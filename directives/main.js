@@ -9,7 +9,7 @@ manywho.directive('mwMain', ['$compile', 'view', 'viewBuilder', function ($compi
 
             var html = viewBuilder.getChildDirectives('root');
             var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            element.append(compiledElement);
 
         }
     }

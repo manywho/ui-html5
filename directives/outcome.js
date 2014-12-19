@@ -3,8 +3,8 @@ manywho.directive('mwOutcome', ['$compile', 'outcome', 'view', 'viewBuilder', fu
     return {
         restrict: 'E',
         scope: {
-            id: '&data',
-            parent: '&parent'
+            id: '@data',
+            parent: '@parent'
         },
         link: function (scope, element, attrs) {
 
@@ -12,7 +12,7 @@ manywho.directive('mwOutcome', ['$compile', 'outcome', 'view', 'viewBuilder', fu
             var html = '<button data-ng-click="click()" class="btn btn-primary">' + item.label + '</button>';
 
             var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            element.append(compiledElement);
             
             scope.click = function() {
                 outcome.onClick(scope.data);

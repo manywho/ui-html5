@@ -3,8 +3,8 @@ manywho.directive('mwHorizontal', ['$compile', 'view', 'viewBuilder', function (
     return {
         restrict: 'E',
         scope: {
-            id: '&id',
-            parent: '&parent'
+            id: '@id',
+            parent: '@parent'
         },
         link: function (scope, element, attrs) {
 
@@ -13,7 +13,7 @@ manywho.directive('mwHorizontal', ['$compile', 'view', 'viewBuilder', function (
             html += '</div>';
 
             var compiledElement = $compile(html)(scope);
-            element.replaceWIth(compiledElement);
+            element.append(compiledElement);
         }
     }
 

@@ -3,15 +3,15 @@ manywho.directive('mwInput', ['$compile', 'view', 'viewBuilder', function ($comp
     return {
         restrict: 'E',
         scope: {
-            id: '&id',
-            parent: '&parent'
+            id: '@id',
+            parent: '@parent'
         },
         link: function (scope, element, attrs) {
 
             var html = '<input type="text" id="{{id}}" />';
 
             var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            element.append(compiledElement);
 
         }
     }

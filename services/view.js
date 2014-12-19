@@ -90,7 +90,7 @@ manywho.service('view', function () {
 
             if (container != null) {
                 children = children.concat(getAll(this.containers, containerId, 'parent'));
-                children = children.concat(getAll(this.components, containerId, 'parentContainerId'));
+                children = children.concat(getAll(this.components, containerId, 'pageContainerId'));
             }
 
             children.sort(function (a, b) {
