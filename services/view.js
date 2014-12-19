@@ -99,6 +99,10 @@ manywho.service('view', function () {
 
             return children;
 
+        },
+
+        getComponent: function(componentId) {
+            return this.components[componentId];
         }
 
     }
