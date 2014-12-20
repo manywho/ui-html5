@@ -39,6 +39,25 @@ manywho.service('viewBuilder', ['view', function (view) {
 
             return childDirectives.join("\n");
 
+        },
+        
+        getOutcomeDirectives: function (id) {
+
+			var outcomeDirectives = [];
+            var outcomes = view.getOutcomes(id);
+
+            outcomes.forEach(function (item) {
+
+                var directive = angular.element(directives['OUTCOME']);
+                directive.attr('id', item.id);
+                directive.attr('parent', id);
+
+                outcomeDirectives.push(directive[0].outerHTML);
+
+            }, this);
+
+            return outcomeDirectives.join("\n");
+
         }
 
     }

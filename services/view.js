@@ -53,27 +53,39 @@ manywho.service('view', function () {
         
         containers: {},
         components: {},
+        outcomes: {},
+        componentInputResponseRequests: {},
 
         fetch: function(tenantId, flowId, elementId) {
     
             var response = JSON.parse(testdata);
+            
+            this.outcomes = response.mapElementInvokeResponses[0].outcomeResponses;
           
-            var containers = flattenContainers(response.pageContainerResponses, null, []);
+            var containers = flattenContainers(response.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             containers.forEach(function (item) {
 
                 this.containers[item.id] = item;
-                if (contains(response.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    this.containers[item.id] = updateData(response.pageContainerDataResponses, item, 'pageContainerId');
+                if (contains(response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                    this.containers[item.id] = updateData(response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
                 }
 
             }, this);
 
-            response.pageComponentResponses.forEach(function (item) {
+            response.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
                 this.components[item.id] = item;
-                if (contains(response.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    this.components[item.id] = updateData(response.pageComponentDataResponses, item, 'pageComponentId');
+                if (contains(response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                    this.components[item.id] = updateData(response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
+                
+                // Create the input response information so we have the page state that needs
+                // to be sent back to the engine pre-configured and ready to update on events
+                this.componentInputResponseRequests[item.id] = {
+                	'pageComponentId': item.id,
+                	'contentValue': null,
+                	'objectData': null
+                };
 
             }, this);
 
@@ -103,6 +115,51 @@ manywho.service('view', function () {
 
         getComponent: function(componentId) {
             return this.components[componentId];
+        },
+
+        getOutcome: function(outcomeId) {
+        	var outcome = null;
+        	
+            this.outcomes.forEach(function (item) {
+        		if (item.id.toLowerCase() == outcomeId.toLowerCase()) {
+        			outcome = item;
+        		}
+            }, this);
+            
+            return outcome;
+        },
+        
+        getOutcomes: function(pageObjectId) {
+        
+        	var pageObjectOutcomes = [];
+        	
+        	// If the directive has supplied an object id, we find the bound outcomes, otherwise
+        	// we find all outcomes that are unbound
+        	if (pageObjectId != null) {
+        		this.outcomes.forEach(function (item) {
+        			if (item.pageObjectBindingId != null &&
+        		    	item.pageObjectBindingId.toLowerCase() == pageObjectId.toLowerCase()) {
+        		    	pageObjectOutcomes[pageObjectOutcomes.length] = item;
+        			}
+				}, this);
+			} else {
+        		this.outcomes.forEach(function (item) {
+        			if (item.pageObjectBindingId == null ||
+        		    	item.pageObjectBindingId.trim().length == 0) {
+        		    	pageObjectOutcomes[pageObjectOutcomes.length] = item;
+        			}
+				}, this);
+			}
+			
+			return pageObjectOutcomes;
+			
+        },
+        
+        setComponentInputResponseRequest: function(componentId, contentValue, objectData) {	
+        		
+			this.componentInputResponseRequests[componentId].contentValue = contentValue;
+			this.componentInputResponseRequests[componentId].objectData = objectData;
+			
         }
 
     }
