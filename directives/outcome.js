@@ -1,4 +1,4 @@
-manywho.directive('mwOutcome', ['$compile', 'outcomeCallback', 'view', 'viewBuilder', function ($compile, outcomeCallback, viewData, viewBuilder) {
+manywho.directive('mwOutcome', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
 
     return {
         restrict: 'E',
@@ -8,14 +8,14 @@ manywho.directive('mwOutcome', ['$compile', 'outcomeCallback', 'view', 'viewBuil
         },
         link: function (scope, element, attrs) {
 
-            var outcome = viewData.getOutcome(scope.id);
+            var outcome = model.getOutcome(scope.id);
             var html = '<button data-ng-click="click()" class="btn btn-primary">' + outcome.label + '</button>';
 
             var compiledElement = $compile(html)(scope);
             element.append(compiledElement);
             
             scope.click = function() {
-                outcomeCallback.onClick(viewData.getOutcome(scope.id));
+                engine.move(model.getOutcome(scope.id));
             }
         }
     }

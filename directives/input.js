@@ -1,4 +1,4 @@
-manywho.directive('mwInput', ['$compile', 'view', 'viewBuilder', function ($compile, viewData, viewBuilder) {
+manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
     
     return {
         restrict: 'E',
@@ -9,7 +9,7 @@ manywho.directive('mwInput', ['$compile', 'view', 'viewBuilder', function ($comp
         },
         link: function (scope, element, attrs) {
 
-			var component = viewData.getComponent(scope.id);
+			var component = model.getComponent(scope.id);
 						
 			// Check to see if the component has a label
 			var hasLabel = false;
@@ -53,7 +53,7 @@ manywho.directive('mwInput', ['$compile', 'view', 'viewBuilder', function ($comp
 
 			// If the user changes anything in this input, we update the component input response requests
             scope.change = function() {
-                viewData.setComponentInputResponseRequest(scope.id, scope.value, null);
+                model.setComponentInputResponseRequest(scope.id, scope.value, null);
             }
             
         }

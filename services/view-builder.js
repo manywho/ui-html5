@@ -1,4 +1,4 @@
-manywho.service('viewBuilder', ['view', function (view) {
+manywho.service('viewBuilder', ['model', function (model) {
 
     var directives = {};
 
@@ -25,7 +25,7 @@ manywho.service('viewBuilder', ['view', function (view) {
         getChildDirectives: function (id) {
 
             var childDirectives = [];
-            var children = view.getChildren(id);
+            var children = model.getChildren(id);
 
             children.forEach(function (item) {
 
@@ -44,7 +44,7 @@ manywho.service('viewBuilder', ['view', function (view) {
         getOutcomeDirectives: function (id) {
 
 			var outcomeDirectives = [];
-            var outcomes = view.getOutcomes(id);
+            var outcomes = model.getOutcomes(id);
 
             outcomes.forEach(function (item) {
 

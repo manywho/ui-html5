@@ -1,4 +1,4 @@
-manywho.service('view', function () {
+manywho.service('model', function () {
 
     function contains(collection, id, key) {
         var selectedItem = collection.filter(function (item) {

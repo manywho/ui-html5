@@ -1,4 +1,4 @@
-manywho.directive('mwPresentation', ['$compile', 'view', 'viewBuilder', function ($compile, viewData, viewBuilder) {
+manywho.directive('mwPresentation', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
 
     return {
         restrict: 'E',
@@ -8,7 +8,7 @@ manywho.directive('mwPresentation', ['$compile', 'view', 'viewBuilder', function
         },
         link: function (scope, element, attrs) {
 
-            var html = viewData.getComponent(scope.id).content
+            var html = model.getComponent(scope.id).content
                 .replace(/&quot;/g, '\"')
                 .replace(/&#39;/g, '\'')
                 .replace(/&lt;/g, '<')

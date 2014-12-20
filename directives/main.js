@@ -1,4 +1,4 @@
-manywho.directive('mwMain', ['$compile', 'view', 'viewBuilder', function ($compile, viewData, viewBuilder) {
+manywho.directive('mwMain', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
     return {
         restrict: 'E',
         scope: true,
