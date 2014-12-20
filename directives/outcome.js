@@ -1,21 +1,21 @@
-manywho.directive('mwOutcome', ['$compile', 'outcome', 'view', 'viewBuilder', function ($compile, outcome, viewData, viewBuilder) {
+manywho.directive('mwOutcome', ['$compile', 'outcomeCallback', 'view', 'viewBuilder', function ($compile, outcomeCallback, viewData, viewBuilder) {
 
     return {
         restrict: 'E',
         scope: {
-            id: '@data',
+            id: '@id',
             parent: '@parent'
         },
         link: function (scope, element, attrs) {
 
-            var item = null;
-            var html = '<button data-ng-click="click()" class="btn btn-primary">' + item.label + '</button>';
+            var outcome = viewData.getOutcome(scope.id);
+            var html = '<button data-ng-click="click()" class="btn btn-primary">' + outcome.label + '</button>';
 
             var compiledElement = $compile(html)(scope);
             element.append(compiledElement);
             
             scope.click = function() {
-                outcome.onClick(scope.data);
+                outcomeCallback.onClick(viewData.getOutcome(scope.id));
             }
         }
     }
