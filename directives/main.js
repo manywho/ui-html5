@@ -7,7 +7,9 @@ manywho.directive('mwMain', ['$compile', 'view', 'viewBuilder', function ($compi
         }],
         link: function (scope, element, attrs) {
 
-            var html = viewBuilder.getChildDirectives('root');
+            var html = '';
+            html += viewBuilder.getChildDirectives('root');
+            html += viewBuilder.getOutcomeDirectives(null);
             var compiledElement = $compile(html)(scope);
             element.append(compiledElement);
 
