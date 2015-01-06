@@ -41,6 +41,10 @@ manywho.service('model', function () {
                 var item = containers[index];
                 if (parent) {
                     item.parent = parent.id;
+                    if (!parent.childCount) {
+                        parent.childCount = 0;
+                    }
+                    parent.childCount++;
                 }
                 result.push(item);
                 flattenContainers(item.pageContainerResponses, item, result);
@@ -113,6 +117,10 @@ manywho.service('model', function () {
 
             return children;
 
+        },
+
+        getContainer: function(containerId) {
+            return this.containers[containerId];
         },
 
         getComponent: function (componentId) {

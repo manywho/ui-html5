@@ -7,11 +7,13 @@ manywho.directive('mwMain', ['$compile', 'engine', 'model', 'viewBuilder', funct
         }],
         link: function (scope, element, attrs) {
 
-            var html = '';
+            var html = '<div class="container">';
             html += viewBuilder.getChildDirectives('root');
             html += viewBuilder.getOutcomeDirectives(null);
+            html += '</div>';
+
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
 
         }
     }

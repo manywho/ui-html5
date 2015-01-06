@@ -16,7 +16,7 @@ manywho.directive('mwPresentation', ['$compile', 'engine', 'model', 'viewBuilder
                 .replace(/&amp;/g, '&');
 
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
 
         }
     }

@@ -1,5 +1,5 @@
 manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
-    
+
     return {
         restrict: 'E',
         scope: {
@@ -9,53 +9,49 @@ manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', func
         },
         link: function (scope, element, attrs) {
 
-			var component = model.getComponent(scope.id);
-						
-			// Check to see if the component has a label
-			var hasLabel = false;
+            var component = model.getComponent(scope.id);
+
+            // Check to see if the component has a label
+            var hasLabel = false;
 
             if (component.label != null &&
                 component.label.trim().length > 0) {
                 hasLabel = true;
-			}
-			
-			// Convert to the HTML5 input types
-			var inputType = 'text';
-			
-			if (component.contentType.toLowerCase() == 'contentnumber') {
-				inputType = 'number';
-			} else if (component.contentType.toLowerCase() == 'contentdatetime') {
-				inputType = 'date';
-			}
+            }
 
-			// Create the actual html for the input			
-            var html = '';
-            
+            // Convert to the HTML5 input types
+            var inputType = 'text';
+
+            if (component.contentType.toLowerCase() == 'contentnumber') {
+                inputType = 'number';
+            } else if (component.contentType.toLowerCase() == 'contentdatetime') {
+                inputType = 'date';
+            }
+
+            var classes = viewBuilder.getClasses(scope.parent);
+
+            // Create the actual html for the input			
+            var html = '<div class="form-group ' + classes + '">';
+
             if (hasLabel) {
-                html += '<label for="{{id}}">' + component.label;
-        	}
-            
-            html += '<input ';
-            html += 'ng-model="value" ';
-            html += 'ng-change="change()" ';
-            html += 'id="{{id}}" ';
+                html += '<label for="{{id}}">' + component.label + '</label>';
+            }
+
+            html += '<input id="{{id}}" ng-model="value" ng-change="change()" value="{{value}}" class="form-control" ';
             html += 'type="' + inputType + '" ';
             html += 'placeholder="' + component.hintValue + '" ';
-            html += 'value="{{value}}" ';
             html += '/>';
 
-            if (hasLabel) {
-                html += '</label>';
-			}
-						
-            var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            html += '</div>';
 
-			// If the user changes anything in this input, we update the component input response requests
-            scope.change = function() {
+            var compiledElement = $compile(html)(scope);
+            element.replaceWith(compiledElement);
+
+            // If the user changes anything in this input, we update the component input response requests
+            scope.change = function () {
                 model.setComponentInputResponseRequest(scope.id, scope.value, null);
             }
-            
+
         }
     }
 

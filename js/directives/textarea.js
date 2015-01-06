@@ -11,7 +11,7 @@ manywho.directive('mwTextarea', ['$compile', 'engine', 'model', 'viewBuilder', f
             var html = '<textarea id="{{id}}" />';
 
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
 
         }
     }

@@ -8,12 +8,14 @@ manywho.directive('mwInline', ['$compile', 'engine', 'model', 'viewBuilder', fun
         },
         link: function (scope, element, attrs) {
 
-            var html = '<div id="{{id}}">';
+            var classes = viewBuilder.getClasses(scope.parent);
+
+            var html = '<div id="{{id}}" class="' + classes + '">';
             html += viewBuilder.getChildDirectives(scope.id);
             html += '</div>';
 
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
         }
     }
 

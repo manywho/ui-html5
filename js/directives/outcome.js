@@ -12,7 +12,7 @@ manywho.directive('mwOutcome', ['$compile', 'engine', 'model', 'viewBuilder', fu
             var html = '<button data-ng-click="click()" class="btn btn-primary">' + outcome.label + '</button>';
 
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
             
             scope.click = function() {
                 engine.move(model.getOutcome(scope.id));

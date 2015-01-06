@@ -8,7 +8,9 @@ manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'viewBuilder', f
         },
         link: function (scope, element, attrs) {
 
-            var html = '<div id="{{id}}">';
+            var classes = viewBuilder.getClasses(scope.parent);
+
+            var html = '<div id="{{id}}" class="' + classes + '">';
             html += viewBuilder.getChildDirectives(scope.id);
             html += '</div>';
 
