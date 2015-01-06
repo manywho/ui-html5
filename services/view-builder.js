@@ -14,6 +14,22 @@ manywho.service('viewBuilder', ['model', function (model) {
 
     }
 
+    function getDirectiveHtml(directiveType, id, parentId) {
+
+        var directive = angular.element(directives[directiveType]);
+
+        if (id) {
+            directive.attr('id', id);
+        }
+
+        if (parentId) {
+            directive.attr('parent', parentId);
+        }
+
+        return directive[0].outerHTML;
+
+    }
+
     return {
 
         registerDirective: function (name, directive) {
@@ -28,32 +44,20 @@ manywho.service('viewBuilder', ['model', function (model) {
             var children = model.getChildren(id);
 
             children.forEach(function (item) {
-
-                var directive = angular.element(directives[getDirectiveType(item)]);
-                directive.attr('id', item.id);
-                directive.attr('parent', id);
-
-                childDirectives.push(directive[0].outerHTML);
-
+                childDirectives.push(getDirectiveHtml(getDirectiveType(item), item.id, id));
             }, this);
 
             return childDirectives.join("\n");
 
         },
-        
+
         getOutcomeDirectives: function (id) {
 
-			var outcomeDirectives = [];
+            var outcomeDirectives = [];
             var outcomes = model.getOutcomes(id);
 
             outcomes.forEach(function (item) {
-
-                var directive = angular.element(directives['OUTCOME']);
-                directive.attr('id', item.id);
-                directive.attr('parent', id);
-
-                outcomeDirectives.push(directive[0].outerHTML);
-
+                outcomeDirectives.push(getDirectiveHtml('OUTCOME', item.id, id));
             }, this);
 
             return outcomeDirectives.join("\n");
