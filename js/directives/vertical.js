@@ -13,7 +13,7 @@ manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'viewBuilder', f
             html += '</div>';
 
             var compiledElement = $compile(html)(scope);
-            element.append(compiledElement);
+            element.replaceWith(compiledElement);
 
         }
     }
