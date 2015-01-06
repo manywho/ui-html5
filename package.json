@@ -1,0 +1,10 @@
+{
+  "name": "ManyWho-HTML5-Player2",
+  "version": "0.0.1",
+  "description": "",
+  "author": "ManyWho",
+  "devDependencies": {
+    "browser-sync": "^1.8.3",
+    "gulp": "^3.8.10"
+  }
+}
