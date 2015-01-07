@@ -9,19 +9,18 @@ manywho.directive('mwTextarea', ['$compile', 'engine', 'model', 'viewBuilder', f
         link: function (scope, element, attrs) {
 
             var component = model.getComponent(scope.id);
-            var classes = viewBuilder.getClasses(scope.parent);
 
-            var html = '<div class="form-group ' + classes + '">';
-
+            var textAreaElement = angular.element('<div></div>');
+            textAreaElement
+                .addClass('form-group')
+                .addClass(viewBuilder.getClasses(scope.parent));
+                
             if (component.label && component.label.trim().length > 0) {
-                html += '<label for="{{id}}">' + component.label + '</label>';
+                textAreaElement.append('<label for="{{id}}">' + component.label + '</label>');
             }
-            
-            html += '<textarea id="{{id}}" class="form-control"/>';
-            html += '</div>';
 
-            var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            textAreaElement.append('<textarea id="{{id}}" class="form-control"/>');
+            element.replaceWith($compile(textAreaElement)(scope));
 
         }
     }

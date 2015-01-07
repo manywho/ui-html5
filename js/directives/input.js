@@ -1,5 +1,20 @@
 manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
 
+    function getInputType(component) {
+
+        switch (component.contentType.toLowerCase()) {
+            case 'contentnumber':
+                return 'number';
+                break;
+            case 'contentdatetime':
+                return 'date';
+                break;
+            default:
+                return 'text';
+        }
+
+    }
+
     return {
         restrict: 'E',
         scope: {
@@ -11,41 +26,27 @@ manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', func
 
             var component = model.getComponent(scope.id);
 
-            // Check to see if the component has a label
-            var hasLabel = false;
+            var formElement = angular.element('<div></div>');
+            formElement
+                .addClass('form-group')
+                .addClass(viewBuilder.getClasses(scope.parent));
 
-            if (component.label != null &&
-                component.label.trim().length > 0) {
-                hasLabel = true;
+            if (component.label != null && component.label.trim().length > 0) {
+                formElement.append('<label for="{{id}}">' + component.label + '</label>');
             }
 
-            // Convert to the HTML5 input types
-            var inputType = 'text';
+            var inputElement = angular.element('<input />');
+            inputElement
+                .attr('id', '{{id}}')
+                .attr('ng-model', 'value')
+                .attr('ng-change', 'change()')
+                .attr('value', '{{value}}')
+                .attr('type', getInputType(component))
+                .attr('placeholder', component.hintValue)
+                .addClass('form-control');
 
-            if (component.contentType.toLowerCase() == 'contentnumber') {
-                inputType = 'number';
-            } else if (component.contentType.toLowerCase() == 'contentdatetime') {
-                inputType = 'date';
-            }
-
-            var classes = viewBuilder.getClasses(scope.parent);
-
-            // Create the actual html for the input			
-            var html = '<div class="form-group ' + classes + '">';
-
-            if (hasLabel) {
-                html += '<label for="{{id}}">' + component.label + '</label>';
-            }
-
-            html += '<input id="{{id}}" ng-model="value" ng-change="change()" value="{{value}}" class="form-control" ';
-            html += 'type="' + inputType + '" ';
-            html += 'placeholder="' + component.hintValue + '" ';
-            html += '/>';
-
-            html += '</div>';
-
-            var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            formElement.append(inputElement);
+            element.replaceWith($compile(formElement)(scope));
 
             // If the user changes anything in this input, we update the component input response requests
             scope.change = function () {
