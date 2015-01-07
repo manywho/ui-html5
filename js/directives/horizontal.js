@@ -8,14 +8,15 @@ manywho.directive('mwHorizontal', ['$compile', 'engine', 'model', 'viewBuilder',
         },
         link: function (scope, element, attrs) {
 
-            var classes = viewBuilder.getClasses(scope.parent);
+            var horizontalElement = angular.element('<div></div>');
+            horizontalElement
+                .attr('id', '{{id}}')
+                .addClass('row')
+                .addClass(viewBuilder.getClasses(scope.parent))
+                .append(viewBuilder.getChildDirectives(scope.id));
 
-            var html = '<div id="{{id}}" class="row ' + classes + '">';
-            html += viewBuilder.getChildDirectives(scope.id);
-            html += '</div>';
+            element.replaceWith($compile(horizontalElement)(scope));
 
-            var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
         }
     }
 

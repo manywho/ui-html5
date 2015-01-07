@@ -8,14 +8,13 @@ manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'viewBuilder', f
         },
         link: function (scope, element, attrs) {
 
-            var classes = viewBuilder.getClasses(scope.parent);
+            var verticalElement = angular.element('<div></div>');
+            verticalElement
+                .attr('id', '{{id}}')
+                .addClass(viewBuilder.getClasses(scope.parent))
+                .append(viewBuilder.getChildDirectives(scope.id));
 
-            var html = '<div id="{{id}}" class="' + classes + '">';
-            html += viewBuilder.getChildDirectives(scope.id);
-            html += '</div>';
-
-            var compiledElement = $compile(html)(scope);
-            element.replaceWith(compiledElement);
+            element.replaceWith($compile(verticalElement)(scope));
 
         }
     }
