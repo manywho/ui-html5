@@ -5,6 +5,8 @@
   "author": "ManyWho",
   "devDependencies": {
     "browser-sync": "^1.8.3",
-    "gulp": "^3.8.10"
+    "gulp": "^3.8.10",
+    "gulp-less": "^2.0.1",
+    "gulp-watch": "^3.0.0"
   }
 }

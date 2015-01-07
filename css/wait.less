@@ -1,0 +1,44 @@
+﻿.wait
+{
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: #000;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.wait-inner 
+{
+    margin: auto;
+    position: absolute;
+    height: 30%;
+    max-height: 50%;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.wait-message
+{
+    font-size: 2em;
+}
+
+.wait-icon
+{
+    font-size: 4em;
+    -animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@-webkit-keyframes spin2 
+{
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin 
+{
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}

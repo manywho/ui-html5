@@ -7,6 +7,7 @@ manywho.service('engine', ['model', function (model) {
             alert('Initialize!');
 
         },
+
         move: function (outcome) {
 
             // Validate all of the components on the page here...
@@ -17,16 +18,19 @@ manywho.service('engine', ['model', function (model) {
             alert('Move! ' + outcome.label);
 
         },
+
         navigate: function (engineInvokeRequest) {
 
             alert('Navigate!');
 
         },
+
         invoke: function (engineInvokeRequest) {
 
             alert('Invoke!');
 
         },
+
         sync: function (engineInvokeRequest) {
 
             alert('Sync!');

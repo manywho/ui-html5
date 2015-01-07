@@ -26,4 +26,4 @@ We'll be providing more information over time.  Please stay tuned as we develop 
 2. Install gulp cli `npm install gulp -g`
 3. cd into the HTML5 Players folder and `npm install`
 
-You can start the dev "server" by running `gulp browser-sync`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc)
+You can start the dev "server" by running `gulp refresh`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc)
