@@ -53,12 +53,36 @@ manywho.service('model', function () {
         return result;
     }
 
+    function getNavigationItems(navigationItemResponses) {
+
+        var navigationItems = {};
+
+        navigationItemResponses.forEach(function (response) {
+
+            navigationItems[response.id] = angular.extend({}, response);
+            
+            if (response.navigationItems != null)
+            {
+                navigationItems[response.id].items = getNavigationItems(response.navigationItems);
+            }
+
+        }, this);
+
+        return navigationItems;
+
+    }
+
+    function updateNavigationItems(navgiation, navigationItemResponses) {
+
+    }
+
     return {
 
         containers: {},
         components: {},
         outcomes: {},
         componentInputResponseRequests: {},
+        navigation: {},
 
         fetch: function (tenantId, flowId, elementId) {
 
@@ -97,6 +121,23 @@ manywho.service('model', function () {
 
         },
 
+        fetchNavigation: function(navigationId, stateId, stateToken) {
+
+            var response = JSON.parse(testnavdata);
+
+            var navigation = {
+                id: navigationId,
+                culture: response.culture,
+                label: response.label,
+                developerName: response.developerName,
+                tag: response.tag,
+                items: getNavigationItems(response.navigationItemResponses)
+            }
+
+            this.navigation[navigationId] = navigation;
+
+        },
+
         getChildren: function (containerId) {
 
             if (containerId == 'root') {
@@ -129,6 +170,10 @@ manywho.service('model', function () {
 
         getOutcome: function (outcomeId) {
             return this.outcomes[outcomeId.toLowerCase()];
+        },
+
+        getNavigation: function(navigationId) {
+            return this.navigation[navigationId];
         },
 
         getOutcomes: function (pageObjectId) {
