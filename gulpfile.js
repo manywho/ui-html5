@@ -3,20 +3,24 @@ var gulp = require('gulp'),
     less = require('gulp-less'),
     watch = require('gulp-watch'),
     jshint = require('gulp-jshint'),
-    stylish = require('jshint-stylish');
+    stylish = require('jshint-stylish'),
+    plumber = require('gulp-plumber'),
 
 gulp.task('less', function () {
 
     gulp.src('css/*.less')
-       .pipe(watch('css/*.less'))
-       .pipe(less())
-       .pipe(gulp.dest('css'));
+        .pipe(plumber())
+        .pipe(watch('css/*.less'))
+        .pipe(less())
+        .pipe(gulp.dest('css'));
 
 });
 
 gulp.task('jshint', function () {
 
     gulp.src('js/*.js')
+        .pipe(plumber())
+        .pipe(watch('js/*.js'))
         .pipe(jshint())
         .pipe(jshint.reporter(stylish))
         .pipe(jshint.reporter('fail'));
