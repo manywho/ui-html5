@@ -3,7 +3,7 @@ manywho.directive('mwNavigation', ['$compile', 'engine', 'model', 'viewBuilder',
     function getHeaderElement(navigation) {
 
         var headerHtml = '<div class="navbar-header">';
-        headerHtml += '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-bar-collapse">';
+        headerHtml += '<button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">';
         headerHtml += '<span class="sr-only">Toggle navigation</span>';
         headerHtml += '<span class="icon-bar"></span>';
         headerHtml += '<span class="icon-bar"></span>';
@@ -35,12 +35,14 @@ manywho.directive('mwNavigation', ['$compile', 'engine', 'model', 'viewBuilder',
 
             if (item.items != null) {
 
-                listItemElement.addClass('dropdown');
+                listItemElement
+                    .addClass('dropdown')
+                    .attr('dropdown', '');
 
                 listItemAnchorElement
                     .addClass('dropdown-toggle')
-                    .attr('data-toggle', 'dropdown')
-                    .attr('role', 'button')
+                    .attr('dropdown-toggle', '')
+                    .attr('aria-haspopup', 'true')
                     .attr('aria-expanded', 'false')
                     .append('<span class="caret"></span>');
 
@@ -67,7 +69,7 @@ manywho.directive('mwNavigation', ['$compile', 'engine', 'model', 'viewBuilder',
 
             var navigation = model.getNavigation(scope.id);
 
-            var navigationItemsElement = angular.element('<div class="collapse navbar-collapse" id="nav-bar-collapse"><ul class="nav navbar-nav"></ul></div>');
+            var navigationItemsElement = angular.element('<div class="collapse navbar-collapse" ng-class="!navCollapsed && \' in \'"><ul class="nav navbar-nav"></ul></div>');
 
             getListElements(navigation.items).forEach(function (item) {
                 navigationItemsElement.children().append(item);
