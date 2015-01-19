@@ -1,4 +1,4 @@
-manywho.directive('mwHorizontal', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwHorizontal', ['$compile', 'engine', 'model', 'directiveHelpers', 'styling', function ($compile, engine, model, directiveHelpers, styling) {
 
     return {
         restrict: 'E',
@@ -12,8 +12,8 @@ manywho.directive('mwHorizontal', ['$compile', 'engine', 'model', 'viewBuilder',
             horizontalElement
                 .attr('id', '{{id}}')
                 .addClass('row')
-                .addClass(viewBuilder.getClasses(scope.parent))
-                .append(viewBuilder.getChildDirectives(scope.id));
+                .addClass(styling.getClasses(scope.parent, scope.id, 'horizontal_flow'))
+                .append(directiveHelpers.getChildDirectives(scope.id));
 
             element.replaceWith($compile(horizontalElement)(scope));
 

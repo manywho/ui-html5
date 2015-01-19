@@ -1,4 +1,4 @@
-manywho.directive('mwGroup', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwGroup', ['$compile', 'engine', 'model', 'directiveHelpers', function ($compile, engine, model, directiveHelpers) {
 
     return {
         restrict: 'E',
@@ -9,7 +9,7 @@ manywho.directive('mwGroup', ['$compile', 'engine', 'model', 'viewBuilder', func
         link: function (scope, element, attrs) {
 
             var html = '<div id="{{id}}">';
-            html += viewBuilder.getChildDirectives(scope.id);
+            html += directiveHelpers.getChildDirectives(scope.id);
             html += '</div>';
 
             var compiledElement = $compile(html)(scope);

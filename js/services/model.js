@@ -176,6 +176,30 @@ manywho.service('model', function () {
             return this.navigation[navigationId];
         },
 
+        getItem: function(id) {
+
+            var item = this.getContainer(id);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getComponent(id);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getOutcome(id);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getNavigation(id);
+            if (item != null) {
+                return item;
+            }
+
+        },
+
         getOutcomes: function (pageObjectId) {
 
             var pageObjectOutcomes = [];

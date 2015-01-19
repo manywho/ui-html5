@@ -1,4 +1,4 @@
-manywho.directive('mwNavigation', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwNavigation', ['$compile', 'engine', 'model', 'directiveHelpers', function ($compile, engine, model, directiveHelpers) {
 
     function getHeaderElement(navigation) {
 

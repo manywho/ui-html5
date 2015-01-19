@@ -1,4 +1,4 @@
-manywho.service('viewBuilder', ['model', function (model) {
+manywho.service('directiveHelpers', ['model', function (model) {
 
     var directives = {};
 
@@ -61,26 +61,6 @@ manywho.service('viewBuilder', ['model', function (model) {
             }, this);
 
             return outcomeDirectives.join("\n");
-
-        },
-
-        getClasses: function (parentId) {
-
-            var container = model.getContainer(parentId);
-            var classes = [];
-
-            if (container) {
-
-                switch (container.containerType.toLowerCase()) {
-                    case "horizontal_flow":
-                        var columnSpan = Math.floor(12 / Math.max(1, container.childCount));
-                        classes.push('col-sm-' + columnSpan);
-                        break;
-                }
-
-            }
-
-            return classes.join(' ');
 
         }
 

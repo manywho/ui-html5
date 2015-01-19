@@ -1,4 +1,4 @@
-manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwInput', ['$compile', 'engine', 'model', 'directiveHelpers', 'styling', function ($compile, engine, model, directiveHelpers, styling) {
 
     function getInputType(component) {
 
@@ -29,7 +29,7 @@ manywho.directive('mwInput', ['$compile', 'engine', 'model', 'viewBuilder', func
             var formElement = angular.element('<div></div>');
             formElement
                 .addClass('form-group')
-                .addClass(viewBuilder.getClasses(scope.parent));
+                .addClass(styling.getClasses(scope.parent, scope.id, 'input'));
 
             if (component.label != null && component.label.trim().length > 0) {
                 formElement.append('<label for="{{id}}">' + component.label + '</label>');

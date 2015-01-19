@@ -1,4 +1,4 @@
-manywho.directive('mwTextarea', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwTextarea', ['$compile', 'engine', 'model', 'directiveHelpers', 'styling', function ($compile, engine, model, directiveHelpers, styling) {
 
     return {
         restrict: 'E',
@@ -13,7 +13,7 @@ manywho.directive('mwTextarea', ['$compile', 'engine', 'model', 'viewBuilder', f
             var textAreaElement = angular.element('<div></div>');
             textAreaElement
                 .addClass('form-group')
-                .addClass(viewBuilder.getClasses(scope.parent));
+                .addClass(styling.getClasses(scope.parent, scope.id, 'textarea'));
                 
             if (component.label && component.label.trim().length > 0) {
                 textAreaElement.append('<label for="{{id}}">' + component.label + '</label>');

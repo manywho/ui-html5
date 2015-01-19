@@ -1,4 +1,4 @@
-manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'directiveHelpers', 'styling', function ($compile, engine, model, directiveHelpers, styling) {
 
     return {
         restrict: 'E',
@@ -11,8 +11,8 @@ manywho.directive('mwVertical', ['$compile', 'engine', 'model', 'viewBuilder', f
             var verticalElement = angular.element('<div></div>');
             verticalElement
                 .attr('id', '{{id}}')
-                .addClass(viewBuilder.getClasses(scope.parent))
-                .append(viewBuilder.getChildDirectives(scope.id));
+                .addClass(styling.getClasses(scope.parent, scope.id, 'vertical_flow'))
+                .append(directiveHelpers.getChildDirectives(scope.id));
 
             element.replaceWith($compile(verticalElement)(scope));
 

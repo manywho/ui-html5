@@ -1,4 +1,4 @@
-manywho.directive('mwOutcome', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwOutcome', ['$compile', 'engine', 'model', 'directiveHelpers', function ($compile, engine, model, directiveHelpers) {
 
     return {
         restrict: 'E',

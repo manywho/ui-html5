@@ -1,4 +1,4 @@
-manywho.directive('mwMain', ['$compile', 'engine', 'model', 'viewBuilder', function ($compile, engine, model, viewBuilder) {
+manywho.directive('mwMain', ['$compile', 'engine', 'model', 'directiveHelpers', function ($compile, engine, model, directiveHelpers) {
     return {
         restrict: 'E',
         scope: true,
@@ -10,8 +10,8 @@ manywho.directive('mwMain', ['$compile', 'engine', 'model', 'viewBuilder', funct
             var mainElement = angular.element('<div></div>');
             mainElement
                 .addClass('container')
-                .append(viewBuilder.getChildDirectives('root'))
-                .append(viewBuilder.getOutcomeDirectives(null));
+                .append(directiveHelpers.getChildDirectives('root'))
+                .append(directiveHelpers.getOutcomeDirectives(null));
 
             element.replaceWith($compile(mainElement)(scope));
 
