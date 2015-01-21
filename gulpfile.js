@@ -5,7 +5,17 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     plumber = require('gulp-plumber'),
+    concat = require('gulp-concat'),
+    minifyCSS = require('gulp-minify-css'),
+    rev = require('gulp-rev'),
+    clean = require('gulp-clean'),
+    ngAnnotate = require('gulp-ng-annotate'),
+    uglify = require('gulp-uglify'),
+    htmlreplace = require('gulp-html-replace'),
+    glob = require('glob'),
+    path = require('path');
 
+// Dev Time
 gulp.task('less', function () {
 
     gulp.src('css/*.less')
@@ -45,3 +55,48 @@ gulp.task('browser-sync', function () {
 });
 
 gulp.task('refresh', ['jshint', 'less', 'browser-sync']);
+
+// Production Build
+gulp.task('clean-dist', function () {
+
+    gulp.src('dist/**/*.*', { read: false })
+        .pipe(clean({ force: true }));
+
+});
+
+gulp.task('less-dist', function () {
+
+    gulp.src('css/*.less')
+        .pipe(concat('compiled.less'))
+        .pipe(less())
+        .pipe(minifyCSS())
+        .pipe(rev())
+        .pipe(gulp.dest('./dist/css'));
+
+});
+
+gulp.task('js-dist', function () {
+
+    gulp.src('js/**/*.js')
+        .pipe(ngAnnotate())
+        .pipe(concat('compiled.js'))
+        .pipe(uglify())
+        .pipe(rev())
+        .pipe(gulp.dest('./dist/js'));
+
+});
+
+gulp.task('html-dist', function () {
+
+    var compiledCss = path.basename(glob.sync('dist/css/compiled*.css')[0]);
+    var compiledJs = path.basename(glob.sync('dist/js/compiled*.js')[0]);
+    
+    gulp.src('index.html')
+        .pipe(htmlreplace({
+            css: path.join("css/", compiledCss),
+            js: path.join("js/", compiledJs)
+        }))
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('dist', ['clean-dist', 'less-dist', 'js-dist', 'html-dist']);
