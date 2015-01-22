@@ -1,4 +1,4 @@
-manywho.service('styling', ['model', function (model) {
+manywho.styling = (function (manywho) {
 
     var containers = {}
 
@@ -8,11 +8,11 @@ manywho.service('styling', ['model', function (model) {
     }
 
     return {
-              
+ 
         getClasses: function (parentId, id, type) {
 
-            var container = model.getContainer(parentId);
-            var item = model.getItem(id);
+            var container = manywho.model.getContainer(parentId);
+            var item = manywho.model.getItem(id);
             var classes = [];
 
             if (container) {
@@ -31,4 +31,4 @@ manywho.service('styling', ['model', function (model) {
 
     }
 
-}]);
+}(manywho));

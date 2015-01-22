@@ -1,4 +1,4 @@
-manywho.service('engine', ['model', function (model) {
+manywho.engine = (function (manywho) {
 
     return {
 
@@ -39,4 +39,4 @@ manywho.service('engine', ['model', function (model) {
 
     }
 
-}]);
+})(manywho);
