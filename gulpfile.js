@@ -13,7 +13,9 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     htmlreplace = require('gulp-html-replace'),
     glob = require('glob'),
-    path = require('path');
+    path = require('path'),
+    gzip = require('gulp-gzip');
+
 
 // Dev Time
 gulp.task('less', function () {
@@ -71,6 +73,7 @@ gulp.task('less-dist', function () {
         .pipe(less())
         .pipe(minifyCSS())
         .pipe(rev())
+        .pipe(gzip({ append: false }))
         .pipe(gulp.dest('./dist/css'));
 
 });
@@ -82,6 +85,7 @@ gulp.task('js-dist', function () {
         .pipe(concat('compiled.js'))
         .pipe(uglify())
         .pipe(rev())
+        .pipe(gzip({ append: false }))
         .pipe(gulp.dest('./dist/js'));
 
 });
