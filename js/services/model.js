@@ -239,7 +239,7 @@
             {
                 var item = this.outcomes[outcomeId];
 
-                // If the directive has supplied an object id, we find the bound outcomes, otherwise
+                // If the component has supplied an object id, we find the bound outcomes, otherwise
                 // we find all outcomes that are unbound
                 if ((item.pageObjectBindingId != null && item.pageObjectBindingId.toLowerCase() == pageObjectId.toLowerCase())
                     || (item.pageObjectBindingId == null || item.pageObjectBindingId.trim().length == 0)) {

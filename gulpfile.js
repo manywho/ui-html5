@@ -9,7 +9,6 @@ var gulp = require('gulp'),
     minifyCSS = require('gulp-minify-css'),
     rev = require('gulp-rev'),
     clean = require('gulp-clean'),
-    ngAnnotate = require('gulp-ng-annotate'),
     uglify = require('gulp-uglify'),
     htmlreplace = require('gulp-html-replace'),
     glob = require('glob'),
@@ -81,7 +80,6 @@ gulp.task('less-dist', function () {
 gulp.task('js-dist', function () {
 
     gulp.src('js/**/*.js')
-        .pipe(ngAnnotate())
         .pipe(concat('compiled.js'))
         .pipe(uglify())
         .pipe(rev())

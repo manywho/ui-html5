@@ -43,6 +43,13 @@ manywho.component = (function (manywho) {
                 return React.createElement(component, { id: item.id, parentId: id });
             }, this);
 
+        },
+
+        getOutcomes: function(outcomes)
+        {
+            return outcomes.map(function (item) {
+                return React.createElement(components['outcome'], { id: item.id });
+            });
         }
 
     }
