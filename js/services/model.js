@@ -90,7 +90,7 @@
 
         navigationItemResponses.forEach(function (response) {
 
-            navigationItems[response.id] = angular.extend({}, response);
+            navigationItems[response.id] = merge({}, response);
             
             if (response.navigationItems != null)
             {

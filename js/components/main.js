@@ -8,7 +8,10 @@
         
         render: function () {
 
-            return React.createElement('div', { className: 'container' }, manywho.component.getChildComponents(this.state.children, this.props.id));
+            return React.DOM.div(null, [
+                        React.createElement(manywho.component.getByName('navigation'), null),
+                        React.DOM.div({ className: 'container' }, manywho.component.getChildComponents(this.state.children, this.props.id))
+                    ]);
 
         }
 
