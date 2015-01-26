@@ -4,7 +4,7 @@
 
         var children = [
             React.DOM.button({ type: 'button', className: 'navbar-toggle' }),
-            React.DOM.span({ type: 'button', className: 'sr-Only' }, 'Toggle navigation'),
+            React.DOM.span({ type: 'button', className: 'sr-only' }, 'Toggle navigation'),
             React.DOM.span({ type: 'button', className: 'icon-bar' }),
             React.DOM.span({ type: 'button', className: 'icon-bar' }),
             React.DOM.span({ type: 'button', className: 'icon-bar' })
