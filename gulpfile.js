@@ -13,7 +13,9 @@ var gulp = require('gulp'),
     htmlreplace = require('gulp-html-replace'),
     glob = require('glob'),
     path = require('path'),
-    gzip = require('gulp-gzip');
+    gzip = require('gulp-gzip'),
+    runSequence = require('run-sequence'),
+    order = require("gulp-order");
 
 
 // Dev Time
@@ -60,31 +62,32 @@ gulp.task('refresh', ['jshint', 'less', 'browser-sync']);
 // Production Build
 gulp.task('clean-dist', function () {
 
-    gulp.src('dist/**/*.*', { read: false })
-        .pipe(clean({ force: true }));
+    return gulp.src('dist', { read: false })
+                .pipe(clean({ force: true }));
 
 });
 
 gulp.task('less-dist', function () {
 
-    gulp.src('css/*.less')
-        .pipe(concat('compiled.less'))
-        .pipe(less())
-        .pipe(minifyCSS())
-        .pipe(rev())
-        .pipe(gzip({ append: false }))
-        .pipe(gulp.dest('./dist/css'));
+    return gulp.src('css/*.less')
+                .pipe(concat('compiled.less'))
+                .pipe(less())
+                .pipe(minifyCSS())
+                .pipe(rev())
+                .pipe(gzip({ append: false }))
+                .pipe(gulp.dest('./dist/css'));
 
 });
 
 gulp.task('js-dist', function () {
 
-    gulp.src('js/**/*.js')
-        .pipe(concat('compiled.js'))
-        .pipe(uglify())
-        .pipe(rev())
-        .pipe(gzip({ append: false }))
-        .pipe(gulp.dest('./dist/js'));
+    return gulp.src(['js/**/*.js'])
+                .pipe(order(['services/*.js', 'components/*.js']))
+                .pipe(concat('compiled.js'))
+                .pipe(uglify())
+                .pipe(rev())
+                .pipe(gzip({ append: false }))
+                .pipe(gulp.dest('./dist/js'));
 
 });
 
@@ -93,12 +96,19 @@ gulp.task('html-dist', function () {
     var compiledCss = path.basename(glob.sync('dist/css/compiled*.css')[0]);
     var compiledJs = path.basename(glob.sync('dist/js/compiled*.js')[0]);
     
-    gulp.src('index.html')
-        .pipe(htmlreplace({
-            css: path.join("css/", compiledCss),
-            js: path.join("js/", compiledJs)
-        }))
-        .pipe(gulp.dest('./dist/'));
+    return gulp.src('index.html')
+                .pipe(htmlreplace({
+                    css: path.join("css/", compiledCss),
+                    js: path.join("js/", compiledJs)
+                }))
+                .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('dist', ['clean-dist', 'less-dist', 'js-dist', 'html-dist']);
+gulp.task('dist', function (callback) {
+
+    runSequence('clean-dist',
+                ['less-dist', 'js-dist'],
+                'html-dist',
+                callback);
+
+});
