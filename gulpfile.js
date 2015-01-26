@@ -13,9 +13,11 @@ var gulp = require('gulp'),
     htmlreplace = require('gulp-html-replace'),
     glob = require('glob'),
     path = require('path'),
-    gzip = require('gulp-gzip'),
     runSequence = require('run-sequence'),
-    order = require("gulp-order");
+    order = require("gulp-order"),
+    awspublish = require('gulp-awspublish'),
+    cloudfront = require("gulp-cloudfront"),
+    rename = require("gulp-rename");
 
 
 // Dev Time
@@ -74,7 +76,6 @@ gulp.task('less-dist', function () {
                 .pipe(less())
                 .pipe(minifyCSS())
                 .pipe(rev())
-                .pipe(gzip({ append: false }))
                 .pipe(gulp.dest('./dist/css'));
 
 });
@@ -86,7 +87,6 @@ gulp.task('js-dist', function () {
                 .pipe(concat('compiled.js'))
                 .pipe(uglify())
                 .pipe(rev())
-                .pipe(gzip({ append: false }))
                 .pipe(gulp.dest('./dist/js'));
 
 });
@@ -110,5 +110,50 @@ gulp.task('dist', function (callback) {
                 ['less-dist', 'js-dist'],
                 'html-dist',
                 callback);
+
+});
+
+
+// Deploy
+gulp.task('deploy-cdn', function () {
+
+    var aws = {
+        key: process.env.AWSKEY,
+        secret: process.env.AWSSECRET,
+        bucket: process.env.CDNBUCKET,
+        region: process.env.CDNREGION,
+        distributionId: process.env.CDNDISTRIBUTIONID
+    };
+
+    var publisher = awspublish.create(aws);
+    var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
+
+    return gulp.src(['dist/js/**/*.js', 'dist/css/**/*.css'])
+                .pipe(awspublish.gzip())
+                .pipe(publisher.publish(headers))
+                .pipe(publisher.cache())
+                .pipe(awspublish.reporter())
+                .pipe(cloudfront(aws));
+
+});
+
+gulp.task('deploy-players', function () {
+
+    var aws = {
+        key: process.env.AWSKEY,
+        secret: process.env.AWSSECRET,
+        bucket: process.env.CDNBUCKET,
+        region: process.env.CDNREGION,
+    };
+
+    var tenantId = argv.tenant;
+    var publisher = awspublish.create(aws);
+    var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
+
+    return gulp.src(['dist/default.html'])
+                .pipe(rename(tenantId + '.default'))
+                .pipe(awspublish.gzip())
+                .pipe(publisher.publish(headers))
+                .pipe(awspublish.reporter())
 
 });
