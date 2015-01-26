@@ -15,4 +15,11 @@
 
     manywho.component.register("horizontal_flow", horizontal);
 
+    manywho.styling.registerContainer("horizontal_flow", function (item, container) {
+
+        var columnSpan = Math.floor(12 / Math.max(1, container.childCount));
+        return ['col-sm-' + columnSpan];
+
+    });
+
 }(manywho));

@@ -1,21 +1,7 @@
 manywho.styling = (function (manywho) {
 
     var containers = {};
-
-    containers.horizontal_flow = function (item, container) {
-        var columnSpan = Math.floor(12 / Math.max(1, container.childCount));
-        return ['col-sm-' + columnSpan];
-    };
     
-    containers.group = function(item, container) {
-        var classes = ['tab-pane'];
-        if (item.order == 0)
-        {
-            classes.push('active');
-        }
-        return classes;
-    }
-
     return {
  
         getClasses: function (parentId, id, type) {
@@ -35,6 +21,12 @@ manywho.styling = (function (manywho) {
             classes.push("mw-" + type.toLowerCase());
 
             return classes.join(' ');
+
+        },
+
+        registerContainer: function (containerType, getClasses) {
+
+            containers[containerType] = getClasses;
 
         }
 

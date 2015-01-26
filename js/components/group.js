@@ -26,4 +26,16 @@
 
     manywho.component.register("group", group);
 
+    manywho.styling.registerContainer("group", function (item, container) {
+
+        var classes = ['tab-pane'];
+
+        if (item.order == 0) {
+            classes.push('active');
+        }
+
+        return classes;
+
+    });
+
 }(manywho));
