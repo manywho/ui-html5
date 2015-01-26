@@ -1,11 +1,11 @@
 manywho.styling = (function (manywho) {
 
-    var containers = {}
+    var containers = {};
 
     containers.horizontal_flow = function (item, container) {
         var columnSpan = Math.floor(12 / Math.max(1, container.childCount));
         return ['col-sm-' + columnSpan];
-    }
+    };
 
     return {
  

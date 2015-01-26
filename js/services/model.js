@@ -163,7 +163,7 @@
                 developerName: response.developerName,
                 tag: response.tag,
                 items: getNavigationItems(response.navigationItemResponses)
-            }
+            };
 
             this.navigation[navigationId] = navigation;
 
