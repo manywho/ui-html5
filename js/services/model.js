@@ -115,25 +115,23 @@
         componentInputResponseRequests: {},
         navigation: {},
 
-        fetch: function (tenantId, flowId, elementId) {
+        setEngineInvokeResponse: function (tenantId, engineInvokeResponse) {
 
-            var response = JSON.parse(testdata);
-
-            var containers = flattenContainers(response.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+            var containers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             containers.forEach(function (item) {
 
                 this.containers[item.id] = item;
-                if (contains(response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    this.containers[item.id] = updateData(response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                    this.containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
                 }
 
             }, this);
 
-            response.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+            engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
                 this.components[item.id] = item;
-                if (contains(response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    this.components[item.id] = updateData(response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                    this.components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
 
                 // Create the input response information so we have the page state that needs
@@ -146,26 +144,15 @@
 
             }, this);
 
-            response.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+            engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
                 this.outcomes[item.id.toLowerCase()] = item;
             }, this);
 
         },
 
-        fetchNavigation: function(navigationId, stateId, stateToken) {
+        setEngineNavigationResponse: function(tenantId, navigationElementId, engineNavigationResponse) {
 
-            var response = JSON.parse(testnavdata);
-
-            var navigation = {
-                id: navigationId,
-                culture: response.culture,
-                label: response.label,
-                developerName: response.developerName,
-                tag: response.tag,
-                items: getNavigationItems(response.navigationItemResponses)
-            };
-
-            this.navigation[navigationId] = navigation;
+            this.navigation[navigationElementId] = engineNavigationResponse;
 
         },
 

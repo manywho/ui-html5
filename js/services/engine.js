@@ -2,9 +2,64 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function (engineInitializationRequest) {
+        initialize: function (tenantId, engineInitializationRequest) {
 
-            alert('Initialize!');
+            $.ajax({
+                url: 'https://flow.manywho.com/api/run/1',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(engineInitializationRequest),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                },
+                success: function (engineInitializationResponse, status, xhr) {
+                    // Create the engine invoke request from the initialization response
+                    var engineInvokeRequest = {
+                        'stateId':engineInitializationResponse.stateId,
+                        'stateToken':engineInitializationResponse.stateToken,
+                        'currentMapElementId':engineInitializationResponse.currentMapElementId,
+                        'invokeType':'FORWARD',
+                        'annotations':null,
+                        'geoLocation':{
+                            'latitude':0,
+                            'longitude':0,
+                            'accuracy':0,
+                            'altitude':0,
+                            'altitudeAccuracy':0,
+                            'heading':0,
+                            'speed':0
+                        },
+                        'mapElementInvokeRequest':{
+                            'selectedOutcomeId':null
+                        },
+                        'mode':null
+                    };
+
+                    // TODO: We're assuming here that the invoke was authenticated successfully
+
+                    // Check to see if this Flow has navigation
+                    if (engineInitializationResponse.navigationElementReferences != null &&
+                        engineInitializationResponse.navigationElementReferences.length > 0) {
+                        // Get the first navigation from the list
+                        manywho.engine.syncNavigation(
+                            tenantId,
+                            engineInitializationResponse.stateId,
+                            engineInitializationResponse.stateToken,
+                            engineInitializationResponse.navigationElementReferences[0].id
+                        );
+                    }
+
+                    setTimeout(function(){
+                        // TODO: We need to wait as the current implementation assumes the navigation and the engine invoke happen together
+                        manywho.engine.invoke(tenantId, engineInvokeRequest);
+                    }, 5000);
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
 
         },
 
@@ -25,13 +80,54 @@ manywho.engine = (function (manywho) {
 
         },
 
-        invoke: function (engineInvokeRequest) {
+        invoke: function (tenantId, engineInvokeRequest) {
 
-            alert('Invoke!');
+            $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(engineInvokeRequest),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                },
+                success: function (engineInvokeResponse, status, xhr) {
+                    manywho.model.setEngineInvokeResponse(tenantId, engineInvokeResponse);
+
+                    var main = manywho.component.getByName('main');
+                    React.render(React.createElement(main), document.body);
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
 
         },
 
-        sync: function (engineInvokeRequest) {
+        syncNavigation: function (tenantId, stateId, stateToken, navigationElementId) {
+
+            $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                },
+                success: function (engineNavigationResponse, status, xhr) {
+                    manywho.model.setEngineNavigationResponse(tenantId, navigationElementId, engineNavigationResponse);
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+
+        },
+
+        syncEngine: function (tenantId, engineInvokeRequest) {
 
             alert('Sync!');
 
