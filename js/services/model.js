@@ -1,5 +1,10 @@
 (function (manywho) {
 
+    var containers = {}
+    var components = {}
+    var outcomes = {}
+    var navigation = {}
+
     // Stolen from here: https://gist.github.com/svlasov-gists/2383751
     function merge(target, source) {
 
@@ -109,29 +114,27 @@
 
     manywho.model = {
 
-        containers: {},
-        components: {},
-        outcomes: {},
         componentInputResponseRequests: {},
-        navigation: {},
 
         setEngineInvokeResponse: function (tenantId, engineInvokeResponse) {
 
-            var containers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-            containers.forEach(function (item) {
+            var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+            flattenedContainers.forEach(function (item) {
 
-                this.containers[item.id] = item;
+                containers[item.id] = item;
+
                 if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    this.containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                    containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
                 }
 
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                this.components[item.id] = item;
+                components[item.id] = item;
+
                 if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    this.components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                    components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
 
                 // Create the input response information so we have the page state that needs
@@ -145,14 +148,14 @@
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
-                this.outcomes[item.id.toLowerCase()] = item;
+                outcomes[item.id.toLowerCase()] = item;
             }, this);
 
         },
 
         setEngineNavigationResponse: function(tenantId, navigationElementId, engineNavigationResponse) {
 
-            this.navigation[navigationElementId] = engineNavigationResponse;
+            navigation[navigationElementId] = engineNavigationResponse;
 
         },
 
@@ -166,8 +169,8 @@
             var container = this.containers[containerId];
 
             if (container != null) {
-                children = children.concat(getAll(this.containers, containerId, 'parent'));
-                children = children.concat(getAll(this.components, containerId, 'pageContainerId'));
+                children = children.concat(getAll(containers, containerId, 'parent'));
+                children = children.concat(getAll(components, containerId, 'pageContainerId'));
             }
 
             children.sort(function (a, b) {
@@ -179,19 +182,19 @@
         },
 
         getContainer: function(containerId) {
-            return this.containers[containerId];
+            return containers[containerId];
         },
 
         getComponent: function (componentId) {
-            return this.components[componentId];
+            return components[componentId];
         },
 
         getOutcome: function (outcomeId) {
-            return this.outcomes[outcomeId.toLowerCase()];
+            return outcomes[outcomeId.toLowerCase()];
         },
 
         getNavigation: function(navigationId) {
-            return this.navigation[navigationId];
+            return navigation[navigationId];
         },
 
         getItem: function(id) {
@@ -222,9 +225,9 @@
 
             var pageObjectOutcomes = [];
             
-            for (outcomeId in this.outcomes)
+            for (outcomeId in outcomes)
             {
-                var item = this.outcomes[outcomeId];
+                var item = outcomes[outcomeId];
 
                 // If the component has supplied an object id, we find the bound outcomes, otherwise
                 // we find all outcomes that are unbound
