@@ -16,6 +16,13 @@ manywho.component = (function (manywho) {
 
     return {
 
+        contentTypes: {
+            string: "CONTENTSTRING",
+            number: "CONTENTNUMBER",
+            boolean: "CONTENTBOOLEAN",
+            password: "CONTENTPASSWORD",
+        },
+
         register: function (name, component) {
 
             components[name.toLowerCase()] = component;

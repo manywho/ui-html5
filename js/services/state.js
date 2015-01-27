@@ -1,29 +1,17 @@
 manywho.state = (function (manywho) {
 
     var state = {};
-
-    function setContentValue(componentId, newValue) {
-
-        var oldValue = state[componentId].contentValue;
-        state[componentId].contentValue = newValue;
-
-        manywho.collaboration.update(componentId, oldValue, state[componentId]);
-
-    }
-
-    function setObjectData(componentId, newValue) {
-
-        var oldValue = state[componentId].objectData;
-        state[componentId].objectData = newValue;
-
-        manywho.collaboration.update(componentId, oldValue, state[componentId]);
-
-    }
-
+    
     return {
         
         id: null,
         
+        get: function(id) {
+
+            return state[id];
+
+        },
+
         update: function(components) {
 
             for (id in components) {
@@ -43,10 +31,24 @@ manywho.state = (function (manywho) {
 
         },
 
-        setText: setContentValue,
+        setContentValue: function(componentId, newValue) {
 
-        setNumber: setContentValue,
+            var oldValue = state[componentId].contentValue;
+            state[componentId].contentValue = newValue;
 
+            manywho.collaboration.update(componentId, oldValue, state[componentId]);
+
+        },
+
+        setObjectData: function(componentId, newValue) {
+
+            var oldValue = state[componentId].objectData;
+            state[componentId].objectData = newValue;
+
+            manywho.collaboration.update(componentId, oldValue, state[componentId]);
+
+        },
+        
         refresh: function (newState) {
 
             state = newState;
