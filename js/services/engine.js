@@ -4,6 +4,8 @@ manywho.engine = (function (manywho) {
 
         initialize: function (tenantId, engineInitializationRequest) {
 
+            log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
+
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1',
                 type: 'POST',
@@ -43,12 +45,12 @@ manywho.engine = (function (manywho) {
                     if (engineInitializationResponse.navigationElementReferences != null &&
                         engineInitializationResponse.navigationElementReferences.length > 0) {
                         // Get the first navigation from the list
-                        manywho.engine.syncNavigation(
-                            tenantId,
-                            engineInitializationResponse.stateId,
-                            engineInitializationResponse.stateToken,
-                            engineInitializationResponse.navigationElementReferences[0].id
-                        );
+                        //manywho.engine.syncNavigation(
+                        //    tenantId,
+                        //    engineInitializationResponse.stateId,
+                        //    engineInitializationResponse.stateToken,
+                        //    engineInitializationResponse.navigationElementReferences[0].id
+                        //);
                     }
 
                     setTimeout(function () {

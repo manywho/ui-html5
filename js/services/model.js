@@ -64,11 +64,15 @@
     }
 
     function updateData(collection, item, key) {
+
+        log.info("Updating item: " + item.id);
+
         var data = get(collection, item.id, key);
         if (data != null) {
             return merge(item, data);
         }
         return item;
+
     }
 
     function flattenContainers(containers, parent, result) {

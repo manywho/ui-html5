@@ -4,6 +4,8 @@
 
         render: function () {
 
+            log.info('Rendering Horizontal: ' + this.props.id);
+
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow");
             var children = manywho.model.getChildren(this.props.id);
 

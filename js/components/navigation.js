@@ -55,6 +55,8 @@
 
         render: function () {
 
+            log.info("Rendering Navigation");
+
             var navigation = manywho.model.getNavigation(this.props.id);
                   
             if (navigation) {

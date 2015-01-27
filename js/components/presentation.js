@@ -4,6 +4,8 @@
 
         componentDidMount: function() {
 
+            log.info('Rendering Presentation: ' + this.props.id);
+
             var html = manywho.model.getComponent(this.props.id).content
                 .replace(/&quot;/g, '\"')
                 .replace(/&#39;/g, '\'')

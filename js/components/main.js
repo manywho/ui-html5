@@ -10,6 +10,8 @@
         },
         
         render: function () {
+            
+            log.info("Rendering Main");
 
             return React.DOM.div(null, [
                         React.createElement(manywho.component.getByName('navigation'), null),

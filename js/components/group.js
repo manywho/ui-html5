@@ -4,6 +4,8 @@
 
         render: function () {
 
+            log.info('Rendering Group: ' + this.props.id);
+
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group");
             var children = manywho.model.getChildren(this.props.id);
             

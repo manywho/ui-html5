@@ -4,6 +4,8 @@
         
         render: function () {
             
+            log.info('Rendering Vertical: ' + this.props.id);
+
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow");
             var children = manywho.model.getChildren(this.props.id);
             
