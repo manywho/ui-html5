@@ -1,7 +1,6 @@
 manywho.state = (function (manywho) {
 
     var state = {};
-    var stateId = null;
 
     function setContentValue(componentId, newValue) {
 
@@ -23,28 +22,30 @@ manywho.state = (function (manywho) {
 
     return {
         
-        initialize: function(id, components) {
-
-            stateId = id;
+        id: null,
+        
+        update: function(components) {
 
             for (id in components) {
 
-                state[id] = {
-                    contentValue: components[id].contentValue ? components[id].contentValue : null,
-                    objectData: components[id].objectData ? components[id].objectData : null
+                if (components[id].isEditable) {
+
+                    state[id] = {
+                        contentValue: components[id].contentValue ? components[id].contentValue : null,
+                        objectData: components[id].objectData ? components[id].objectData : null
+                    }
+
                 }
 
             }
 
-            manywho.collaboration.initialize(stateId, state);
+            manywho.collaboration.sync(state);
 
         },
-        
-        setText: function (componentId, newValue) {
-            
-            setContentValue(componentId, newValue);
 
-        },
+        setText: setContentValue,
+
+        setNumber: setContentValue,
 
         refresh: function (newState) {
 

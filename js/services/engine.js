@@ -51,9 +51,13 @@ manywho.engine = (function (manywho) {
                         );
                     }
 
-                    setTimeout(function(){
+                    setTimeout(function () {
+
+                        manywho.state.id = engineInvokeRequest.stateId;
+                        manywho.collaboration.initialize(engineInvokeRequest.stateId);
                         // TODO: We need to wait as the current implementation assumes the navigation and the engine invoke happen together
                         manywho.engine.invoke(tenantId, engineInvokeRequest);
+
                     }, 5000);
                 },
                 error: function (xhr, status, error) {
@@ -93,10 +97,13 @@ manywho.engine = (function (manywho) {
                     xhr.setRequestHeader('ManyWhoTenant', tenantId);
                 },
                 success: function (engineInvokeResponse, status, xhr) {
-                    manywho.model.setEngineInvokeResponse(tenantId, engineInvokeResponse);
+
+                    manywho.model.parseEngineResponse(tenantId, engineInvokeResponse);
+                    manywho.state.update(manywho.model.getComponents());
 
                     var main = manywho.component.getByName('main');
                     React.render(React.createElement(main), document.body);
+
                 },
                 error: function (xhr, status, error) {
                     alert(error);
@@ -118,7 +125,7 @@ manywho.engine = (function (manywho) {
                     xhr.setRequestHeader('ManyWhoTenant', tenantId);
                 },
                 success: function (engineNavigationResponse, status, xhr) {
-                    manywho.model.setEngineNavigationResponse(tenantId, navigationElementId, engineNavigationResponse);
+                    manywho.model.parseNavigationResponse(tenantId, navigationElementId, engineNavigationResponse);
                 },
                 error: function (xhr, status, error) {
                     alert(error);

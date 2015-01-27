@@ -116,7 +116,7 @@
 
         componentInputResponseRequests: {},
 
-        setEngineInvokeResponse: function (tenantId, engineInvokeResponse) {
+        parseEngineResponse: function (tenantId, engineInvokeResponse) {
 
             var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             flattenedContainers.forEach(function (item) {
@@ -153,7 +153,7 @@
 
         },
 
-        setEngineNavigationResponse: function(tenantId, navigationElementId, engineNavigationResponse) {
+        parseNavigationResponse: function (tenantId, navigationElementId, engineNavigationResponse) {
 
             navigation[navigationElementId] = engineNavigationResponse;
 
@@ -187,6 +187,10 @@
 
         getComponent: function (componentId) {
             return components[componentId];
+        },
+
+        getComponents: function() {
+            return components;
         },
 
         getOutcome: function (outcomeId) {

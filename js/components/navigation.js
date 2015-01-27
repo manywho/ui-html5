@@ -56,18 +56,24 @@
         render: function () {
 
             var navigation = manywho.model.getNavigation(this.props.id);
-                         
-            return React.DOM.nav({ className: 'navbar navbar-default'},
-                        React.DOM.div({ className: 'container-fluid' }, [
-                            getHeaderElement(navigation),
-                            React.DOM.div({ className: 'collapse navbar-collapse' },
-                                React.DOM.ul({ className: 'nav navbar-nav' },
-                                    getListElements(navigation.items)
+                  
+            if (navigation) {
+
+                return React.DOM.nav({ className: 'navbar navbar-default' },
+                            React.DOM.div({ className: 'container-fluid' }, [
+                                getHeaderElement(navigation),
+                                React.DOM.div({ className: 'collapse navbar-collapse' },
+                                    React.DOM.ul({ className: 'nav navbar-nav' },
+                                        getListElements(navigation.items)
+                                    )
                                 )
+                            ]
                             )
-                        ]                        
-                        )                
-                    );   
+                        );
+
+            }
+
+            return null;
 
         }
 
