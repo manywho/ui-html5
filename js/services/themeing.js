@@ -4,26 +4,29 @@ manywho.themeing = (function (manywho, $) {
 
     return {
         
-        initialize: function () {
+        initialize: function (name) {
+
+            var self = this;
 
             $.get(manywho.settings.get('themesUri'))
-                .done(function(data) {
-                    
+                .done(function (data) {
+
                     log.info('Loaded ' + data.themes.length + ' themes')
                     themes = data.themes;
+                    self.apply(name);
 
                 })
-                .fail(function() {
-                    
+                .fail(function () {
+
                     log.error("Failed to load themes from: ");
 
-                })
+                });
             
         },
 
         apply: function (name) {
 
-            if (themes != null) {
+            if (themes != null && name) {
 
                 var theme = themes.filter(function (item) {
                     return item.name.toLowerCase() == name.toLowerCase();
