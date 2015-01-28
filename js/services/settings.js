@@ -1,23 +1,40 @@
-manywho.settings = (function (manywho) {
+manywho.settings = (function (manywho, $) {
 
     var settings = {};
 
     return {
 
-        initialize: function() {
+        initialize: function(custom) {
 
-            settings = {
-                themesUri: 'http://api.bootswatch.com/3/'
+            defaults = {
+                themesUri: 'http://api.bootswatch.com/3/',
+                initialization: {},
+                invoke: {},
+                sync: {},
+                navigation: {}
             }
 
+            // Replace this with a call to /js/constants
+            var constants = {}
+
+            settings = $.extend({}, constants, defaults, custom);
+
+            for (prop in settings) {
+
+                var temp = settings[prop];
+                delete settings[prop];
+                settings[prop.toLowerCase()] = temp;
+
+            }
+            
         },
 
         get: function (name) {
 
-            return settings[name];
+            return settings[name.toLowerCase()];
 
         }
 
     }
 
-})(manywho);
+})(manywho, jQuery);
