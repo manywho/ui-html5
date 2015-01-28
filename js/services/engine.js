@@ -2,7 +2,7 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function (tenantId, engineInitializationRequest) {
+        initialize: function (tenantId, engineInitializationRequest, beforeSendCallback, successCallback, errorCallback) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -15,55 +15,25 @@ manywho.engine = (function (manywho) {
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('ManyWhoTenant', tenantId);
+
+                    if (beforeSendCallback) {
+                        beforeSendCallback.call(this, xhr);
+                    }
                 },
                 success: function (engineInitializationResponse, status, xhr) {
-                    // Create the engine invoke request from the initialization response
-                    var engineInvokeRequest = {
-                        'stateId':engineInitializationResponse.stateId,
-                        'stateToken':engineInitializationResponse.stateToken,
-                        'currentMapElementId':engineInitializationResponse.currentMapElementId,
-                        'invokeType':'FORWARD',
-                        'annotations':null,
-                        'geoLocation':{
-                            'latitude':0,
-                            'longitude':0,
-                            'accuracy':0,
-                            'altitude':0,
-                            'altitudeAccuracy':0,
-                            'heading':0,
-                            'speed':0
-                        },
-                        'mapElementInvokeRequest':{
-                            'selectedOutcomeId':null
-                        },
-                        'mode':null
-                    };
 
-                    // TODO: We're assuming here that the invoke was authenticated successfully
+                    manywho.state.id = engineInitializationResponse.stateId;
+                    manywho.collaboration.initialize(engineInitializationResponse.stateId);
 
-                    // Check to see if this Flow has navigation
-                    if (engineInitializationResponse.navigationElementReferences != null &&
-                        engineInitializationResponse.navigationElementReferences.length > 0) {
-                        // Get the first navigation from the list
-                        //manywho.engine.syncNavigation(
-                        //    tenantId,
-                        //    engineInitializationResponse.stateId,
-                        //    engineInitializationResponse.stateToken,
-                        //    engineInitializationResponse.navigationElementReferences[0].id
-                        //);
+                    if (successCallback) {
+                        successCallback.call(this, engineInitializationResponse, status, xhr);
                     }
 
-                    setTimeout(function () {
-
-                        manywho.state.id = engineInvokeRequest.stateId;
-                        manywho.collaboration.initialize(engineInvokeRequest.stateId);
-                        // TODO: We need to wait as the current implementation assumes the navigation and the engine invoke happen together
-                        manywho.engine.invoke(tenantId, engineInvokeRequest);
-
-                    }, 5000);
                 },
                 error: function (xhr, status, error) {
-                    alert(error);
+                    if (errorCallback) {
+                        errorCallback.call(this, xhr, status, error);
+                    }
                 }
             });
 
@@ -86,7 +56,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        invoke: function (tenantId, engineInvokeRequest) {
+        invoke: function (tenantId, engineInvokeRequest, beforeSendCallback, successCallback, errorCallback) {
 
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -106,15 +76,21 @@ manywho.engine = (function (manywho) {
                     var main = manywho.component.getByName('main');
                     React.render(React.createElement(main), document.body);
 
+                    if (successCallback) {
+                        successCallback.call(this, engineInitializationResponse, status, xhr);
+                    }
+
                 },
                 error: function (xhr, status, error) {
-                    alert(error);
+                    if (errorCallback) {
+                        errorCallback.call(this, xhr, status, error);
+                    }
                 }
             });
 
         },
 
-        syncNavigation: function (tenantId, stateId, stateToken, navigationElementId) {
+        createNavigation: function (tenantId, stateId, stateToken, navigationElementId, beforeSendCallback, successCallback, errorCallback) {
 
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
@@ -136,7 +112,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        syncEngine: function (tenantId, engineInvokeRequest) {
+        syncEngine: function (tenantId, engineInvokeRequest, beforeSendCallback, successCallback, errorCallback) {
 
             alert('Sync!');
 
