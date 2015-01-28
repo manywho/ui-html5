@@ -99,7 +99,8 @@ gulp.task('html-dist', function () {
     return gulp.src('index.html')
                 .pipe(htmlreplace({
                     css: path.join("css/", compiledCss),
-                    js: path.join("js/", compiledJs)
+                    js: path.join("js/", compiledJs),
+                    log: ''
                 }))
                 .pipe(gulp.dest('./dist/'));
 });
