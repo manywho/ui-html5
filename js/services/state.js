@@ -1,10 +1,10 @@
 manywho.state = (function (manywho) {
 
     var state = {};
-    
+
     return {
         
-        id: null,
+        engineResponse: null,
         
         get: function(id) {
 

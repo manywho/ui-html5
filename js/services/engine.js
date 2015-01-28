@@ -2,7 +2,7 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function (engineInitializationRequest) {
+        initialize: function (engineInitializationRequest, callback) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -24,15 +24,9 @@ manywho.engine = (function (manywho) {
                 },
                 success: function (engineInitializationResponse, status, xhr) {
 
-                    manywho.state.id = engineInitializationResponse.stateId;
-                    manywho.collaboration.initialize(engineInitializationResponse.stateId);
+                    manywho.state.engineResponse = engineInitializationResponse;
 
-                    // Check to make sure the user authenticated OK before performing the UI build requests
-                    if (engineInitializationResponse.statusCode == '200') {
-                        manywho.view.buildUI(engineInitializationResponse);
-                    } else {
-                        // TODO: Show the login dialog
-                    }
+                    callback.call(this, engineInitializationResponse);
 
                     if (manywho.settings.get('initialization.success')) {
                         manywho.settings.get('initialization.success').call(this, engineInitializationResponse, status, xhr);
@@ -57,7 +51,14 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            alert('Move! ' + outcome.label);
+            manywho.engine.invoke(
+                manywho.json.generateInvokeRequest(manywho.state.engineResponse, 'FORWARD', outcome.id),
+                function (engineInvokeResponse) {
+
+                    manywho.view.create();
+
+                }
+            );
 
         },
 
@@ -67,7 +68,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        invoke: function (engineInvokeRequest) {
+        invoke: function (engineInvokeRequest, callback) {
 
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -77,19 +78,31 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify(engineInvokeRequest),
                 beforeSend: function (xhr) {
+
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('invoke.beforeSend')) {
+                        manywho.settings.get('invoke.beforeSend').call(this, xhr);
+                    }
+
                 },
                 success: function (engineInvokeResponse, status, xhr) {
 
-                    manywho.model.parseEngineResponse(engineInvokeResponse);
-                    manywho.state.update(manywho.model.getComponents());
+                    manywho.state.engineResponse = engineInvokeResponse;
 
-                    var main = manywho.component.getByName('main');
-                    React.render(React.createElement(main), document.body);
+                    callback.call(this, engineInvokeResponse);
+
+                    if (manywho.settings.get('invoke.success')) {
+                        manywho.settings.get('invoke.success').call(this, engineInvokeResponse, status, xhr);
+                    }
 
                 },
                 error: function (xhr, status, error) {
-                    alert(error);
+
+                    if (manywho.settings.get('invoke.error')) {
+                        manywho.settings.get('invoke.error').call(this, xhr, status, error);
+                    }
+
                 }
             });
 

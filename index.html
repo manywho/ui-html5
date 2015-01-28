@@ -75,9 +75,26 @@
         
         manywho.settings.initialize();
         manywho.themeing.initialize();
+        manywho.view.initialize();
 
-        // Now initialize the engine to kick things off
-        manywho.engine.initialize(engineInitializationRequest);
+        // Now initialize the engine and kick off the flow
+        manywho.engine.initialize(
+                engineInitializationRequest,
+                function(engineInitializationResponse) {
+
+                    manywho.collaboration.initialize(engineInitializationResponse.stateId);
+
+                    manywho.engine.invoke(
+                            manywho.json.generateInvokeRequest(engineInitializationResponse, 'FORWARD'),
+                            function (engineInvokeResponse) {
+
+                                manywho.view.create();
+
+                            }
+                    );
+
+                }
+        );
 
     </script>
 

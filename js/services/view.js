@@ -1,22 +1,51 @@
 manywho.view = (function (manywho) {
 
+    var render = null;
+    var renderFirst = null;
+    var rendered = false;
+
     return {
 
-        buildUI: function(engineInitializationResponse) {
+        initialize: function(custom) {
 
-            // 1. Invoke the engine
-            manywho.engine.invoke(
-                manywho.json.generateInvokeRequest(engineInitializationResponse, 'FORWARD'),
-                function (xhr) {
-
+            defaults = {
+                render: function() {
+                    manywho.view.createPage(manywho.state.engineResponse);
                 },
-                function (engineInvokeResponse, status, xhr) {
-
-                },
-                function (xhr, status, error) {
-
+                renderFirst: function() {
+                    manywho.view.createPage(manywho.state.engineResponse);
+                    //manywho.view.createNavigation(manywho.state.engineResponse);
+                    //manywho.view.createSocialStream(manywho.state.engineResponse);
                 }
-            );
+            }
+
+            // Replace this with a call to /js/constants
+            var constants = {}
+
+            render = $.extend({}, constants, defaults, custom).render;
+
+        },
+
+        create: function() {
+
+            if (rendered) {
+                renderFirst.call(this);
+                rendered = true;
+            } else {
+                render.call(this);
+            }
+
+        },
+
+        createPage: function (engineInvokeResponse) {
+
+            // 1. Render the core page ui
+            manywho.model.parseEngineResponse(engineInvokeResponse);
+            manywho.state.update(manywho.model.getComponents());
+
+            var main = manywho.component.getByName('main');
+            React.render(React.createElement(main), document.body);
+
         },
 
         createNavigation: function(engineInitializationResponse) {
