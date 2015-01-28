@@ -6,7 +6,7 @@ manywho.view = (function (manywho) {
 
             // 1. Invoke the engine
             manywho.engine.invoke(
-                manywho.json.generateInvokeData(engineInitializationResponse, 'FORWARD'),
+                manywho.json.generateInvokeRequest(engineInitializationResponse, 'FORWARD'),
                 function (xhr) {
 
                 },

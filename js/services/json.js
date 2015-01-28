@@ -2,7 +2,7 @@ manywho.json = (function (manywho) {
 
     return {
 
-        generateInitializationData: function(flowId, annotations, inputs, mode) {
+        generateInitializationRequest: function(flowId, annotations, inputs, mode) {
 
             return {
                 'flowId': {
@@ -15,7 +15,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateInvokeData: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, annotations, geolocation, mode) {
+        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, annotations, geolocation, mode) {
 
             return {
                 'stateId': stateData.stateId,
