@@ -38,7 +38,6 @@
             var attributes = {
                 type: getInputType(model.contentType),
                 placeholder: model.hintValue,
-                className: 'form-control',
                 value: state.contentValue,
                 input: onChange,
                 change: onChange,
@@ -53,19 +52,35 @@
                 attributes.required = "";
             }
 
-            if (model.contentType.toUpperCase() == manywho.component.contentType.boolean && Boolean(state.contentValue)) {
-                attributes.checked = "checked";
-            }
+            if (model.contentType.toUpperCase() == manywho.component.contentType.boolean) {
 
-            return React.DOM.div({ className: 'form-group ' + (model.isVisible) ? "" : "hidden" }, [
-                React.DOM.label({ 'for': this.props.id }, model.label),
-                React.DOM.input(attributes, null)
-            ]);
+                if (Boolean(state.contentValue)) {
+                    attributes.checked = "checked";
+                }
+
+                return React.DOM.div({ className: 'checkbox ' + (model.isVisible) ? "" : "hidden" },
+                            React.DOM.label(null, [
+                                React.DOM.input(attributes, null),
+                                model.label,
+                            ])
+                        );
+
+            }
+            else {
+
+                attributes.className = 'form-control';
+
+                return React.DOM.div({ className: 'form-group ' + (model.isVisible) ? "" : "hidden" }, [
+                            React.DOM.label({ 'for': this.props.id }, model.label),
+                            React.DOM.input(attributes, null)
+                        ]);
+
+            }                       
 
         }
 
     });
-
+    
     manywho.component.register("input", input);
 
 }(manywho));
