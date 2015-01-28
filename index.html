@@ -41,9 +41,10 @@
     <script src="js/services/styling.js"></script>
     <script src="js/services/collaboration.js"></script>
     <script src="js/services/state.js"></script>
-    <script src="js/services/state.js"></script>
+    <script src="js/services/view.js"></script>
     <script src="js/services/themeing.js"></script>
     <script src="js/services/settings.js"></script>
+    <script src="js/services/json.js"></script>
 
     <script src="js/components/main.js"></script>
     <script src="js/components/navigation.js"></script>
@@ -61,116 +62,22 @@
 <body>    
     <script>
 
-        // Utility method as this sequence of calls can all be made in parallel
-        function buildUI(engineInitializationResponse) {
-
-            // 1. Invoke the engine
-            manywho.engine.invoke(
-                    tenantId,
-                    {
-                        'stateId': engineInitializationResponse.stateId,
-                        'stateToken': engineInitializationResponse.stateToken,
-                        'currentMapElementId': engineInitializationResponse.currentMapElementId,
-                        'invokeType': 'FORWARD',
-                        'annotations': null,
-                        'geoLocation': {
-                            'latitude': 0,
-                            'longitude': 0,
-                            'accuracy': 0,
-                            'altitude': 0,
-                            'altitudeAccuracy': 0,
-                            'heading': 0,
-                            'speed': 0
-                        },
-                        'mapElementInvokeRequest': {
-                            'selectedOutcomeId': null
-                        },
-                        'mode': null
-                    },
-                    function (xhr) {
-
-                    },
-                    function (engineInvokeResponse, status, xhr) {
-
-                    },
-                    function (xhr, status, error) {
-
-                    }
-            );
-
-            // 2. Create the navigation if we have any
-            if (engineInitializationResponse.navigationElementReferences != null &&
-                    engineInitializationResponse.navigationElementReferences.length > 0) {
-                // Get the first navigation from the list and kick off the async
-                manywho.engine.createNavigation(
-                        tenantId,
-                        engineInitializationResponse.stateId,
-                        engineInitializationResponse.stateToken,
-                        engineInitializationResponse.navigationElementReferences[0].id,
-                        function (xhr) {
-
-                        },
-                        function (engineNavigationResponse, status, xhr) {
-
-                        },
-                        function (xhr, status, error) {
-
-                        }
-                );
-            }
-
-            // 3. Create the feed if we have a stream
-            if (engineInitializationResponse.currentStreamId != null &&
-                    engineInitializationResponse.currentStreamId.trim().length > 0) {
-                // TODO: start the collaboration feed here async
-            }
-
-        }
-
         // The info needed to execute the Flow
-        var tenantId = '870bc2ae-2e02-42c0-abc3-46ab584522c7';
+        manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
+
+        var flowId = {
+            'id':'b7e2a056-35dd-4973-b279-c85aeafb299c',
+            'versionId':'8cae4f4e-39d1-4751-8eba-2935e27434ba'
+        };
 
         // Create the engine initialization request
-        var engineInitializationRequest = {
-            'flowId':{
-                'id':'b7e2a056-35dd-4973-b279-c85aeafb299c',
-                'versionId':'8cae4f4e-39d1-4751-8eba-2935e27434ba'
-            },
-            'annotations':null,
-            'inputs':null,
-            'mode':null
-        };
+        var engineInitializationRequest = manywho.json.generateInitializationData(flowId, 'something');
         
         manywho.settings.initialize();
         manywho.themeing.initialize();
 
         // Now initialize the engine to kick things off
-        manywho.engine.initialize(
-                tenantId,
-                engineInitializationRequest,
-                function (xhr) {
-
-                },
-                function (engineInitializationResponse, status, xhr) {
-
-                    // Check to make sure the user authenticated OK before performing the UI build requests
-                    if (engineInitializationResponse.statusCode == '200') {
-                        buildUI(engineInitializationResponse);
-                    } else {
-                        // TODO: Show the login dialog
-                        // callback function success {
-                        //     buildUI(engineInitializationResponse);
-                        // }
-                        // callback function logic failure {
-                        //     try again
-                        // }
-                    }
-
-                },
-                function (xhr, status, error) {
-
-                }
-        );
+        manywho.engine.initialize(engineInitializationRequest);
 
     </script>
 
