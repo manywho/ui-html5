@@ -1,8 +1,6 @@
 manywho.collaboration = (function (manywho) {
 
-    var socket = new BCSocket(null, { reconnect: false });
-    var shareJs = new window.sharejs.Connection(socket);    
-    var doc = null;
+    var socket, shareJs, doc;
 
     function diff(source, target) {
 
@@ -34,7 +32,10 @@ manywho.collaboration = (function (manywho) {
 
         initialize: function (stateId) {
 
-            if (this.isEnabled) {
+            if (this.isEnabled && !socket && !shareJs && !doc) {
+
+                socket = new BCSocket(null, { reconnect: false });
+                shareJs = new window.sharejs.Connection(socket);
 
                 doc = shareJs.get('states', stateId);
                 doc.whenReady(function () {
