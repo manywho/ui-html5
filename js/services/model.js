@@ -167,11 +167,11 @@
         getChildren: function (containerId) {
 
             if (containerId == 'root') {
-                return getAll(this.containers, null, 'parent');
+                return getAll(containers, null, 'parent');
             }
 
             var children = [];
-            var container = this.containers[containerId];
+            var container = containers[containerId];
 
             if (container != null) {
                 children = children.concat(getAll(containers, containerId, 'parent'));
