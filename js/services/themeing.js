@@ -32,9 +32,21 @@ manywho.themeing = (function (manywho, $) {
                 if (theme) {
 
                     log.info("Switching theme to: " + name);
+                    // Show loading indicator here
 
+                    var url = 'https:' + theme.cssCdn;
                     var link = document.getElementById('theme');
-                    link.setAttribute('href', 'https:' + theme.cssCdn);
+                    var img = document.createElement('img');
+
+                    link.setAttribute('href', url);
+                    
+                    img.onerror = function () {
+                       
+                        log.info('Finished loading theme: ' + name);
+                        // Hide loading indicator here
+
+                    }
+                    img.src = url;
 
                 }
                 else {
