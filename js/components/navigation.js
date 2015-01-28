@@ -55,11 +55,11 @@
 
         render: function () {
 
-            log.info("Rendering Navigation");
-
             var navigation = manywho.model.getNavigation(this.props.id);
                   
             if (navigation) {
+
+                log.info("Rendering Navigation");
 
                 return React.DOM.nav({ className: 'navbar navbar-default' },
                             React.DOM.div({ className: 'container-fluid' }, [
