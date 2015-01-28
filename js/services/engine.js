@@ -2,7 +2,7 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function (tenantId, engineInitializationRequest, beforeSendCallback, successCallback, errorCallback) {
+        initialize: function (engineInitializationRequest) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -14,19 +14,18 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
-
-                    if (beforeSendCallback) {
-                        beforeSendCallback.call(this, xhr);
-                    }
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
                 },
                 success: function (engineInitializationResponse, status, xhr) {
 
                     manywho.state.id = engineInitializationResponse.stateId;
                     manywho.collaboration.initialize(engineInitializationResponse.stateId);
 
-                    if (successCallback) {
-                        successCallback.call(this, engineInitializationResponse, status, xhr);
+                    // Check to make sure the user authenticated OK before performing the UI build requests
+                    if (engineInitializationResponse.statusCode == '200') {
+                        manywho.view.buildUI(engineInitializationResponse);
+                    } else {
+                        // TODO: Show the login dialog
                     }
 
                 },
@@ -56,7 +55,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        invoke: function (tenantId, engineInvokeRequest, beforeSendCallback, successCallback, errorCallback) {
+        invoke: function (engineInvokeRequest) {
 
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -66,31 +65,25 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify(engineInvokeRequest),
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
                 },
                 success: function (engineInvokeResponse, status, xhr) {
 
-                    manywho.model.parseEngineResponse(tenantId, engineInvokeResponse);
+                    manywho.model.parseEngineResponse(engineInvokeResponse);
                     manywho.state.update(manywho.model.getComponents());
 
                     var main = manywho.component.getByName('main');
                     React.render(React.createElement(main), document.body);
 
-                    if (successCallback) {
-                        successCallback.call(this, engineInitializationResponse, status, xhr);
-                    }
-
                 },
                 error: function (xhr, status, error) {
-                    if (errorCallback) {
-                        errorCallback.call(this, xhr, status, error);
-                    }
+                    alert(error);
                 }
             });
 
         },
 
-        createNavigation: function (tenantId, stateId, stateToken, navigationElementId, beforeSendCallback, successCallback, errorCallback) {
+        createNavigation: function (stateId, stateToken, navigationElementId) {
 
             $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
@@ -100,10 +93,10 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
                 },
                 success: function (engineNavigationResponse, status, xhr) {
-                    manywho.model.parseNavigationResponse(tenantId, navigationElementId, engineNavigationResponse);
+                    manywho.model.parseNavigationResponse(navigationElementId, engineNavigationResponse);
                 },
                 error: function (xhr, status, error) {
                     alert(error);
@@ -112,7 +105,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        syncEngine: function (tenantId, engineInvokeRequest, beforeSendCallback, successCallback, errorCallback) {
+        syncEngine: function (engineInvokeRequest) {
 
             alert('Sync!');
 

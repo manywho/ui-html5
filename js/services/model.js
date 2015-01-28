@@ -1,9 +1,10 @@
 (function (manywho) {
 
-    var containers = {}
-    var components = {}
-    var outcomes = {}
-    var navigation = {}
+    var containers = {};
+    var components = {};
+    var outcomes = {};
+    var navigation = {};
+    var tenantId = '';
 
     // Stolen from here: https://gist.github.com/svlasov-gists/2383751
     function merge(target, source) {
@@ -120,7 +121,7 @@
 
         componentInputResponseRequests: {},
 
-        parseEngineResponse: function (tenantId, engineInvokeResponse) {
+        parseEngineResponse: function (engineInvokeResponse) {
 
             var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             flattenedContainers.forEach(function (item) {
@@ -157,7 +158,7 @@
 
         },
 
-        parseNavigationResponse: function (tenantId, navigationElementId, engineNavigationResponse) {
+        parseNavigationResponse: function (navigationElementId, engineNavigationResponse) {
 
             navigation[navigationElementId] = engineNavigationResponse;
 
@@ -254,6 +255,14 @@
             this.componentInputResponseRequests[componentId].contentValue = contentValue;
             this.componentInputResponseRequests[componentId].objectData = objectData;
 
+        },
+
+        getTenantId: function () {
+            return this.tenantId;
+        },
+
+        setTenantId: function (tenantId) {
+            this.tenantId = tenantId;
         }
 
     }
