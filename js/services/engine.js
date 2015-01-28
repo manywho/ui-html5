@@ -14,7 +14,13 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
+
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('initialization.beforeSend')) {
+                        manywho.settings.get('initialization.beforeSend').call(this, xhr);
+                    }
+
                 },
                 success: function (engineInitializationResponse, status, xhr) {
 
@@ -28,11 +34,17 @@ manywho.engine = (function (manywho) {
                         // TODO: Show the login dialog
                     }
 
+                    if (manywho.settings.get('initialization.success')) {
+                        manywho.settings.get('initialization.success').call(this, engineInitializationResponse, status, xhr);
+                    }
+
                 },
                 error: function (xhr, status, error) {
-                    if (errorCallback) {
-                        errorCallback.call(this, xhr, status, error);
+                    
+                    if (manywho.settings.get('initialization.error')) {
+                        manywho.settings.get('initialization.error').call(this, xhr, status, error);
                     }
+
                 }
             });
 

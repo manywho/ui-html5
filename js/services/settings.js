@@ -2,6 +2,31 @@ manywho.settings = (function (manywho, $) {
 
     var settings = {};
 
+    // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
+    function getValueByPath (obj, path) {
+        for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
+            obj = obj[path[i]];
+        };
+        return obj;
+    };
+
+    function toLowerCaseKeys(obj) {
+
+        for (var prop in obj) {
+
+            var temp = obj[prop];
+
+            if (temp !== null && typeof temp === 'object') {
+                toLowerCaseKeys(temp)
+            }
+
+            delete obj[prop];
+            obj[prop.toLowerCase()] = temp;
+
+        }
+
+    }
+
     return {
 
         initialize: function(custom) {
@@ -19,19 +44,12 @@ manywho.settings = (function (manywho, $) {
 
             settings = $.extend({}, constants, defaults, custom);
 
-            for (prop in settings) {
-
-                var temp = settings[prop];
-                delete settings[prop];
-                settings[prop.toLowerCase()] = temp;
-
-            }
-            
+            toLowerCaseKeys(settings);
         },
 
-        get: function (name) {
+        get: function (path) {
 
-            return settings[name.toLowerCase()];
+            return getValueByPath(settings, path.toLowerCase());
 
         }
 
