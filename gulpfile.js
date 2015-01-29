@@ -7,7 +7,7 @@ var gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     concat = require('gulp-concat'),
     minifyCSS = require('gulp-minify-css'),
-    rev = require('gulp-rev'),
+    revall = require('gulp-rev-all'),
     clean = require('gulp-clean'),
     uglify = require('gulp-uglify'),
     htmlreplace = require('gulp-html-replace'),
@@ -75,7 +75,6 @@ gulp.task('less-dist', function () {
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
-                .pipe(rev())
                 .pipe(gulp.dest('./dist/css'));
 
 });
@@ -86,7 +85,6 @@ gulp.task('js-dist', function () {
                 .pipe(order(['services/*.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
                 .pipe(uglify())
-                .pipe(rev())
                 .pipe(gulp.dest('./dist/js'));
 
 });
@@ -129,6 +127,7 @@ gulp.task('deploy-cdn', function () {
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
     return gulp.src(['dist/**'])
+                .pipe(revall())
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(publisher.cache())
