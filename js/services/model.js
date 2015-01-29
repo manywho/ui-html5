@@ -19,7 +19,8 @@
 
                 var sourceProperty = source[property];
 
-                if (typeof sourceProperty === 'object') {
+                if (sourceProperty != null &&
+                    typeof sourceProperty === 'object') {
                     target[property] = merge(target[property], sourceProperty);
                     continue;
                 }

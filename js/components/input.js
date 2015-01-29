@@ -4,13 +4,13 @@
 
         switch(contentType.toUpperCase())
         {
-            case manywho.component.contentType.string:
+            case manywho.component.contentTypes.string:
                 return 'text';
-            case manywho.component.contentType.number:
+            case manywho.component.contentTypes.number:
                 return 'number';
-            case manywho.component.contentType.boolean:
+            case manywho.component.contentTypes.boolean:
                 return 'checkbox';
-            case manywho.component.contentType.password:
+            case manywho.component.contentTypes.password:
                 return 'password';
             default:
                 return 'text';
@@ -52,7 +52,7 @@
                 attributes.required = "";
             }
 
-            if (model.contentType.toUpperCase() == manywho.component.contentType.boolean) {
+            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
                 if (Boolean(state.contentValue)) {
                     attributes.checked = "checked";

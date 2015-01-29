@@ -7,17 +7,23 @@ manywho.state = (function (manywho) {
         
         initialize: function(id, token, mapElementId) {
 
-            data = {
-                id: id,
-                token: token,
-                currentMapElementId: mapElementId
-            }
+            this.setData(id, token, mapElementId);
 
         },
 
         get: function(id) {
 
             return state[id];
+
+        },
+
+        setData: function(id, token, mapElementId) {
+
+            data = {
+                id: id,
+                token: token,
+                currentMapElementId: mapElementId
+            }
 
         },
 

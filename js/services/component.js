@@ -20,7 +20,7 @@ manywho.component = (function (manywho) {
             string: "CONTENTSTRING",
             number: "CONTENTNUMBER",
             boolean: "CONTENTBOOLEAN",
-            password: "CONTENTPASSWORD",
+            password: "CONTENTPASSWORD"
         },
 
         register: function (name, component) {

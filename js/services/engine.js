@@ -3,6 +3,7 @@ manywho.engine = (function (manywho) {
     function update(response) {
 
         manywho.model.parseEngineResponse(response);
+        manywho.state.setData(response.stateId, response.stateToken, response.currentMapElementId);
         manywho.state.update(manywho.model.getComponents());
 
     }
@@ -75,9 +76,11 @@ manywho.engine = (function (manywho) {
         },
 
         render: function () {
-            
+
+            React.unmountComponentAtNode(document.getElementById('manywho'));
+
             var main = manywho.component.getByName('main');
-            React.render(React.createElement(main), document.body);
+            React.render(React.createElement(main), document.getElementById('manywho'));
 
         }
 
