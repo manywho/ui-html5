@@ -1,4 +1,11 @@
-manywho.view = (function (manywho) {
+manywho.engine = (function (manywho) {
+
+    function update(response) {
+
+        manywho.model.parseEngineResponse(response);
+        manywho.state.update(manywho.model.getComponents());
+
+    }
 
     return {
 
@@ -14,15 +21,16 @@ manywho.view = (function (manywho) {
             var self = this;
             var initializationRequest = manywho.json.generateInitializationRequest(flowId);
 
-            manywho.engine.initialize(initializationRequest)
+            manywho.ajax.initialize(initializationRequest)
                 .then(function (response) {
 
+                    manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
                     manywho.collaboration.initialize(response.stateId);
 
                     var defereds = [response];
 
                     if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                        defereds.push(manywho.engine.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+                        defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
                     }
 
                     if (response.currentStreamId) {
@@ -35,17 +43,29 @@ manywho.view = (function (manywho) {
                 .then(function (response, navigation, stream) {
                     
                     manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-                    return manywho.engine.invoke(manywho.json.generateInvokeRequest(response, 'FORWARD'));
+                    return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD'));
 
                 })
                 .then(function (response) {
 
-                    manywho.model.parseEngineResponse(response);
-                    manywho.state.update(manywho.model.getComponents());
-
+                    update(response);
                     self.render();
 
                 });
+
+        },
+
+        move: function(outcome) {
+
+            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD', outcome.id);
+            var self = this;
+
+            manywho.ajax.invoke(invokeRequest).then(function (response) {
+
+                update(response);
+                self.render();
+
+            });
 
         },
 

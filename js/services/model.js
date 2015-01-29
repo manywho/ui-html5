@@ -123,6 +123,10 @@
 
         parseEngineResponse: function (engineInvokeResponse) {
 
+            containers = {};
+            components = {};
+            outcomes = {};
+
             var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             flattenedContainers.forEach(function (item) {
 
@@ -160,6 +164,7 @@
 
         parseNavigationResponse: function (navigationElementId, engineNavigationResponse) {
 
+            navigation = {};
             navigation[navigationElementId] = engineNavigationResponse;
 
         },

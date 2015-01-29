@@ -18,8 +18,8 @@ manywho.json = (function (manywho) {
         generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, annotations, geolocation, mode) {
 
             return {
-                'stateId': stateData.stateId,
-                'stateToken': stateData.stateToken,
+                'stateId': stateData.id,
+                'stateToken': stateData.token,
                 'currentMapElementId': stateData.currentMapElementId,
                 'invokeType': invokeType,
                 'annotations': annotations || null,

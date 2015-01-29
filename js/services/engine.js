@@ -1,117 +1,83 @@
 manywho.engine = (function (manywho) {
 
-    function onError(xhr, status, error) {
+    function update(response) {
 
-        log.error(error);
+        manywho.model.parseEngineResponse(response);
+        manywho.state.update(manywho.model.getComponents());
 
     }
 
     return {
 
-        initialize: function (engineInitializationRequest, callback) {
+        initialize: function() {
 
-            log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
+            manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
 
-            return $.ajax({
-                url: 'https://flow.manywho.com/api/run/1',
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify(engineInitializationRequest),
-                beforeSend: function (xhr) {
+            var flowId = {
+                'id': 'b7e2a056-35dd-4973-b279-c85aeafb299c',
+                'versionId': '8cae4f4e-39d1-4751-8eba-2935e27434ba'
+            };
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+            var self = this;
+            var initializationRequest = manywho.json.generateInitializationRequest(flowId);
 
-                    if (manywho.settings.get('initialization.beforeSend')) {
-                        manywho.settings.get('initialization.beforeSend').call(this, xhr);
+            manywho.ajax.initialize(initializationRequest)
+                .then(function (response) {
+
+                    manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
+                    manywho.collaboration.initialize(response.stateId);
+
+                    var defereds = [response];
+
+                    if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+                        defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
                     }
 
-                }
-            })
-            .done(manywho.settings.get('initialization.done'))
-            .fail(onError)
-            .fail(manywho.settings.get('initialization.fail'));
+                    if (response.currentStreamId) {
+                        // Add create social stream ajax call to deffereds here
+                    }
+
+                    return $.when.apply($, defereds);
+
+                })
+                .then(function (response, navigation, stream) {
+                    
+                    manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+                    return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD'));
+
+                })
+                .then(function (response) {
+
+                    update(response);
+                    self.render();
+
+                });
 
         },
 
-        move: function (outcome) {
+        move: function(outcome) {
 
             // Validate all of the components on the page here...
             // In the model.js, there are componentInputResponseRequests entries for each component
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            manywho.engine.invoke(
-                manywho.json.generateInvokeRequest(manywho.state.engineResponse, 'FORWARD', outcome.id),
-                function (engineInvokeResponse) {
+            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD', outcome.id);
+            var self = this;
 
-                    manywho.view.create();
+            manywho.ajax.invoke(invokeRequest).then(function (response) {
 
-                }
-            );
+                update(response);
+                self.render();
 
-        },
-
-        navigate: function (engineInvokeRequest) {
-
-            alert('Navigate!');
+            });
 
         },
 
-        invoke: function (engineInvokeRequest, callback) {
-
-            return $.ajax({
-                url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify(engineInvokeRequest),
-                beforeSend: function (xhr) {
-
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('invoke.beforeSend')) {
-                        manywho.settings.get('invoke.beforeSend').call(this, xhr);
-                    }
-
-                }
-            })
-            .done(manywho.settings.get('invoke.done'))
-            .fail(onError)
-            .fail(manywho.settings.get('invoke.fail'));
-
-        },
-
-        getNavigation: function (stateId, stateToken, navigationElementId) {
+        render: function () {
             
-            return $.ajax({
-                url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
-                beforeSend: function (xhr) {
-
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('navigation.beforeSend')) {
-                        manywho.settings.get('navigation.beforeSend').call(this, xhr);
-                    }
-
-                }
-            })
-            .done(manywho.settings.get('navigation.done'))
-            .fail(onError)
-            .fail(manywho.settings.get('navigation.fail'));
-
-        },
-
-        syncEngine: function (engineInvokeRequest) {
-
-            alert('Sync!');
+            var main = manywho.component.getByName('main');
+            React.render(React.createElement(main), document.body);
 
         }
 
