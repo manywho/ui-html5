@@ -118,11 +118,11 @@ gulp.task('dist', function () {
 gulp.task('deploy-cdn', function () {
 
     var aws = {
-        key: process.env.AWSKEY,
-        secret: process.env.AWSSECRET,
-        bucket: process.env.CDNBUCKET,
-        region: process.env.CDNREGION,
-        distributionId: process.env.CDNDISTRIBUTIONID
+        key: process.env.BAMBOO_AWSKEY,
+        secret: process.env.BAMBOO_AWSSECRET,
+        bucket: process.env.BAMBOO_CDNBUCKET,
+        region: process.env.BAMBOO_CDNREGION,
+        distributionId: process.env.BAMBOO_CDNDISTRIBUTIONID
     };
 
     var publisher = awspublish.create(aws);
@@ -140,10 +140,10 @@ gulp.task('deploy-cdn', function () {
 gulp.task('deploy-players', function () {
 
     var aws = {
-        key: process.env.AWSKEY,
-        secret: process.env.AWSSECRET,
-        bucket: process.env.CDNBUCKET,
-        region: process.env.CDNREGION,
+        key: process.env.BAMBOO_AWSKEY,
+        secret: process.env.BAMBOO_AWSSECRET,
+        bucket: process.env.BAMBOO_CDNBUCKET,
+        region: process.env.BAMBOO_CDNREGION,
     };
 
     var tenantId = argv.tenant;
