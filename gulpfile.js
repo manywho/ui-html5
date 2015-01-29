@@ -105,12 +105,11 @@ gulp.task('html-dist', function () {
                 .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('dist', function (callback) {
+gulp.task('dist', function () {
 
     runSequence('clean-dist',
                 ['less-dist', 'js-dist'],
-                'html-dist',
-                callback);
+                'html-dist');
 
 });
 
