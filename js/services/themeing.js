@@ -18,7 +18,7 @@ manywho.themeing = (function (manywho, $) {
                 })
                 .fail(function () {
 
-                    log.error("Failed to load themes from: ");
+                    log.error("Failed to load themes from: " + manywho.settings.get('themesUri'));
 
                 });
             

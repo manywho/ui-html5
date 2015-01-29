@@ -4,8 +4,6 @@ manywho.state = (function (manywho) {
 
     return {
         
-        engineResponse: null,
-        
         get: function(id) {
 
             return state[id];
@@ -61,8 +59,7 @@ manywho.state = (function (manywho) {
 
             }
 
-            var main = manywho.component.getByName('main');
-            React.render(React.createElement(main), document.body);
+            manywho.view.render();
 
         }
 

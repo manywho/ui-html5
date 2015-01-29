@@ -1,12 +1,18 @@
 manywho.engine = (function (manywho) {
 
+    function onError(xhr, status, error) {
+
+        log.error(error);
+
+    }
+
     return {
 
         initialize: function (engineInitializationRequest, callback) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
-            $.ajax({
+            return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1',
                 type: 'POST',
                 dataType: 'json',
@@ -21,26 +27,11 @@ manywho.engine = (function (manywho) {
                         manywho.settings.get('initialization.beforeSend').call(this, xhr);
                     }
 
-                },
-                success: function (engineInitializationResponse, status, xhr) {
-
-                    manywho.state.engineResponse = engineInitializationResponse;
-
-                    callback.call(this, engineInitializationResponse);
-
-                    if (manywho.settings.get('initialization.success')) {
-                        manywho.settings.get('initialization.success').call(this, engineInitializationResponse, status, xhr);
-                    }
-
-                },
-                error: function (xhr, status, error) {
-                    
-                    if (manywho.settings.get('initialization.error')) {
-                        manywho.settings.get('initialization.error').call(this, xhr, status, error);
-                    }
-
                 }
-            });
+            })
+            .done(manywho.settings.get('initialization.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('initialization.fail'));
 
         },
 
@@ -70,7 +61,7 @@ manywho.engine = (function (manywho) {
 
         invoke: function (engineInvokeRequest, callback) {
 
-            $.ajax({
+            return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
                 type: 'POST',
                 dataType: 'json',
@@ -85,32 +76,17 @@ manywho.engine = (function (manywho) {
                         manywho.settings.get('invoke.beforeSend').call(this, xhr);
                     }
 
-                },
-                success: function (engineInvokeResponse, status, xhr) {
-
-                    manywho.state.engineResponse = engineInvokeResponse;
-
-                    callback.call(this, engineInvokeResponse);
-
-                    if (manywho.settings.get('invoke.success')) {
-                        manywho.settings.get('invoke.success').call(this, engineInvokeResponse, status, xhr);
-                    }
-
-                },
-                error: function (xhr, status, error) {
-
-                    if (manywho.settings.get('invoke.error')) {
-                        manywho.settings.get('invoke.error').call(this, xhr, status, error);
-                    }
-
                 }
-            });
+            })
+            .done(manywho.settings.get('invoke.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('invoke.fail'));
 
         },
 
-        createNavigation: function (stateId, stateToken, navigationElementId) {
-
-            $.ajax({
+        getNavigation: function (stateId, stateToken, navigationElementId) {
+            
+            return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
                 type: 'POST',
                 dataType: 'json',
@@ -118,15 +94,18 @@ manywho.engine = (function (manywho) {
                 processData: true,
                 data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
                 beforeSend: function (xhr) {
+
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-                },
-                success: function (engineNavigationResponse, status, xhr) {
-                    manywho.model.parseNavigationResponse(navigationElementId, engineNavigationResponse);
-                },
-                error: function (xhr, status, error) {
-                    alert(error);
+
+                    if (manywho.settings.get('navigation.beforeSend')) {
+                        manywho.settings.get('navigation.beforeSend').call(this, xhr);
+                    }
+
                 }
-            });
+            })
+            .done(manywho.settings.get('navigation.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('navigation.fail'));
 
         },
 

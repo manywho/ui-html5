@@ -60,43 +60,10 @@
 
 </head>
 <body>    
-    <script>
-
-        // The info needed to execute the Flow
-        manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
-
-        var flowId = {
-            'id':'b7e2a056-35dd-4973-b279-c85aeafb299c',
-            'versionId':'8cae4f4e-39d1-4751-8eba-2935e27434ba'
-        };
-
-        // Create the engine initialization request
-        var engineInitializationRequest = manywho.json.generateInitializationRequest(flowId, 'something');
-        
+    <script>                
         manywho.settings.initialize();
         manywho.themeing.initialize();
-        manywho.view.initialize();
-
-        // Now initialize the engine and kick off the flow
-        manywho.engine.initialize(
-                engineInitializationRequest,
-                function(engineInitializationResponse) {
-
-                    manywho.collaboration.initialize(engineInitializationResponse.stateId);
-
-                    manywho.engine.invoke(
-                            manywho.json.generateInvokeRequest(engineInitializationResponse, 'FORWARD'),
-                            function (engineInvokeResponse) {
-
-                                manywho.view.create();
-
-                            }
-                    );
-
-                }
-        );
-
+        manywho.view.initialize();        
     </script>
-
 </body>
 </html>
