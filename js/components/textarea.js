@@ -16,6 +16,7 @@
 
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.get(this.props.id);
+            var isValid = true;
 
             var attributes = {
                 id: this.props.id,
@@ -33,9 +34,20 @@
                 attributes.required = "";
             }
 
-            return React.DOM.div({ className: 'form-group ' + (model.isVisible) ? "" : "hidden" }, [
+            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+                isValid = false;
+            }
+
+            var classNames = [
+                'form-group',
+                (model.isVisible) ? '' : 'hidden',
+                (isValid) ? '' : 'has-error'
+            ].join(' ');
+
+            return React.DOM.div({ className: classNames }, [
                 React.DOM.label({ 'for': this.props.id }, model.label),
-                React.DOM.textarea(attributes, null)
+                React.DOM.textarea(attributes, null),
+                React.DOM.span({ className: 'help-block' }, model.message)
             ]);
 
         }

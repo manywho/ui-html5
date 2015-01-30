@@ -34,6 +34,7 @@
 
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.get(this.props.id);
+            var isValid = true;
 
             var attributes = {
                 type: getInputType(model.contentType),
@@ -52,27 +53,40 @@
                 attributes.required = "";
             }
 
+            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+                isValid = false;
+            }
+
+            var containerClasseNames = [
+                (model.isVisible) ? '' : 'hidden',
+                (isValid) ? '' : 'has-error'
+            ].join(' ');
+
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
                 if (Boolean(state.contentValue)) {
                     attributes.checked = "checked";
                 }
 
-                return React.DOM.div({ className: 'checkbox ' + (model.isVisible) ? "" : "hidden" },
-                            React.DOM.label(null, [
-                                React.DOM.input(attributes, null),
-                                model.label,
-                            ])
-                        );
+                return React.DOM.div({ className: containerClasseNames}, [
+                            React.DOM.div({ className: 'checkbox ' },
+                                React.DOM.label(null, [
+                                    React.DOM.input(attributes, null),
+                                    model.label,
+                                ])
+                            ),
+                            React.DOM.span({className: 'help-block'}, model.message)
+                        ]);
 
             }
             else {
 
                 attributes.className = 'form-control';
 
-                return React.DOM.div({ className: 'form-group ' + (model.isVisible) ? "" : "hidden" }, [
+                return React.DOM.div({ className: 'form-group ' + containerClasseNames }, [
                             React.DOM.label({ 'for': this.props.id }, model.label),
-                            React.DOM.input(attributes, null)
+                            React.DOM.input(attributes, null),
+                            React.DOM.span({className: 'help-block'}, model.message)
                         ]);
 
             }                       
