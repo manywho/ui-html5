@@ -71,7 +71,7 @@ gulp.task('clean-dist', function () {
 
 gulp.task('less-dist', function () {
 
-    return gulp.src('css/*.less')
+    return gulp.src('css/**/*.*')
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
