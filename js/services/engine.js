@@ -69,6 +69,7 @@ manywho.engine = (function (manywho) {
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
                 update(response);
+                React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render();
 
             });
@@ -76,8 +77,6 @@ manywho.engine = (function (manywho) {
         },
 
         render: function () {
-
-            React.unmountComponentAtNode(document.getElementById('manywho'));
 
             var main = manywho.component.getByName('main');
             React.render(React.createElement(main), document.getElementById('manywho'));
