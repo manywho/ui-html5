@@ -75,13 +75,29 @@
 
             }
             
+            var model = manywho.model.getComponent(this.props.id);
             var options = [];
+            var isValid = true;
+
             if (this.state.data) {
                 options = this.state.data.map(renderOption);
             }
 
-            return React.createElement(Chosen, { children: options });
-        
+            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+                isValid = false;
+            }
+
+            var containerClasseNames = [
+                (model.isVisible) ? '' : 'hidden',
+                (isValid) ? '' : 'has-error'
+            ].join(' ');
+
+            return React.DOM.div({ className: 'form-group ' + containerClasseNames }, [
+                        React.DOM.label({ 'for': this.props.id }, model.label),
+                        React.createElement(Chosen, { children: options }),
+                        React.DOM.span({ className: 'help-block' }, model.message)
+            ]);
+                    
         }
 
     });
