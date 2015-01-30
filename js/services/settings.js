@@ -36,7 +36,8 @@ manywho.settings = (function (manywho, $) {
                 initialization: {},
                 invoke: {},
                 sync: {},
-                navigation: {}
+                navigation: {},
+                objectData: {}
             }
 
             // Replace this with a call to /js/constants

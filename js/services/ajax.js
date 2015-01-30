@@ -89,6 +89,52 @@ manywho.ajax = (function (manywho) {
 
             alert('Sync!');
 
+        },
+
+        dispatchObjectDataRequest: function (request, limit, search, orderBy, orderByDirection, page) {
+
+            if (request.listFilter == null) {
+                request.listFilter = {};
+            }
+
+            request.listFilter.limit = limit;
+
+            if (search) {
+                request.listFilter.search = search;
+            }
+
+            if (orderBy) {
+                request.listFilter.orderBy = orderBy;
+                request.listFilter.orderByDirection = orderByDirection;
+            }
+
+            if (page > 0) {
+                request.listFilter.offset = page * request.listFilter.limit;
+            }
+
+            log.info('Dispatching object data request');
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/service/1/data/',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(request),
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('objectData.beforeSend')) {
+                        manywho.settings.get('objectData.beforeSend').call(this, xhr);
+                    }
+
+                }
+            })
+            .done(manywho.settings.get('objectData.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('objectData.fail'));
+
         }
 
     }
