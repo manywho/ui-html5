@@ -21,8 +21,7 @@
     function onChange(e) {
 
         var id = e.target.getAttribute('id');
-        var value = e.target.getAttribute('value');
-        manywho.state.setContentValue(id, value);
+        manywho.state.set(id, e.target.value, true);
 
     }
 
@@ -41,7 +40,7 @@
                 placeholder: model.hintValue,
                 value: state.contentValue,
                 input: onChange,
-                change: onChange,
+                onChange: onChange,
                 id: this.props.id
             }
 

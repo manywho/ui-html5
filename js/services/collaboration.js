@@ -1,30 +1,6 @@
 manywho.collaboration = (function (manywho) {
 
-    var socket, shareJs, doc;
-
-    function diff(source, target) {
-
-        var diff = {}
-
-        for (prop in source) {
-
-            if (!target.hasOwnProperty(prop)) {
-
-                diff[prop] = source[prop];
-
-            }
-
-        }
-
-        return diff;
-
-    }
-
-    function onStateChanged(error) {
-                
-        manywho.state.refresh(doc.getSnapshot());        
-
-    }
+    var socket = null;
 
     return {
 
@@ -32,69 +8,60 @@ manywho.collaboration = (function (manywho) {
 
         initialize: function (stateId) {
 
-            if (this.isEnabled && !socket && !shareJs && !doc) {
+            if (this.isEnabled) {
 
-                socket = new BCSocket(null, { reconnect: false });
-                shareJs = new window.sharejs.Connection(socket);
+                socket = io.connect(manywho.settings.get('collaborationUri'));
 
-                doc = shareJs.get('states', stateId);
-                doc.whenReady(function () {
+                socket.on('connect', function () {
 
-                    if (!doc.getSnapshot()) {
-                        doc.create('json0');
-                    }
+                    socket.emit('join', { state: 'stateid', user: '' });
 
                 });
 
-                doc.subscribe(onStateChanged);
+                socket.on('disconnect', function () {
+
+                    socket.emit('left', { state: 'stateid', user: '' });
+
+                });
+
+                socket.on('joined', function (data) {
+
+                    log.info(data.user + ' has joined');
+                    $.bootstrapGrowl(data.user + ' has joined', { type: 'success', allow_dismiss: false, width: 300 });
+
+                });
+
+                socket.on('left', function (data) {
+
+                    log.info(data.user + ' has left');
+                    $.bootstrapGrowl(data.user + ' has left', { type: 'danger', allow_dismiss: false, width: 300 });
+
+                });
+
+                socket.on('change', function (data) {
+
+                    log.info('change to: ' + data.id);
+
+                    manywho.state.set(data.id, data.value, false);
+                    manywho.engine.render();
+
+                });
+
+                window.addEventListener("beforeunload", function (event) {
+
+                    socket.emit('left', { state: 'stateid', user: '' });
+
+                });
 
             }
 
         },
 
-        sync: function(state) {
+        push: function (id, value) {
 
             if (this.isEnabled) {
 
-                doc.whenReady(function () {
-
-                    var context = doc.createContext();
-                    var snapshot = doc.getSnapshot();
-
-                    var clientDiff = diff(state, snapshot);
-                    
-                    // Insert each component state that exists on the client but not on the remote
-                    for (id in clientDiff) {
-                        context.submitOp([{ p: [id], oi: clientDiff[id] }]);
-                    }
-
-                    for (id in snapshot) {
-                        state[id] = snapshot[id];
-                    }
-
-                    manywho.state.refresh(state);
-
-                });
-
-            }
-
-        },
-
-        update: function(componentId, oldValue, newValue) {
-            
-            if (this.isEnabled) {
-
-                var operation = {
-                    p: [componentId],
-                    od: oldValue,
-                    oi: newValue
-                }
-
-                doc.whenReady(function () {
-                    var context = doc.createContext();
-                    context.submitOp([operation]);
-                    context.destroy();
-                });
+                socket.emit('change', { state: 'stateid', user: '', id: id, value: value });
 
             }
 
