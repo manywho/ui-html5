@@ -18,14 +18,14 @@
 
     }
 
-    function onChange(e) {
-
-        var id = e.target.getAttribute('id');
-        manywho.state.set(id, e.target.value, true);
-
-    }
-
     var input = React.createClass({
+
+        handleChange: function(e) {
+
+            manywho.state.set(this.props.id, e.target.value, true);
+            this.forceUpdate();
+
+        },
 
         render: function () {
 
@@ -39,8 +39,7 @@
                 type: getInputType(model.contentType),
                 placeholder: model.hintValue,
                 value: state.contentValue,
-                input: onChange,
-                onChange: onChange,
+                onChange: this.handleChange,
                 id: this.props.id
             }
 
@@ -82,7 +81,8 @@
 
                 attributes.className = 'form-control';
 
-                return React.DOM.div({ className: 'form-group ' + containerClasseNames }, [
+                return React.DOM.div({ className: 'form-group ' + containerClasseNames }, 
+                        [
                             React.DOM.label({ 'for': this.props.id }, model.label),
                             React.DOM.input(attributes, null),
                             React.DOM.span({className: 'help-block'}, model.message)
