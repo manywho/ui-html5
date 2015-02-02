@@ -52,7 +52,8 @@ manywho.collaboration = (function (manywho) {
 
                 socket.on('sync-request', function (data) {
 
-                    socket.emit('sync', { state: 'stateid', components: manywho.state.getComponents() });
+                    // Disabled for now as the states aren't synced in testing yet
+                    //socket.emit('sync', { state: 'stateid', components: manywho.state.getComponents() });
                     
                 });
 
