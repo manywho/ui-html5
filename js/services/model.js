@@ -6,38 +6,6 @@
     var navigation = {};
     var tenantId = '';
 
-    // Stolen from here: https://gist.github.com/svlasov-gists/2383751
-    function merge(target, source) {
-
-        if (typeof target !== 'object') {
-            target = {};
-        }
-
-        for (var property in source) {
-
-            if (source.hasOwnProperty(property)) {
-
-                var sourceProperty = source[property];
-
-                if (sourceProperty != null &&
-                    typeof sourceProperty === 'object') {
-                    target[property] = merge(target[property], sourceProperty);
-                    continue;
-                }
-
-                target[property] = sourceProperty;
-
-            }
-
-        }
-
-        for (var a = 2, l = arguments.length; a < l; a++) {
-            merge(target, arguments[a]);
-        }
-
-        return target;
-    };
-
     function contains(collection, id, key) {
         var selectedItem = collection.filter(function (item) {
             return item[key] == id;
@@ -71,7 +39,7 @@
 
         var data = get(collection, item.id, key);
         if (data != null) {
-            return merge(item, data);
+            return $.extend({}, item, data);
         }
         return item;
 
@@ -101,7 +69,7 @@
 
         navigationItemResponses.forEach(function (response) {
 
-            navigationItems[response.id] = merge({}, response);
+            navigationItems[response.id] = $.extend({}, response);
             
             if (response.navigationItems != null)
             {
