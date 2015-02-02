@@ -1,14 +1,17 @@
 manywho.collaboration = (function (manywho) {
 
     var socket = null;
+    var isInitialized = false;
+    var isEnabled = false;
 
     return {
 
-        isEnabled: false,
+        initialize: function (stateId, enable) {
 
-        initialize: function (stateId) {
+            if (!isInitialized && enable) {
 
-            if (this.isEnabled) {
+                isInitialized = true;
+                isEnabled = true;
 
                 socket = io.connect(manywho.settings.get('collaborationUri'));
 
@@ -42,7 +45,20 @@ manywho.collaboration = (function (manywho) {
 
                     log.info('change to: ' + data.id);
 
-                    manywho.state.set(data.id, data.value, false);
+                    manywho.state.setComponent(data.id, data.value, false);
+                    manywho.engine.render();
+
+                });
+
+                socket.on('sync-request', function (data) {
+
+                    socket.emit('sync', { state: 'stateid', components: manywho.state.getComponents() });
+                    
+                });
+
+                socket.on('sync', function (data) {
+
+                    manywho.state.setComponents(data);
                     manywho.engine.render();
 
                 });
@@ -57,9 +73,21 @@ manywho.collaboration = (function (manywho) {
 
         },
 
+        enable: function() {
+
+            isEnabled = true;
+
+        },
+
+        disable: function() {
+
+            isEnabled = false;
+
+        },
+
         push: function (id, value) {
 
-            if (this.isEnabled) {
+            if (isEnabled && isInitialized) {
 
                 socket.emit('change', { state: 'stateid', user: '', id: id, value: value });
 

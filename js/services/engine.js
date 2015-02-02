@@ -3,8 +3,8 @@ manywho.engine = (function (manywho) {
     function update(response) {
 
         manywho.model.parseEngineResponse(response);
-        manywho.state.setData(response.stateId, response.stateToken, response.currentMapElementId);
-        manywho.state.update(manywho.model.getComponents());
+        manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
+        manywho.state.refreshComponents(manywho.model.getComponents());
 
     }
 
@@ -26,7 +26,7 @@ manywho.engine = (function (manywho) {
                 .then(function (response) {
 
                     manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
-                    manywho.collaboration.initialize(response.stateId);
+                    manywho.collaboration.initialize(response.stateId, true);
 
                     var defereds = [response];
 
@@ -44,7 +44,7 @@ manywho.engine = (function (manywho) {
                 .then(function (response, navigation, stream) {
                     
                     manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-                    return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD'));
+                    return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
 
                 })
                 .then(function (response) {
@@ -63,7 +63,7 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getData(), 'FORWARD', outcome.id);
+            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD', outcome.id);
             var self = this;
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {

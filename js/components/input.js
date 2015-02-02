@@ -32,7 +32,7 @@
             log.info('Rendering Input: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id);
-            var state = manywho.state.get(this.props.id);
+            var state = manywho.state.getComponent(this.props.id);
             var isValid = true;
 
             var attributes = {

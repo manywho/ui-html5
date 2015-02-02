@@ -1,35 +1,63 @@
 manywho.state = (function (manywho) {
 
-    var state = {};
-    var data = null;
+    var components = {};
+    var state = null;
 
     return {
         
         initialize: function(id, token, mapElementId) {
 
-            this.setData(id, token, mapElementId);
+            this.setState(id, token, mapElementId);
 
         },
 
-        get: function(id) {
+        refreshComponents: function(models) {
 
-            return state[id];
+            for (id in models) {
+
+                if (models[id].isEditable) {
+
+                    components[id] = {
+                        contentValue: models[id].contentValue ? models[id].contentValue : null
+                    }
+
+                }
+
+            }
+            
+        },
+
+        getComponent: function(id) {
+
+            return components[id];
 
         },
 
-        set: function(id, value, push) {
+        getComponents: function() {
 
-            state[id].contentValue = value;
+            return components;
+
+        },
+
+        setComponent: function(id, value, push) {
+
+            components[id].contentValue = value;
 
             if (push) {
                 manywho.collaboration.push(id, value);
             }
-            
+
+        },
+
+        setComponents: function(value) {
+
+            components = value;
+
         },
         
-        setData: function(id, token, mapElementId) {
+        setState: function(id, token, mapElementId) {
 
-            data = {
+            state = {
                 id: id,
                 token: token,
                 currentMapElementId: mapElementId
@@ -37,27 +65,11 @@ manywho.state = (function (manywho) {
 
         },
 
-        getData: function() {
+        getState: function() {
 
-            return data;
+            return state;
 
-        },
-
-        update: function(components) {
-
-            for (id in components) {
-
-                if (components[id].isEditable) {
-
-                    state[id] = {
-                        contentValue: components[id].contentValue ? components[id].contentValue : null
-                    }
-
-                }
-
-            }
-            
-        }
+        }        
         
     }
 
