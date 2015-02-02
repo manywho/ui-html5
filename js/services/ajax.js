@@ -93,16 +93,10 @@ manywho.ajax = (function (manywho) {
 
         dispatchObjectDataRequest: function (request, limit, search, orderBy, orderByDirection, page) {
 
-            if (request.listFilter == null) {
-                request.listFilter = {};
-            }
-
+            request.listFilter = request.listFilter || {};           
             request.listFilter.limit = limit;
-
-            if (search) {
-                request.listFilter.search = search;
-            }
-
+            request.listFilter.search = search || null;
+            
             if (orderBy) {
                 request.listFilter.orderBy = orderBy;
                 request.listFilter.orderByDirection = orderByDirection;
@@ -115,7 +109,7 @@ manywho.ajax = (function (manywho) {
             log.info('Dispatching object data request');
 
             return $.ajax({
-                url: 'https://flow.manywho.com/api/service/1/data/',
+                url: 'https://flow.manywho.com/api/service/1/data',
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
