@@ -17,13 +17,14 @@ var gulp = require('gulp'),
     order = require("gulp-order"),
     awspublish = require('gulp-awspublish'),
     cloudfront = require("gulp-cloudfront"),
-    rename = require("gulp-rename");
+    rename = require("gulp-rename"),
+    replace = require('gulp-replace');
 
 
 // Dev Time
 gulp.task('less', function () {
 
-    gulp.src('css/*.less')
+    gulp.src(['css/*.less', '!css/mw-bootstrap.less'])
         .pipe(plumber())
         .pipe(watch('css/*.less'))
         .pipe(less())
@@ -39,6 +40,26 @@ gulp.task('jshint', function () {
         .pipe(jshint())
         .pipe(jshint.reporter(stylish))
         .pipe(jshint.reporter('fail'));
+
+});
+
+gulp.task('bootstrap', function () {
+
+    gulp.src('css/mw-bootstrap.less')
+        .pipe(less())
+        .pipe(replace('.mw-bs html {', '.mw-bs {'))
+        .pipe(replace('.mw-bs body {', '.mw-bs {'))
+        .pipe(gulp.dest('css'));
+
+});
+
+gulp.task('bootstrap-templates', function () {
+
+    gulp.src('css/themes/*.less')
+        .pipe(less())
+        .pipe(replace('.mw-bs html {', '.mw-bs {'))
+        .pipe(replace('.mw-bs body {', '.mw-bs {'))
+        .pipe(gulp.dest('css/themes'));
 
 });
 
@@ -59,7 +80,7 @@ gulp.task('browser-sync', function () {
 
 });
 
-gulp.task('refresh', ['jshint', 'less', 'browser-sync']);
+gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
 
 // Production Build
 gulp.task('clean-dist', function () {
@@ -76,6 +97,28 @@ gulp.task('less-dist', function () {
                 .pipe(less())
                 .pipe(minifyCSS())
                 .pipe(gulp.dest('./dist/css'));
+
+});
+
+gulp.task('bootstrap-dist', function () {
+
+    return gulp.src('css/mw-bootstrap.less')
+                .pipe(less())
+                .pipe(replace('.mw-bs html {', '.mw-bs {'))
+                .pipe(replace('.mw-bs body {', '.mw-bs {'))
+                .pipe(minifyCSS())
+                .pipe(gulp.dest('./dist/css'));
+
+});
+
+gulp.task('bootstrap-themes-dist', function () {
+
+    return gulp.src('css/themes/*.less')
+                .pipe(less())
+                .pipe(replace('.mw-bs html {', '.mw-bs {'))
+                .pipe(replace('.mw-bs body {', '.mw-bs {'))
+                .pipe(minifyCSS())
+                .pipe(gulp.dest('./dist/css/themes'));
 
 });
 
@@ -106,7 +149,7 @@ gulp.task('html-dist', function () {
 gulp.task('dist', function () {
 
     runSequence('clean-dist',
-                ['less-dist', 'js-dist'],
+                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist'],
                 'html-dist');
 
 });

@@ -5,9 +5,11 @@
     <meta charset="utf-8" />
     <title>ManyWho React UI</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.1/paper/bootstrap.min.css" id="theme">
-    
+    <!-- build:boostrap -->
+    <link rel="stylesheet" href="css/mw-bootstrap.css">
+    <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme">
+    <!-- endbuild -->
+
     <!-- build:css -->
     <link rel="stylesheet" href="css/lib/bootstrap-chosen.css">
     <link rel="stylesheet" href="css/wait.css" />
@@ -69,11 +71,9 @@
 <body>    
     <script>                
         manywho.settings.initialize();
-        manywho.themeing.initialize();
         manywho.engine.initialize();        
     </script>
-
+    
     <div id="manywho"></div>
-
 </body>
 </html>

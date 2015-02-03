@@ -6,6 +6,7 @@
 node_modules
 
 /css/*.css
+/css/themes/mw-*.css
 /dist
 
 .c9/

@@ -32,7 +32,7 @@ manywho.settings = (function (manywho, $) {
         initialize: function(custom) {
 
             defaults = {
-                themesUri: 'http://api.bootswatch.com/3/',
+                themesUri: '/css/themes',
                 collaborationUri: 'http://localhost:4444',
                 initialization: {},
                 invoke: {},
