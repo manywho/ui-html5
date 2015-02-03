@@ -22,7 +22,7 @@
 
         handleChange: function(e) {
 
-            manywho.state.setComponent(this.props.id, e.target.value, true);
+            manywho.state.setComponent(this.props.id, e.target.value, null, true);
             this.forceUpdate();
 
         },

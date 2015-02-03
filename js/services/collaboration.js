@@ -45,7 +45,7 @@ manywho.collaboration = (function (manywho) {
 
                     log.info('change to: ' + data.id);
 
-                    manywho.state.setComponent(data.id, data.value, false);
+                    manywho.state.setComponent(data.id, data.value, null, false);
                     manywho.engine.render();
 
                 });
@@ -53,6 +53,7 @@ manywho.collaboration = (function (manywho) {
                 socket.on('sync-request', function (data) {
 
                     // Disabled for now as the states aren't synced in testing yet
+                    // SW: Once this is done, it should work as we also need to consider object data in the sync with the above code ignores I think
                     //socket.emit('sync', { state: 'stateid', components: manywho.state.getComponents() });
                     
                 });

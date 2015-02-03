@@ -4,7 +4,7 @@
 
         handleChange: function(e) {
 
-            manywho.state.setContentValue(this.props.id, e.target.value, true);
+            manywho.state.setComponent(this.props.id, e.target.value, null, true);
             this.forceUpdate();
 
         },
@@ -21,7 +21,7 @@
                 id: this.props.id,
                 placeholder: model.hintValue,
                 value: state.contentValue,
-                change: this.handleChange
+                onChange: this.handleChange
             }
 
             if (!model.isEnabled) {

@@ -13,12 +13,15 @@ manywho.state = (function (manywho) {
 
         refreshComponents: function(models) {
 
+            components = {};
+
             for (id in models) {
 
                 if (models[id].isEditable) {
 
                     components[id] = {
-                        contentValue: models[id].contentValue ? models[id].contentValue : null
+                        contentValue: models[id].contentValue ? models[id].contentValue : null,
+                        objectData: models[id].objectData ? models[id].objectData : null
                     }
 
                 }
@@ -39,12 +42,13 @@ manywho.state = (function (manywho) {
 
         },
 
-        setComponent: function(id, value, push) {
+        setComponent: function(id, contentValue, objectData, push) {
 
-            components[id].contentValue = value;
+            components[id].contentValue = contentValue;
+            components[id].objectData = objectData;
 
             if (push) {
-                manywho.collaboration.push(id, value);
+                manywho.collaboration.push(id, contentValue);
             }
 
         },
@@ -52,6 +56,26 @@ manywho.state = (function (manywho) {
         setComponents: function(value) {
 
             components = value;
+
+        },
+
+        getPageComponentInputResponseRequests: function() {
+
+            var pageComponentInputResponseRequests = null;
+
+            if (components != null) {
+                pageComponentInputResponseRequests = new Array();
+
+                for (id in components) {
+                    pageComponentInputResponseRequests[pageComponentInputResponseRequests.length] = {
+                        pageComponentId: id,
+                        contentValue: components[id].contentValue,
+                        objectData: components[id].objectData
+                    };
+                }
+            }
+
+            return pageComponentInputResponseRequests;
 
         },
         

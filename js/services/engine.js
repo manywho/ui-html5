@@ -63,7 +63,27 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD', outcome.id);
+            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD', outcome.id, manywho.state.getPageComponentInputResponseRequests());
+            var self = this;
+
+            manywho.ajax.invoke(invokeRequest).then(function (response) {
+
+                update(response);
+                React.unmountComponentAtNode(document.getElementById('manywho'));
+                self.render();
+
+            });
+
+        },
+
+        sync: function() {
+
+            // Validate all of the components on the page here...
+            // In the model.js, there are componentInputResponseRequests entries for each component
+            // that needs to be validated. If a component does not validate correctly, it should
+            // prevent the 'move' and also indicate in the UI which component has failed validation
+
+            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'SYNC', null, manywho.state.getPageComponentInputResponseRequests());
             var self = this;
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {
