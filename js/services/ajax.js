@@ -8,7 +8,7 @@ manywho.ajax = (function (manywho) {
 
     return {
 
-        initialize: function (engineInitializationRequest, callback) {
+        initialize: function (engineInitializationRequest) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -34,8 +34,33 @@ manywho.ajax = (function (manywho) {
             .fail(manywho.settings.get('initialization.fail'));
 
         },
+
+        join: function(stateId) {
+
+            log.info('Joining State: ' + stateId);
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/state/' + stateId,
+                type: 'GET',
+                contentType: 'application/json',
+                processData: true,
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('join.beforeSend')) {
+                        manywho.settings.get('join.beforeSend').call(this, xhr);
+                    }
+
+                }
+            })
+            .done(manywho.settings.get('join.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('join.fail'));
+
+        },
         
-        invoke: function (engineInvokeRequest, callback) {
+        invoke: function (engineInvokeRequest) {
 
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,

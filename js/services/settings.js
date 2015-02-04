@@ -38,6 +38,7 @@ manywho.settings = (function (manywho, $) {
                 invoke: {},
                 sync: {},
                 navigation: {},
+                join: {},
                 objectData: {}
             }
 

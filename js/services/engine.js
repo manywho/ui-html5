@@ -1,5 +1,21 @@
 manywho.engine = (function (manywho) {
 
+    // Stolen from: http://www.joezimjs.com/javascript/3-ways-to-parse-a-query-string-in-a-url/
+    function parseQueryString(queryString) {
+        var params = {}, queries, temp, i, l;
+
+        // Split into key/value pairs
+        queries = queryString.split("&");
+
+        // Convert the array of strings into an object
+        for (i = 0, l = queries.length; i < l; i++) {
+            temp = queries[i].split('=');
+            params[temp[0]] = temp[1];
+        }
+
+        return params;
+    };
+
     function update(response) {
 
         manywho.model.parseEngineResponse(response);
@@ -12,6 +28,9 @@ manywho.engine = (function (manywho) {
 
         initialize: function() {
 
+            var self = this;
+            var queryParameters = parseQueryString(window.location.search.substring(1));
+
             manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
 
             var flowId = {
@@ -19,40 +38,52 @@ manywho.engine = (function (manywho) {
                 'versionId': '8cae4f4e-39d1-4751-8eba-2935e27434ba'
             };
 
-            var self = this;
-            var initializationRequest = manywho.json.generateInitializationRequest(flowId);
+            var stateId = queryParameters['join'];
 
-            manywho.ajax.initialize(initializationRequest)
-                .then(function (response) {
+            var dispatcher = null;
 
-                    manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
-                    manywho.collaboration.initialize(response.stateId, true);
+            if (stateId) {
 
-                    var defereds = [response];
+                dispatcher = manywho.ajax.join(stateId);
+                
+            }
+            else {
 
-                    if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                        defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
-                    }
+                var initializationRequest = manywho.json.generateInitializationRequest(flowId);
+                dispatcher = manywho.ajax.initialize(initializationRequest)
 
-                    if (response.currentStreamId) {
-                        // Add create social stream ajax call to deffereds here
-                    }
+            }
+  
+            dispatcher.then(function (response) {
 
-                    return $.when.apply($, defereds);
+                manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
+                manywho.collaboration.initialize(response.stateId, true);
 
-                })
-                .then(function (response, navigation, stream) {
-                    
-                    manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-                    return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
+                var defereds = [response];
 
-                })
-                .then(function (response) {
+                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+                    defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+                }
 
-                    update(response);
-                    self.render();
+                if (response.currentStreamId) {
+                    // Add create social stream ajax call to deffereds here
+                }
 
-                });
+                return $.when.apply($, defereds);
+
+            })
+            .then(function (response, navigation, stream) {
+
+                manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+                return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
+
+            })
+            .then(function (response) {
+
+                update(response);
+                self.render();
+
+            });
 
         },
 
