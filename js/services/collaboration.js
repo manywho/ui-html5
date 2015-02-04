@@ -30,14 +30,14 @@ manywho.collaboration = (function (manywho) {
                 socket.on('joined', function (data) {
 
                     log.info(data.user + ' has joined');
-                    $.bootstrapGrowl(data.user + ' has joined', { type: 'success', allow_dismiss: false, width: 300 });
+                    $.bootstrapGrowl(data.user + ' has joined', { ele: '.mw-bs', type: 'success', allow_dismiss: false, width: 300 });
 
                 });
 
                 socket.on('left', function (data) {
 
                     log.info(data.user + ' has left');
-                    $.bootstrapGrowl(data.user + ' has left', { type: 'danger', allow_dismiss: false, width: 300 });
+                    $.bootstrapGrowl(data.user + ' has left', { ele: '.mw-bs', type: 'danger', allow_dismiss: false, width: 300 });
 
                 });
 
