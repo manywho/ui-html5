@@ -12,11 +12,11 @@
             var childElements = children.map(function(child) {
                 
                 return React.createElement('li', { className: (child.order == 0) ? 'active' : null }, 
-                            React.createElement('a', { href: '#' + child.developerName, "data-toggle": "tab" }, child.label)
+                            React.createElement('a', { href: '#' + child.id, "data-toggle": "tab" }, child.label)
                         );
                 
             });
-            
+                        
             return React.DOM.div({ className: 'group_container' }, [
                 React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
                 React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id))

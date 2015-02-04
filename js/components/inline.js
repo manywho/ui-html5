@@ -9,7 +9,7 @@
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow");
             var children = manywho.model.getChildren(this.props.id);
 
-            return React.createElement('div', { className: classes }, manywho.component.getChildComponents(children, this.props.id));
+            return React.createElement('div', { className: classes, id: this.props.id }, manywho.component.getChildComponents(children, this.props.id));
 
         }
 
