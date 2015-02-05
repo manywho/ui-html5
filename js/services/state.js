@@ -48,7 +48,7 @@ manywho.state = (function (manywho) {
             components[id].objectData = objectData;
 
             if (push) {
-                manywho.collaboration.push(id, contentValue);
+                manywho.collaboration.push(id, contentValue, state.id);
             }
 
         },

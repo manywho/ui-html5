@@ -16,14 +16,6 @@ io.on('connection', function (socket) {
         socket.join(data.state);
         socket.broadcast.to(data.state).emit('joined', { user: data.user });
 
-        // If there is more than one user on this state then sync the new user with the first user
-        var clientIds = Object.keys(io.nsps['/'].adapter.rooms[data.state]);
-        if (clientIds.length > 1) {
-
-            io.to(clientIds[0]).emit('sync-request');
-
-        }
-
     });
 
     socket.on('left', function (data) {
@@ -47,7 +39,35 @@ io.on('connection', function (socket) {
 
         console.log('sync: ' + data.state);
 
-        socket.broadcast.to(data.state).emit('sync', data.components);
+        socket.broadcast.to(data.state).emit('sync', data);
+
+    });
+
+    socket.on('getValues', function (data) {
+
+        console.log('get values for: ' + data.id);
+
+        var targetId = data.owner;
+
+        // If a user isn't specified to get the latest values from then go to the first user in the room
+        if (!targetId) {
+
+            var clientIds = Object.keys(io.nsps['/'].adapter.rooms[data.state]);
+            if (clientIds.length > 1) {
+
+                targetId = clientIds[0];
+
+            }
+
+        }
+
+        io.to(targetId).emit('getValues', data);
+
+    });
+
+    socket.on('setValues', function (data) {
+
+        io.to(data.id).emit('setValues', data);
 
     });
 

@@ -24,11 +24,47 @@ manywho.engine = (function (manywho) {
 
     }
 
+    function process(dispatcher) {
+
+        var self = this;
+
+        return dispatcher.then(function (response) {
+
+            manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
+            manywho.collaboration.initialize(true);
+
+            var defereds = [response];
+
+            if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+                defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+            }
+
+            if (response.currentStreamId) {
+                // Add create social stream ajax call to deffereds here
+            }
+
+            return $.when.apply($, defereds);
+
+        })
+        .then(function (response, navigation, stream) {
+
+            manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+            return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
+
+        })
+        .then(function (response) {
+
+            update(response);
+            self.render();
+
+        });
+        
+    }
+
     return {
 
         initialize: function() {
 
-            var self = this;
             var queryParameters = parseQueryString(window.location.search.substring(1));
 
             manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
@@ -39,51 +75,22 @@ manywho.engine = (function (manywho) {
             };
 
             var stateId = queryParameters['join'];
-
-            var dispatcher = null;
-
+            
             if (stateId) {
 
-                dispatcher = manywho.ajax.join(stateId);
+                process.call(this, manywho.ajax.join(stateId)).then(function () {
+
+                    manywho.collaboration.getValues(stateId);
+
+                });
                 
             }
             else {
 
                 var initializationRequest = manywho.json.generateInitializationRequest(flowId);
-                dispatcher = manywho.ajax.initialize(initializationRequest)
+                process.call(this, manywho.ajax.initialize(initializationRequest));
 
             }
-  
-            dispatcher.then(function (response) {
-
-                manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
-                manywho.collaboration.initialize(response.stateId, true);
-
-                var defereds = [response];
-
-                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                    defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
-                }
-
-                if (response.currentStreamId) {
-                    // Add create social stream ajax call to deffereds here
-                }
-
-                return $.when.apply($, defereds);
-
-            })
-            .then(function (response, navigation, stream) {
-
-                manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-                return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
-
-            })
-            .then(function (response) {
-
-                update(response);
-                self.render();
-
-            });
 
         },
 
@@ -100,6 +107,8 @@ manywho.engine = (function (manywho) {
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
                 update(response);
+                manywho.collaboration.sync(manywho.state.getState().id);
+
                 React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render();
 
@@ -120,10 +129,17 @@ manywho.engine = (function (manywho) {
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
                 update(response);
-                React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render();
 
             });
+
+        },
+
+        join: function(stateId) {
+
+            var dispatcher = manywho.ajax.join(stateId);
+            React.unmountComponentAtNode(document.getElementById('manywho'));
+            return process.call(this, dispatcher);
 
         },
 
