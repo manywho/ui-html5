@@ -16,9 +16,9 @@ manywho.engine = (function (manywho) {
         return params;
     };
 
-    function update(response) {
+    function update(response, responseParser) {
 
-        manywho.model.parseEngineResponse(response);
+        responseParser.call(manywho.model, response);
         manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
         manywho.state.refreshComponents(manywho.model.getComponents());
 
@@ -54,7 +54,7 @@ manywho.engine = (function (manywho) {
         })
         .then(function (response) {
 
-            update(response);
+            update(response, manywho.model.parseEngineResponse);
             self.render();
 
         });
@@ -106,8 +106,8 @@ manywho.engine = (function (manywho) {
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
-                update(response);
-                manywho.collaboration.sync(manywho.state.getState().id);
+                update(response, manywho.model.parseEngineResponse);
+                manywho.collaboration.move(manywho.state.getState().id);
 
                 React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render();
@@ -125,13 +125,40 @@ manywho.engine = (function (manywho) {
 
             var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'SYNC', null, manywho.state.getPageComponentInputResponseRequests());
             var self = this;
+            var componentIds = [];
 
-            manywho.ajax.invoke(invokeRequest).then(function (response) {
+            manywho.ajax.invoke(invokeRequest)
+                .then(function (response) {
+                    
+                    update(response, manywho.model.parseEngineSyncResponse);
+                    
+                    var components = manywho.utils.convertToArray(manywho.model.getComponents()).filter(function(component) {
 
-                update(response);
-                self.render();
+                        return component.objectDataRequest != null;
 
-            });
+                    });
+
+                    return $.when.apply($, components.map(function(component) {
+
+                        componentIds.push(component.pageComponentId);
+                        return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest)
+
+                    // concat null here so that the reponse array is formatted as [response, repsonse, ...]
+                    }).concat(null));
+
+                })
+                .then(function () {
+                    
+                    var responses = Array.prototype.slice.call(arguments);
+                    
+                    for (var i = 0; i < componentIds.length; i++)
+                    {
+                        manywho.model.getComponent(componentIds[i]).objectData = responses[i][0].objectData;
+                    }
+                    
+                    self.render();
+                    
+                });
 
         },
 

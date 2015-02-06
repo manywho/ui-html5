@@ -114,19 +114,27 @@
                 if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
                     components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
-
-                // Create the input response information so we have the page state that needs
-                // to be sent back to the engine pre-configured and ready to update on events
-                this.componentInputResponseRequests[item.id] = {
-                    'pageComponentId': item.id,
-                    'contentValue': null,
-                    'objectData': null
-                };
-
+                
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
                 outcomes[item.id.toLowerCase()] = item;
+            }, this);
+
+        },
+
+        parseEngineSyncResponse: function(response) {
+            
+            response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
+
+                containers[item.pageContainerId] = $.extend(containers[item.pageContainerId], item);
+
+            }, this);
+
+            response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
+
+                components[item.pageComponentId] = $.extend(components[item.pageComponentId], item);
+                
             }, this);
 
         },

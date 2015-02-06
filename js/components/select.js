@@ -1,21 +1,41 @@
 ﻿(function (manywho) {
 
-    function convertToArray(obj) {
+    function getLabelColumnId(columns) {
 
-        var items = null;
+        if (columns) {
 
-        if (obj) {
+            for (column in columns) {
 
-            items = [];
-            for (prop in obj) {
+                if (columns[column].isDisplayValue == true) {
 
-                items.push(obj[prop]);
+                    return columns[column].typeElementPropertyId;
+
+                }
 
             }
 
         }
 
-        return items;
+        return null;
+
+    }
+
+    function renderOption (item) {
+
+        if (item.properties) {
+
+            var label = item.properties.filter(function (value) {
+
+                return manywho.utils.isEqual(value.typeElementPropertyId, this.column, true);
+
+            }, this)[0];
+
+            // TODO: we just store the external id as that's all we need to find the actual state.data entry that will be sent back (we always send the full object back)
+            return React.DOM.option({ value: item.externalId, selected: item.isSelected }, label.contentValue);
+
+        }
+
+        return null;
 
     }
 
@@ -23,35 +43,28 @@
 
         handleChange: function(e) {
 
+            var model = manywho.model.getComponent(this.props.id);
             var selectedObjectData = null;
 
             // TODO: This logic will be the same for tables, selects and file listings - basically anything that uses object data that can be selected
             // TODO: I've put it in here as I'm not sure where it should go more generically
-            if (e.target.selectedOptions != null && e.target.selectedOptions.length > 0) {
+            if (e.target.selectedOptions) {
 
                 for (option in e.target.selectedOptions) {
 
-                    if (e.target.selectedOptions[option].value != null &&
-                        e.target.selectedOptions[option].value.trim().length > 0) {
+                    if (!manywho.utils.isNullOrWhitespace(e.target.selectedOptions[option].value)) {
 
-                        for (entry in this.state.data) {
+                        selectedObjectData = model.objectData.filter(function (item) {
 
-                            // Find the state data entry with the matching external identifier
-                            if (this.state.data[entry].externalId.toLowerCase() == e.target.selectedOptions[option].value.toLowerCase()) {
+                            return manywho.utils.isEqual(item.externalId, e.target.selectedOptions[option].value, true);
 
-                                if (selectedObjectData == null) {
-                                    selectedObjectData = new Array();
-                                }
+                        })
+                        .map(function (item) {
+                          
+                            item.isSelected = true;
+                            return item;
 
-                                // Tell the engine that this is a selected entry
-                                this.state.data[entry].isSelected = true;
-
-                                // This can be more than one entry for multi-selection use-cases
-                                selectedObjectData[selectedObjectData.length] = this.state.data[entry];
-
-                            }
-
-                        }
+                        });
 
                     }
 
@@ -61,39 +74,14 @@
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
 
-            // TODO: This should only happen if "hasEvents" is true - in fact, all components should implement this if that's true now
-            manywho.engine.sync();
+            if (model.hasEvents) {
+                // TODO: This should only happen if "hasEvents" is true - in fact, all components should implement this if that's true now
+                manywho.engine.sync(true);
+                manywho.collaboration.sync(manywho.state.getState().id);
+            }
+
             this.forceUpdate();
 
-        },
-
-        getInitialState: function() {
-
-            var model = manywho.model.getComponent(this.props.id);
-
-            return {
-                data: convertToArray(model.objectData)
-            }
-
-        },
-
-        componentDidMount: function() {
-
-            // TODO: This only executes on first render, we need something that executes on update, but the "forceUpdates" are blocking certain behaviours
-            var model = manywho.model.getComponent(this.props.id);
-
-            if (model.objectDataRequest != null) {
-            
-                manywho.ajax.dispatchObjectDataRequest(model.objectDataRequest)
-                    .then(function (response) {
-                        // Populate state here
-                        // TODO: the model.objectData contains the items that should be selected from the async list being loaded - using the objectData.externalId to match them together
-                        // TODO: whatever model.objectData has been provided back and has isSelected=true should be stored in the manywho.state.setComponent until an event overwrites the value(s)
-                        // TODO: this is actually the case for both sync and async calls - if the model.objectData is non-empty and any of the entries .isSelected=true, then that's what's been selected and should be returned to the engine unless this user selects otherwise
-                    });
-
-            }
-            
         },
 
         render: function () {
@@ -101,56 +89,16 @@
             log.info('Rendering Select: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id);
+            var state = manywho.state.getComponent(this.props.id);
+
+            var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
+
             var options = [];
             var isValid = true;
-            var columnTypeElementPropertyId = null;
+            var columnTypeElementPropertyId = getLabelColumnId(model.columns);
 
-            // Find the column that holds the label
-            // TODO: this is exactly what we do for tables and files, we take out all of the display columns and fill them with their value as per the renderOption stuff below
-            // TODO: with "select" there's an implicit assumption that one of the columns is the display column
-            if (model.columns != null && model.columns.length > 0) {
-
-                for (column in model.columns) {
-
-                    if (model.columns[column].isDisplayValue == true) {
-                        columnTypeElementPropertyId = model.columns[column].typeElementPropertyId;
-                        break;
-                    }
-
-                }
-
-            }
-
-            var renderOption = function (item) {
-
-                if (item.properties) {
-
-                    var value, label = null;
-
-                    // TODO: if item.isSelected = true, then we should select the option in the list - basically whenever the option is refreshed or rendered
-
-                    for (prop in item.properties) {
-
-                        // Find the property that matches the display column
-                        // TODO: for a table, we'd put this data under the relevant column found in the previous loop in this method for finding columns
-                        if (item.properties[prop].typeElementPropertyId.toLowerCase() == columnTypeElementPropertyId.toLowerCase()) {
-                            label = item.properties[prop].contentValue;
-                            break;
-                        }
-
-                    }
-
-                    // TODO: we just store the external id as that's all we need to find the actual state.data entry that will be sent back (we always send the full object back)
-                    return React.DOM.option({ value: item.externalId }, label);
-
-                }
-
-                return null;
-
-            }
-
-            if (this.state.data) {
-                options = this.state.data.map(renderOption);
+            if (objectData) {
+                options = objectData.map(renderOption, { column: columnTypeElementPropertyId });
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -167,7 +115,7 @@
                         React.createElement(Chosen, { children: options, onChange: this.handleChange }),
                         React.DOM.span({ className: 'help-block' }, model.message)
             ]);
-                    
+
         }
 
     });

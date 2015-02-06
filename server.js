@@ -43,6 +43,14 @@ io.on('connection', function (socket) {
 
     });
 
+    socket.on('move', function (data) {
+
+        console.log('move: ' + data.state);
+
+        socket.broadcast.to(data.state).emit('move', data);
+
+    });
+
     socket.on('getValues', function (data) {
 
         console.log('get values for: ' + data.id);

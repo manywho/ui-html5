@@ -49,12 +49,12 @@ manywho.collaboration = (function (manywho) {
 
                     log.info('change to: ' + data.id);
 
-                    manywho.state.setComponent(data.id, data.value, null, false);
+                    manywho.state.setComponent(data.id, data.value, data.objectData, false);
                     manywho.engine.render();
 
                 });
 
-                socket.on('sync', function (data) {
+                socket.on('move', function (data) {
 
                     log.info('re-joining');
 
@@ -64,6 +64,14 @@ manywho.collaboration = (function (manywho) {
                         socket.emit('getValues', { state: data.state, id: socket.id, owner: data.owner });
 
                     });
+
+                });
+
+                socket.on('sync', function (data) {
+
+                    log.info('syncing');
+
+                    manywho.engine.sync();
 
                 });
 
@@ -106,11 +114,11 @@ manywho.collaboration = (function (manywho) {
 
         },
 
-        push: function (id, value, stateId) {
+        push: function (id, value, objectData, stateId) {
 
             if (isEnabled && isInitialized) {
 
-                socket.emit('change', { state: stateId, user: '', id: id, value: value });
+                socket.emit('change', { state: stateId, user: '', id: id, value: value, objectData: objectData });
 
             }
 
@@ -121,6 +129,16 @@ manywho.collaboration = (function (manywho) {
             if (isEnabled && isInitialized) {
 
                 socket.emit('sync', { state: stateId, owner: socket.id });
+
+            }
+
+        },
+
+        move: function (stateId) {
+
+            if (isEnabled && isInitialized) {
+
+                socket.emit('move', { state: stateId, owner: socket.id });
 
             }
 

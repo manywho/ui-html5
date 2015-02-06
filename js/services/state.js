@@ -1,5 +1,6 @@
 manywho.state = (function (manywho) {
 
+    var isLoading = {};
     var components = {};
     var state = null;
 
@@ -48,7 +49,7 @@ manywho.state = (function (manywho) {
             components[id].objectData = objectData;
 
             if (push) {
-                manywho.collaboration.push(id, contentValue, state.id);
+                manywho.collaboration.push(id, contentValue, objectData, state.id);
             }
 
         },
@@ -67,11 +68,11 @@ manywho.state = (function (manywho) {
                 pageComponentInputResponseRequests = new Array();
 
                 for (id in components) {
-                    pageComponentInputResponseRequests[pageComponentInputResponseRequests.length] = {
+                    pageComponentInputResponseRequests.push({
                         pageComponentId: id,
                         contentValue: components[id].contentValue,
                         objectData: components[id].objectData
-                    };
+                    });
                 }
             }
 
@@ -93,7 +94,19 @@ manywho.state = (function (manywho) {
 
             return state;
 
-        }        
+        },
+
+        getIsLoading: function (componentId) {
+
+            return isLoading[componentId];
+
+        },
+
+        setIsLoading: function (componentId, isLoading) {
+
+            isLoading[componentId] = isLoading;
+
+        }
         
     }
 
