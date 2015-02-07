@@ -1,25 +1,5 @@
 ﻿(function (manywho) {
 
-    function getLabelColumnId(columns) {
-
-        if (columns) {
-
-            for (column in columns) {
-
-                if (columns[column].isDisplayValue == true) {
-
-                    return columns[column].typeElementPropertyId;
-
-                }
-
-            }
-
-        }
-
-        return null;
-
-    }
-
     function renderOption (item) {
 
         if (item.properties) {
@@ -30,7 +10,6 @@
 
             }, this)[0];
 
-            // TODO: we just store the external id as that's all we need to find the actual state.data entry that will be sent back (we always send the full object back)
             return React.DOM.option({ value: item.externalId, selected: item.isSelected }, label.contentValue);
 
         }
@@ -44,43 +23,10 @@
         handleChange: function(e) {
 
             var model = manywho.model.getComponent(this.props.id);
-            var selectedObjectData = null;
-
-            // TODO: This logic will be the same for tables, selects and file listings - basically anything that uses object data that can be selected
-            // TODO: I've put it in here as I'm not sure where it should go more generically
-            if (e.target.selectedOptions) {
-
-                for (option in e.target.selectedOptions) {
-
-                    if (!manywho.utils.isNullOrWhitespace(e.target.selectedOptions[option].value)) {
-
-                        selectedObjectData = model.objectData.filter(function (item) {
-
-                            return manywho.utils.isEqual(item.externalId, e.target.selectedOptions[option].value, true);
-
-                        })
-                        .map(function (item) {
-                          
-                            item.isSelected = true;
-                            return item;
-
-                        });
-
-                    }
-
-                }
-
-            }
+            var selectedObjectData = manywho.componentUtils.getSelectedOptions(model, e.target.selectedOptions);
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
-
-            if (model.hasEvents) {
-                // TODO: This should only happen if "hasEvents" is true - in fact, all components should implement this if that's true now
-                manywho.engine.sync(true);
-                manywho.collaboration.sync(manywho.state.getState().id);
-            }
-
-            this.forceUpdate();
+            manywho.componentUtils.handleEvent(this, model);
 
         },
 
@@ -88,14 +34,14 @@
 
             log.info('Rendering Select: ' + this.props.id);
 
+            var options = [];
+            var isValid = true;
+
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
 
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
-
-            var options = [];
-            var isValid = true;
-            var columnTypeElementPropertyId = getLabelColumnId(model.columns);
+            var columnTypeElementPropertyId = manywho.componentUtils.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             if (objectData) {
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId });

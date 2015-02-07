@@ -5,7 +5,7 @@
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, e.target.value, null, true);
-            this.forceUpdate();
+            manywho.componentUtils.handleEvent(this, manywho.model.getComponent(this.props.id));
 
         },
 

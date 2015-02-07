@@ -18,30 +18,26 @@ manywho.state = (function (manywho) {
 
             for (id in models) {
 
-                if (models[id].isEditable) {
+                var selectedObjectData = null;
 
-                    var selectedObjectData = null;
+                // We need to do a little work on the object data as we only want the selected values in the state
+                if (models[id].objectData != null &&
+                    models[id].objectData.length > 0) {
+                    for (objectDataEntry in models[id].objectData) {
+                        if (objectDataEntry.isSelected == true) {
 
-                    // We need to do a little work on the object data as we only want the selected values in the state
-                    if (models[id].objectData != null &&
-                        models[id].objectData.length > 0) {
-                        for (objectDataEntry in models[id].objectData) {
-                            if (objectDataEntry.isSelected == true) {
-
-                                if (selectedObjectData == null) {
-                                    selectedObjectData = new Array();
-                                }
-
-                                selectedObjectData[selectedObjectData.length] = objectDataEntry;
+                            if (selectedObjectData == null) {
+                                selectedObjectData = new Array();
                             }
+
+                            selectedObjectData[selectedObjectData.length] = objectDataEntry;
                         }
                     }
+                }
 
-                    components[id] = {
-                        contentValue: models[id].contentValue ? models[id].contentValue : null,
-                        objectData: selectedObjectData ? selectedObjectData : null
-                    }
-
+                components[id] = {
+                    contentValue: models[id].contentValue ? models[id].contentValue : null,
+                    objectData: selectedObjectData ? selectedObjectData : null
                 }
 
             }
