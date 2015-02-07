@@ -51,10 +51,10 @@
         handleChange: function(e) {
 
             var model = manywho.model.getComponent(this.props.id);
-            var selectedObjectData = manywho.componentUtils.getSelectedOptions(model, e.target.selectedOptions);
+            var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
-            manywho.componentUtils.handleEvent(this, model);
+            manywho.component.handleEvent(this, model);
 
         },
 
@@ -68,7 +68,7 @@
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
 
-            var displayColumns = manywho.componentUtils.getDisplayColumns(model.columns);
+            var displayColumns = manywho.component.getDisplayColumns(model.columns);
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
 
             if (displayColumns) {

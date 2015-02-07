@@ -23,10 +23,10 @@
         handleChange: function(e) {
 
             var model = manywho.model.getComponent(this.props.id);
-            var selectedObjectData = manywho.componentUtils.getSelectedOptions(model, e.target.selectedOptions);
+            var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
-            manywho.componentUtils.handleEvent(this, model);
+            manywho.component.handleEvent(this, model);
 
         },
 
@@ -39,9 +39,10 @@
 
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
+            var isLoading = manywho.state.getIsLoading(this.props.id);
 
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
-            var columnTypeElementPropertyId = manywho.componentUtils.getDisplayColumns(model.columns)[0].typeElementPropertyId;
+            var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             if (objectData) {
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId });
