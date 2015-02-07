@@ -138,13 +138,19 @@ manywho.engine = (function (manywho) {
 
                     });
 
-                    return $.when.apply($, components.map(function(component) {
+                    var requests = $.when.apply($, components.map(function(component) {
 
                         componentIds.push(component.pageComponentId);
+                        manywho.state.setIsLoading(component.pageComponentId, true);
+
                         return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest)
 
                     // concat null here so that the reponse array is formatted as [response, repsonse, ...]
                     }).concat(null));
+
+                    self.render();
+
+                    return requests;
 
                 })
                 .then(function () {
@@ -153,6 +159,7 @@ manywho.engine = (function (manywho) {
                     
                     for (var i = 0; i < componentIds.length; i++)
                     {
+                        manywho.state.setIsLoading(componentIds[i], false);
                         manywho.model.getComponent(componentIds[i]).objectData = responses[i][0].objectData;
                     }
                     

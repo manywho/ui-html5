@@ -1,6 +1,6 @@
 manywho.state = (function (manywho) {
 
-    var isLoading = {};
+    var loading = {};
     var components = {};
     var state = null;
 
@@ -21,23 +21,19 @@ manywho.state = (function (manywho) {
                 var selectedObjectData = null;
 
                 // We need to do a little work on the object data as we only want the selected values in the state
-                if (models[id].objectData != null &&
-                    models[id].objectData.length > 0) {
-                    for (objectDataEntry in models[id].objectData) {
-                        if (objectDataEntry.isSelected == true) {
+                if (models[id].objectData) {
 
-                            if (selectedObjectData == null) {
-                                selectedObjectData = new Array();
-                            }
+                    selectedObjectData = models[id].objectData.filter(function (item) {
 
-                            selectedObjectData[selectedObjectData.length] = objectDataEntry;
-                        }
-                    }
+                        return item.isSelected;
+
+                    });
+
                 }
 
                 components[id] = {
-                    contentValue: models[id].contentValue ? models[id].contentValue : null,
-                    objectData: selectedObjectData ? selectedObjectData : null
+                    contentValue: models[id].contentValue || null,
+                    objectData: selectedObjectData || null
                 }
 
             }
@@ -78,15 +74,19 @@ manywho.state = (function (manywho) {
             var pageComponentInputResponseRequests = null;
 
             if (components != null) {
+
                 pageComponentInputResponseRequests = new Array();
 
                 for (id in components) {
+
                     pageComponentInputResponseRequests.push({
                         pageComponentId: id,
                         contentValue: components[id].contentValue,
                         objectData: components[id].objectData
                     });
+
                 }
+
             }
 
             return pageComponentInputResponseRequests;
@@ -111,13 +111,13 @@ manywho.state = (function (manywho) {
 
         getIsLoading: function (componentId) {
 
-            return isLoading[componentId];
+            return loading[componentId];
 
         },
 
         setIsLoading: function (componentId, isLoading) {
 
-            isLoading[componentId] = isLoading;
+            loading[componentId] = isLoading;
 
         }
         

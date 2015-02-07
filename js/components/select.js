@@ -52,17 +52,25 @@
                 isValid = false;
             }
 
-            var containerClasseNames = [
+            var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ].join(' ');
 
-            return React.DOM.div({ className: 'form-group ' + containerClasseNames }, [
+            var iconClassNames = [
+                'glyphicon glyphicon-refresh loading',
+                (isLoading) ? '' : 'hidden'
+            ].join(' ');
+
+            return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
                         React.DOM.label({ 'for': this.props.id }, model.label),
-                        React.createElement(Chosen, { children: options, onChange: this.handleChange }),
+                        React.DOM.div({ className: 'input-wrapper' }, [
+                            React.createElement(Chosen, { children: options, onChange: this.handleChange, containerClasses: 'select', }),
+                            React.DOM.span({ className: iconClassNames }, null)
+                        ]),
                         React.DOM.span({ className: 'help-block' }, model.message)
             ]);
-
+            
         }
 
     });
