@@ -1,27 +1,54 @@
 manywho.engine = (function (manywho) {
 
-    // Stolen from: http://www.joezimjs.com/javascript/3-ways-to-parse-a-query-string-in-a-url/
-    function parseQueryString(queryString) {
-        var params = {}, queries, temp, i, l;
+    function handleAuthorization(response) {
 
-        // Split into key/value pairs
-        queries = queryString.split("&");
+        // Check to see if the user has successfully authenticated
+        if (manywho.utils.isEqual(response.statusCode, '401', true)) {
 
-        // Convert the array of strings into an object
-        for (i = 0, l = queries.length; i < l; i++) {
-            temp = queries[i].split('=');
-            params[temp[0]] = temp[1];
+            if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
+                // Navigate the user to the oauth provider
+                window.location = response.authorizationContext.loginUrl;
+                return false;
+            }
+
+            // TODO: throw up the login dialog to login to the directory
+            alert('login!');
+
+            // TODO: login to the flow like this to get the authentication token
+            this.login(
+                response,
+                'my username',
+                'my password',
+                manywho.settings.get('authentication.sessionid'),
+                manywho.settings.get('authentication.sessionurl')
+            );
+
+            // TODO: set the authentication token
+            manywho.state.setAuthenticationToken('the token');
+
+            // TODO: restart whatever async sequence was tried before
+
+            return false;
         }
 
-        return params;
-    };
+        return true;
+
+    }
 
     function update(response, responseParser) {
 
-        responseParser.call(manywho.model, response);
-        manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
-        manywho.state.refreshComponents(manywho.model.getComponents());
+        if (handleAuthorization(response)) {
 
+            responseParser.call(manywho.model, response);
+
+            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
+            manywho.state.refreshComponents(manywho.model.getComponents());
+
+            if (manywho.settings.get('replaceUrl')) {
+                manywho.utils.replaceBrowserUrl(response);
+            }
+
+        }
     }
 
     function process(dispatcher) {
@@ -30,20 +57,25 @@ manywho.engine = (function (manywho) {
 
         return dispatcher.then(function (response) {
 
-            manywho.state.initialize(response.stateId, response.stateToken, response.currentMapElementId);
-            manywho.collaboration.initialize(true);
+            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
 
-            var defereds = [response];
+            if (handleAuthorization(response)) {
 
-            if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+                manywho.collaboration.initialize(true);
+
+                var defereds = [response];
+
+                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+                    defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+                }
+
+                if (response.currentStreamId) {
+                    // Add create social stream ajax call to deffereds here
+                }
+
+                return $.when.apply($, defereds);
+
             }
-
-            if (response.currentStreamId) {
-                // Add create social stream ajax call to deffereds here
-            }
-
-            return $.when.apply($, defereds);
 
         })
         .then(function (response, navigation, stream) {
@@ -65,29 +97,25 @@ manywho.engine = (function (manywho) {
 
         initialize: function() {
 
-            var queryParameters = parseQueryString(window.location.search.substring(1));
+            manywho.model.setTenantId(manywho.settings.get('tenantId'));
 
-            manywho.model.setTenantId('870bc2ae-2e02-42c0-abc3-46ab584522c7');
+            manywho.state.initialize(manywho.settings.get('stateId'));
+            manywho.state.setAuthenticationToken(manywho.settings.get('authentication.token'));
 
-            var flowId = {
-                'id': 'b7e2a056-35dd-4973-b279-c85aeafb299c',
-                'versionId': '8cae4f4e-39d1-4751-8eba-2935e27434ba'
-            };
+            var flowId = manywho.settings.get('flowId');
 
-            var stateId = queryParameters['join'];
-            
-            if (stateId) {
+            if (manywho.state.getState().id) {
 
-                process.call(this, manywho.ajax.join(stateId)).then(function () {
+                process.call(this, manywho.ajax.join(manywho.state.getState().id)).then(function () {
 
-                    manywho.collaboration.getValues(stateId);
+                    manywho.collaboration.getValues(manywho.state.getState().id);
 
                 });
                 
             }
             else {
 
-                var initializationRequest = manywho.json.generateInitializationRequest(flowId);
+                var initializationRequest = manywho.json.generateInitializationRequest(flowId, manywho.state.getState().id);
                 process.call(this, manywho.ajax.initialize(initializationRequest));
 
             }
@@ -145,7 +173,7 @@ manywho.engine = (function (manywho) {
 
                         return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest)
 
-                    // concat null here so that the reponse array is formatted as [response, repsonse, ...]
+                    // concat null here so that the response array is formatted as [response, response, ...]
                     }).concat(null));
 
                     self.render();

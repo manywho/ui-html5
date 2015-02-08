@@ -2,16 +2,18 @@ manywho.json = (function (manywho) {
 
     return {
 
-        generateInitializationRequest: function(flowId, annotations, inputs, mode) {
+        generateInitializationRequest: function(flowId, stateId, annotations, inputs, mode, reportingMode) {
 
             return {
                 'flowId': {
                     'id': flowId.id,
-                    'versionId': flowId.versionId
+                    'versionId': flowId.versionid
                 },
+                'stateId': stateId || null,
                 'annotations': annotations || null,
                 'inputs': inputs || null,
-                'mode': mode || null
+                'mode': mode || null,
+                'reportingMode': reportingMode || null
             }
         },
 

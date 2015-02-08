@@ -3,12 +3,13 @@ manywho.state = (function (manywho) {
     var loading = {};
     var components = {};
     var state = null;
+    var authenticationToken = null;
 
     return {
         
-        initialize: function(id, token, mapElementId) {
+        initialize: function(id) {
 
-            this.setState(id, token, mapElementId);
+            this.setState(id);
 
         },
 
@@ -106,6 +107,18 @@ manywho.state = (function (manywho) {
         getState: function() {
 
             return state;
+
+        },
+
+        setAuthenticationToken: function(token) {
+
+            authenticationToken = token;
+
+        },
+
+        getAuthenticationToken: function() {
+
+            return authenticationToken;
 
         },
 

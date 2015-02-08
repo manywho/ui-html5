@@ -19,7 +19,7 @@ manywho.engine = (function (manywho) {
             };
 
             var self = this;
-            var initializationRequest = manywho.json.generateInitializationRequest(flowId);
+            var initializationRequest = manywho.json.generateInitializationRequest(flowId, manywho.state.getState().id);
 
             manywho.ajax.initialize(initializationRequest)
                 .then(function (response) {

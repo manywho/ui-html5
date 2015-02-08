@@ -39,7 +39,23 @@ manywho.settings = (function (manywho, $) {
                 sync: {},
                 navigation: {},
                 join: {},
-                objectData: {}
+                login: {},
+                objectData: {},
+                flowId: {
+                    id: null,
+                    versionId: null
+                },
+                stateId: null,
+                navigationElementId: null,
+                authentication: {
+                    sessionId: null,
+                    sessionUrl: null,
+                    token: null
+                },
+                mode: null,
+                reportingMode: null,
+                trackLocation: false,
+                replaceUrl: false
             }
 
             // Replace this with a call to /js/constants

@@ -8,6 +8,46 @@ manywho.ajax = (function (manywho) {
 
     return {
 
+        login: function (response, username, password, sessionId, sessionUrl) {
+
+            log.info('Logging into Flow State: \n    Id: ' + response.stateId);
+
+            var authenticationCredentials = {
+                username: null,
+                password: null,
+                token: null,
+                sessionToken: sessionId,
+                sessionUrl: sessionUrl,
+                loginUrl: response.authorizationContext.loginUrl
+            };
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/authentication/' + response.stateId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(authenticationCredentials),
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
+
+                    if (manywho.settings.get('login.beforeSend')) {
+                        manywho.settings.get('login.beforeSend').call(this, xhr);
+                    }
+
+                }
+            })
+            .done(manywho.settings.get('login.done'))
+            .fail(onError)
+            .fail(manywho.settings.get('login.fail'));
+
+        },
+
         initialize: function (engineInitializationRequest) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
@@ -22,6 +62,10 @@ manywho.ajax = (function (manywho) {
                 beforeSend: function (xhr) {
 
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
 
                     if (manywho.settings.get('initialization.beforeSend')) {
                         manywho.settings.get('initialization.beforeSend').call(this, xhr);
@@ -48,6 +92,10 @@ manywho.ajax = (function (manywho) {
 
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
 
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
+
                     if (manywho.settings.get('join.beforeSend')) {
                         manywho.settings.get('join.beforeSend').call(this, xhr);
                     }
@@ -73,6 +121,10 @@ manywho.ajax = (function (manywho) {
 
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
 
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
+
                     if (manywho.settings.get('invoke.beforeSend')) {
                         manywho.settings.get('invoke.beforeSend').call(this, xhr);
                     }
@@ -97,6 +149,10 @@ manywho.ajax = (function (manywho) {
                 beforeSend: function (xhr) {
 
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
 
                     if (manywho.settings.get('navigation.beforeSend')) {
                         manywho.settings.get('navigation.beforeSend').call(this, xhr);
@@ -143,6 +199,10 @@ manywho.ajax = (function (manywho) {
                 beforeSend: function (xhr) {
 
                     xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
 
                     if (manywho.settings.get('objectData.beforeSend')) {
                         manywho.settings.get('objectData.beforeSend').call(this, xhr);
