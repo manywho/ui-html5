@@ -32,15 +32,6 @@ manywho.settings = (function (manywho, $) {
         initialize: function(custom) {
 
             defaults = {
-                themesUri: '/css/themes',
-                collaborationUri: 'http://localhost:4444',
-                initialization: {},
-                invoke: {},
-                sync: {},
-                navigation: {},
-                join: {},
-                login: {},
-                objectData: {},
                 flowId: {
                     id: null,
                     versionId: null
@@ -56,9 +47,24 @@ manywho.settings = (function (manywho, $) {
                 reportingMode: null,
                 trackLocation: false,
                 replaceUrl: false,
-                realtimeCollaboration: true,
                 inputs: null,
-                annotations: null
+                annotations: null,
+                collaboration: {
+                    isEnabled: true,
+                    uri: 'http://localhost:4444'
+                },
+                themeing: {
+                    uri: '/css/themes'
+                },
+                events: {
+                    initialization: {},
+                    invoke: {},
+                    sync: {},
+                    navigation: {},
+                    join: {},
+                    login: {},
+                    objectData: {}
+                }
             }
 
             // Replace this with a call to /js/constants

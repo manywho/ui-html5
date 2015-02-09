@@ -16,11 +16,12 @@ manywho.engine = (function (manywho) {
 
             // TODO: login to the flow like this to get the authentication token
             this.login(
-                response,
+                response.authorizationContext.loginUrl,
                 'my username',
                 'my password',
                 manywho.settings.get('authentication.sessionid'),
-                manywho.settings.get('authentication.sessionurl')
+                manywho.settings.get('authentication.sessionurl'),
+                response.stateId
             );
 
             // TODO: set the authentication token
@@ -61,7 +62,7 @@ manywho.engine = (function (manywho) {
 
             if (handleAuthorization(response)) {
 
-                manywho.collaboration.initialize(manywho.settings.get('realtimecollaboration'));
+                manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
 
                 var defereds = [response];
 
@@ -131,6 +132,7 @@ manywho.engine = (function (manywho) {
                     manywho.settings.get('mode'),
                     manywho.settings.get('reportingMode')
                 );
+
                 process.call(this, manywho.ajax.initialize(initializationRequest));
 
             }

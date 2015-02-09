@@ -17,6 +17,7 @@ manywho.utils = (function (manywho, $) {
             }
 
             return float;
+
         },
 
         replaceBrowserUrl: function(response) {

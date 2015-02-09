@@ -8,9 +8,9 @@ manywho.ajax = (function (manywho) {
 
     return {
 
-        login: function (response, username, password, sessionId, sessionUrl) {
+        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId) {
 
-            log.info('Logging into Flow State: \n    Id: ' + response.stateId);
+            log.info('Logging into Flow State: \n    Id: ' + stateId);
 
             var authenticationCredentials = {
                 username: null,
@@ -18,11 +18,11 @@ manywho.ajax = (function (manywho) {
                 token: null,
                 sessionToken: sessionId,
                 sessionUrl: sessionUrl,
-                loginUrl: response.authorizationContext.loginUrl
+                loginUrl: loginUrl
             };
 
             return $.ajax({
-                url: 'https://flow.manywho.com/api/run/1/authentication/' + response.stateId,
+                url: 'https://flow.manywho.com/api/run/1/authentication/' + stateId,
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -36,15 +36,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('login.beforeSend')) {
-                        manywho.settings.get('login.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.login.beforeSend')) {
+                        manywho.settings.get('events.login.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('login.done'))
+            .done(manywho.settings.get('events.login.done'))
             .fail(onError)
-            .fail(manywho.settings.get('login.fail'));
+            .fail(manywho.settings.get('events.login.fail'));
 
         },
 
@@ -67,15 +67,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('initialization.beforeSend')) {
-                        manywho.settings.get('initialization.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.initialization.beforeSend')) {
+                        manywho.settings.get('events.initialization.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('initialization.done'))
+            .done(manywho.settings.get('events.initialization.done'))
             .fail(onError)
-            .fail(manywho.settings.get('initialization.fail'));
+            .fail(manywho.settings.get('events.initialization.fail'));
 
         },
 
@@ -96,15 +96,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('join.beforeSend')) {
-                        manywho.settings.get('join.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.join.beforeSend')) {
+                        manywho.settings.get('events.join.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('join.done'))
+            .done(manywho.settings.get('events.join.done'))
             .fail(onError)
-            .fail(manywho.settings.get('join.fail'));
+            .fail(manywho.settings.get('events.join.fail'));
 
         },
         
@@ -125,15 +125,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('invoke.beforeSend')) {
-                        manywho.settings.get('invoke.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.invoke.beforeSend')) {
+                        manywho.settings.get('events.invoke.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('invoke.done'))
+            .done(manywho.settings.get('events.invoke.done'))
             .fail(onError)
-            .fail(manywho.settings.get('invoke.fail'));
+            .fail(manywho.settings.get('events.invoke.fail'));
 
         },
 
@@ -154,15 +154,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('navigation.beforeSend')) {
-                        manywho.settings.get('navigation.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.navigation.beforeSend')) {
+                        manywho.settings.get('events.navigation.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('navigation.done'))
+            .done(manywho.settings.get('events.navigation.done'))
             .fail(onError)
-            .fail(manywho.settings.get('navigation.fail'));
+            .fail(manywho.settings.get('events.navigation.fail'));
 
         },
 
@@ -204,15 +204,15 @@ manywho.ajax = (function (manywho) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
                     }
 
-                    if (manywho.settings.get('objectData.beforeSend')) {
-                        manywho.settings.get('objectData.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.objectData.beforeSend')) {
+                        manywho.settings.get('events.objectData.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-            .done(manywho.settings.get('objectData.done'))
+            .done(manywho.settings.get('events.objectData.done'))
             .fail(onError)
-            .fail(manywho.settings.get('objectData.fail'));
+            .fail(manywho.settings.get('events.objectData.fail'));
 
         }
 

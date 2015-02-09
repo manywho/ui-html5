@@ -11,7 +11,7 @@ manywho.themeing = (function (manywho, $) {
                 log.info("Switching theme to: " + name);
                 // Show loading indicator here
 
-                var url = manywho.settings.get('themesUri') + '/mw-' + name + '.css';
+                var url = manywho.settings.get('themeing.uri') + '/mw-' + name + '.css';
                 var link = document.getElementById('theme');
                 var img = document.createElement('img');
 

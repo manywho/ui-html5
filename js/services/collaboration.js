@@ -17,7 +17,7 @@ manywho.collaboration = (function (manywho) {
 
                 var self = this;
 
-                socket = io.connect(manywho.settings.get('collaborationUri'));
+                socket = io.connect(manywho.settings.get('collaboration.uri'));
 
                 socket.on('connect', function () {
                     
