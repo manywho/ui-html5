@@ -2,6 +2,23 @@ manywho.utils = (function (manywho, $) {
   
     return {
 
+        getNumber: function(number) {
+
+            var float = 0;
+
+            if (number != null) {
+
+                float = parseFloat(number);
+
+                if (isNaN(float) || !isFinite(number)) {
+                    float = 0;
+                }
+
+            }
+
+            return float;
+        },
+
         replaceBrowserUrl: function(response) {
 
             // Check to make sure the browser supports the switch of the url

@@ -81,7 +81,15 @@ manywho.engine = (function (manywho) {
         .then(function (response, navigation, stream) {
 
             manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-            return manywho.ajax.invoke(manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD'));
+            return manywho.ajax.invoke(manywho.json.generateInvokeRequest(
+                manywho.state.getState(),
+                'FORWARD',
+                null,
+                null,
+                manywho.settings.get('annotations'),
+                manywho.state.getGeoLocation(),
+                manywho.settings.get('mode'))
+            );
 
         })
         .then(function (response) {
@@ -115,7 +123,14 @@ manywho.engine = (function (manywho) {
             }
             else {
 
-                var initializationRequest = manywho.json.generateInitializationRequest(flowId, manywho.state.getState().id);
+                var initializationRequest = manywho.json.generateInitializationRequest(
+                    flowId,
+                    manywho.state.getState().id,
+                    manywho.settings.get('annotations'),
+                    manywho.settings.get('inputs'),
+                    manywho.settings.get('mode'),
+                    manywho.settings.get('reportingMode')
+                );
                 process.call(this, manywho.ajax.initialize(initializationRequest));
 
             }
@@ -129,7 +144,15 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'FORWARD', outcome.id, manywho.state.getPageComponentInputResponseRequests());
+            var invokeRequest = manywho.json.generateInvokeRequest(
+                manywho.state.getState(),
+                'FORWARD',
+                outcome.id,
+                manywho.state.getPageComponentInputResponseRequests(),
+                manywho.settings.get('annotations'),
+                manywho.state.getGeoLocation(),
+                manywho.settings.get('mode')
+            );
             var self = this;
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {
@@ -151,7 +174,15 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            var invokeRequest = manywho.json.generateInvokeRequest(manywho.state.getState(), 'SYNC', null, manywho.state.getPageComponentInputResponseRequests());
+            var invokeRequest = manywho.json.generateInvokeRequest(
+                manywho.state.getState(),
+                'SYNC',
+                null,
+                manywho.state.getPageComponentInputResponseRequests(),
+                manywho.settings.get('annotations'),
+                manywho.state.getGeoLocation(),
+                manywho.settings.get('mode')
+            );
             var self = this;
             var componentIds = [];
 

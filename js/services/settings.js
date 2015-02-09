@@ -55,7 +55,9 @@ manywho.settings = (function (manywho, $) {
                 mode: null,
                 reportingMode: null,
                 trackLocation: false,
-                replaceUrl: false
+                replaceUrl: false,
+                inputs: null,
+                annotations: null
             }
 
             // Replace this with a call to /js/constants

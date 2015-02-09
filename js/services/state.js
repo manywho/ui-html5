@@ -4,12 +4,49 @@ manywho.state = (function (manywho) {
     var components = {};
     var state = null;
     var authenticationToken = null;
+    var geoLocation = null;
+
+    function assignGeoLocation(position) {
+
+        if (position != null &&
+            position.coords != null) {
+
+            geoLocation = {
+                latitude: manywho.utils.getNumber(position.coords.latitude),
+                longitude: manywho.utils.getNumber(position.coords.longitude),
+                accuracy: manywho.utils.getNumber(position.coords.accuracy),
+                altitude: manywho.utils.getNumber(position.coords.altitude),
+                altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
+                heading: manywho.utils.getNumber(position.coords.heading),
+                speed: manywho.utils.getNumber(position.coords.speed)
+            }
+
+        }
+    }
+
+    function trackUserPosition() {
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                assignGeoLocation(domId, position);
+            },
+            null,
+            {
+                timeout: 60000
+            }
+        );
+
+    }
 
     return {
         
         initialize: function(id) {
 
             this.setState(id);
+
+            if (manywho.settings.get('trackLocation')) {
+                trackUserPosition();
+            }
 
         },
 
@@ -39,6 +76,12 @@ manywho.state = (function (manywho) {
 
             }
             
+        },
+
+        getGeoLocation: function() {
+
+            return geoLocation;
+
         },
 
         getComponent: function(id) {
