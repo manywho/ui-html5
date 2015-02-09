@@ -100,6 +100,54 @@ manywho.utils = (function (manywho, $) {
 
             return items;
 
+        },
+
+        contains: function (collection, id, key) {
+
+            var selectedItem = collection.filter(function (item) {
+
+                return item[key] == id;
+
+            });
+
+            return (selectedItem && selectedItem.length > 0);
+
+        },
+
+        get: function (collection, id, key) {
+
+            var selectedItem = collection.filter(function (item) {
+
+                return item[key] == id;
+
+            });
+
+            if (selectedItem && selectedItem.length > 0) {
+
+                return selectedItem[0];
+
+            }
+
+            return null;
+
+        },
+
+        getAll: function (map, id, key) {
+
+            var items = [];
+
+            for (var name in map) {
+
+                if (map[name][key] == id) {
+
+                    items.push(map[name]);
+
+                }
+
+            }
+
+            return items;
+
         }
 
     }

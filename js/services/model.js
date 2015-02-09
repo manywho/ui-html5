@@ -6,86 +6,81 @@
     var navigation = {};
     var tenantId = '';
 
-    function contains(collection, id, key) {
-        var selectedItem = collection.filter(function (item) {
-            return item[key] == id;
-        });
-        return (selectedItem && selectedItem.length > 0);
-    }
-
-    function get(collection, id, key) {
-        var selectedItem = collection.filter(function (item) {
-            return item[key] == id;
-        });
-        if (selectedItem && selectedItem.length > 0) {
-            return selectedItem[0];
-        }
-        return null;
-    }
-
-    function getAll(map, id, key) {
-        var items = [];
-        for (var name in map) {
-            if (map[name][key] == id) {
-                items.push(map[name]);
-            }
-        }
-        return items;
-    }
-
     function updateData(collection, item, key) {
 
         log.info("Updating item: " + item.id);
 
-        var data = get(collection, item.id, key);
+        var data = manywho.utils.get(collection, item.id, key);
+
         if (data != null) {
+
             return $.extend({}, item, data);
+
         }
+
         return item;
 
     }
 
     function flattenContainers(containers, parent, result) {
+
         if (containers != null) {
+
             for (var index = 0; index < containers.length; index++) {
+
                 var item = containers[index];
+
                 if (parent) {
+
                     item.parent = parent.id;
+
                     if (!parent.childCount) {
+
                         parent.childCount = 0;
+
                     }
+
                     parent.childCount++;
                 }
+
                 result.push(item);
                 flattenContainers(item.pageContainerResponses, item, result);
+
             }
         }
+
         return result;
+
     }
 
-    function getNavigationItems(navigationItemResponses) {
+    function getNavigationItems(itemsResponse, dataResponse) {
 
         var navigationItems = {};
 
-        navigationItemResponses.forEach(function (response) {
+        if (itemsResponse) {
 
-            navigationItems[response.id] = $.extend({}, response);
-            
-            if (response.navigationItems != null)
-            {
-                navigationItems[response.id].items = getNavigationItems(response.navigationItems);
-            }
+            itemsResponse.forEach(function (item) {
 
-        }, this);
+                var data = dataResponse.filter(function (dataResponseItem) {
+
+                    return manywho.utils.isEqual(dataResponseItem.navigationItemId, item.id, true);
+
+                })[0];
+
+                navigationItems[item.id] = $.extend({}, item, data);
+
+                if (item.navigationItems != null) {
+                    navigationItems[item.id].items = getNavigationItems(item.navigationItems);
+                }
+
+            }, this);
+
+        }
 
         return navigationItems;
 
     }
-
-    function updateNavigationItems(navgiation, navigationItemResponses) {
-
-    }
-
+    
     manywho.model = {
 
         componentInputResponseRequests: {},
@@ -101,7 +96,7 @@
 
                 containers[item.id] = item;
 
-                if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
                     containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
                 }
 
@@ -111,14 +106,16 @@
 
                 components[item.id] = item;
 
-                if (contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
                     components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
                 
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+
                 outcomes[item.id.toLowerCase()] = item;
+
             }, this);
 
         },
@@ -139,53 +136,86 @@
 
         },
 
-        parseNavigationResponse: function (navigationElementId, engineNavigationResponse) {
+        parseNavigationResponse: function (id, response) {
 
             navigation = {};
-            navigation[navigationElementId] = engineNavigationResponse;
 
+            navigation[id] = {
+                culture: response.culture,
+                developerName: response.developerName,
+                label: response.label,
+                tags: response.tags
+            }
+
+            navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+            
         },
 
         getChildren: function (containerId) {
 
             if (containerId == 'root') {
-                return getAll(containers, null, 'parent');
+
+                return manywho.utils.getAll(containers, null, 'parent');
+
             }
 
             var children = [];
             var container = containers[containerId];
 
             if (container != null) {
-                children = children.concat(getAll(containers, containerId, 'parent'));
-                children = children.concat(getAll(components, containerId, 'pageContainerId'));
+
+                children = children.concat(manywho.utils.getAll(containers, containerId, 'parent'));
+                children = children.concat(manywho.utils.getAll(components, containerId, 'pageContainerId'));
+
             }
 
             children.sort(function (a, b) {
+
                 return a.order - b.order;
+
             });
 
             return children;
 
         },
 
-        getContainer: function(containerId) {
+        getContainer: function (containerId) {
+
             return containers[containerId];
+
         },
 
         getComponent: function (componentId) {
+
             return components[componentId];
+
         },
 
-        getComponents: function() {
+        getComponents: function () {
+
             return components;
+
         },
 
         getOutcome: function (outcomeId) {
+
             return outcomes[outcomeId.toLowerCase()];
+
         },
 
-        getNavigation: function(navigationId) {
-            return navigation[navigationId];
+        getNavigation: function (navigationId) {
+
+            if (navigationId) {
+
+                return navigation[navigationId];
+
+            }
+            else {
+
+                return navigation[Object.keys(navigation)[0]];
+
+            }            
+
         },
 
         getItem: function(id) {
@@ -224,7 +254,9 @@
                 // we find all outcomes that are unbound
                 if ((item.pageObjectBindingId != null && item.pageObjectBindingId.toLowerCase() == pageObjectId.toLowerCase())
                     || (item.pageObjectBindingId == null || item.pageObjectBindingId.trim().length == 0)) {
+
                     pageObjectOutcomes.push(item);
+
                 }
             }
 
@@ -240,11 +272,15 @@
         },
 
         getTenantId: function () {
+
             return this.tenantId;
+
         },
 
         setTenantId: function (tenantId) {
+
             this.tenantId = tenantId;
+
         }
 
     }

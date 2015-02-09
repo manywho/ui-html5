@@ -12,9 +12,9 @@
         render: function () {
             
             log.info("Rendering Main");
-
+            
             return React.DOM.div({ className: 'mw-bs' }, [
-                        React.createElement(manywho.component.getByName('navigation'), null),
+                        React.createElement(manywho.component.getByName('navigation'), { id: null }),
                         React.DOM.div({ className: 'container' }, [
                             manywho.component.getChildComponents(this.state.children, this.props.id),
                             manywho.component.getOutcomes(this.state.outcomes, this.props.id)
