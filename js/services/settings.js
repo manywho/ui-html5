@@ -56,6 +56,7 @@ manywho.settings = (function (manywho, $) {
                 reportingMode: null,
                 trackLocation: false,
                 replaceUrl: false,
+                realtimeCollaboration: true,
                 inputs: null,
                 annotations: null
             }

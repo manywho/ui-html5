@@ -61,7 +61,7 @@ manywho.engine = (function (manywho) {
 
             if (handleAuthorization(response)) {
 
-                manywho.collaboration.initialize(true);
+                manywho.collaboration.initialize(manywho.settings.get('realtimecollaboration'));
 
                 var defereds = [response];
 
