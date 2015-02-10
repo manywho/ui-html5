@@ -20,6 +20,12 @@ manywho.styling = (function (manywho) {
 
             classes.push("mw-" + type.toLowerCase());
 
+            if (manywho.model.isContainer(item)) {
+
+                classes.push('clearfix');
+
+            }
+
             return classes.join(' ');
 
         },

@@ -281,6 +281,12 @@
 
             this.tenantId = tenantId;
 
+        },
+
+        isContainer: function (item) {
+
+            return !manywho.utils.isNullOrWhitespace(item.containerType);
+
         }
 
     }

@@ -49,7 +49,7 @@ manywho.collaboration = (function (manywho) {
 
                     log.info('change to: ' + data.id);
 
-                    manywho.state.setComponent(data.id, data.value, data.objectData, false);
+                    manywho.state.setComponent(data.id, data.values, false);
                     manywho.engine.render();
 
                 });
@@ -114,11 +114,11 @@ manywho.collaboration = (function (manywho) {
 
         },
 
-        push: function (id, value, objectData, stateId) {
+        push: function (id, values, stateId) {
 
             if (isEnabled && isInitialized) {
 
-                socket.emit('change', { state: stateId, user: '', id: id, value: value, objectData: objectData });
+                socket.emit('change', { state: stateId, user: '', id: id, values: values });
 
             }
 

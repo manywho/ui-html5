@@ -102,6 +102,22 @@ manywho.engine = (function (manywho) {
         
     }
 
+    function processObjectDataRequests(components) {
+
+        var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
+
+            return component.objectDataRequest != null;
+
+        });
+
+        return $.when.apply($, requestComponents.map(function (component) {
+
+            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest)
+
+        }));
+
+    }
+
     return {
 
         initialize: function() {
@@ -115,11 +131,7 @@ manywho.engine = (function (manywho) {
 
             if (manywho.state.getState().id) {
 
-                process.call(this, manywho.ajax.join(manywho.state.getState().id)).then(function () {
-
-                    manywho.collaboration.getValues(manywho.state.getState().id);
-
-                });
+                this.join(manywho.state.getState().id);
                 
             }
             else {
@@ -188,44 +200,12 @@ manywho.engine = (function (manywho) {
             var self = this;
             var componentIds = [];
 
-            manywho.ajax.invoke(invokeRequest)
+            return manywho.ajax.invoke(invokeRequest)
                 .then(function (response) {
-                    
+
                     update(response, manywho.model.parseEngineSyncResponse);
-                    
-                    var components = manywho.utils.convertToArray(manywho.model.getComponents()).filter(function(component) {
+                    return processObjectDataRequests(manywho.model.getComponents());
 
-                        return component.objectDataRequest != null;
-
-                    });
-
-                    var requests = $.when.apply($, components.map(function(component) {
-
-                        componentIds.push(component.pageComponentId);
-                        manywho.state.setIsLoading(component.pageComponentId, true);
-
-                        return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest)
-
-                    // concat null here so that the response array is formatted as [response, response, ...]
-                    }).concat(null));
-
-                    self.render();
-
-                    return requests;
-
-                })
-                .then(function () {
-                    
-                    var responses = Array.prototype.slice.call(arguments);
-                    
-                    for (var i = 0; i < componentIds.length; i++)
-                    {
-                        manywho.state.setIsLoading(componentIds[i], false);
-                        manywho.model.getComponent(componentIds[i]).objectData = responses[i][0].objectData;
-                    }
-                    
-                    self.render();
-                    
                 });
 
         },
@@ -233,8 +213,34 @@ manywho.engine = (function (manywho) {
         join: function(stateId) {
 
             var dispatcher = manywho.ajax.join(stateId);
+
             React.unmountComponentAtNode(document.getElementById('manywho'));
-            return process.call(this, dispatcher);
+
+            return process.call(this, dispatcher)
+                .then(function () {
+
+                    return processObjectDataRequests(manywho.model.getComponents());
+
+                })
+
+        },
+
+        objectDataRequest: function(id, request, limit, search, orderBy, orderByDirection, page) {
+
+            var self = this;
+
+            manywho.state.setIsLoading(id, true);
+            self.render();
+
+            return manywho.ajax.dispatchObjectDataRequest(request, limit, search, orderBy, orderByDirection, page)
+                .then(function (response) {
+                    
+                    manywho.state.setIsLoading(id, false);
+                    manywho.model.getComponent(id).objectData = response.objectData;
+
+                    self.render();
+
+                });
 
         },
 

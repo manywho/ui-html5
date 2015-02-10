@@ -96,13 +96,12 @@ manywho.state = (function (manywho) {
 
         },
 
-        setComponent: function(id, contentValue, objectData, push) {
+        setComponent: function(id, values, push) {
 
-            components[id].contentValue = contentValue;
-            components[id].objectData = objectData;
+            components[id] = $.extend(components[id], values)
 
             if (push) {
-                manywho.collaboration.push(id, contentValue, objectData, state.id);
+                manywho.collaboration.push(id, values, state.id);
             }
 
         },

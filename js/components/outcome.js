@@ -8,8 +8,14 @@
 
             var model = manywho.model.getOutcome(this.props.id);
 
+            var classes = [
+                'outcome btn',
+                manywho.utils.getButtonType(model.pageActionBindingType),
+                (model.pageActionBindingType) ? 'btn-sm' : ''
+            ].join(' ');
+
             return React.DOM.button({
-                className: 'btn btn-primary',
+                className: classes,
                 onClick: function(event) {
                     manywho.engine.move(model);
                 }
