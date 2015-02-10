@@ -177,6 +177,11 @@ manywho.engine = (function (manywho) {
                 React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render();
 
+            })
+            .then(function () {
+
+                return processObjectDataRequests(manywho.model.getComponents());
+
             });
 
         },
