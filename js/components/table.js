@@ -26,7 +26,7 @@
 
             if (column == 'mw-outcomes') {
 
-                return React.DOM.th(null, null);
+                return React.DOM.th({className: 'table-outcome-column'}, null);
 
             }
             else {
@@ -55,7 +55,7 @@
                     
                     var outcomeComponent = manywho.component.getByName('outcome');
 
-                    return React.DOM.td({ scope: 'row' }, outcomes.map(function(outcome) {
+                    return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
                         
                         return React.createElement(outcomeComponent, { id: outcome.id });
 
