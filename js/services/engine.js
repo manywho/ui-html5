@@ -215,6 +215,33 @@ manywho.engine = (function (manywho) {
 
         },
 
+        navigate: function(navigationId, navigationElementId) {
+
+            var self = this;
+
+            var invokeRequest = manywho.json.generateNavigateRequest(
+                manywho.state.getState(),
+                navigationId,
+                navigationElementId,
+                manywho.settings.get('annotations'),
+                manywho.state.getGeoLocation());
+
+            manywho.ajax.invoke(invokeRequest).then(function (response) {
+
+                update(response, manywho.model.parseEngineResponse);
+                
+                React.unmountComponentAtNode(document.getElementById('manywho'));
+                self.render();
+
+            })
+            .then(function () {
+
+                return processObjectDataRequests(manywho.model.getComponents());
+
+            });
+
+        },
+
         join: function(stateId) {
 
             var dispatcher = manywho.ajax.join(stateId);

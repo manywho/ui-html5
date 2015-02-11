@@ -165,13 +165,7 @@ manywho.ajax = (function (manywho) {
             .fail(manywho.settings.get('events.navigation.fail'));
 
         },
-
-        syncEngine: function (engineInvokeRequest) {
-
-            alert('Sync!');
-
-        },
-
+        
         dispatchObjectDataRequest: function (request, limit, search, orderBy, orderByDirection, page) {
 
             request.listFilter = request.listFilter || {};           

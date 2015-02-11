@@ -34,6 +34,25 @@ manywho.json = (function (manywho) {
                 },
                 'mode': mode || null
             }
+        },
+
+        generateNavigateRequest: function (stateData, navigationId, navigationElementId, annotations, geolocation) {
+
+            return {
+                'stateId': stateData.id,
+                'stateToken': stateData.token,
+                'currentMapElementId': stateData.currentMapElementId,
+                'invokeType': 'NAVIGATE',
+                'navigationElementId': navigationId,
+                'selectedNavigationItemId': navigationElementId,
+                'annotations': annotations || null,
+                'geoLocation': geolocation || null,
+                'mapElementInvokeRequest': {
+                    'pageRequest': null,
+                    'selectedOutcomeId': null
+                }
+            }
+
         }
 
     }

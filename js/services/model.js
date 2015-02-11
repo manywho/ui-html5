@@ -212,9 +212,15 @@
             }
             else {
 
-                return navigation[Object.keys(navigation)[0]];
+                return navigation[this.getDefaultNavigationId()];
 
             }            
+
+        },
+
+        getDefaultNavigationId: function() {
+
+            return Object.keys(navigation)[0];
 
         },
 
