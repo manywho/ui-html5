@@ -80,6 +80,7 @@
     <script src="js/components/table.js"></script>
     <!-- endbuild -->
 
+    <!-- options -->
 </head>
 <body>    
     <script>
@@ -110,7 +111,7 @@
             annotations: null
         };
 
-        manywho.settings.initialize(options);
+        manywho.settings.initialize($.extend(options, window.devOptions || {}));
         manywho.engine.initialize();
 
     </script>
