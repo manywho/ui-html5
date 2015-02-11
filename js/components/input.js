@@ -23,7 +23,7 @@
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, e.target.value, null, true);
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id), this.props.flowId);
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowId), this.props.flowId);
 
         },
 
@@ -41,7 +41,7 @@
                 value: state.contentValue,
                 onChange: this.handleChange,
                 id: this.props.id
-            }
+            };
 
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";
@@ -70,7 +70,7 @@
                             React.DOM.div({ className: 'checkbox ' },
                                 React.DOM.label(null, [
                                     React.DOM.input(attributes, null),
-                                    model.label,
+                                    model.label
                                 ])
                             ),
                             React.DOM.span({className: 'help-block'}, model.message)
