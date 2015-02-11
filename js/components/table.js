@@ -101,33 +101,10 @@
     }
 
     function renderFooter(pageIndex, hasMoreResults) {
-
-        var previousAttributes = { className: 'btn btn-default' }
-        if (pageIndex <= 1) {
-
-            previousAttributes.disabled = 'disabled';
-
-        }
-
-        var nextAttributes = { className: 'btn btn-default' }
-        if (!hasMoreResults) {
-
-            nextAttributes.disabled = 'disabled';
-
-        }
         
         return React.DOM.tr({ className: 'active' },
-            React.DOM.td({ colSpan: '100' }, [
-                React.DOM.div({ className: 'pull-right' }, [
-                    React.DOM.button(previousAttributes,
-                        React.DOM.span({className: 'glyphicon glyphicon-chevron-left'}, null)
-                    ),
-                    React.DOM.span({ className: 'page-counter' }, pageIndex),
-                    React.DOM.button(nextAttributes,
-                        React.DOM.span({ className: 'glyphicon glyphicon-chevron-right' }, null)
-                    )
-                ])
-            ]));
+            React.DOM.td({ colSpan: '100' }, 
+                React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: false, containerClasses: 'pull-right' })));
 
     }
 
