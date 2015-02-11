@@ -5,7 +5,7 @@
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, e.target.value, null, true);
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id));
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowId));
 
         },
 
@@ -13,7 +13,7 @@
 
             log.info('Rendering Textarea: ' + this.props.id);
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var state = manywho.state.getComponent(this.props.id);
             var isValid = true;
 

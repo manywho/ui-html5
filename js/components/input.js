@@ -31,7 +31,7 @@
 
             log.info('Rendering Input: ' + this.props.id);
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var state = manywho.state.getComponent(this.props.id);
             var isValid = true;
 

@@ -4,10 +4,10 @@ manywho.styling = (function (manywho) {
     
     return {
  
-        getClasses: function (parentId, id, type) {
+        getClasses: function (parentId, id, type, flowId) {
 
-            var container = manywho.model.getContainer(parentId);
-            var item = manywho.model.getItem(id);
+            var container = manywho.model.getContainer(parentId, flowId);
+            var item = manywho.model.getItem(id, flowId);
             var classes = [];
 
             if (container) {

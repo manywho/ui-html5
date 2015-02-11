@@ -2,6 +2,24 @@ manywho.json = (function (manywho) {
 
     return {
 
+        generateFlowInputs: function (inputsData, objectData, typeElementDeveloperName) {
+
+            var inputs = [];
+
+            for (var property in data) {
+                inputs.push({
+                    'contentType': 'Content' + (typeof data[property]).charAt(0).toUpperCase(),
+                    'contentValue': data[property],
+                    'developerName': property,
+                    'objectData': objectData || null,
+                    'typeElementDeveloperName': typeElementDeveloperName || null
+                });
+            }
+
+            return inputs;
+
+        },
+
         generateInitializationRequest: function(flowId, stateId, annotations, inputs, mode, reportingMode) {
 
             return {

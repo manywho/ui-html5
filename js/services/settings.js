@@ -65,10 +65,10 @@ manywho.settings = (function (manywho, $) {
                     login: {},
                     objectData: {}
                 }
-            }
+            };
 
             // Replace this with a call to /js/constants
-            var constants = {}
+            var constants = {};
 
             settings = $.extend({}, constants, defaults, custom);
 

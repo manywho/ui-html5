@@ -8,7 +8,7 @@
             React.DOM.span({ type: 'button', className: 'icon-bar' }),
             React.DOM.span({ type: 'button', className: 'icon-bar' }),
             React.DOM.span({ type: 'button', className: 'icon-bar' })
-        ]
+        ];
 
         if (navigation.label != null && navigation.label.trim().length > 0) {
             children.push(React.DOM.a({ className: 'navbar-brand', href: '#'}, navigation.label));
@@ -55,7 +55,7 @@
 
         render: function () {
 
-            var navigation = manywho.model.getNavigation(this.props.id);
+            var navigation = manywho.model.getNavigation(this.props.id, this.props.flowId);
                   
             if (navigation) {
 

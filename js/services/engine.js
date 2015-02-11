@@ -36,14 +36,14 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function update(response, responseParser) {
+    function update(response, responseParser, flowId) {
 
         if (handleAuthorization(response)) {
 
-            responseParser.call(manywho.model, response);
+            responseParser.call(manywho.model, response, flowId);
 
             manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
-            manywho.state.refreshComponents(manywho.model.getComponents());
+            manywho.state.refreshComponents(manywho.model.getComponents(flowId));
 
             if (manywho.settings.get('replaceUrl')) {
                 manywho.utils.replaceBrowserUrl(response);
@@ -52,7 +52,7 @@ manywho.engine = (function (manywho) {
         }
     }
 
-    function process(dispatcher) {
+    function process(dispatcher, flowId) {
 
         var self = this;
 
@@ -81,7 +81,7 @@ manywho.engine = (function (manywho) {
         })
         .then(function (response, navigation, stream) {
 
-            manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+            manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0], flowId);
             return manywho.ajax.invoke(manywho.json.generateInvokeRequest(
                 manywho.state.getState(),
                 'FORWARD',
@@ -95,8 +95,8 @@ manywho.engine = (function (manywho) {
         })
         .then(function (response) {
 
-            update(response, manywho.model.parseEngineResponse);
-            self.render();
+            update(response, manywho.model.parseEngineResponse, flowId);
+            self.render(flowId);
 
         });
         
@@ -106,12 +106,12 @@ manywho.engine = (function (manywho) {
 
         initialize: function() {
 
+            var flowId = manywho.settings.get('flowId');
+
             manywho.model.setTenantId(manywho.settings.get('tenantId'));
 
             manywho.state.initialize(manywho.settings.get('stateId'));
             manywho.state.setAuthenticationToken(manywho.settings.get('authentication.token'));
-
-            var flowId = manywho.settings.get('flowId');
 
             if (manywho.state.getState().id) {
 
@@ -133,7 +133,7 @@ manywho.engine = (function (manywho) {
                     manywho.settings.get('reportingMode')
                 );
 
-                process.call(this, manywho.ajax.initialize(initializationRequest));
+                process.call(this, manywho.ajax.initialize(initializationRequest), flowId.id);
 
             }
 
@@ -238,10 +238,10 @@ manywho.engine = (function (manywho) {
 
         },
 
-        render: function () {
+        render: function (flowId) {
 
             var main = manywho.component.getByName('main');
-            React.render(React.createElement(main), document.getElementById('manywho'));
+            React.render(React.createElement(main, { flowId: flowId } ), document.getElementById('manywho'));
 
         }
 

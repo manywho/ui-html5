@@ -41,21 +41,21 @@ manywho.component = (function (manywho) {
 
         },
 
-        getChildComponents: function (children, id) {
+        getChildComponents: function (children, id, flowId) {
 
             return children.map(function (item) {
                 var component = this.get(item);
                 if (!component)
                     debugger;
-                return React.createElement(component, { id: item.id, parentId: id });
+                return React.createElement(component, { id: item.id, parentId: id, flowId: flowId });
             }, this);
 
         },
 
-        getOutcomes: function(outcomes)
+        getOutcomes: function(outcomes, flowId)
         {
             return outcomes.map(function (item) {
-                return React.createElement(components['outcome'], { id: item.id });
+                return React.createElement(components['outcome'], { id: item.id, flowId: flowId });
             });
         },
 

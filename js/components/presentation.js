@@ -6,7 +6,7 @@
 
             log.info('Rendering Presentation: ' + this.props.id);
 
-            var html = manywho.model.getComponent(this.props.id).content
+            var html = manywho.model.getComponent(this.props.id, this.props.flowId).content
                 .replace(/&quot;/g, '\"')
                 .replace(/&#39;/g, '\'')
                 .replace(/&lt;/g, '<')

@@ -22,7 +22,7 @@
 
         handleChange: function(e) {
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
@@ -37,7 +37,7 @@
             var options = [];
             var isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var state = manywho.state.getComponent(this.props.id);
             var isLoading = manywho.state.getIsLoading(this.props.id);
 

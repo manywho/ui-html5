@@ -4,8 +4,8 @@
 
         getInitialState: function () {
             return {
-                children: manywho.model.getChildren('root'),
-                outcomes: manywho.model.getOutcomes('root')
+                children: manywho.model.getChildren('root', this.props.flowId),
+                outcomes: manywho.model.getOutcomes('root', this.props.flowId)
             }
         },
         
@@ -14,10 +14,10 @@
             log.info("Rendering Main");
             
             return React.DOM.div({ className: 'mw-bs' }, [
-                        React.createElement(manywho.component.getByName('navigation'), { id: null }),
+                        React.createElement(manywho.component.getByName('navigation'), { id: null, flowId: this.props.flowId }),
                         React.DOM.div({ className: 'container' }, [
-                            manywho.component.getChildComponents(this.state.children, this.props.id),
-                            manywho.component.getOutcomes(this.state.outcomes, this.props.id)
+                            manywho.component.getChildComponents(this.state.children, this.props.id, this.props.flowId),
+                            manywho.component.getOutcomes(this.state.outcomes, this.props.flowId)
                         ])
                     ]);
 
