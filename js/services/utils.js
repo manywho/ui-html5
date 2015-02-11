@@ -148,27 +148,6 @@ manywho.utils = (function (manywho, $) {
 
             return items;
 
-        },
-
-        getButtonType: function (action) {
-
-            if (!manywho.utils.isNullOrWhitespace(action)) {
-
-                switch (action.toLowerCase()) {
-                    case 'save':
-                        return 'btn-primary';
-                    case 'edit':
-                        return 'btn-info';
-                    case 'delete':
-                        return 'btn-danger';
-                    default:
-                        return 'btn-default';
-                }
-
-            }
-
-            return 'btn-default';
-
         }
 
     }
