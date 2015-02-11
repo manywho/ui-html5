@@ -26,7 +26,7 @@
             var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
             manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
-            manywho.component.handleEvent(this, model);
+            manywho.component.handleEvent(this, model, this.props.flowId);
 
         },
 

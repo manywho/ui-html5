@@ -23,7 +23,7 @@
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, e.target.value, null, true);
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id));
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id), this.props.flowId);
 
         },
 

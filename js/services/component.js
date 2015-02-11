@@ -59,7 +59,7 @@ manywho.component = (function (manywho) {
             });
         },
 
-        handleEvent: function (component, model) {
+        handleEvent: function (component, model, flowId) {
 
             if (model.hasEvents) {
                 manywho.engine.sync(true);

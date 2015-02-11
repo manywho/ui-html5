@@ -166,6 +166,29 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        getFlowByName: function (flowName) {
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/flow/name' + flowName,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('events.getflowbyname.beforeSend')) {
+                        manywho.settings.get('events.getflowbyname.beforeSend').call(this, xhr);
+                    }
+
+                }
+            })
+                .done(manywho.settings.get('events.getflowbyname.done'))
+                .fail(onError)
+                .fail(manywho.settings.get('events.getflowbyname.fail'));
+
+        },
+
         syncEngine: function (engineInvokeRequest) {
 
             alert('Sync!');

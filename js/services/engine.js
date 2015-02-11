@@ -139,7 +139,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        move: function(outcome) {
+        move: function(outcome, flowId) {
 
             // Validate all of the components on the page here...
             // In the model.js, there are componentInputResponseRequests entries for each component
@@ -159,17 +159,17 @@ manywho.engine = (function (manywho) {
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
-                update(response, manywho.model.parseEngineResponse);
+                update(response, manywho.model.parseEngineResponse, flowId);
                 manywho.collaboration.move(manywho.state.getState().id);
 
                 React.unmountComponentAtNode(document.getElementById('manywho'));
-                self.render();
+                self.render(flowId);
 
             });
 
         },
 
-        sync: function() {
+        sync: function(flowId) {
 
             // Validate all of the components on the page here...
             // In the model.js, there are componentInputResponseRequests entries for each component
@@ -191,7 +191,7 @@ manywho.engine = (function (manywho) {
             manywho.ajax.invoke(invokeRequest)
                 .then(function (response) {
                     
-                    update(response, manywho.model.parseEngineSyncResponse);
+                    update(response, manywho.model.parseEngineSyncResponse, flowId);
                     
                     var components = manywho.utils.convertToArray(manywho.model.getComponents()).filter(function(component) {
 
@@ -204,12 +204,12 @@ manywho.engine = (function (manywho) {
                         componentIds.push(component.pageComponentId);
                         manywho.state.setIsLoading(component.pageComponentId, true);
 
-                        return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest)
+                        return manywho.ajax.dispatchObjectDataRequest(component.objectDataRequest);
 
                     // concat null here so that the response array is formatted as [response, response, ...]
                     }).concat(null));
 
-                    self.render();
+                    self.render(flowId);
 
                     return requests;
 
@@ -221,10 +221,10 @@ manywho.engine = (function (manywho) {
                     for (var i = 0; i < componentIds.length; i++)
                     {
                         manywho.state.setIsLoading(componentIds[i], false);
-                        manywho.model.getComponent(componentIds[i]).objectData = responses[i][0].objectData;
+                        manywho.model.getComponent(componentIds[i], flowId).objectData = responses[i][0].objectData;
                     }
                     
-                    self.render();
+                    self.render(flowId);
                     
                 });
 

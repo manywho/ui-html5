@@ -22,7 +22,7 @@
                 placeholder: model.hintValue,
                 value: state.contentValue,
                 onChange: this.handleChange
-            }
+            };
 
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";
