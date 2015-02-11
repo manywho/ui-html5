@@ -1,4 +1,4 @@
-(function (manywho) {
+﻿(function (manywho) {
     
     function getDisplayColumns(columns, outcomes) {
 
@@ -39,7 +39,7 @@
 
     }
 
-    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked) {
+    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked, flowId) {
 
         var displayColumns = getDisplayColumns(columns, outcomes);
 
@@ -57,7 +57,7 @@
 
                     return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
                         
-                        return React.createElement(outcomeComponent, { id: outcome.id });
+                        return React.createElement(outcomeComponent, { id: outcome.id, flowId: flowId });
 
                     }));
                     
@@ -102,14 +102,14 @@
 
     function renderFooter(pageIndex, hasMoreResults) {
 
-        var previousAttributes = { className: 'btn btn-default' }
+        var previousAttributes = { className: 'btn btn-default' };
         if (pageIndex <= 1) {
 
             previousAttributes.disabled = 'disabled';
 
         }
 
-        var nextAttributes = { className: 'btn btn-default' }
+        var nextAttributes = { className: 'btn btn-default' };
         if (!hasMoreResults) {
 
             nextAttributes.disabled = 'disabled';
@@ -166,7 +166,7 @@
 
             if (selectedRows.indexOf(e.currentTarget.id) == -1) {
 
-                var model = manywho.model.getComponent(this.props.id);
+                var model = manywho.model.getComponent(this.props.id, this.props.flowId);
                 if (model.isMultiSelect) {
 
                     selectedRows.push(e.currentTarget.id);
@@ -192,17 +192,17 @@
 
         search: function() {
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var state = manywho.state.getComponent(this.props.id);
 
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, 10, state.search);
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowId, 10, state.search);
 
         },
 
         getInitialState: function () {
 
             return {
-                outcomes: manywho.model.getOutcomes(this.props.id),
+                outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowId),
                 selectedRows: []
             }
 
@@ -214,7 +214,7 @@
 
             var isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var state = manywho.state.getComponent(this.props.id);
             var isLoading = manywho.state.getIsLoading(this.props.id);
             var objectDataRequest = model.objectDataRequest || {};
@@ -235,7 +235,7 @@
                     React.DOM.tbody({}, [
                         renderHeader(this.onSearchChanged, this.onSearchEnter, this.search),
                         renderHeaderRow(model.columns, this.state.outcomes),
-                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked),
+                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked, this.props.flowId),
                         renderFooter(1, objectDataRequest.hasMoreResults)
                     ])
                 ),

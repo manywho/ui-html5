@@ -102,7 +102,7 @@ manywho.engine = (function (manywho) {
         
     }
 
-    function processObjectDataRequests(components) {
+    function processObjectDataRequests(components, flowId) {
 
         var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
 
@@ -112,7 +112,7 @@ manywho.engine = (function (manywho) {
 
         return $.when.apply($, requestComponents.map(function (component) {
 
-            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest)
+            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowId)
 
         }));
 
@@ -228,7 +228,7 @@ manywho.engine = (function (manywho) {
 
             manywho.ajax.invoke(invokeRequest).then(function (response) {
 
-                update(response, manywho.model.parseEngineResponse);
+                update(response, manywho.model.parseEngineResponse, flowId);
                 
                 React.unmountComponentAtNode(document.getElementById('manywho'));
                 self.render(flowId);
@@ -236,7 +236,7 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                return processObjectDataRequests(manywho.model.getComponents(flowId));
+                return processObjectDataRequests(manywho.model.getComponents(flowId), flowId);
 
             });
 
@@ -257,20 +257,20 @@ manywho.engine = (function (manywho) {
 
         },
 
-        objectDataRequest: function(id, request, limit, search, orderBy, orderByDirection, page) {
+        objectDataRequest: function(id, request, flowId, limit, search, orderBy, orderByDirection, page) {
 
             var self = this;
 
             manywho.state.setIsLoading(id, true);
-            self.render();
+            self.render(flowId);
 
             return manywho.ajax.dispatchObjectDataRequest(request, limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
                     
                     manywho.state.setIsLoading(id, false);
-                    manywho.model.getComponent(id).objectData = response.objectData;
+                    manywho.model.getComponent(id, flowId).objectData = response.objectData;
 
-                    self.render();
+                    self.render(flowId);
 
                 });
 
