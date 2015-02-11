@@ -18,7 +18,7 @@
 
     }
 
-    function getListElements(items) {
+    function getListElements(items, clickHandler) {
 
         var elements = [];
 
@@ -40,7 +40,7 @@
             }
             else {
                 element = React.DOM.li(null, [
-                    React.DOM.a({ className: 'dropdown-toggle', href: '#' }, item.label)
+                    React.DOM.a({ className: 'dropdown-toggle', href: '#', onClick: clickHandler, id: item.id}, item.label)
                 ]);
             }
             
@@ -52,6 +52,12 @@
     }
 
     var navigation = React.createClass({
+
+        handleClick: function(e) {
+
+            manywho.engine.navigate(this.props.id, e.target.id, this.props.flowId);
+
+        },
 
         render: function () {
 
@@ -66,11 +72,10 @@
                                 getHeaderElement(navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse' },
                                     React.DOM.ul({ className: 'nav navbar-nav' },
-                                        getListElements(navigation.items)
+                                        getListElements(navigation.items, this.handleClick)
                                     )
                                 )
-                            ]
-                            )
+                            ])
                         );
 
             }

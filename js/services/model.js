@@ -213,9 +213,15 @@
             }
             else {
 
-                return flowModel[flowId].navigation[Object.keys(flowModel[flowId].navigation)[0]];
+                return navigation[Object.keys(flowModel[flowId].navigation)[0]];
 
             }            
+
+        },
+
+        getDefaultNavigationId: function(flowId) {
+
+            return Object.keys(flowModel[flowId].navigation)[0];
 
         },
 
@@ -281,6 +287,12 @@
         setTenantId: function (tenantId) {
 
             this.tenantId = tenantId;
+
+        },
+
+        isContainer: function (item) {
+
+            return !manywho.utils.isNullOrWhitespace(item.containerType);
 
         }
 

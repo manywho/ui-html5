@@ -1,60 +1,210 @@
-﻿(function (manywho) {
+(function (manywho) {
+    
+    function getDisplayColumns(columns, outcomes) {
 
-    function renderColumn(property) {
+        var displayColumns = manywho.component.getDisplayColumns(columns) || [];
 
-        if (property) {
+        if (outcomes.filter(function (outcome) {
 
-            return React.DOM.div({ className: 'table-cell' }, property.contentValue);
+            return !outcome.isBulkAction;
 
-        }
+        }).length > 0) {
 
-        return null;
-
-    }
-
-    function renderHeaderColumn(column) {
-
-        if (column) {
-
-            return React.DOM.div({ className: 'table-header-cell' }, column.label);
+            displayColumns.unshift('mw-outcomes');
 
         }
 
-        return null;
+        return displayColumns;
 
     }
 
-    function renderRow(objectData) {
+    function renderHeaderRow(columns, outcomes) {
 
-        if (objectData.properties) {
+        var displayColumns = getDisplayColumns(columns, outcomes);
 
-            var displayProperties = objectData.properties.filter(function (value) {
+        return React.DOM.tr(null, displayColumns.map(function(column) {
 
-                for (column in this.columns) {
+            if (column == 'mw-outcomes') {
 
-                    return manywho.utils.isEqual(value.typeElementPropertyId, this.columns[column].typeElementPropertyId, true);
+                return React.DOM.th({className: 'table-outcome-column'}, null);
+
+            }
+            else {
+
+                return React.DOM.th(null, column.label);
+
+            }
+
+        }));
+
+    }
+
+    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked) {
+
+        var displayColumns = getDisplayColumns(columns, outcomes);
+
+        return objectData.map(function(item) {
+
+            var classes = [
+                (selectedRows.indexOf(item.internalId) != -1) ? 'info' : ''
+            ];
+
+            return React.DOM.tr({ className: classes, id: item.internalId, onClick: onRowClicked }, displayColumns.map(function(column) {
+
+                if (column == 'mw-outcomes') {
+                    
+                    var outcomeComponent = manywho.component.getByName('outcome');
+
+                    return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
+                        
+                        return React.createElement(outcomeComponent, { id: outcome.id });
+
+                    }));
+                    
+                }
+                else {
+
+                    var selectedProperty = item.properties.filter(function (property) {
+
+                        return property.typeElementPropertyId == column.typeElementPropertyId
+
+                    })[0];
+
+                    if (selectedProperty) {
+
+                        return React.DOM.td(null, React.DOM.span(null, selectedProperty.contentValue));
+
+                    }
 
                 }
 
-            }, this);
+            }));
 
-            return React.DOM.div({ className: 'table-row' }, displayProperties.map(renderColumn));
+        });
+
+    }
+
+    function renderHeader(onSearchChanged, onSearchEntered, search) {
+
+        return React.DOM.tr({ className: 'active' },
+            React.DOM.td({ colSpan: '100' }, [
+                React.DOM.div({ className: 'input-group' }, [
+                    React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
+                    React.DOM.span({ className: 'input-group-btn' }, 
+                        React.DOM.button({className: 'btn btn-default', onClick: search}, 
+                            React.DOM.span({className: 'glyphicon glyphicon-search'}, null)
+                        )
+                    )
+                ])
+            ]));
+
+    }
+
+    function renderFooter(pageIndex, hasMoreResults) {
+
+        var previousAttributes = { className: 'btn btn-default' }
+        if (pageIndex <= 1) {
+
+            previousAttributes.disabled = 'disabled';
 
         }
 
-        return null;
+        var nextAttributes = { className: 'btn btn-default' }
+        if (!hasMoreResults) {
+
+            nextAttributes.disabled = 'disabled';
+
+        }
+        
+        return React.DOM.tr({ className: 'active' },
+            React.DOM.td({ colSpan: '100' }, [
+                React.DOM.div({ className: 'pull-right' }, [
+                    React.DOM.button(previousAttributes,
+                        React.DOM.span({className: 'glyphicon glyphicon-chevron-left'}, null)
+                    ),
+                    React.DOM.span({ className: 'page-counter' }, pageIndex),
+                    React.DOM.button(nextAttributes,
+                        React.DOM.span({ className: 'glyphicon glyphicon-chevron-right' }, null)
+                    )
+                ])
+            ]));
 
     }
 
     var table = React.createClass({
 
-        handleChange: function(e) {
+        onSearchChanged: function(e) {
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
-            var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
+            manywho.state.setComponent(this.props.id, { search: e.target.value }, true);
 
-            manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
-            manywho.component.handleEvent(this, model, this.props.flowId);
+        },
+
+        onSearchEnter: function(e) {
+            
+            if (e.keyCode == 13) {
+
+                this.search();
+
+            }
+
+        },
+
+        onRowClicked: function(e) {
+            
+            if (this.state.outcomes.filter(function (outcome) {
+
+                return outcome.isBulkAction;
+
+            }).length == 0) {
+
+                // Don't select the row if there aren't any bulk actions defined
+                return;
+
+            }
+
+            var selectedRows = this.state.selectedRows;
+
+            if (selectedRows.indexOf(e.currentTarget.id) == -1) {
+
+                var model = manywho.model.getComponent(this.props.id);
+                if (model.isMultiSelect) {
+
+                    selectedRows.push(e.currentTarget.id);
+
+                }
+                else {
+
+                    selectedRows = [e.currentTarget.id];
+
+                }
+                
+            }
+            else {
+
+                selectedRows.pop(e.currentTarget.id);                
+
+            }
+
+            this.setState({ selectedRows: selectedRows });
+            manywho.state.setComponent(this.props.id, { objectData: selectedRows }, true);
+
+        },
+
+        search: function() {
+
+            var model = manywho.model.getComponent(this.props.id);
+            var state = manywho.state.getComponent(this.props.id);
+
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, 10, state.search);
+
+        },
+
+        getInitialState: function () {
+
+            return {
+                outcomes: manywho.model.getOutcomes(this.props.id),
+                selectedRows: []
+            }
 
         },
 
@@ -62,36 +212,36 @@
 
             log.info('Rendering Table: ' + this.props.id);
 
-            var table = [];
             var isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
+            var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
-
-            var displayColumns = manywho.component.getDisplayColumns(model.columns);
-            var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
-
-            if (displayColumns) {
-                table[table.length] = React.DOM.div({ className: 'table-header ' }, displayColumns.map(renderHeaderColumn));
-            }
-
-            if (objectData) {
-                table = table.concat(objectData.map(renderRow, { columns: displayColumns }));
-            }
+            var isLoading = manywho.state.getIsLoading(this.props.id);
+            var objectDataRequest = model.objectDataRequest || {};
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
                 isValid = false;
             }
 
             var containerClasseNames = [
+                'table-responsive',
+                'table-container',
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ].join(' ');
-
-            return React.DOM.div({ className: 'form-group ' + containerClasseNames }, [
-                React.DOM.label({ 'for': this.props.id }, model.label),
-                React.DOM.div({ className: 'table' }, table),
-                React.DOM.span({ className: 'help-block' }, model.message)
+            
+            return React.DOM.div({ className: containerClasseNames }, [
+                React.DOM.table({ className: 'table table-hover table-bordered' },
+                    React.DOM.tbody({}, [
+                        renderHeader(this.onSearchChanged, this.onSearchEnter, this.search),
+                        renderHeaderRow(model.columns, this.state.outcomes),
+                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked),
+                        renderFooter(1, objectDataRequest.hasMoreResults)
+                    ])
+                ),
+                React.DOM.div({ className: 'table-loading-overlay ' + ((isLoading) ? '' : 'hidden') }, 
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh table-loading-icon loading-spin' }, null)
+                )
             ]);
         }
 

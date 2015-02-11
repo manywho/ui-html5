@@ -8,5 +8,6 @@ node_modules
 /css/*.css
 /css/themes/mw-*.css
 /dist
+flow-run.html
 
 .c9/

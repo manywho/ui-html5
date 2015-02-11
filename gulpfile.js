@@ -18,7 +18,8 @@ var gulp = require('gulp'),
     awspublish = require('gulp-awspublish'),
     cloudfront = require("gulp-cloudfront"),
     rename = require("gulp-rename"),
-    replace = require('gulp-replace');
+    replace = require('gulp-replace'),
+    argv = require('yargs').argv;
 
 
 // Dev Time
@@ -63,6 +64,29 @@ gulp.task('bootstrap-templates', function () {
 
 });
 
+gulp.task('options', function () {
+
+    var options = {
+        tenantId: argv.tenant,
+        flowId: {
+            id: argv.flow,
+            versionId: argv.version
+        },
+        stateId: argv.state,
+    }
+
+    var scriptTag = '<script>';
+    scriptTag += 'var devOptions = ';
+    scriptTag += JSON.stringify(options);
+    scriptTag += '</script>';
+
+    gulp.src('flow.html')
+        .pipe(replace('<!-- options -->', scriptTag))
+        .pipe(rename('flow-run.html'))
+        .pipe(gulp.dest('.'));
+
+});
+
 gulp.task('browser-sync', function () {
 
     var files = [
@@ -74,13 +98,15 @@ gulp.task('browser-sync', function () {
 
     browserSync.init(files, {
         server: {
-            baseDir: '.'
-        }
+            baseDir: '.',
+            index: 'flow-run.html'
+        },
+        ghostMode: false
     });
 
 });
 
-gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
+gulp.task('refresh', ['options', 'jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
 
 // Production Build
 gulp.task('clean-dist', function () {

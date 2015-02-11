@@ -25,7 +25,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowId);
             var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
-            manywho.state.setComponent(this.props.id, null, selectedObjectData, true);
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, true);
             manywho.component.handleEvent(this, model, this.props.flowId);
 
         },
@@ -58,7 +58,7 @@
             ].join(' ');
 
             var iconClassNames = [
-                'glyphicon glyphicon-refresh loading',
+                'glyphicon glyphicon-refresh loading-spin',
                 (isLoading) ? '' : 'hidden'
             ].join(' ');
 

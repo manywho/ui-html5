@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="css/mw-bootstrap.css" />
     <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
     <!-- endbuild -->
-
+    
     <!-- build:css -->
     <link rel="stylesheet" href="css/lib/bootstrap-chosen.css" />
     <link rel="stylesheet" href="css/wait.css" />
@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="css/textarea.css" />
     <link rel="stylesheet" href="css/table.css" />
     <link rel="stylesheet" href="css/input.css" />
+    <link rel="stylesheet" href="css/outcome.css" />
     <link rel="stylesheet" href="css/loading.css" />
     <!-- endbuild -->
     
@@ -39,8 +40,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-growl/1.0.0/jquery.bootstrap-growl.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/loglevel/1.2.0/loglevel.min.js"></script>
-
-
+    
     <script>
         var manywho = {};
     </script>
@@ -80,6 +80,7 @@
     <script src="js/components/table.js"></script>
     <!-- endbuild -->
 
+    <!-- options -->
 </head>
 <body>    
     <script>
@@ -104,13 +105,13 @@
             trackLocation: false,
             replaceUrl: false,
             collaboration: {
-                isEnabled: true
+                isEnabled: false
             },
             inputs: null,
             annotations: null
         };
 
-        manywho.settings.initialize(options);
+        manywho.settings.initialize($.extend(options, window.devOptions || {}));
         manywho.engine.initialize();
 
     </script>
