@@ -88,7 +88,7 @@
 
         return React.DOM.tr({ className: 'active' },
             React.DOM.td({ colSpan: '100' }, [
-                React.DOM.div({ className: 'input-group' }, [
+                React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' }, 
                         React.DOM.button({className: 'btn btn-default', onClick: search}, 
