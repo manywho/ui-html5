@@ -1,7 +1,6 @@
 (function (manywho) {
 
     var flowModel = {};
-    var tenantId = '';
 
     function updateData(collection, item, key) {
 
@@ -82,91 +81,91 @@
 
         componentInputResponseRequests: {},
 
-        parseEngineResponse: function (engineInvokeResponse, flowId) {
+        parseEngineResponse: function (engineInvokeResponse, flowKey) {
 
-            if (!flowModel[flowId]) flowModel[flowId] = {};
+            if (!flowModel[flowKey]) flowModel[flowKey] = {};
 
-            flowModel[flowId].containers = {};
-            flowModel[flowId].components = {};
-            flowModel[flowId].outcomes = {};
+            flowModel[flowKey].containers = {};
+            flowModel[flowKey].components = {};
+            flowModel[flowKey].outcomes = {};
 
             var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             flattenedContainers.forEach(function (item) {
 
-                flowModel[flowId].containers[item.id] = item;
+                flowModel[flowKey].containers[item.id] = item;
 
                 if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    flowModel[flowId].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                    flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
                 }
 
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                flowModel[flowId].components[item.id] = item;
+                flowModel[flowKey].components[item.id] = item;
 
                 if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    flowModel[flowId].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                    flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
                 }
                 
             }, this);
 
             engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
 
-                flowModel[flowId].outcomes[item.id.toLowerCase()] = item;
+                flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
 
             }, this);
 
         },
 
-        parseEngineSyncResponse: function(response, flowId) {
+        parseEngineSyncResponse: function(response, flowKey) {
             
             response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                flowModel[flowId].containers[item.pageContainerId] = $.extend(flowModel[flowId].containers[item.pageContainerId], item);
+                flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
 
             }, this);
 
             response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                flowModel[flowId].components[item.pageComponentId] = $.extend(flowModel[flowId].components[item.pageComponentId], item);
+                flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
                 
             }, this);
 
         },
 
-        parseNavigationResponse: function (id, response, flowId) {
+        parseNavigationResponse: function (id, response, flowKey) {
 
-            if(!flowModel[flowId]) flowModel[flowId] = {};
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
 
-            flowModel[flowId].navigation = {};
+            flowModel[flowKey].navigation = {};
 
-            flowModel[flowId].navigation[id] = {
+            flowModel[flowKey].navigation[id] = {
                 culture: response.culture,
                 developerName: response.developerName,
                 label: response.label,
                 tags: response.tags
             };
 
-            flowModel[flowId].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+            flowModel[flowKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
 
         },
 
-        getChildren: function (containerId, flowId) {
+        getChildren: function (containerId, flowKey) {
 
             if (containerId == 'root') {
 
-                return manywho.utils.getAll(flowModel[flowId].containers, null, 'parent');
+                return manywho.utils.getAll(flowModel[flowKey].containers, null, 'parent');
 
             }
 
             var children = [];
-            var container = flowModel[flowId].containers[containerId];
+            var container = flowModel[flowKey].containers[containerId];
 
             if (container != null) {
 
-                children = children.concat(manywho.utils.getAll(flowModel[flowId].containers, containerId, 'parent'));
-                children = children.concat(manywho.utils.getAll(flowModel[flowId].components, containerId, 'pageContainerId'));
+                children = children.concat(manywho.utils.getAll(flowModel[flowKey].containers, containerId, 'parent'));
+                children = children.concat(manywho.utils.getAll(flowModel[flowKey].components, containerId, 'pageContainerId'));
 
             }
 
@@ -180,82 +179,82 @@
 
         },
 
-        getContainer: function (containerId, flowId) {
+        getContainer: function (containerId, flowKey) {
 
-            return flowModel[flowId].containers[containerId];
-
-        },
-
-        getComponent: function (componentId, flowId) {
-
-            return flowModel[flowId].components[componentId];
+            return flowModel[flowKey].containers[containerId];
 
         },
 
-        getComponents: function (flowId) {
+        getComponent: function (componentId, flowKey) {
 
-            return flowModel[flowId].components;
-
-        },
-
-        getOutcome: function (outcomeId, flowId) {
-
-            return flowModel[flowId].outcomes[outcomeId.toLowerCase()];
+            return flowModel[flowKey].components[componentId];
 
         },
 
-        getNavigation: function (navigationId, flowId) {
+        getComponents: function (flowKey) {
+
+            return flowModel[flowKey].components;
+
+        },
+
+        getOutcome: function (outcomeId, flowKey) {
+
+            return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+
+        },
+
+        getNavigation: function (navigationId, flowKey) {
 
             if (navigationId) {
 
-                return flowModel[flowId].navigation[navigationId];
+                return flowModel[flowKey].navigation[navigationId];
 
             }
             else {
 
-                return navigation[Object.keys(flowModel[flowId].navigation)[0]];
+                return navigation[Object.keys(flowModel[flowKey].navigation)[0]];
 
             }            
 
         },
 
-        getDefaultNavigationId: function(flowId) {
+        getDefaultNavigationId: function(flowKey) {
 
-            return Object.keys(flowModel[flowId].navigation)[0];
-
-        },
-
-        getItem: function(id, flowId) {
-
-            var item = this.getContainer(id, flowId);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getComponent(id, flowId);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getOutcome(id, flowId);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getNavigation(id, flowId);
-            if (item != null) {
-                return item;
-            }
+            return Object.keys(flowModel[flowKey].navigation)[0];
 
         },
 
-        getOutcomes: function (pageObjectId, flowId) {
+        getItem: function(id, flowKey) {
+
+            var item = this.getContainer(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getComponent(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getOutcome(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getNavigation(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+        },
+
+        getOutcomes: function (pageObjectId, flowKey) {
 
             var pageObjectOutcomes = [];
             
-            for (outcomeId in flowModel[flowId].outcomes)
+            for (outcomeId in flowModel[flowKey].outcomes)
             {
-                var item = flowModel[flowId].outcomes[outcomeId];
+                var item = flowModel[flowKey].outcomes[outcomeId];
 
                 // If the component has supplied an object id, we find the bound outcomes, otherwise
                 // we find all outcomes that are unbound
@@ -278,15 +277,19 @@
 
         },
 
-        getTenantId: function () {
+        getTenantId: function (flowKey) {
 
-            return this.tenantId;
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
+
+            return flowModel[flowKey].tenantId;
 
         },
 
-        setTenantId: function (tenantId) {
+        setTenantId: function (flowKey, tenantId) {
 
-            this.tenantId = tenantId;
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
+
+            flowModel[flowKey].tenantId = tenantId;
 
         },
 

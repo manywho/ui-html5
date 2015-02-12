@@ -148,6 +148,12 @@ manywho.utils = (function (manywho, $) {
 
             return items;
 
+        },
+
+        buildModelKey: function (flowId, flowVersionId, tenantId) {
+
+            return tenantId + '-' + flowId + '-' + flowVersionId;
+
         }
 
     }

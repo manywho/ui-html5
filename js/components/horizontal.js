@@ -6,10 +6,10 @@
 
             log.info('Rendering Horizontal: ' + this.props.id);
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowId);
-            var children = manywho.model.getChildren(this.props.id, this.props.flowId);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey);
+            var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            return React.createElement('div', { className: classes, id: this.props.id }, manywho.component.getChildComponents(children, this.props.id, this.props.flowId));
+            return React.createElement('div', { className: classes, id: this.props.id }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey));
 
         }
 

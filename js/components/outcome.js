@@ -29,7 +29,7 @@
 
             log.info('Rendering Outcome: ' + self.props.id);
 
-            var model = manywho.model.getOutcome(self.props.id, self.props.flowId);
+            var model = manywho.model.getOutcome(self.props.id, self.props.flowKey);
 
             var classes = [
                 'outcome btn',
@@ -40,7 +40,7 @@
             return React.DOM.button({
                 className: classes,
                 onClick: function(event) {
-                    manywho.engine.move(model, self.props.flowId);
+                    manywho.engine.move(model, self.props.flowKey);
                 }
 
             }, model.label);

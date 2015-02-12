@@ -41,28 +41,28 @@ manywho.component = (function (manywho) {
 
         },
 
-        getChildComponents: function (children, id, flowId) {
+        getChildComponents: function (children, id, flowKey) {
 
             return children.map(function (item) {
                 var component = this.get(item);
                 if (!component)
                     debugger;
-                return React.createElement(component, { id: item.id, parentId: id, flowId: flowId });
+                return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey });
             }, this);
 
         },
 
-        getOutcomes: function(outcomes, flowId)
+        getOutcomes: function(outcomes, flowKey)
         {
             return outcomes.map(function (item) {
-                return React.createElement(components['outcome'], { id: item.id, flowId: flowId });
+                return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey });
             });
         },
 
-        handleEvent: function (component, model, flowId) {
+        handleEvent: function (component, model, flowKey) {
 
             if (model.hasEvents) {
-                manywho.engine.sync(true);
+                manywho.engine.sync(flowKey);
                 manywho.collaboration.sync(manywho.state.getState().id);
             }
 

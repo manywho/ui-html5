@@ -8,7 +8,7 @@ manywho.ajax = (function (manywho) {
 
     return {
 
-        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId) {
+        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId) {
 
             log.info('Logging into Flow State: \n    Id: ' + stateId);
 
@@ -30,7 +30,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(authenticationCredentials),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
@@ -48,7 +48,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        initialize: function (engineInitializationRequest) {
+        initialize: function (engineInitializationRequest, tenantId) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -61,7 +61,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
@@ -79,7 +79,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        join: function(stateId) {
+        join: function(stateId, tenantId) {
 
             log.info('Joining State: ' + stateId);
 
@@ -90,7 +90,7 @@ manywho.ajax = (function (manywho) {
                 processData: true,
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
@@ -108,7 +108,7 @@ manywho.ajax = (function (manywho) {
 
         },
         
-        invoke: function (engineInvokeRequest) {
+        invoke: function (engineInvokeRequest, tenantId) {
 
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -119,7 +119,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInvokeRequest),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
@@ -137,7 +137,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        getNavigation: function (stateId, stateToken, navigationElementId) {
+        getNavigation: function (stateId, stateToken, navigationElementId, tenantId) {
             
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
@@ -148,7 +148,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
@@ -166,7 +166,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        getFlowByName: function (flowName) {
+        getFlowByName: function (flowName, tenantId) {
 
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/flow/name' + flowName,
@@ -175,7 +175,7 @@ manywho.ajax = (function (manywho) {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('events.getflowbyname.beforeSend')) {
                         manywho.settings.get('events.getflowbyname.beforeSend').call(this, xhr);
@@ -195,7 +195,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        dispatchObjectDataRequest: function (request, limit, search, orderBy, orderByDirection, page) {
+        dispatchObjectDataRequest: function (request, tenantId, limit, search, orderBy, orderByDirection, page) {
 
             request.listFilter = request.listFilter || {};           
             request.listFilter.limit = limit;
@@ -221,7 +221,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(request),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
                     if (manywho.settings.get('authentication.token')) {
                         xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));

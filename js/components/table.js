@@ -39,7 +39,7 @@
 
     }
 
-    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked, flowId) {
+    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked, flowKey) {
 
         var displayColumns = getDisplayColumns(columns, outcomes);
 
@@ -57,7 +57,7 @@
 
                     return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
                         
-                        return React.createElement(outcomeComponent, { id: outcome.id, flowId: flowId });
+                        return React.createElement(outcomeComponent, { id: outcome.id, flowKey: flowKey });
 
                     }));
                     
@@ -166,7 +166,7 @@
 
             if (selectedRows.indexOf(e.currentTarget.id) == -1) {
 
-                var model = manywho.model.getComponent(this.props.id, this.props.flowId);
+                var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
                 if (model.isMultiSelect) {
 
                     selectedRows.push(e.currentTarget.id);
@@ -192,17 +192,17 @@
 
         search: function() {
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id);
 
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowId, 10, state.search);
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, 10, state.search);
 
         },
 
         getInitialState: function () {
 
             return {
-                outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowId),
+                outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowKey),
                 selectedRows: []
             }
 
@@ -214,7 +214,7 @@
 
             var isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowId);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id);
             var isLoading = manywho.state.getIsLoading(this.props.id);
             var objectDataRequest = model.objectDataRequest || {};
@@ -235,7 +235,7 @@
                     React.DOM.tbody({}, [
                         renderHeader(this.onSearchChanged, this.onSearchEnter, this.search),
                         renderHeaderRow(model.columns, this.state.outcomes),
-                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked, this.props.flowId),
+                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked, this.props.flowKey),
                         renderFooter(1, objectDataRequest.hasMoreResults)
                     ])
                 ),

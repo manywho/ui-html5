@@ -55,13 +55,13 @@
 
         handleClick: function(e) {
 
-            manywho.engine.navigate(this.props.id, e.target.id, this.props.flowId);
+            manywho.engine.navigate(this.props.id, e.target.id, this.props.flowKey);
 
         },
 
         render: function () {
 
-            var navigation = manywho.model.getNavigation(this.props.id, this.props.flowId);
+            var navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
                   
             if (navigation) {
 
