@@ -58,7 +58,7 @@
             ].join(' ');
 
             var iconClassNames = [
-                'glyphicon glyphicon-refresh loading-spin',
+                'glyphicon glyphicon-refresh select-loading-icon spin',
                 (isLoading) ? '' : 'hidden'
             ].join(' ');
 

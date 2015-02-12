@@ -217,7 +217,7 @@
                     ])
                 ),
                 React.DOM.div({ className: 'table-loading-overlay ' + ((isLoading) ? '' : 'hidden') }, 
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh table-loading-icon loading-spin' }, null)
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh table-loading-icon spin' }, null)
                 )
             ]);
         }
