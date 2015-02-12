@@ -180,7 +180,7 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                return processObjectDataRequests(manywho.model.getComponents(flowId));
+                return processObjectDataRequests(manywho.model.getComponents(flowId), flowId);
 
             });
 
@@ -209,7 +209,7 @@ manywho.engine = (function (manywho) {
                 .then(function (response) {
 
                     update(response, manywho.model.parseEngineSyncResponse, flowId);
-                    return processObjectDataRequests(manywho.model.getComponents(flowId));
+                    return processObjectDataRequests(manywho.model.getComponents(flowId), flowId);
 
                 });
 
