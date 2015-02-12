@@ -36,4 +36,11 @@ Then run `npm install --msvs_version=2012`
 
 You can start the dev "server" by running `gulp refresh`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc).
 
+'gulp refresh' takes several arguments to make working against a specific flow & state easier. Specifying a flow & state will also mean that when gulp refreshes
+the page on a script change that you end up back where you were.
+
+e.g. `gulp refresh --tenant=<tenant id> --flow=<flow id> --version=<flow version id> --state=<state id>`
+
+If you don't have a state id you can get it entering `manywho.state.getState().id` in the browser console once the flow is running.
+
 You can start the socket.io server (for realtime collaboration) by running `node server`
