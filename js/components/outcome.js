@@ -21,6 +21,18 @@
 
     }
 
+    function getButtonSize(bindingId) {
+
+        if (!manywho.utils.isNullOrWhitespace(bindingId)) {
+
+            return 'btn-sm';
+
+        }
+
+        return '';
+
+    }
+
     var outcome = React.createClass({
 
         render: function () {
@@ -32,7 +44,7 @@
             var classes = [
                 'outcome btn',
                 getButtonType(model.pageActionBindingType),
-                (model.pageActionBindingType) ? 'btn-sm' : ''
+                getButtonSize(model.pageObjectBindingId)
             ].join(' ');
 
             return React.DOM.button({

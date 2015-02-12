@@ -203,6 +203,19 @@
 
         },
 
+        getOutcomes: function (pageObjectId) {
+
+            var outcomesArray = manywho.utils.convertToArray(outcomes) || [];
+
+            return outcomesArray.filter(function (outcome) {
+
+                return (!manywho.utils.isNullOrWhitespace(pageObjectId) && manywho.utils.isEqual(outcome.pageObjectBindingId, pageObjectId, true))
+                    || ((manywho.utils.isNullOrWhitespace(pageObjectId) || manywho.utils.isEqual(pageObjectId, 'root', true)) && manywho.utils.isNullOrWhitespace(outcome.pageObjectBindingId));
+
+            });
+
+        },
+
         getNavigation: function (navigationId) {
 
             if (navigationId) {
@@ -245,28 +258,6 @@
             if (item != null) {
                 return item;
             }
-
-        },
-
-        getOutcomes: function (pageObjectId) {
-
-            var pageObjectOutcomes = [];
-            
-            for (outcomeId in outcomes)
-            {
-                var item = outcomes[outcomeId];
-
-                // If the component has supplied an object id, we find the bound outcomes, otherwise
-                // we find all outcomes that are unbound
-                if ((item.pageObjectBindingId != null && item.pageObjectBindingId.toLowerCase() == pageObjectId.toLowerCase())
-                    || (item.pageObjectBindingId == null || item.pageObjectBindingId.trim().length == 0)) {
-
-                    pageObjectOutcomes.push(item);
-
-                }
-            }
-
-            return pageObjectOutcomes;
 
         },
 

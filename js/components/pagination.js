@@ -3,6 +3,8 @@
     var pagination = React.createClass({
 
         render: function () {
+
+            log.info("Rendering Pagination");
             
             var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev }
             if (this.props.pageIndex <= 1) {
@@ -17,8 +19,6 @@
                 nextAttributes.disabled = 'disabled';
 
             }
-
-            log.info("Rendering Pagination");
 
             return React.DOM.div({ className: this.props.containerClasses }, [
                 React.DOM.button(previousAttributes,
