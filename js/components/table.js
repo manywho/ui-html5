@@ -26,7 +26,7 @@
 
             if (column == 'mw-outcomes') {
 
-                return React.DOM.th({className: 'table-outcome-column'}, null);
+                return React.DOM.th({className: 'table-outcome-column'}, 'Actions');
 
             }
             else {
@@ -84,27 +84,63 @@
 
     }
 
-    function renderHeader(onSearchChanged, onSearchEntered, search) {
+    function renderHeader(isSearchEnabled, onSearchChanged, onSearchEntered, search) {
 
-        return React.DOM.tr({ className: 'active' },
-            React.DOM.td({ colSpan: '100' }, [
-                React.DOM.div({ className: 'input-group table-search' }, [
+        var headerElements = [];
+
+        if (isSearchEnabled) {
+
+            headerElements.push(React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
-                    React.DOM.span({ className: 'input-group-btn' }, 
-                        React.DOM.button({className: 'btn btn-default', onClick: search}, 
-                            React.DOM.span({className: 'glyphicon glyphicon-search'}, null)
+                    React.DOM.span({ className: 'input-group-btn' },
+                        React.DOM.button({ className: 'btn btn-default', onClick: search },
+                            React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
-                ])
             ]));
+
+        }
+
+        if (headerElements.length > 0) {
+
+            return React.DOM.tr({ className: 'active' },
+                    React.DOM.td({ colSpan: '100' }, headerElements));
+
+        }
+
+        return null;
 
     }
 
     function renderFooter(pageIndex, hasMoreResults) {
         
-        return React.DOM.tr({ className: 'active' },
-            React.DOM.td({ colSpan: '100' }, 
-                React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: false, containerClasses: 'pull-right' })));
+        var footerElements = [];
+
+        if (pageIndex > 1 && hasMoreResults) {
+
+            footerElements.push(React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: hasMoreResults, containerClasses: 'pull-right' }));
+
+        }
+
+        if (footerElements.length > 0) {
+
+            return React.DOM.tr({ className: 'active' },
+                React.DOM.td({ colSpan: '100' }, footerElements)
+            );
+
+        }
+
+        return null;
+
+    }
+
+    function areBulkActionsDefined(outcomes) {
+
+        return outcomes.filter(function (outcome) {
+
+            return outcome.isBulkAction;
+
+        }).length != 0
 
     }
 
@@ -128,11 +164,7 @@
 
         onRowClicked: function(e) {
             
-            if (this.state.outcomes.filter(function (outcome) {
-
-                return outcome.isBulkAction;
-
-            }).length == 0) {
+            if (!areBulkActionsDefined(this.state.outcomes)) {
 
                 // Don't select the row if there aren't any bulk actions defined
                 return;
@@ -196,23 +228,29 @@
             var loading = manywho.state.getLoading(this.props.id);
             var objectDataRequest = model.objectDataRequest || {};
             var isWaitVisible = loading && !loading.error;
-
+            var isSelectionEnabled = areBulkActionsDefined(this.state.outcomes) || model.isMultiSelect;
+            
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
 
                 isValid = false;
 
             }
 
-            var containerClasseNames = [
+            var containerClassNames = [
                 'table-responsive',
                 'table-container',
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ].join(' ');
             
+            var tableClassNames = [
+                'table table-bordered',
+                (isSelectionEnabled) ? 'table-hover' : ''
+            ].join(' ');
+
             var tableRows = []
             
-            tableRows.push(renderHeader(this.onSearchChanged, this.onSearchEnter, this.search));
+            tableRows.push(renderHeader(model.isSearchEnabled, this.onSearchChanged, this.onSearchEnter, this.search));
 
             if (loading && loading.error) {
 
@@ -233,8 +271,8 @@
 
             tableRows.push(renderFooter(1, objectDataRequest.hasMoreResults));
 
-            return React.DOM.div({ className: containerClasseNames }, [
-                React.DOM.table({ className: 'table table-hover table-bordered' },
+            return React.DOM.div({ className: containerClassNames }, [
+                React.DOM.table({ className: tableClassNames },
                     React.DOM.tbody({}, tableRows)
                 ),
                 React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: 'Loading...' }, null)
