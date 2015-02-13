@@ -17,9 +17,9 @@
                 
             });
                         
-            return React.DOM.div({ className: 'group_container' }, [
+            return React.DOM.div({ className: classes }, [
                 React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
-                React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id))
+                React.createElement('div', { className: 'tab-content' }, manywho.component.getChildComponents(children, this.props.id))
             ]);
 
         }
