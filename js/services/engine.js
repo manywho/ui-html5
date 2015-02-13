@@ -1,5 +1,7 @@
 manywho.engine = (function (manywho) {
 
+    var isWaiting = false;
+
     function handleAuthorization(response) {
 
         // Check to see if the user has successfully authenticated
@@ -49,6 +51,13 @@ manywho.engine = (function (manywho) {
                 manywho.utils.replaceBrowserUrl(response);
             }
 
+            setIsWaiting(response.invokeType);
+            if (isWaiting) {
+
+                manywho.engine.ping();
+
+            }
+
         }
     }
 
@@ -67,7 +76,14 @@ manywho.engine = (function (manywho) {
                 var defereds = [response];
 
                 if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+
                     defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
+
+                }
+                else {
+
+                    defereds.push(null);
+
                 }
 
                 if (response.currentStreamId) {
@@ -81,7 +97,12 @@ manywho.engine = (function (manywho) {
         })
         .then(function (response, navigation, stream) {
 
-            manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+            if (navigation) {
+
+                manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
+
+            }
+
             return manywho.ajax.invoke(manywho.json.generateInvokeRequest(
                 manywho.state.getState(),
                 'FORWARD',
@@ -115,6 +136,21 @@ manywho.engine = (function (manywho) {
             return manywho.engine.objectDataRequest(component.id, component.objectDataRequest)
 
         }));
+
+    }
+
+    function setIsWaiting(invokeType) {
+
+        if (manywho.utils.isEqual(invokeType, 'wait', true)) {
+
+            isWaiting = true;
+
+        }
+        else {
+
+            isWaiting = false;
+
+        }
 
     }
 
@@ -288,6 +324,34 @@ manywho.engine = (function (manywho) {
 
             var main = manywho.component.getByName('main');
             React.render(React.createElement(main), document.getElementById('manywho'));
+
+        },
+
+        ping: function () {
+
+            if (isWaiting) {
+
+                var state = manywho.state.getState();
+                var self = this;
+
+                manywho.ajax.ping(state.id, state.token)
+                    .then(function (response) {
+
+                        if (response)
+                        {
+
+                            self.join(state.id);
+
+                        }
+                        else {
+
+                            setTimeout(function () { self.ping(); }, 10000);
+
+                        }
+
+                    });
+
+            }
 
         }
 

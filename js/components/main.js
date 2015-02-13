@@ -5,7 +5,8 @@
         getInitialState: function () {
             return {
                 children: manywho.model.getChildren('root'),
-                outcomes: manywho.model.getOutcomes('root')
+                outcomes: manywho.model.getOutcomes('root'),
+                wait: manywho.model.getWait()
             }
         },
         
@@ -18,7 +19,8 @@
                         React.DOM.div({ className: 'container' }, [
                             manywho.component.getChildComponents(this.state.children, this.props.id),
                             manywho.component.getOutcomes(this.state.outcomes, this.props.id)
-                        ])
+                        ]),
+                        React.createElement(manywho.component.getByName('wait'), { wait: this.state.wait })
                     ]);
 
         }

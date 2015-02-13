@@ -208,6 +208,27 @@ manywho.ajax = (function (manywho) {
             .fail(onError)
             .fail(manywho.settings.get('events.objectData.fail'));
 
+        },
+
+        ping: function (stateId, stateToken) {
+
+            log.info('Pinging for changes');
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/state/' + stateId + '/ping/' + stateToken,
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
+
+                    if (manywho.settings.get('authentication.token')) {
+                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    }
+
+                }
+            })
+            .fail(onError);
+
         }
 
     }

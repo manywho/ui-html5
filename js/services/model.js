@@ -4,6 +4,7 @@
     var components = {};
     var outcomes = {};
     var navigation = {};
+    var wait = null;
     var tenantId = '';
 
     function updateData(collection, item, key) {
@@ -83,40 +84,58 @@
     
     manywho.model = {
 
-        componentInputResponseRequests: {},
-
         parseEngineResponse: function (engineInvokeResponse) {
 
             containers = {};
             components = {};
             outcomes = {};
+            wait = null;
 
-            var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-            flattenedContainers.forEach(function (item) {
+            if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
-                containers[item.id] = item;
+                var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+                flattenedContainers.forEach(function (item) {
 
-                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
-                }
+                    containers[item.id] = item;
 
-            }, this);
+                    if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
 
-            engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+                        containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
 
-                components[item.id] = item;
+                    }
 
-                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                }
-                
-            }, this);
+                }, this);
 
-            engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+                engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                outcomes[item.id.toLowerCase()] = item;
+                    components[item.id] = item;
 
-            }, this);
+                    if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+
+                        components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+
+                    }
+
+                }, this);
+
+            }
+
+            if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
+
+                engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+
+                    outcomes[item.id.toLowerCase()] = item;
+
+                }, this);
+
+            }
+            
+            switch (engineInvokeResponse.invokeType.toLowerCase())
+            {
+                case "wait":
+                    wait = { message: engineInvokeResponse.waitMessage }
+                    break;
+            }
 
         },
 
@@ -213,6 +232,12 @@
                     || ((manywho.utils.isNullOrWhitespace(pageObjectId) || manywho.utils.isEqual(pageObjectId, 'root', true)) && manywho.utils.isNullOrWhitespace(outcome.pageObjectBindingId));
 
             });
+
+        },
+
+        getWait: function() {
+
+            return wait;
 
         },
 
