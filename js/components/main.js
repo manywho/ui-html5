@@ -16,7 +16,7 @@
             
             return React.DOM.div({ className: 'mw-bs' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId() }),
-                        React.DOM.div({ className: 'container' }, [
+                        React.DOM.div({ className: 'container main' }, [
                             manywho.component.getChildComponents(this.state.children, this.props.id),
                             manywho.component.getOutcomes(this.state.outcomes, this.props.id)
                         ]),
