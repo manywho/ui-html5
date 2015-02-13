@@ -39,7 +39,7 @@
 
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
-            var isLoading = manywho.state.getIsLoading(this.props.id);
+            var loading = manywho.state.getLoading(this.props.id);
 
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
@@ -59,7 +59,7 @@
 
             var iconClassNames = [
                 'glyphicon glyphicon-refresh select-loading-icon spin',
-                (isLoading) ? '' : 'hidden'
+                (loading) ? '' : 'hidden'
             ].join(' ');
 
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [

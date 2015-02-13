@@ -164,15 +164,15 @@ manywho.state = (function (manywho) {
 
         },
 
-        getIsLoading: function (componentId) {
+        getLoading: function (componentId) {
 
             return loading[componentId];
 
         },
 
-        setIsLoading: function (componentId, isLoading) {
+        setLoading: function (componentId, data) {
 
-            loading[componentId] = isLoading;
+            loading[componentId] = data;
 
         }
         

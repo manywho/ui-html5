@@ -261,14 +261,22 @@ manywho.engine = (function (manywho) {
 
             var self = this;
 
-            manywho.state.setIsLoading(id, true);
+            manywho.state.setLoading(id, { message: 'Loading...'});
             self.render();
 
             return manywho.ajax.dispatchObjectDataRequest(request, limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
-                    
-                    manywho.state.setIsLoading(id, false);
+
+                    manywho.state.setLoading(id, null);
                     manywho.model.getComponent(id).objectData = response.objectData;
+                    
+                })
+                .fail(function (xhr, status, error) {
+
+                    manywho.state.setLoading(id, { error: error });
+
+                })
+                .always(function () {
 
                     self.render();
 

@@ -190,14 +190,17 @@
             log.info('Rendering Table: ' + this.props.id);
 
             var isValid = true;
-
+            
             var model = manywho.model.getComponent(this.props.id);
             var state = manywho.state.getComponent(this.props.id);
-            var isLoading = manywho.state.getIsLoading(this.props.id);
+            var loading = manywho.state.getLoading(this.props.id);
             var objectDataRequest = model.objectDataRequest || {};
+            var isWaitVisible = loading && !loading.error;
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+
                 isValid = false;
+
             }
 
             var containerClasseNames = [
@@ -207,18 +210,34 @@
                 (isValid) ? '' : 'has-error'
             ].join(' ');
             
+            var tableRows = []
+            
+            tableRows.push(renderHeader(this.onSearchChanged, this.onSearchEnter, this.search));
+
+            if (loading && loading.error) {
+
+                tableRows.push(React.DOM.tr(null,
+                    React.DOM.td({ colSpan: 100, className: 'table-error' }, [
+                        React.DOM.p({ className: 'lead' }, loading.error),
+                        React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry'),
+                    ])
+                ));
+
+            }
+            else {
+
+                tableRows.push(renderHeaderRow(model.columns, this.state.outcomes));
+                tableRows.push(renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked));
+
+            }
+
+            tableRows.push(renderFooter(1, objectDataRequest.hasMoreResults));
+
             return React.DOM.div({ className: containerClasseNames }, [
                 React.DOM.table({ className: 'table table-hover table-bordered' },
-                    React.DOM.tbody({}, [
-                        renderHeader(this.onSearchChanged, this.onSearchEnter, this.search),
-                        renderHeaderRow(model.columns, this.state.outcomes),
-                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked),
-                        renderFooter(1, objectDataRequest.hasMoreResults)
-                    ])
+                    React.DOM.tbody({}, tableRows)
                 ),
-                React.DOM.div({ className: 'table-loading-overlay ' + ((isLoading) ? '' : 'hidden') }, 
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh table-loading-icon spin' }, null)
-                )
+                React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: 'Loading...' }, null)
             ]);
         }
 
