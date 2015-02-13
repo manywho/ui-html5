@@ -26,7 +26,7 @@
 
             if (column == 'mw-outcomes') {
 
-                return React.DOM.th({className: 'table-outcome-column'}, null);
+                return React.DOM.th({className: 'table-outcome-column'}, 'Actions');
 
             }
             else {
@@ -87,25 +87,25 @@
     function renderHeader(onSearchChanged, onSearchEntered, search) {
 
         return React.DOM.tr({ className: 'active' },
-            React.DOM.td({ colSpan: '100' }, [
-                React.DOM.div({ className: 'input-group table-search' }, [
+                React.DOM.th({ colSpan: '100' }, React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
-                    React.DOM.span({ className: 'input-group-btn' }, 
-                        React.DOM.button({className: 'btn btn-default', onClick: search}, 
+                    React.DOM.span({ className: 'input-group-btn' },
+                        React.DOM.button({className: 'btn btn-default', onClick: search},
                             React.DOM.span({className: 'glyphicon glyphicon-search'}, null)
                         )
                     )
                 ])
-            ]));
-
+            )
+        );
     }
 
     function renderFooter(pageIndex, hasMoreResults) {
         
         return React.DOM.tr({ className: 'active' },
-            React.DOM.td({ colSpan: '100' }, 
-                React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: false, containerClasses: 'pull-right' })));
-
+            React.DOM.td({ colSpan: '100' },
+                React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: false, containerClasses: 'pull-right' })
+            )
+        );
     }
 
     var table = React.createClass({
@@ -195,6 +195,8 @@
             var state = manywho.state.getComponent(this.props.id);
             var isLoading = manywho.state.getIsLoading(this.props.id);
             var objectDataRequest = model.objectDataRequest || {};
+            var tableHeader = [];
+            var table = [];
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
                 isValid = false;
@@ -206,16 +208,28 @@
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ].join(' ');
-            
+
+            // Only include the search bar if it's enabled
+            if (model.isSearchable) {
+                tableHeader[tableHeader.length] = renderHeader(this.onSearchChanged, this.onSearchEnter, this.search);
+            }
+
+            tableHeader[tableHeader.length] = renderHeaderRow(model.columns, this.state.outcomes);
+
+            table[table.length] = React.DOM.thead({}, tableHeader);
+            table[table.length] = React.DOM.tbody({}, [
+                renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked)
+            ]);
+
+            // Only include the paging if we have more results
+            if (objectDataRequest.hasMoreResults) {
+                table[table.length] = React.DOM.tfoot({}, [
+                    renderFooter(1, objectDataRequest.hasMoreResults)
+                ]);
+            }
+
             return React.DOM.div({ className: containerClasseNames }, [
-                React.DOM.table({ className: 'table table-hover table-bordered' },
-                    React.DOM.tbody({}, [
-                        renderHeader(this.onSearchChanged, this.onSearchEnter, this.search),
-                        renderHeaderRow(model.columns, this.state.outcomes),
-                        renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked),
-                        renderFooter(1, objectDataRequest.hasMoreResults)
-                    ])
-                ),
+                React.DOM.table({ className: 'table table-hover table-bordered' }, table),
                 React.DOM.div({ className: 'table-loading-overlay ' + ((isLoading) ? '' : 'hidden') }, 
                     React.DOM.span({ className: 'glyphicon glyphicon-refresh table-loading-icon spin' }, null)
                 )

@@ -1,13 +1,14 @@
 (function (manywho) {
 
-    function getHeaderElement(navigation) {
+    function getHeaderElement(id, navigation) {
 
         var children = [
-            React.DOM.button({ type: 'button', className: 'navbar-toggle' }),
-            React.DOM.span({ type: 'button', className: 'sr-only' }, 'Toggle navigation'),
-            React.DOM.span({ type: 'button', className: 'icon-bar' }),
-            React.DOM.span({ type: 'button', className: 'icon-bar' }),
-            React.DOM.span({ type: 'button', className: 'icon-bar' })
+            React.DOM.button({ type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#' + id }, [
+                React.DOM.span({ type: 'button', className: 'sr-only' }, 'Toggle navigation'),
+                React.DOM.span({ type: 'button', className: 'icon-bar' }),
+                React.DOM.span({ type: 'button', className: 'icon-bar' }),
+                React.DOM.span({ type: 'button', className: 'icon-bar' })
+            ])
         ]
 
         if (navigation.label != null && navigation.label.trim().length > 0) {
@@ -68,9 +69,9 @@
                 log.info("Rendering Navigation");
 
                 return React.DOM.nav({ className: 'navbar navbar-default' },
-                            React.DOM.div({ className: 'container-fluid' }, [
-                                getHeaderElement(navigation),
-                                React.DOM.div({ className: 'collapse navbar-collapse' },
+                            React.DOM.div({ className: 'container' }, [
+                                getHeaderElement(this.props.id, navigation),
+                                React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },
                                     React.DOM.ul({ className: 'nav navbar-nav' },
                                         getListElements(navigation.items, this.handleClick)
                                     )
