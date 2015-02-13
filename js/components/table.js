@@ -250,7 +250,7 @@
 
             var tableRows = []
             
-            tableRows.push(renderHeader(model.isSearchEnabled, this.onSearchChanged, this.onSearchEnter, this.search));
+            tableRows.push(renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search));
 
             if (loading && loading.error) {
 
