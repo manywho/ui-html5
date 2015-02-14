@@ -35,6 +35,27 @@ manywho.component = (function (manywho) {
 
         },
 
+        getComponentSizeClass: function(size) {
+
+            var fieldSize = '';
+
+            if (size > 0) {
+                if (size < 10) {
+                    fieldSize = ' col-xs-1';
+                } else if (size < 20) {
+                    fieldSize = ' col-xs-2';
+                } else if (size < 30) {
+                    fieldSize = ' col-xs-3';
+                } else if (size < 50) {
+                    fieldSize = ' col-xs-4';
+                } else if (size < 70) {
+                    fieldSize = ' col-xs-5';
+                }
+            }
+
+            return fieldSize;
+        },
+
         getByName: function (name) {
 
             return components[name.toLowerCase()];
@@ -83,6 +104,37 @@ manywho.component = (function (manywho) {
                         selectedObjectData = model.objectData.filter(function (item) {
 
                             return manywho.utils.isEqual(item.externalId, selectedOptions[option].value, true);
+
+                        })
+                        .map(function (item) {
+
+                            item.isSelected = true;
+                            return item;
+
+                        });
+
+                    }
+
+                }
+
+            }
+
+            return selectedObjectData;
+        },
+
+        getSelectedRows: function (model, selectedIds) {
+
+            var selectedObjectData = null;
+
+            if (selectedIds) {
+
+                for (selectedId in selectedIds) {
+
+                    if (!manywho.utils.isNullOrWhitespace(selectedIds[selectedId])) {
+
+                        selectedObjectData = model.objectData.filter(function (item) {
+
+                            return manywho.utils.isEqual(item.externalId, selectedIds[selectedId], true);
 
                         })
                         .map(function (item) {

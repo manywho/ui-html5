@@ -39,17 +39,19 @@
 
     }
 
-    function renderRows(objectData, selectedRows, columns, outcomes, onRowClicked) {
+    function renderRows(model, selectedRows, outcomes, onRowClicked) {
 
+        var objectData = model.objectData || [];
+        var columns = model.columns;
         var displayColumns = getDisplayColumns(columns, outcomes);
 
         return objectData.map(function(item) {
 
             var classes = [
-                (selectedRows.indexOf(item.internalId) != -1) ? 'info' : ''
+                (selectedRows.indexOf(item.externalId) != -1) ? 'info' : ''
             ];
 
-            return React.DOM.tr({ className: classes, id: item.internalId, onClick: onRowClicked }, displayColumns.map(function(column) {
+            return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
                     
@@ -57,8 +59,20 @@
 
                     return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
                         
-                        return React.createElement(outcomeComponent, { id: outcome.id });
+                        return React.createElement(
+                            outcomeComponent,
+                            {
+                                id: outcome.id,
+                                onClick: function (event) {
 
+                                    // This code assumes the button is an immediate child of the td and that the parent tr holds the identifier
+                                    manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [$(event.target).parent().parent().attr('id')]) }, true);
+
+                                    // Tell the engine to move now we have assigned the selected object data to the state
+                                    manywho.engine.move(outcome);
+                                }
+                            }
+                        );
                     }));
                     
                 }
@@ -163,7 +177,9 @@
         },
 
         onRowClicked: function(e) {
-            
+
+            var model = manywho.model.getComponent(this.props.id);
+
             if (!areBulkActionsDefined(this.state.outcomes)) {
 
                 // Don't select the row if there aren't any bulk actions defined
@@ -195,7 +211,7 @@
             }
 
             this.setState({ selectedRows: selectedRows });
-            manywho.state.setComponent(this.props.id, { objectData: selectedRows }, true);
+            manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, true);
 
         },
 
@@ -265,7 +281,7 @@
             else {
 
                 tableRows.push(renderHeaderRow(model.columns, this.state.outcomes));
-                tableRows.push(renderRows(model.objectData || [], this.state.selectedRows, model.columns, this.state.outcomes, this.onRowClicked));
+                tableRows.push(renderRows(model, this.state.selectedRows, this.state.outcomes, this.onRowClicked));
 
             }
 

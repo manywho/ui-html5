@@ -21,6 +21,8 @@
                 id: this.props.id,
                 placeholder: model.hintValue,
                 value: state.contentValue,
+                maxLength: model.maxSize,
+                /*className: manywho.component.getComponentSizeClass(model.width),*/
                 onChange: this.handleChange
             }
 

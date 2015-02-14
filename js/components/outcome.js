@@ -40,6 +40,15 @@
             log.info('Rendering Outcome: ' + this.props.id);
 
             var model = manywho.model.getOutcome(this.props.id);
+            var onClickFunction = function (event) {
+
+                manywho.engine.move(model);
+            };
+
+            if (this.props.onClick) {
+
+                onClickFunction = this.props.onClick;
+            }
 
             var classes = [
                 'outcome btn',
@@ -49,10 +58,7 @@
 
             return React.DOM.button({
                 className: classes,
-                onClick: function (event) {
-
-                    manywho.engine.move(model);
-                }
+                onClick: onClickFunction
 
             }, model.label);
 
