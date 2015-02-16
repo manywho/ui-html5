@@ -241,7 +241,7 @@
             return React.DOM.div({ className: classNames }, [
                 renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
-                renderFooter(1, true),
+                renderFooter(1, objectDataRequest.hasMoreResults),
                 React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible }, null)
             ]);
 
