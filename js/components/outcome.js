@@ -38,7 +38,17 @@
         onClick: function(e) {
 
             var model = manywho.model.getOutcome(this.props.id);
-            manywho.engine.move(model);
+
+            if (this.props.onClick) {
+
+                this.props.onClick(e, model);
+
+            }
+            else {
+
+                manywho.engine.move(model);
+
+            }            
 
         },
 
@@ -54,7 +64,7 @@
                 getButtonSize(model.pageObjectBindingId)
             ].join(' ');
 
-            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.props.onClick || this.onClick }, model.label);
+            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, model.label);
 
         }
 
