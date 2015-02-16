@@ -89,6 +89,8 @@
 
         var options = {
             tenantId: queryParameters['tenant-id'],
+            // Replace this with the admin tenant ID from the constants file
+            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
             flowId: {
                 id: queryParameters['flow-id'],
                 versionId: queryParameters['flow-version-id']
@@ -107,6 +109,7 @@
             collaboration: {
                 isEnabled: false
             },
+            playerUrl: document.URL,
             inputs: null,
             annotations: null
         };

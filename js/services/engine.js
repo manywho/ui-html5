@@ -1,9 +1,9 @@
 manywho.engine = (function (manywho) {
 
-    function handleAuthorization(response) {
+    function handleAuthorization(response, flowKey) {
 
         // Check to see if the user has successfully authenticated
-        if (manywho.utils.isEqual(response.statusCode, '401', true)) {
+        if (response.authorizationContext != null) {
 
             if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
                 // Navigate the user to the oauth provider
@@ -11,8 +11,32 @@ manywho.engine = (function (manywho) {
                 return false;
             }
 
-            // TODO: throw up the login dialog to login to the directory
-            alert('login!');
+            // Get the authentication Flow and follow all of the steps
+            manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.get('adminTenantId'))
+                .then(function(data) {
+
+                    // Generate the second flow key to store the authentication flow model
+                    var authenticationKey = manywho.utils.buildModelKey(data.id.id, data.id.versionId, manywho.settings.get('adminTenantId'));
+
+                    //Set the tenantId in the new Flow model for the authentication flow
+                    manywho.model.setTenantId(authenticationKey, manywho.settings.get('adminTenantId'));
+
+                    // Construct the inputs to invoke the Authentication Flow
+                    var inputObject = {
+                        loginUrl: response.authorizationContext.loginUrl,
+                        ManyWhoTenantId: manywho.model.getTenantId(flowKey),
+                        DirectoryName: response.authorizationContext.directoryName,
+                        StateId: response.stateId
+                    };
+
+                    // Convert the input data into a proper parsable format
+                    var inputData = manywho.json.generateFlowInputs(inputObject);
+
+                    var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.get('playerUrl'));
+
+                    process.call(this, manywho.ajax.initialize(requestData, manywho.model.getTenantId(authenticationKey)), authenticationKey);
+
+                });
 
             // TODO: login to the flow like this to get the authentication token
             this.login(
@@ -60,7 +84,7 @@ manywho.engine = (function (manywho) {
 
             manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
 
-            if (handleAuthorization(response)) {
+            if (handleAuthorization(response, flowKey)) {
 
                 manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
 
