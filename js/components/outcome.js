@@ -35,32 +35,26 @@
 
     var outcome = React.createClass({
 
+        onClick: function(e) {
+
+            var model = manywho.model.getOutcome(this.props.id);
+            manywho.engine.move(model);
+
+        },
+
         render: function () {
 
             log.info('Rendering Outcome: ' + this.props.id);
 
             var model = manywho.model.getOutcome(this.props.id);
-            var onClickFunction = function (event) {
-
-                manywho.engine.move(model);
-            };
-
-            if (this.props.onClick) {
-
-                onClickFunction = this.props.onClick;
-            }
-
+            
             var classes = [
                 'outcome btn',
                 getButtonType(model.pageActionBindingType),
                 getButtonSize(model.pageObjectBindingId)
             ].join(' ');
 
-            return React.DOM.button({
-                className: classes,
-                onClick: onClickFunction
-
-            }, model.label);
+            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.props.onClick || this.onClick }, model.label);
 
         }
 

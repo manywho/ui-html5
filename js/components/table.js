@@ -44,6 +44,7 @@
         var objectData = model.objectData || [];
         var columns = model.columns;
         var displayColumns = getDisplayColumns(columns, outcomes);
+        var outcomeComponent = manywho.component.getByName('outcome');
 
         return objectData.map(function(item) {
 
@@ -54,25 +55,11 @@
             return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
-                    
-                    var outcomeComponent = manywho.component.getByName('outcome');
-
-                    return React.DOM.td({ className: 'table-outcome-column' }, outcomes.map(function (outcome) {
+                                        
+                    return React.DOM.td({ className: 'table-outcome-column', 'data-item-id': item.externalId, 'data-model-id': model.id }, outcomes.map(function (outcome) {
                         
-                        return React.createElement(
-                            outcomeComponent,
-                            {
-                                id: outcome.id,
-                                onClick: function (event) {
+                        return React.createElement(outcomeComponent, { id: outcome.id, onClick: onOutcomeClick }, null);
 
-                                    // This code assumes the button is an immediate child of the td and that the parent tr holds the identifier
-                                    manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [$(event.target).parent().parent().attr('id')]) }, true);
-
-                                    // Tell the engine to move now we have assigned the selected object data to the state
-                                    manywho.engine.move(outcome);
-                                }
-                            }
-                        );
                     }));
                     
                 }
@@ -155,6 +142,19 @@
             return outcome.isBulkAction;
 
         }).length != 0
+
+    }
+
+    function onOutcomeClick(e) {
+
+        var modelId = e.target.parentElement.getAttribute('data-model-id');
+        var objectDataId = e.target.parentElement.getAttribute('data-item-id');
+
+        var model = manywho.model.getComponent(modelId);
+        manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [objectDataId]) }, true);
+
+        var outcome = manywho.model.getOutcome(e.target.id);
+        manywho.engine.move(outcome);
 
     }
 
