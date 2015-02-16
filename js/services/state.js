@@ -118,7 +118,7 @@ manywho.state = (function (manywho) {
 
             if (components != null) {
 
-                pageComponentInputResponseRequests = new Array();
+                pageComponentInputResponseRequests = [];
 
                 for (id in components) {
 

@@ -72,7 +72,7 @@ gulp.task('options', function () {
             id: argv.flow,
             versionId: argv.version
         },
-        stateId: argv.state,
+        stateId: argv.state
     }
 
     var scriptTag = '<script>';

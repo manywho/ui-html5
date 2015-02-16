@@ -169,7 +169,7 @@ manywho.ajax = (function (manywho) {
         getFlowByName: function (flowName, tenantId) {
 
             return $.ajax({
-                url: 'https://flow.manywho.com/api/run/1/flow/name' + flowName,
+                url: 'https://flow.manywho.com/api/run/1/flow/name/' + flowName,
                 type: 'GET',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -177,15 +177,15 @@ manywho.ajax = (function (manywho) {
 
                     xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
-                    if (manywho.settings.get('events.getflowbyname.beforeSend')) {
-                        manywho.settings.get('events.getflowbyname.beforeSend').call(this, xhr);
+                    if (manywho.settings.get('events.getFlowByName.beforeSend')) {
+                        manywho.settings.get('events.getFlowByName.beforeSend').call(this, xhr);
                     }
 
                 }
             })
-                .done(manywho.settings.get('events.getflowbyname.done'))
+                .done(manywho.settings.get('events.getFlowByName.done'))
                 .fail(onError)
-                .fail(manywho.settings.get('events.getflowbyname.fail'));
+                .fail(manywho.settings.get('events.getFlowByName.fail'));
 
         },
 

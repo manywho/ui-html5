@@ -6,10 +6,10 @@ manywho.json = (function (manywho) {
 
             var inputs = [];
 
-            for (var property in data) {
+            for (var property in inputsData) {
                 inputs.push({
-                    'contentType': 'Content' + (typeof data[property]).charAt(0).toUpperCase(),
-                    'contentValue': data[property],
+                    'contentType': 'Content' + (typeof inputsData[property]).charAt(0).toUpperCase() + (typeof inputsData[property]).substring(1).toLowerCase(),
+                    'contentValue': inputsData[property],
                     'developerName': property,
                     'objectData': objectData || null,
                     'typeElementDeveloperName': typeElementDeveloperName || null
@@ -25,7 +25,7 @@ manywho.json = (function (manywho) {
             return {
                 'flowId': {
                     'id': flowId.id,
-                    'versionId': flowId.versionid
+                    'versionId': flowId.versionid || flowId.versionId || null
                 },
                 'stateId': stateId || null,
                 'annotations': annotations || null,

@@ -63,7 +63,8 @@ manywho.settings = (function (manywho, $) {
                     navigation: {},
                     join: {},
                     login: {},
-                    objectData: {}
+                    objectData: {},
+                    getFlowByName: {}
                 }
             };
 

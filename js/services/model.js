@@ -88,6 +88,7 @@
             flowModel[flowKey].containers = {};
             flowModel[flowKey].components = {};
             flowModel[flowKey].outcomes = {};
+            flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
             var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
             flattenedContainers.forEach(function (item) {
@@ -148,6 +149,12 @@
             };
 
             flowModel[flowKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+
+        },
+
+        getLabel: function (flowKey) {
+
+            return flowModel[flowKey].label;
 
         },
 
