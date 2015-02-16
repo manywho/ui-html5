@@ -80,7 +80,7 @@
             }
             else {
 
-                attributes.className = 'form-control'; // + manywho.component.getComponentSizeClass(model.size);
+                attributes.className = 'form-control';
 
                 return React.DOM.div({ className: 'form-group ' + containerClassNames },
                         [

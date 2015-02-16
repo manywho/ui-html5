@@ -34,28 +34,7 @@ manywho.component = (function (manywho) {
             return components[getComponentType(item).toLowerCase()];
 
         },
-
-        getComponentSizeClass: function(size) {
-
-            var fieldSize = '';
-
-            if (size > 0) {
-                if (size < 10) {
-                    fieldSize = ' col-xs-1';
-                } else if (size < 20) {
-                    fieldSize = ' col-xs-2';
-                } else if (size < 30) {
-                    fieldSize = ' col-xs-3';
-                } else if (size < 50) {
-                    fieldSize = ' col-xs-4';
-                } else if (size < 70) {
-                    fieldSize = ' col-xs-5';
-                }
-            }
-
-            return fieldSize;
-        },
-
+        
         getByName: function (name) {
 
             return components[name.toLowerCase()];
@@ -65,19 +44,21 @@ manywho.component = (function (manywho) {
         getChildComponents: function (children, id) {
 
             return children.map(function (item) {
-                var component = this.get(item);
-                if (!component)
-                    debugger;
+
+                var component = this.get(item);                
                 return React.createElement(component, { id: item.id, parentId: id });
+
             }, this);
 
         },
 
         getOutcomes: function(outcomes)
         {
+
             return outcomes.map(function (item) {
                 return React.createElement(components['outcome'], { id: item.id });
             });
+
         },
 
         handleEvent: function (component, model) {
