@@ -132,6 +132,13 @@ gulp.task('fonts-dist', function () {
 
 });
 
+gulp.task('chosen-dist', function () {
+
+    return gulp.src('css/lib/*.png')
+                .pipe(gulp.dest('./dist/css'));
+
+});
+
 gulp.task('bootstrap-dist', function () {
 
     return gulp.src('css/mw-bootstrap.less')
@@ -179,7 +186,7 @@ gulp.task('html-dist', function () {
 gulp.task('dist', function () {
 
     runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist'],
+                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
                 'html-dist');
 
 });
