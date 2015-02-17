@@ -88,35 +88,45 @@
             flowModel[flowKey].containers = {};
             flowModel[flowKey].components = {};
             flowModel[flowKey].outcomes = {};
-            flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
+            flowModel[flowKey].label = null;
 
-            var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-            flattenedContainers.forEach(function (item) {
+            if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
-                flowModel[flowKey].containers[item.id] = item;
+                flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                    flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
-                }
+                var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+                flattenedContainers.forEach(function (item) {
 
-            }, this);
+                    flowModel[flowKey].containers[item.id] = item;
 
-            engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+                    if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                        flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                    }
 
-                flowModel[flowKey].components[item.id] = item;
+                }, this);
 
-                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-                    flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                }
+                engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+
+                    flowModel[flowKey].components[item.id] = item;
+
+                    if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                        flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                    }
                 
-            }, this);
+                }, this);
+                                
+            }
 
-            engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+            if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
 
-                flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
+                engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
 
-            }, this);
+                    flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
 
+                }, this);
+
+            }
+            
         },
 
         parseEngineSyncResponse: function(response, flowKey) {

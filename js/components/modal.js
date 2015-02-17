@@ -3,19 +3,25 @@
     var modal = React.createClass({
 
         getInitialState: function () {
+
             return {
                 children: manywho.model.getChildren('root', this.props.flowKey),
                 outcomes: manywho.model.getOutcomes('root', this.props.flowKey),
                 modalIsOpen: false
             }
+
         },
 
         openModal: function () {
+
             this.setState({ modalIsOpen: true });
+
         },
 
-        closeModal: function() {
+        closeModal: function () {
+
             this.setState({ modalIsOpen: false });
+
         },
 
         render: function () {
@@ -41,5 +47,7 @@
         }
 
     });
+
+    manywho.component.register("modal", modal);
 
 }(manywho));

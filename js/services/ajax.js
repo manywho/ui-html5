@@ -121,8 +121,8 @@ manywho.ajax = (function (manywho) {
 
                     xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
+                    if (manywho.state.getAuthenticationToken()) {
+                        xhr.setRequestHeader('Authorization', manywho.state.getAuthenticationToken());
                     }
 
                     if (manywho.settings.get('events.invoke.beforeSend')) {

@@ -1,26 +1,45 @@
 manywho.engine = (function (manywho) {
 
-    function handleAuthorization(response, flowKey) {
+    var doneCallbacks = {};
+
+    function isAuthorized(response) {
+
+        if (response.authorizationContext != null
+            && response.authorizationContext.directoryId != null
+            && manywho.utils.isNullOrWhitespace(manywho.state.getAuthenticationToken())) {
+
+            return $.Deferred().reject(response).promise();
+
+        }
+
+        return response
+
+    }
+
+    function handleAuthorization(response, flowKey, doneCallback) {
 
         // Check to see if the user has successfully authenticated
         if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
             if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
+
                 // Navigate the user to the oauth provider
                 window.location = response.authorizationContext.loginUrl;
-                return false;
+
             }
+
+            var authenticationKey = null;
 
             // Get the authentication Flow and follow all of the steps
             manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.get('adminTenantId'))
-                .then(function(data) {
+                .then(function (data) {
 
                     // Generate the second flow key to store the authentication flow model
-                    var authenticationKey = manywho.utils.buildModelKey(data.id.id, data.id.versionId, manywho.settings.get('adminTenantId'), 'modal');
+                    authenticationKey = manywho.utils.buildModelKey(data.id.id, data.id.versionId, manywho.settings.get('adminTenantId'), 'modal');
 
                     // Add the flow main div to render the modal
                     var flowDiv = document.createElement('div');
-                    flowDiv.setAttribute('id', flowKey);
+                    flowDiv.setAttribute('id', authenticationKey);
                     document.body.appendChild(flowDiv);
 
                     //Set the tenantId in the new Flow model for the authentication flow
@@ -36,79 +55,80 @@ manywho.engine = (function (manywho) {
 
                     // Convert the input data into a proper parsable format
                     var inputData = manywho.json.generateFlowInputs(inputObject);
-
                     var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.get('playerUrl'));
 
-                    process.call(this, manywho.ajax.initialize(requestData, manywho.model.getTenantId(authenticationKey)), authenticationKey);
+                    registerDoneCallback(authenticationKey, {
+                        callback: function (response) {
+
+                            var authenticationToken = response.outputs.filter(function (output) {
+
+                                return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
+
+                            }).map(function (output) {
+
+                                return output.contentValue;
+
+                            })[0];
+
+                            manywho.state.setAuthenticationToken(authenticationToken);
+
+                        },
+                        context: manywho.engine
+                    });
+
+                    registerDoneCallback(authenticationKey, doneCallback);
+
+                    return manywho.ajax.initialize(requestData, manywho.model.getTenantId(authenticationKey));                   
+
+                })
+                .then(function(response) {
+
+                    process.call(manywho.engine, response, authenticationKey);
 
                 });
 
-            // TODO: login to the flow like this to get the authentication token
-            /*this.login(
-                response.authorizationContext.loginUrl,
-                'my username',
-                'my password',
-                manywho.settings.get('authentication.sessionid'),
-                manywho.settings.get('authentication.sessionurl'),
-                response.stateId
-            );*/
-
-            // TODO: set the authentication token
-            manywho.state.setAuthenticationToken('the token');
-
-            // TODO: restart whatever async sequence was tried before
-
-            return false;
         }
-
-        return true;
 
     }
 
     function update(response, responseParser, flowKey) {
 
-        if (handleAuthorization(response)) {
+        responseParser.call(manywho.model, response, flowKey);
 
-            responseParser.call(manywho.model, response, flowKey);
+        manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
+        manywho.state.refreshComponents(manywho.model.getComponents(flowKey));
 
-            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
-            manywho.state.refreshComponents(manywho.model.getComponents(flowKey));
-
-            if (manywho.settings.get('replaceUrl')) {
-                manywho.utils.replaceBrowserUrl(response);
-            }
-
+        if (manywho.settings.get('replaceUrl')) {
+            manywho.utils.replaceBrowserUrl(response);
         }
+
     }
 
-    function process(dispatcher, flowKey) {
+    function process(response, flowKey) {
 
         var self = this;
+        var defereds = [response];
 
-        return dispatcher.then(function (response) {
+        manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
 
-            var defereds = [response];
+        manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
 
-            defereds.push(handleAuthorization(response, flowKey));
+        if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+            defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id, manywho.model.getTenantId(flowKey)));
+        }
 
-            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
+        if (response.currentStreamId) {
+            // Add create social stream ajax call to defereds here
+        }
 
-            manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
+        return $.when.apply($, defereds).then(function (response, navigation, stream) {
 
-            if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id, manywho.model.getTenantId(flowKey)));
+            if (navigation) {
+
+                manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0], flowKey);
+
             }
 
-            if (response.currentStreamId) {
-                // Add create social stream ajax call to defereds here
-            }
-
-            return $.when.apply($, defereds);
-
-        })
-        .then(function (response, navigation, stream) {
-
-            manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0], flowKey);
             return manywho.ajax.invoke(manywho.json.generateInvokeRequest(
                     manywho.state.getState(),
                     'FORWARD',
@@ -117,7 +137,7 @@ manywho.engine = (function (manywho) {
                     manywho.settings.get('annotations'),
                     manywho.state.getGeoLocation(),
                     manywho.settings.get('mode')),
-                manywho.model.getTenantId(flowKey)
+                    manywho.model.getTenantId(flowKey)
             );
 
         })
@@ -146,6 +166,49 @@ manywho.engine = (function (manywho) {
 
     }
 
+    function registerDoneCallback(flowKey, callback) {
+
+        doneCallbacks[flowKey] = doneCallbacks[flowKey] || [];
+        doneCallbacks[flowKey].push(callback);
+
+    }
+
+    function executeDoneCallbacks(flowKey, args) {
+
+        if (doneCallbacks[flowKey]) {
+
+            doneCallbacks[flowKey].forEach(function(item) {
+               
+                item.callback.apply(item.context, item.args || args);
+
+            });
+
+            delete doneCallbacks[flowKey];
+
+        }
+
+    }
+
+    function test(invokeRequest, flowKey) {
+
+        manywho.ajax.invoke(invokeRequest, manywho.model.getTenantId(flowKey))
+            .then(isAuthorized)
+            .then(function (response) {
+                
+                return process.call(manywho.engine, response, flowKey);
+
+            }, function (response) {
+
+                handleAuthorization(response, flowKey, {
+                    callback: test,
+                    context: this,
+                    args: [invokeRequest, manywho.model.getTenantId(flowKey)]
+                });
+
+            });
+
+    }
+
     return {
 
         initialize: function() {
@@ -171,14 +234,36 @@ manywho.engine = (function (manywho) {
 
                 var initializationRequest = manywho.json.generateInitializationRequest(
                     manywho.settings.get('flowId'),
-                    manywho.state.getState().id,
+                    null,
                     manywho.settings.get('annotations'),
                     manywho.settings.get('inputs'),
                     manywho.settings.get('mode'),
                     manywho.settings.get('reportingMode')
                 );
 
-                process.call(this, manywho.ajax.initialize(initializationRequest, manywho.model.getTenantId(flowKey)), flowKey);
+                var self = this;
+
+                manywho.ajax.initialize(initializationRequest, manywho.model.getTenantId(flowKey))
+                    .then(isAuthorized)
+                    .then(function (response) {
+
+                        return process.call(self, response, flowKey);
+
+                    }, function (response) {
+                        
+                        var invokeRequest = manywho.json.generateInvokeRequest({
+                            id: response.stateId,
+                            token: response.stateToken,
+                            currentMapElementId: response.currentMapElementId
+                        }, 'FORWARD');
+
+                        handleAuthorization(response, flowKey, {
+                            callback: test,
+                            context: self,
+                            args: [invokeRequest, flowKey]
+                        });
+
+                    });
 
             }
 
@@ -210,12 +295,23 @@ manywho.engine = (function (manywho) {
                 React.unmountComponentAtNode(document.getElementById(flowKey));
                 self.render(flowKey);
 
+                return response;
+
+            })
+            .then(function (response) {
+
+                if (manywho.utils.isEqual(response.invokeType, 'done', true)) {
+
+                    executeDoneCallbacks(flowKey, [response]);
+
+                }
+
             })
             .then(function () {
 
                 return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
-            });
+            })
 
         },
 
