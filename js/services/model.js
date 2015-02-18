@@ -222,22 +222,30 @@
 
         getNavigation: function (navigationId, flowKey) {
 
-            if (navigationId) {
+            if (flowModel[flowKey].navigation) {
 
-                return flowModel[flowKey].navigation[navigationId];
+                if (navigationId) {
+
+                    return flowModel[flowKey].navigation[navigationId];
+
+                }
+                else {
+
+                    return navigation[Object.keys(flowModel[flowKey].navigation)[0]];
+
+                }
 
             }
-            else {
-
-                return navigation[Object.keys(flowModel[flowKey].navigation)[0]];
-
-            }            
 
         },
 
         getDefaultNavigationId: function(flowKey) {
 
-            return Object.keys(flowModel[flowKey].navigation)[0];
+            if (flowModel[flowKey].navigation) {
+
+                return Object.keys(flowModel[flowKey].navigation)[0];
+
+            }
 
         },
 
