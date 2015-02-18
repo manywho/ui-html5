@@ -318,6 +318,40 @@
 
         },
 
+        setModal: function(flowKey, modalKey) {
+
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
+
+            flowModel[flowKey].modal = modalKey;
+
+        },
+
+        getModal: function(flowKey) {
+
+            if (flowModel[flowKey]) {
+
+                return flowModel[flowKey].modal;
+
+            }
+
+        },
+
+        getParentForModal: function(modalKey) {
+
+            for (flowKey in flowModel) {
+
+                if (manywho.utils.isEqual(flowModel[flowKey].modal, modalKey, true)) {
+
+                    return flowKey;
+
+                }
+
+            }
+
+            return null;
+
+        },
+
         isContainer: function (item) {
 
             return !manywho.utils.isNullOrWhitespace(item.containerType);

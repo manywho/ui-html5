@@ -50,15 +50,8 @@ manywho.authorization = (function (manywho) {
                 manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.get('adminTenantId'))
                     .then(function (data) {
 
-                        // Generate the second flow key to store the authentication flow model
                         authenticationKey = manywho.utils.buildModelKey(data.id.id, data.id.versionId, manywho.settings.get('adminTenantId'), 'modal');
 
-                        // Add the flow main div to render the modal
-                        var flowDiv = document.createElement('div');
-                        flowDiv.setAttribute('id', authenticationKey);
-                        document.body.appendChild(flowDiv);
-
-                        //Set the tenantId in the new Flow model for the authentication flow
                         manywho.model.setTenantId(authenticationKey, manywho.settings.get('adminTenantId'));
 
                         // Construct the inputs to invoke the Authentication Flow
@@ -86,9 +79,15 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function(response) {
 
-                        manywho.engine.process.call(manywho.engine, response, authenticationKey);
+                        return manywho.engine.process.call(manywho.engine, response, authenticationKey);
 
-                    });
+                    })
+                    .then(function () {
+
+                        manywho.model.setModal(flowKey, authenticationKey);
+                        manywho.engine.render(flowKey);
+
+                    })
 
             }
 

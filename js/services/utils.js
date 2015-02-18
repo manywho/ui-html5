@@ -157,7 +157,9 @@ manywho.utils = (function (manywho, $) {
         },
 
         extractElementKey: function (flowKey) {
+
             return flowKey.split('|')[3];
+
         }
 
     }

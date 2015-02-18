@@ -49,7 +49,8 @@ manywho.engine = (function (manywho) {
             .then(pipeIsAuthorized)
             .then(function (response) {
                 
-                return self.process(response, flowKey);
+                self.process(response, flowKey)
+                    .then(self.render);
 
             }, function (response) {
 
@@ -64,7 +65,7 @@ manywho.engine = (function (manywho) {
             });
 
     }
-
+    
     return {
 
         initialize: function() {
@@ -74,6 +75,7 @@ manywho.engine = (function (manywho) {
             // Add the flow main div to render
             var flowDiv = document.createElement('div');
             flowDiv.setAttribute('id', flowKey);
+            flowDiv.className = 'mw-bs';
             document.body.appendChild(flowDiv);
 
             manywho.model.setTenantId(flowKey, manywho.settings.get('tenantId'));
@@ -103,8 +105,9 @@ manywho.engine = (function (manywho) {
                     .then(pipeIsAuthorized)
                     .then(function (response) {
 
-                        return self.process(response, flowKey);
-
+                        self.process(response, flowKey)
+                            .then(self.render);
+                        
                     }, function (response) {
                         
                         var invokeRequest = manywho.json.generateInvokeRequest({
@@ -143,6 +146,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getGeoLocation(),
                 manywho.settings.get('mode')
             );
+
             var self = this;
 
             manywho.ajax.invoke(invokeRequest, manywho.model.getTenantId(flowKey)).then(function (response) {
@@ -159,6 +163,19 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 manywho.callbacks.execute(flowKey, 'done', null, [response]);
+                return response;
+
+            })
+            .then(function (response) {
+
+                if (manywho.utils.isEqual(manywho.utils.extractElementKey(flowKey), 'modal', true)
+                    && manywho.utils.isEqual(response.invokeType, 'done', true)) {
+
+                    var parentFlowKey = manywho.model.getParentForModal(flowKey);                    
+                    manywho.model.setModal(parentFlowKey, null);
+                    manywho.engine.render(parentFlowKey);
+
+                }
 
             })
             .then(function () {
@@ -299,7 +316,7 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 update(response, manywho.model.parseEngineResponse, flowKey);
-                self.render(flowKey);
+                return flowKey;
 
             });
         
@@ -308,10 +325,10 @@ manywho.engine = (function (manywho) {
         render: function (flowKey) {
 
             var element = manywho.utils.extractElementKey(flowKey);
-
             var component = manywho.component.getByName(element);
 
             React.render(React.createElement(component, { flowKey: flowKey } ), document.getElementById(flowKey));
+
 
         }
 
