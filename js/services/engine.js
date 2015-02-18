@@ -41,7 +41,7 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function initializeWithAuthorization(invokeRequest, flowKey) {
+    function initializeWithAuthorization(callback, invokeRequest, flowKey) {
 
         var self = this;
 
@@ -53,13 +53,7 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                manywho.authorization.invokeAuthorization(response, flowKey, {
-                    callback: initializeWithAuthorization,
-                    context: self,
-                    args: [invokeRequest, manywho.model.getTenantId(flowKey)],
-                    name: 'invoke',
-                    type: 'done'
-                });
+                manywho.authorization.invokeAuthorization(response, flowKey, callback);
 
             });
 
@@ -80,7 +74,7 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function moveWithAuthorization(invokeRequest, flowKey) {
+    function moveWithAuthorization(callback, invokeRequest, flowKey) {
 
         var self = this;
 
@@ -92,13 +86,7 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                manywho.authorization.invokeAuthorization(response, flowKey, {
-                    callback: moveWithAuthorization,
-                    context: self,
-                    args: [invokeRequest, manywho.model.getTenantId(flowKey)],
-                    name: 'invoke',
-                    type: 'done'
-                });
+                manywho.authorization.invokeAuthorization(response, flowKey, callback);
 
             });
 
@@ -177,7 +165,7 @@ manywho.engine = (function (manywho) {
                         }, 'FORWARD');
 
                         manywho.authorization.invokeAuthorization(response, flowKey, {
-                            callback: initializeWithAuthorization,
+                            execute: initializeWithAuthorization,
                             context: self,
                             args: [invokeRequest, flowKey],
                             name: 'invoke',
@@ -218,7 +206,7 @@ manywho.engine = (function (manywho) {
                 }, function (response) {
 
                     manywho.authorization.invokeAuthorization(response, flowKey, {
-                        callback: moveWithAuthorization,
+                        execute: moveWithAuthorization,
                         context: self,
                         args: [invokeRequest, flowKey],
                         name: 'invoke',
@@ -304,7 +292,7 @@ manywho.engine = (function (manywho) {
                     }, 'FORWARD');
 
                     manywho.authorization.invokeAuthorization(response, flowKey, {
-                        callback: initializeWithAuthorization,
+                        execute: initializeWithAuthorization,
                         context: self,
                         args: [invokeRequest, flowKey],
                         name: 'invoke',

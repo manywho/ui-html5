@@ -33,8 +33,8 @@ manywho.callbacks = (function (manywho) {
 
                 })
                 .forEach(function (item) {
-
-                    item.callback.apply(item.context, item.args || args);
+                    debugger;
+                    item.execute.apply(item.context, [item].concat(item.args || args));
 
                 })
 

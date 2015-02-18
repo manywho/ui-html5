@@ -1,6 +1,6 @@
 manywho.authorization = (function (manywho) {
 
-    function setAuthenticationToken(response) {
+    function setAuthenticationToken(callback, response) {
 
         var authenticationToken = response.outputs.filter(function (output) {
 
@@ -67,8 +67,7 @@ manywho.authorization = (function (manywho) {
                         var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.get('playerUrl'));
 
                         manywho.callbacks.register(authenticationKey, {
-                            callback: setAuthenticationToken,
-                            context: manywho.engine,
+                            execute: setAuthenticationToken,
                             type: 'done'
                         });
 
