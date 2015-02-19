@@ -1,6 +1,22 @@
 manywho.settings = (function (manywho, $) {
 
-    var settings = {};
+    var globals = {};
+    var flows = {};
+
+    var themes = {
+        uri: '/css/themes'
+    }
+
+    var events = {
+        initialization: {},
+        invoke: {},
+        sync: {},
+        navigation: {},
+        join: {},
+        login: {},
+        objectData: {},
+        getFlowByName: {}
+    }
 
     // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
     function getValueByPath (obj, path) {
@@ -29,56 +45,44 @@ manywho.settings = (function (manywho, $) {
 
     return {
 
-        initialize: function(custom) {
+        initialize: function(custom, handlers) {
 
-            defaults = {
-                flowId: {
-                    id: null,
-                    versionId: null
-                },
-                stateId: null,
-                navigationElementId: null,
-                authentication: {
-                    sessionId: null,
-                    sessionUrl: null,
-                    token: null
-                },
-                mode: null,
-                reportingMode: null,
-                trackLocation: false,
-                replaceUrl: false,
-                inputs: null,
-                annotations: null,
-                collaboration: {
-                    isEnabled: true,
-                    uri: 'http://localhost:4444'
-                },
-                themeing: {
-                    uri: '/css/themes'
-                },
-                events: {
-                    initialization: {},
-                    invoke: {},
-                    sync: {},
-                    navigation: {},
-                    join: {},
-                    login: {},
-                    objectData: {},
-                    getFlowByName: {}
-                }
-            };
+            globals = $.extend(globals, custom);
+            events = $.extend(events, handlers);
 
-            // Replace this with a call to /js/constants
-            var constants = {};
+            toLowerCaseKeys(globals);
+            toLowerCaseKeys(events);
 
-            settings = $.extend({}, constants, defaults, custom);
-
-            toLowerCaseKeys(settings);
         },
 
-        get: function (path) {
+        initializeFlow: function(settings, flowKey) {
 
-            return getValueByPath(settings, path.toLowerCase());
+            flows[flowKey] = settings;
+            toLowerCaseKeys(flows[flowKey]);
+
+        },
+
+        global: function (path) {
+
+            return getValueByPath(globals, path.toLowerCase());
+
+        },
+
+        flow: function(path, flowKey) {
+
+            return getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+
+        },
+
+        event: function (path) {
+
+            return getValueByPath(events, path.toLowerCase());
+
+        },
+
+        theme: function (path) {
+
+            return getValueByPath(themes, path.toLowerCase());
 
         }
 

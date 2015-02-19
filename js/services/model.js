@@ -301,23 +301,7 @@
             this.componentInputResponseRequests[componentId].objectData = objectData;
 
         },
-
-        getTenantId: function (flowKey) {
-
-            if(!flowModel[flowKey]) flowModel[flowKey] = {};
-
-            return flowModel[flowKey].tenantId;
-
-        },
-
-        setTenantId: function (flowKey, tenantId) {
-
-            if(!flowModel[flowKey]) flowModel[flowKey] = {};
-
-            flowModel[flowKey].tenantId = tenantId;
-
-        },
-
+        
         setModal: function(flowKey, modalKey) {
 
             if(!flowModel[flowKey]) flowModel[flowKey] = {};

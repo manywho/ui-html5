@@ -22,7 +22,7 @@
 
         handleChange: function(e) {
 
-            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, true);
+            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -32,7 +32,7 @@
             log.info('Rendering Input: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
 
             var attributes = {

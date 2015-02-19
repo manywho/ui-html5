@@ -53,7 +53,7 @@ manywho.json = (function (manywho) {
                     'selectedOutcomeId': selectedOutcomeId || null
                 },
                 'mode': mode || null,
-                'navigationElementId': ''
+                'navigationElementId': null
             }
         },
 

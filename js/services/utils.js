@@ -150,13 +150,31 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        buildModelKey: function (tenantId, flowId, flowVersionId, element) {
+        getFlowKey: function (tenantId, flowId, flowVersionId, stateId, element) {
 
-            return tenantId + '|' + flowId + '|' + flowVersionId + '|' + element;
+            var args = Array.prototype.slice.call(arguments).filter(function(item) {
+              
+                return item;
+
+            });
+
+            return args.join('|');
 
         },
 
-        extractElementKey: function (flowKey) {
+        extractElement: function (flowKey) {
+
+            return flowKey.split('|')[4];
+
+        },
+
+        extractTenantId: function (flowKey) {
+
+            return flowKey.split('|')[0];
+
+        },
+
+        extractStateId: function (flowKey) {
 
             return flowKey.split('|')[3];
 

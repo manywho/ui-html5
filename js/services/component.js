@@ -118,6 +118,23 @@ manywho.component = (function (manywho) {
 
             return displayColumns;
 
+        },
+
+        appendFlowContainer: function (flowKey) {
+
+            var container = document.getElementById(flowKey);
+
+            if (!container) {
+
+                container = document.createElement('div');
+                container.setAttribute('id', flowKey);
+                container.className = 'mw-bs';
+                document.body.appendChild(container);
+
+            }
+
+            return container;
+
         }
 
     }

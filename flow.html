@@ -88,24 +88,19 @@
 </head>
 <body>    
     <script>
-
         var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+        
+        manywho.settings.initialize({
+            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+            playerUrl: document.URL
+        });
 
         var options = {
-            tenantId: queryParameters['tenant-id'],
-            // Replace this with the admin tenant ID from the constants file
-            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
-            flowId: {
-                id: queryParameters['flow-id'],
-                versionId: queryParameters['flow-version-id']
-            },
-            stateId: queryParameters['join'],
-            navigationElementId: queryParameters['navigation-element-id'],
             authentication: {
                 sessionId: queryParameters['session-token'],
-                sessionUrl: queryParameters['session-url'],
-                token: queryParameters['authorization']
+                sessionUrl: queryParameters['session-url']
             },
+            navigationElementId: queryParameters['navigation-element-id'],
             mode: queryParameters['mode'],
             reportingMode: queryParameters['reporting-mode'],
             trackLocation: false,
@@ -113,14 +108,17 @@
             collaboration: {
                 isEnabled: false
             },
-            playerUrl: document.URL,
             inputs: null,
             annotations: null
-        };
+        }
 
-        manywho.settings.initialize($.extend(options, window.devOptions || {}));
-        manywho.engine.initialize();
-
+        manywho.engine.initialize(queryParameters['tenant-id'],
+            queryParameters['flow-id'],
+            queryParameters['flow-version-id'],
+            'main', 
+            queryParameters['join'],
+            queryParameters['authorization'],
+            options);
     </script>
 
 </body>

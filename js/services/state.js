@@ -2,8 +2,8 @@ manywho.state = (function (manywho) {
 
     var loading = {};
     var components = {};
-    var state = null;
-    var authenticationToken = null;
+    var state = {};
+    var authenticationToken = {};
     var geoLocation = null;
 
     function assignGeoLocation(position) {
@@ -22,6 +22,7 @@ manywho.state = (function (manywho) {
             }
 
         }
+
     }
 
     function trackUserPosition() {
@@ -40,19 +41,9 @@ manywho.state = (function (manywho) {
 
     return {
         
-        initialize: function(id) {
+        refreshComponents: function(models, flowKey) {
 
-            this.setState(id);
-
-            if (manywho.settings.get('trackLocation')) {
-                trackUserPosition();
-            }
-
-        },
-
-        refreshComponents: function(models) {
-
-            components = {};
+            components[flowKey] = {};
 
             for (id in models) {
 
@@ -69,7 +60,7 @@ manywho.state = (function (manywho) {
 
                 }
 
-                components[id] = {
+                components[flowKey][id] = {
                     contentValue: models[id].contentValue || null,
                     objectData: selectedObjectData || null
                 }
@@ -84,21 +75,21 @@ manywho.state = (function (manywho) {
 
         },
 
-        getComponent: function(id) {
+        getComponent: function(id, flowKey) {
 
-            return components[id];
-
-        },
-
-        getComponents: function() {
-
-            return components;
+            return (components[flowKey] || {})[id];
 
         },
 
-        setComponent: function(id, values, push) {
+        getComponents: function(flowKey) {
 
-            components[id] = $.extend(components[id], values)
+            return components[flowKey];
+
+        },
+
+        setComponent: function(id, values, flowKey, push) {
+
+            components[flowKey][id] = $.extend(components[flowKey][id], values)
 
             if (push) {
                 manywho.collaboration.push(id, values, state.id);
@@ -106,26 +97,26 @@ manywho.state = (function (manywho) {
 
         },
 
-        setComponents: function(value) {
+        setComponents: function (value, flowKey) {
 
-            components = value;
+            components[flowKey] = value;
 
         },
 
-        getPageComponentInputResponseRequests: function() {
+        getPageComponentInputResponseRequests: function(flowKey) {
 
             var pageComponentInputResponseRequests = null;
 
-            if (components != null) {
+            if (components[flowKey] != null) {
 
                 pageComponentInputResponseRequests = [];
 
-                for (id in components) {
+                for (id in components[flowKey]) {
 
                     pageComponentInputResponseRequests.push({
                         pageComponentId: id,
-                        contentValue: components[id].contentValue,
-                        objectData: components[id].objectData
+                        contentValue: components[flowKey][id].contentValue,
+                        objectData: components[flowKey][id].objectData
                     });
 
                 }
@@ -136,9 +127,9 @@ manywho.state = (function (manywho) {
 
         },
         
-        setState: function(id, token, mapElementId) {
+        setState: function(id, token, mapElementId, flowKey) {
 
-            state = {
+            state[flowKey] = {
                 id: id,
                 token: token,
                 currentMapElementId: mapElementId
@@ -146,21 +137,21 @@ manywho.state = (function (manywho) {
 
         },
 
-        getState: function() {
+        getState: function(flowKey) {
 
-            return state;
-
-        },
-
-        setAuthenticationToken: function(token) {
-
-            authenticationToken = token;
+            return state[flowKey];
 
         },
 
-        getAuthenticationToken: function() {
+        setAuthenticationToken: function(token, flowKey) {
 
-            return authenticationToken;
+            authenticationToken[flowKey] = token;
+
+        },
+
+        getAuthenticationToken: function(flowKey) {
+
+            return authenticationToken[flowKey];
 
         },
 
