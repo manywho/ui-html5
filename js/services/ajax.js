@@ -6,7 +6,7 @@ manywho.ajax = (function (manywho) {
 
     }
 
-    function beforeSend(xhr, tenantId, authenticationToken) {
+    function beforeSend(xhr, tenantId, authenticationToken, event) {
 
         xhr.setRequestHeader('ManyWhoTenant', tenantId);
 
@@ -14,9 +14,9 @@ manywho.ajax = (function (manywho) {
             xhr.setRequestHeader('Authorization', authenticationToken);
         }
 
-        //if (manywho.settings.event('login.beforeSend')) {
-        //    manywho.settings.event('login.beforeSend').call(this, xhr);
-        //}
+        if (manywho.settings.event(event + '.beforeSend')) {
+            manywho.settings.event(event + '.beforeSend').call(this, xhr);
+        }
 
     }
 
@@ -44,7 +44,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(authenticationCredentials),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'login');
                     
                 }
             })
@@ -67,7 +67,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'initialization');
 
                 }
             })
@@ -88,7 +88,7 @@ manywho.ajax = (function (manywho) {
                 processData: true,
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'join');
 
                 }
             })
@@ -109,7 +109,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInvokeRequest),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'invoke');
 
                 }
             })
@@ -130,7 +130,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'navigation');
 
                 }
             })
@@ -149,7 +149,7 @@ manywho.ajax = (function (manywho) {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowByName');
 
                 }
             })
@@ -158,13 +158,7 @@ manywho.ajax = (function (manywho) {
                 .fail(manywho.settings.event('getFlowByName.fail'));
 
         },
-
-        syncEngine: function (engineInvokeRequest) {
-
-            alert('Sync!');
-
-        },
-
+        
         dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             request.listFilter = request.listFilter || {};           
@@ -191,7 +185,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(request),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'objectData');
 
                 }
             })
