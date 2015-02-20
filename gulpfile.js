@@ -12,7 +12,6 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     htmlreplace = require('gulp-html-replace'),
     glob = require('glob'),
-    path = require('path'),
     runSequence = require('run-sequence'),
     order = require("gulp-order"),
     awspublish = require('gulp-awspublish'),
@@ -118,10 +117,24 @@ gulp.task('clean-dist', function () {
 
 gulp.task('less-dist', function () {
 
-    return gulp.src('css/**/*.*')
+    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css'])
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
+                .pipe(gulp.dest('./dist/css'));
+
+});
+
+gulp.task('fonts-dist', function () {
+
+    return gulp.src('css/fonts/*.*')
+                .pipe(gulp.dest('./dist/css/fonts'));
+
+});
+
+gulp.task('chosen-dist', function () {
+
+    return gulp.src('css/lib/*.png')
                 .pipe(gulp.dest('./dist/css'));
 
 });
@@ -160,26 +173,23 @@ gulp.task('js-dist', function () {
 
 gulp.task('html-dist', function () {
 
-    var compiledCss = path.basename(glob.sync('dist/css/compiled*.css')[0]);
-    var compiledJs = path.basename(glob.sync('dist/js/compiled*.js')[0]);
-    
-    return gulp.src('index.html')
+    return gulp.src('flow.html')
                 .pipe(htmlreplace({
-                    css: "css/" + compiledCss,
-                    js: "js/" + compiledJs,
+                    css: 'css/compiled.css',
+                    js: 'js/compiled.js',
                     log: ''
                 }))
+                .pipe(rename('default.html'))
                 .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('dist', function () {
 
     runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist'],
+                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
                 'html-dist');
 
 });
-
 
 // Deploy
 gulp.task('deploy-cdn', function () {

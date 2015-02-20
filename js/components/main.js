@@ -2,12 +2,14 @@
 
     var main = React.createClass({
                 
+
         render: function () {
             
             log.info("Rendering Main");
             
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
+            var wait = manywho.model.getWait(this.props.flowKey);
 
             var modalKey = manywho.model.getModal(this.props.flowKey);
             var modal = null;
@@ -20,11 +22,12 @@
 
             return React.DOM.div({ className: 'full-height' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
-                        React.DOM.div({ className: 'container' }, [
+                        React.DOM.div({ className: 'container main' }, [
                             manywho.component.getChildComponents(children, this.props.id, this.props.flowKey),
                             manywho.component.getOutcomes(outcomes, this.props.flowKey)
                         ]),
-                        modal
+                        modal,
+                        React.createElement(manywho.component.getByName('wait'), { wait: wait })
                     ]);
 
         }

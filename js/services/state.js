@@ -155,15 +155,19 @@ manywho.state = (function (manywho) {
 
         },
 
-        getIsLoading: function (componentId, flowKey) {
+        getLoading: function (componentId, flowKey) {
 
-            return (loading[flowKey] || {})[componentId];
+            if (!loading[flowKey]) loading[flowKey] = {};
+
+            return loading[flowKey][componentId];
 
         },
 
-        setIsLoading: function (componentId, isLoading, flowKey) {
+        setLoading: function (componentId, data, flowKey) {
 
-            (loading[flowKey] || {})[componentId] = isLoading;
+            if (!loading[flowKey]) loading[flowKey] = {};
+
+            loading[flowKey][componentId] = data;
 
         }
         

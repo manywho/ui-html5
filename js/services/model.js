@@ -79,8 +79,6 @@
     
     manywho.model = {
 
-        componentInputResponseRequests: {},
-
         parseEngineResponse: function (engineInvokeResponse, flowKey) {
 
             if (!flowModel[flowKey]) flowModel[flowKey] = {};
@@ -89,6 +87,7 @@
             flowModel[flowKey].components = {};
             flowModel[flowKey].outcomes = {};
             flowModel[flowKey].label = null;
+            flowModel[flowKey].wait = null;
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -101,6 +100,7 @@
 
                     if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
                         flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+
                     }
 
                 }, this);
@@ -111,8 +111,9 @@
 
                     if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
                         flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+
                     }
-                
+
                 }, this);
                                 
             }
@@ -127,6 +128,13 @@
 
             }
             
+            switch (engineInvokeResponse.invokeType.toLowerCase())
+            {
+                case "wait":
+                    flowModel[flowKey].wait = { message: engineInvokeResponse.waitMessage }
+                    break;
+            }
+
         },
 
         parseEngineSyncResponse: function(response, flowKey) {
@@ -220,25 +228,35 @@
 
         },
 
+        getOutcomes: function (pageObjectId, flowKey) {
+
+            var outcomesArray = manywho.utils.convertToArray(flowModel[flowKey].outcomes) || [];
+
+            return outcomesArray.filter(function (outcome) {
+
+                return (!manywho.utils.isNullOrWhitespace(pageObjectId) && manywho.utils.isEqual(outcome.pageObjectBindingId, pageObjectId, true))
+                    || ((manywho.utils.isNullOrWhitespace(pageObjectId) || manywho.utils.isEqual(pageObjectId, 'root', true)) && manywho.utils.isNullOrWhitespace(outcome.pageObjectBindingId));
+
+            });
+
+        },
+
         getNavigation: function (navigationId, flowKey) {
 
-            if (flowModel[flowKey].navigation) {
+            if (navigationId) {
 
-                if (navigationId) {
-
-                    return flowModel[flowKey].navigation[navigationId];
-
-                }
-                else {
-
-                    return navigation[Object.keys(flowModel[flowKey].navigation)[0]];
-
-                }
+                return flowModel[flowKey].navigation[navigationId];
 
             }
 
         },
 
+        getWait: function(flowKey) {
+
+            return flowModel[flowKey].wait;
+
+        },
+        
         getDefaultNavigationId: function(flowKey) {
 
             if (flowModel[flowKey].navigation) {
@@ -272,29 +290,7 @@
             }
 
         },
-
-        getOutcomes: function (pageObjectId, flowKey) {
-
-            var pageObjectOutcomes = [];
-            
-            for (outcomeId in flowModel[flowKey].outcomes)
-            {
-                var item = flowModel[flowKey].outcomes[outcomeId];
-
-                // If the component has supplied an object id, we find the bound outcomes, otherwise
-                // we find all outcomes that are unbound
-                if ((item.pageObjectBindingId != null && item.pageObjectBindingId.toLowerCase() == pageObjectId.toLowerCase())
-                    || (item.pageObjectBindingId == null || item.pageObjectBindingId.trim().length == 0)) {
-
-                    pageObjectOutcomes.push(item);
-
-                }
-            }
-
-            return pageObjectOutcomes;
-
-        },
-
+        
         setComponentInputResponseRequest: function (componentId, contentValue, objectData) {
 
             this.componentInputResponseRequests[componentId].contentValue = contentValue;

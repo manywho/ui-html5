@@ -25,7 +25,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, true);
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
             manywho.component.handleEvent(this, model, this.props.flowKey);
 
         },
@@ -38,8 +38,8 @@
             var isValid = true;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id);
-            var isLoading = manywho.state.getIsLoading(this.props.id);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
@@ -58,8 +58,8 @@
             ].join(' ');
 
             var iconClassNames = [
-                'glyphicon glyphicon-refresh loading-spin',
-                (isLoading) ? '' : 'hidden'
+                'glyphicon glyphicon-refresh select-loading-icon spin',
+                (loading) ? '' : 'hidden'
             ].join(' ');
 
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [

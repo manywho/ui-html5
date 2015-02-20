@@ -1,18 +1,18 @@
-﻿.loading-spin {
-    -webkit-animation: spin 1s infinite linear;
-    animation: spin 1s infinite linear;
-    float: left;    
-    font-size: 1.8em;
-    margin-left: 0.5em;
-    margin-top: 4px;
-}
- 
-@-webkit-keyframes "spin" {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
-}
+﻿.mw-bs {
 
- @keyframes "spin" {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
+    .spin {
+        -webkit-animation: spin 1s infinite linear;
+        animation: spin 1s infinite linear;
+    }
+ 
+    @-webkit-keyframes "spin" {
+      from { transform: scale( 1 ) rotate( 0deg );   }
+      to   { transform: scale( 1 ) rotate( 360deg ); }
+    }
+
+     @keyframes "spin" {
+      from { transform: scale( 1 ) rotate( 0deg );   }
+      to   { transform: scale( 1 ) rotate( 360deg ); }
+    }
+
 }

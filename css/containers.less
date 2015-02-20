@@ -1,17 +1,50 @@
 ﻿@container-margin: 20px;
 
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.mw-bs {
+	
 .full-height {
     height: 100%;
 }
 
-.mw-container {
-    margin-bottom: @container-margin;
-}
+    .mw-container {
+        margin-bottom: @container-margin;
+    }
 
-.mw-vertical_flow {
-    .mw-container;
-}
+    .main {
+        margin-bottom: @container-margin;
+    }
 
-.mw-horizontal_flow {
-    .mw-container;
+    .main:first-child {
+        margin-top: @container-margin;
+    }
+
+    .mw-vertical_flow {
+        .mw-container;
+    }
+
+    .mw-horizontal_flow {
+        .mw-container;
+    }
+
+    .mw-vertical_flow:last-child {
+        margin-bottom: 0;
+    }
+
+    .mw-horizontal_flow:last-child {
+        margin-bottom: 0;
+    }
+
+    .mw-inline_flow {
+        .mw-container;
+    }
+
 }

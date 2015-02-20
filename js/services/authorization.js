@@ -95,7 +95,7 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function (response) {
 
-                        manywho.engine.process.call(manywho.engine, response, authenticationFlow.key);
+                        manywho.engine.parseResponse(response, manywho.model.parseEngineResponse, authenticationFlow.key);
 
                     })
                     .then(function () {

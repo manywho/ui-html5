@@ -193,6 +193,23 @@ manywho.ajax = (function (manywho) {
             .fail(onError)
             .fail(manywho.settings.event('objectData.fail'));
 
+        },
+
+        ping: function (tenantId, stateId, stateToken, authenticationToken) {
+
+            log.info('Pinging for changes');
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/state/' + stateId + '/ping/' + stateToken,
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'ping');
+
+                }
+            })
+            .fail(onError);
+
         }
 
     }

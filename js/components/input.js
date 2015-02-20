@@ -40,8 +40,9 @@
                 placeholder: model.hintValue,
                 value: state.contentValue,
                 onChange: this.handleChange,
-                id: this.props.id
-            };
+                id: this.props.id,
+                maxLength: model.maxSize
+            }
 
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";
@@ -55,7 +56,7 @@
                 isValid = false;
             }
 
-            var containerClasseNames = [
+            var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ].join(' ');
@@ -66,7 +67,7 @@
                     attributes.checked = "checked";
                 }
 
-                return React.DOM.div({ className: containerClasseNames}, [
+                return React.DOM.div({ className: containerClassNames}, [
                             React.DOM.div({ className: 'checkbox ' },
                                 React.DOM.label(null, [
                                     React.DOM.input(attributes, null),
@@ -81,7 +82,7 @@
 
                 attributes.className = 'form-control';
 
-                return React.DOM.div({ className: 'form-group ' + containerClasseNames }, 
+                return React.DOM.div({ className: 'form-group ' + containerClassNames },
                         [
                             React.DOM.label({ 'for': this.props.id }, model.label),
                             React.DOM.input(attributes, null),

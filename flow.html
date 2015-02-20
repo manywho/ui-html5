@@ -5,21 +5,8 @@
     <meta charset="utf-8" />
     <title>ManyWho React UI</title>
 
-    <style>
-        html, body, #manywho {
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-        }
-    </style>
-
-    <!-- build:boostrap -->
     <link rel="stylesheet" href="css/mw-bootstrap.css" />
     <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
-    <!-- endbuild -->
     
     <!-- build:css -->
     <link rel="stylesheet" href="css/lib/bootstrap-chosen.css" />
@@ -32,6 +19,8 @@
     <link rel="stylesheet" href="css/outcome.css" />
     <link rel="stylesheet" href="css/loading.css" />
     <link rel="stylesheet" href="css/modal.css" />
+    <link rel="stylesheet" href="css/group.css" />
+    <link rel="stylesheet" href="css/pagination.css" />
     <!-- endbuild -->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -41,7 +30,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-growl/1.0.0/jquery.bootstrap-growl.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/loglevel/1.2.0/loglevel.min.js"></script>
-    
+
     <script>
         var manywho = {};
     </script>
@@ -80,13 +69,19 @@
     <script src="js/components/textarea.js"></script>
     <script src="js/components/outcome.js"></script>
     <script src="js/components/select.js"></script>
-    <script src="js/components/table.js"></script>
+    <script src="js/components/table-container.js"></script>
+    <script src="js/components/table-large.js"></script>
+    <script src="js/components/table-small.js"></script>
+    <script src="js/components/pagination.js"></script>
+    <script src="js/components/wait.js"></script>
     <script src="js/components/modal.js"></script>
     <!-- endbuild -->
 
     <!-- options -->
 </head>
 <body>    
+    <div id="manywho"></div>
+
     <script>
         var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
         

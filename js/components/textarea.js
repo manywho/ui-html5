@@ -4,7 +4,7 @@
 
         handleChange: function(e) {
 
-            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.prop.flowKey, true);
+            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey));
 
         },
@@ -21,6 +21,7 @@
                 id: this.props.id,
                 placeholder: model.hintValue,
                 value: state.contentValue,
+                maxLength: model.maxSize,
                 onChange: this.handleChange
             };
 

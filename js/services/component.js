@@ -34,7 +34,7 @@ manywho.component = (function (manywho) {
             return components[getComponentType(item).toLowerCase()];
 
         },
-
+        
         getByName: function (name) {
 
             return components[name.toLowerCase()];
@@ -44,19 +44,21 @@ manywho.component = (function (manywho) {
         getChildComponents: function (children, id, flowKey) {
 
             return children.map(function (item) {
-                var component = this.get(item);
-                if (!component)
-                    debugger;
+
+                var component = this.get(item);                
                 return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey });
+
             }, this);
 
         },
 
         getOutcomes: function(outcomes, flowKey)
         {
+
             return outcomes.map(function (item) {
                 return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey });
             });
+
         },
 
         handleEvent: function (component, model, flowKey) {
@@ -83,6 +85,37 @@ manywho.component = (function (manywho) {
                         selectedObjectData = model.objectData.filter(function (item) {
 
                             return manywho.utils.isEqual(item.externalId, selectedOptions[option].value, true);
+
+                        })
+                        .map(function (item) {
+
+                            item.isSelected = true;
+                            return item;
+
+                        });
+
+                    }
+
+                }
+
+            }
+
+            return selectedObjectData;
+        },
+
+        getSelectedRows: function (model, selectedIds) {
+
+            var selectedObjectData = null;
+
+            if (selectedIds) {
+
+                for (selectedId in selectedIds) {
+
+                    if (!manywho.utils.isNullOrWhitespace(selectedIds[selectedId])) {
+
+                        selectedObjectData = model.objectData.filter(function (item) {
+
+                            return manywho.utils.isEqual(item.externalId, selectedIds[selectedId], true);
 
                         })
                         .map(function (item) {
