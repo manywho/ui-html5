@@ -1,129 +1,8 @@
 manywho.engine = (function (manywho) {
 
-    var isWaiting = false;
+    var waiting = {};
 
-    function handleAuthorization(response) {
-
-        // Check to see if the user has successfully authenticated
-        if (manywho.utils.isEqual(response.statusCode, '401', true)) {
-
-            if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
-                // Navigate the user to the oauth provider
-                window.location = response.authorizationContext.loginUrl;
-                return false;
-            }
-
-            // TODO: throw up the login dialog to login to the directory
-            alert('login!');
-
-            // TODO: login to the flow like this to get the authentication token
-            this.login(
-                response.authorizationContext.loginUrl,
-                'my username',
-                'my password',
-                manywho.settings.get('authentication.sessionid'),
-                manywho.settings.get('authentication.sessionurl'),
-                response.stateId
-            );
-
-            // TODO: set the authentication token
-            manywho.state.setAuthenticationToken('the token');
-
-            // TODO: restart whatever async sequence was tried before
-
-            return false;
-        }
-
-        return true;
-
-    }
-
-    function update(response, responseParser) {
-
-        if (handleAuthorization(response)) {
-
-            responseParser.call(manywho.model, response);
-
-            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
-            manywho.state.refreshComponents(manywho.model.getComponents());
-
-            if (manywho.settings.get('replaceUrl')) {
-                manywho.utils.replaceBrowserUrl(response);
-            }
-
-            setIsWaiting(response.invokeType);
-            if (isWaiting) {
-
-                manywho.engine.ping();
-
-            }
-
-        }
-    }
-
-    function process(dispatcher) {
-
-        var self = this;
-
-        return dispatcher.then(function (response) {
-
-            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId);
-
-            if (handleAuthorization(response)) {
-
-                manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
-
-                var defereds = [response];
-
-                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-
-                    defereds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id));
-
-                }
-                else {
-
-                    defereds.push(null);
-
-                }
-
-                if (response.currentStreamId) {
-                    // Add create social stream ajax call to deffereds here
-                }
-
-                return $.when.apply($, defereds);
-
-            }
-
-        })
-        .then(function (response, navigation, stream) {
-
-            if (navigation) {
-
-                manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0]);
-
-            }
-
-            return manywho.ajax.invoke(manywho.json.generateInvokeRequest(
-                manywho.state.getState(),
-                'FORWARD',
-                null,
-                null,
-                manywho.settings.get('annotations'),
-                manywho.state.getGeoLocation(),
-                manywho.settings.get('mode'))
-            );
-
-        })
-        .then(function (response) {
-
-            update(response, manywho.model.parseEngineResponse);
-            self.render();
-
-        });
-        
-    }
-
-    function processObjectDataRequests(components) {
+    function processObjectDataRequests(components, flowKey) {
 
         var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
 
@@ -133,61 +12,210 @@ manywho.engine = (function (manywho) {
 
         return $.when.apply($, requestComponents.map(function (component) {
 
-            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest)
+            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey)
 
         }));
 
     }
 
-    function setIsWaiting(invokeType) {
+    function isAuthorized(response, flowKey) {
+
+        if (!manywho.authorization.isAuthorized(response, flowKey)) {
+
+            return $.Deferred().reject(response).promise();
+
+        }
+
+        return response;
+
+    }
+
+    function initializeWithAuthorization(callback, navigationElementReferences, currentStreamId, flowKey) {
+
+        var self = this;
+        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+        var invokeRequest = manywho.json.generateInvokeRequest(
+            manywho.state.getState(flowKey),
+            'FORWARD',
+            null,
+            null,
+            manywho.settings.flow('annotations', flowKey),
+            null,
+            manywho.settings.flow('mode', flowKey)
+        );
+
+        manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
+            .then(function (response) {
+
+                return isAuthorized(response, flowKey);
+
+            })
+            .then(function (response) {
+                
+                self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
+
+                manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+                //manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
+
+                var deferreds = [];
+
+                if (navigationElementReferences && navigationElementReferences.length > 0) {
+                    deferreds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, navigationElementReferences[0].id, manywho.utils.extractTenantId(flowKey)));
+                }
+
+                if (currentStreamId) {
+                    // Add create social stream ajax call to defereds here
+                }
+
+                return $.when.apply($, deferreds);
+
+            }, function (response) {
+
+                // Authorization failed, retry
+                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+            })
+            .then(function (navigation, stream) {
+
+                if (navigation) {
+
+                    manywho.model.parseNavigationResponse(navigationElementReferences[0].id, navigation, flowKey);
+
+                }
+
+                if (stream) {
+                    // TODO                    
+                }
+
+            })
+            .then(function () {
+
+                var container = manywho.component.appendFlowContainer(flowKey);
+                React.unmountComponentAtNode(container);
+
+                self.render(flowKey);
+
+            })
+            .then(function () {
+
+                return processObjectDataRequests(manywho.model.getComponents(flowKey));
+
+            });
+        
+    }
+ 
+    function moveWithAuthorization(callback, invokeRequest, flowKey) {
+
+        var self = this;
+        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+        
+        manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
+            .then(function (response) {
+
+                return isAuthorized(response, flowKey);
+
+            })
+            .then(function (response) {
+
+                self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
+                manywho.collaboration.move(manywho.state.getState(flowKey).id);
+
+                React.unmountComponentAtNode(document.getElementById(flowKey));
+                self.render(flowKey);
+
+                manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
+
+                if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)
+                    && manywho.utils.isEqual(response.invokeType, 'done', true)) {
+
+                    var parentFlowKey = manywho.model.getParentForModal(flowKey);
+                    manywho.model.setModal(parentFlowKey, null);
+                    manywho.engine.render(parentFlowKey);
+
+                }
+
+                processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+
+            }, function (response) {
+
+                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+            });
+
+    }
+    
+    function setIsWaiting(invokeType, flowKey) {
 
         if (manywho.utils.isEqual(invokeType, 'wait', true)) {
 
-            isWaiting = true;
+            waiting[flowKey] = true;
 
         }
         else {
 
-            isWaiting = false;
+            waiting[flowKey] = false;
 
         }
 
     }
 
+    function getIsWaiting(flowKey) {
+
+        return waiting[flowKey];
+
+    }
+
     return {
 
-        initialize: function() {
+        initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options) {
 
-            manywho.model.setTenantId(manywho.settings.get('tenantId'));
+            options = options || {};
 
-            manywho.state.initialize(manywho.settings.get('stateId'));
-            manywho.state.setAuthenticationToken(manywho.settings.get('authentication.token'));
+            if (stateId) {
 
-            var flowId = manywho.settings.get('flowId');
-
-            if (manywho.state.getState().id) {
-
-                this.join(manywho.state.getState().id);
+                this.join(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options);
                 
             }
             else {
 
                 var initializationRequest = manywho.json.generateInitializationRequest(
-                    flowId,
-                    manywho.state.getState().id,
-                    manywho.settings.get('annotations'),
-                    manywho.settings.get('inputs'),
-                    manywho.settings.get('mode'),
-                    manywho.settings.get('reportingMode')
+                    { id: flowId, versionId: flowVersionId },
+                    stateId,
+                    options.annotations,
+                    options.inputs,
+                    options.mode,
+                    options.reportingMode
                 );
 
-                process.call(this, manywho.ajax.initialize(initializationRequest));
+                var self = this;
+
+                manywho.ajax.initialize(initializationRequest, tenantId, authenticationToken)
+                    .then(function (response) {
+                        
+                        var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
+
+                        manywho.settings.initializeFlow(options, flowKey);
+                        manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+
+                        initializeWithAuthorization.call(self,
+                            {
+                                execute: initializeWithAuthorization,
+                                context: self,
+                                args: [response.navigationElementReferences, response.currentStreamId, flowKey],
+                                name: 'invoke',
+                                type: 'done'
+                            },
+                            response.navigationElementReferences,
+                            response.currentStreamId,
+                            flowKey);
+
+                    });
 
             }
 
         },
 
-        move: function(outcome) {
+        move: function(outcome, flowKey) {
 
             // Validate all of the components on the page here...
             // In the model.js, there are componentInputResponseRequests entries for each component
@@ -195,34 +223,29 @@ manywho.engine = (function (manywho) {
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
             var invokeRequest = manywho.json.generateInvokeRequest(
-                manywho.state.getState(),
+                manywho.state.getState(flowKey),
                 'FORWARD',
                 outcome.id,
-                manywho.state.getPageComponentInputResponseRequests(),
-                manywho.settings.get('annotations'),
+                manywho.state.getPageComponentInputResponseRequests(flowKey),
+                manywho.settings.flow('annotations', flowKey),
                 manywho.state.getGeoLocation(),
-                manywho.settings.get('mode')
+                manywho.settings.flow('mode', flowKey)
             );
-            var self = this;
 
-            manywho.ajax.invoke(invokeRequest).then(function (response) {
-
-                update(response, manywho.model.parseEngineResponse);
-                manywho.collaboration.move(manywho.state.getState().id);
-
-                React.unmountComponentAtNode(document.getElementById('manywho'));
-                self.render();
-
-            })
-            .then(function () {
-
-                return processObjectDataRequests(manywho.model.getComponents());
-
-            });
-
+            moveWithAuthorization.call(this,
+                {
+                    execute: moveWithAuthorization,
+                    context: this,
+                    args: [invokeRequest, flowKey],
+                    name: 'invoke',
+                    type: 'done'
+                },  
+                invokeRequest,
+                flowKey);
+               
         },
 
-        sync: function() {
+        sync: function(flowKey) {
 
             // Validate all of the components on the page here...
             // In the model.js, there are componentInputResponseRequests entries for each component
@@ -230,111 +253,141 @@ manywho.engine = (function (manywho) {
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
             var invokeRequest = manywho.json.generateInvokeRequest(
-                manywho.state.getState(),
+                manywho.state.getState(flowKey),
                 'SYNC',
                 null,
-                manywho.state.getPageComponentInputResponseRequests(),
-                manywho.settings.get('annotations'),
-                manywho.state.getGeoLocation(),
-                manywho.settings.get('mode')
+                manywho.state.getPageComponentInputResponseRequests(flowKey),
+                manywho.settings.flow('annotations', flowKey),
+                null,
+                manywho.settings.flow('mode', flowKey)
             );
             var self = this;
-            var componentIds = [];
-
-            return manywho.ajax.invoke(invokeRequest)
+            
+            return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey))
                 .then(function (response) {
 
-                    update(response, manywho.model.parseEngineSyncResponse);
-                    return processObjectDataRequests(manywho.model.getComponents());
+                    self.parseResponse(response, manywho.model.parseEngineSyncResponse, flowKey);
+                    return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
                 });
 
         },
 
-        navigate: function(navigationId, navigationElementId) {
-
-            var self = this;
+        navigate: function(navigationId, navigationElementId, flowKey) {
 
             var invokeRequest = manywho.json.generateNavigateRequest(
-                manywho.state.getState(),
+                manywho.state.getState(flowKey),
                 navigationId,
                 navigationElementId,
-                manywho.settings.get('annotations'),
-                manywho.state.getGeoLocation());
+                manywho.settings.flow('annotations', flowKey),
+                null);
 
-            manywho.ajax.invoke(invokeRequest).then(function (response) {
-
-                update(response, manywho.model.parseEngineResponse);
-                
-                React.unmountComponentAtNode(document.getElementById('manywho'));
-                self.render();
-
-            })
-            .then(function () {
-
-                return processObjectDataRequests(manywho.model.getComponents());
-
-            });
+            moveWithAuthorization.call(this,
+                {
+                    execute: moveWithAuthorization,
+                    context: this,
+                    args: [invokeRequest, flowKey],
+                    name: 'invoke',
+                    type: 'done'
+                },
+                invokeRequest,
+                flowKey);
 
         },
 
-        join: function(stateId) {
+        join: function (tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options) {
 
-            var dispatcher = manywho.ajax.join(stateId);
+            var self = this;
+            var flowKey = null;
 
-            React.unmountComponentAtNode(document.getElementById('manywho'));
+            manywho.ajax.join(stateId, tenantId, authenticationToken)
+                .then(function (response) {
 
-            return process.call(this, dispatcher)
-                .then(function () {
-
-                    return processObjectDataRequests(manywho.model.getComponents());
+                    flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
+                    manywho.settings.initializeFlow(options, flowKey);
+                    return response;
 
                 })
+                .then(function (response) {
 
+                    return isAuthorized(response, flowKey);
+
+                })
+                .then(function (response) {
+
+                    onInitialize(response, flowKey);
+
+                }, function (response) {
+
+                    var invokeRequest = manywho.json.generateInvokeRequest({
+                        id: response.stateId,
+                        token: response.stateToken,
+                        currentMapElementId: response.currentMapElementId
+                    }, 'FORWARD');
+
+                    manywho.authorization.invokeAuthorization(response, flowKey, {
+                        execute: initializeWithAuthorization,
+                        context: self,
+                        args: [invokeRequest, flowKey],
+                        name: 'invoke',
+                        type: 'done'
+                    });
+
+                });
+                        
         },
 
-        objectDataRequest: function(id, request, limit, search, orderBy, orderByDirection, page) {
+        objectDataRequest: function(id, request, flowKey, limit, search, orderBy, orderByDirection, page) {
 
             var self = this;
 
-            manywho.state.setLoading(id, { message: 'Loading...'});
-            self.render();
+            manywho.state.setLoading(id, { message: 'Loading...' }, flowKey);
+            self.render(flowKey);
 
-            return manywho.ajax.dispatchObjectDataRequest(request, limit, search, orderBy, orderByDirection, page)
+            return manywho.ajax.dispatchObjectDataRequest(request, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey), limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
 
-                    manywho.state.setLoading(id, null);
-                    manywho.model.getComponent(id).objectData = response.objectData;
+                    manywho.state.setLoading(id, null, flowKey);
+                    manywho.model.getComponent(id, flowKey).objectData = response.objectData;
                     
                 })
-                .fail(function (xhr, status, error) {
+               .fail(function (xhr, status, error) {
 
-                    manywho.state.setLoading(id, { error: error });
+                   manywho.state.setLoading(id, { error: error });
 
-                })
-                .always(function () {
+               })
+               .always(function () {
 
-                    self.render();
+                   self.render(flowKey);
 
-                });
+               });
+
+        },
+        
+        parseResponse: function(response, responseParser, flowKey) {
+
+            responseParser.call(manywho.model, response, flowKey);
+
+            manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+            manywho.state.refreshComponents(manywho.model.getComponents(flowKey), flowKey);
+
+            if (manywho.settings.flow('replaceUrl', flowKey)) {
+                manywho.utils.replaceBrowserUrl(response);
+            }
+
+            setIsWaiting(response.invokeType, flowKey);
+            manywho.engine.ping(flowKey);
 
         },
 
-        render: function () {
+        ping: function (flowKey) {
 
-            var main = manywho.component.getByName('main');
-            React.render(React.createElement(main), document.getElementById('manywho'));
+            if (getIsWaiting(flowKey)) {
 
-        },
-
-        ping: function () {
-
-            if (isWaiting) {
-
-                var state = manywho.state.getState();
+                var state = manywho.state.getState(flowKey);
                 var self = this;
 
-                manywho.ajax.ping(state.id, state.token)
+                manywho.ajax.ping(manywho.utils.extractTenantId(flowKey), state.id, state.token, manywho.state.getAuthenticationToken(flowKey))
                     .then(function (response) {
 
                         if (response)
@@ -353,6 +406,15 @@ manywho.engine = (function (manywho) {
 
             }
 
+        },
+
+        render: function (flowKey) {
+
+            var element = manywho.utils.extractElement(flowKey);
+            var component = manywho.component.getByName(element);
+
+            React.render(React.createElement(component, { flowKey: flowKey } ), document.getElementById(flowKey));
+            
         }
 
     }

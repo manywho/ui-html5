@@ -6,8 +6,8 @@
 
             log.info('Rendering Group: ' + this.props.id);
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group");
-            var children = manywho.model.getChildren(this.props.id);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey);
+            var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
             
             var childElements = children.map(function(child) {
                 
@@ -19,7 +19,7 @@
                         
             return React.DOM.div({ className: classes }, [
                 React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
-                React.createElement('div', { className: 'tab-content' }, manywho.component.getChildComponents(children, this.props.id))
+                React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
 
         }

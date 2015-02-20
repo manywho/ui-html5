@@ -4,8 +4,8 @@
 
         handleChange: function(e) {
 
-            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, true);
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id));
+            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey));
 
         },
 
@@ -13,8 +13,8 @@
 
             log.info('Rendering Textarea: ' + this.props.id);
 
-            var model = manywho.model.getComponent(this.props.id);
-            var state = manywho.state.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
 
             var attributes = {
@@ -23,7 +23,7 @@
                 value: state.contentValue,
                 maxLength: model.maxSize,
                 onChange: this.handleChange
-            }
+            };
 
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";

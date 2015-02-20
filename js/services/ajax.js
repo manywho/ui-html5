@@ -6,9 +6,23 @@ manywho.ajax = (function (manywho) {
 
     }
 
+    function beforeSend(xhr, tenantId, authenticationToken, event) {
+
+        xhr.setRequestHeader('ManyWhoTenant', tenantId);
+
+        if (authenticationToken) {
+            xhr.setRequestHeader('Authorization', authenticationToken);
+        }
+
+        if (manywho.settings.event(event + '.beforeSend')) {
+            manywho.settings.event(event + '.beforeSend').call(this, xhr);
+        }
+
+    }
+
     return {
 
-        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId) {
+        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId, authenticationToken) {
 
             log.info('Logging into Flow State: \n    Id: ' + stateId);
 
@@ -30,25 +44,17 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(authenticationCredentials),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.login.beforeSend')) {
-                        manywho.settings.get('events.login.beforeSend').call(this, xhr);
-                    }
-
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'login');
+                    
                 }
             })
-            .done(manywho.settings.get('events.login.done'))
+            .done(manywho.settings.event('login.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.login.fail'));
+            .fail(manywho.settings.event('login.fail'));
 
         },
 
-        initialize: function (engineInitializationRequest) {
+        initialize: function (engineInitializationRequest, tenantId, authenticationToken) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
@@ -61,25 +67,17 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInitializationRequest),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.initialization.beforeSend')) {
-                        manywho.settings.get('events.initialization.beforeSend').call(this, xhr);
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'initialization');
 
                 }
             })
-            .done(manywho.settings.get('events.initialization.done'))
+            .done(manywho.settings.event('initialization.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.initialization.fail'));
+            .fail(manywho.settings.event('initialization.fail'));
 
         },
 
-        join: function(stateId) {
+        join: function(stateId, tenantId, authenticationToken) {
 
             log.info('Joining State: ' + stateId);
 
@@ -90,25 +88,17 @@ manywho.ajax = (function (manywho) {
                 processData: true,
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.join.beforeSend')) {
-                        manywho.settings.get('events.join.beforeSend').call(this, xhr);
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'join');
 
                 }
             })
-            .done(manywho.settings.get('events.join.done'))
+            .done(manywho.settings.event('join.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.join.fail'));
+            .fail(manywho.settings.event('join.fail'));
 
         },
         
-        invoke: function (engineInvokeRequest) {
+        invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -119,25 +109,17 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(engineInvokeRequest),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.invoke.beforeSend')) {
-                        manywho.settings.get('events.invoke.beforeSend').call(this, xhr);
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'invoke');
 
                 }
             })
-            .done(manywho.settings.get('events.invoke.done'))
+            .done(manywho.settings.event('invoke.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.invoke.fail'));
+            .fail(manywho.settings.event('invoke.fail'));
 
         },
 
-        getNavigation: function (stateId, stateToken, navigationElementId) {
+        getNavigation: function (stateId, stateToken, navigationElementId, tenantId, authenticationToken) {
             
             return $.ajax({
                 url: 'https://flow.manywho.com/api/run/1/navigation/' + stateId,
@@ -148,25 +130,36 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.navigation.beforeSend')) {
-                        manywho.settings.get('events.navigation.beforeSend').call(this, xhr);
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'navigation');
 
                 }
             })
-            .done(manywho.settings.get('events.navigation.done'))
+            .done(manywho.settings.event('navigation.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.navigation.fail'));
+            .fail(manywho.settings.event('navigation.fail'));
+
+        },
+
+        getFlowByName: function (flowName, tenantId, authenticationToken) {
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/flow/name/' + flowName,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowByName');
+
+                }
+            })
+                .done(manywho.settings.event('getFlowByName.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('getFlowByName.fail'));
 
         },
         
-        dispatchObjectDataRequest: function (request, limit, search, orderBy, orderByDirection, page) {
+        dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             request.listFilter = request.listFilter || {};           
             request.listFilter.limit = limit;
@@ -192,25 +185,17 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(request),
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
-
-                    if (manywho.settings.get('events.objectData.beforeSend')) {
-                        manywho.settings.get('events.objectData.beforeSend').call(this, xhr);
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'objectData');
 
                 }
             })
-            .done(manywho.settings.get('events.objectData.done'))
+            .done(manywho.settings.event('objectData.done'))
             .fail(onError)
-            .fail(manywho.settings.get('events.objectData.fail'));
+            .fail(manywho.settings.event('objectData.fail'));
 
         },
 
-        ping: function (stateId, stateToken) {
+        ping: function (tenantId, stateId, stateToken, authenticationToken) {
 
             log.info('Pinging for changes');
 
@@ -219,11 +204,7 @@ manywho.ajax = (function (manywho) {
                 type: 'GET',
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', manywho.model.getTenantId());
-
-                    if (manywho.settings.get('authentication.token')) {
-                        xhr.setRequestHeader('Authorization', manywho.settings.get('authentication.token'));
-                    }
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'ping');
 
                 }
             })

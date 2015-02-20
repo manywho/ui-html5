@@ -1,11 +1,6 @@
 (function (manywho) {
 
-    var containers = {};
-    var components = {};
-    var outcomes = {};
-    var navigation = {};
-    var wait = null;
-    var tenantId = '';
+    var flowModel = {};
 
     function updateData(collection, item, key) {
 
@@ -84,23 +79,27 @@
     
     manywho.model = {
 
-        parseEngineResponse: function (engineInvokeResponse) {
+        parseEngineResponse: function (engineInvokeResponse, flowKey) {
 
-            containers = {};
-            components = {};
-            outcomes = {};
-            wait = null;
+            if (!flowModel[flowKey]) flowModel[flowKey] = {};
+
+            flowModel[flowKey].containers = {};
+            flowModel[flowKey].components = {};
+            flowModel[flowKey].outcomes = {};
+            flowModel[flowKey].label = null;
+            flowModel[flowKey].wait = null;
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
+
+                flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
                 var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
                 flattenedContainers.forEach(function (item) {
 
-                    containers[item.id] = item;
+                    flowModel[flowKey].containers[item.id] = item;
 
                     if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-
-                        containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                        flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
 
                     }
 
@@ -108,23 +107,22 @@
 
                 engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                    components[item.id] = item;
+                    flowModel[flowKey].components[item.id] = item;
 
                     if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-
-                        components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                        flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
 
                     }
 
                 }, this);
-
+                                
             }
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
 
                 engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
 
-                    outcomes[item.id.toLowerCase()] = item;
+                    flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
 
                 }, this);
 
@@ -133,58 +131,66 @@
             switch (engineInvokeResponse.invokeType.toLowerCase())
             {
                 case "wait":
-                    wait = { message: engineInvokeResponse.waitMessage }
+                    flowModel[flowKey].wait = { message: engineInvokeResponse.waitMessage }
                     break;
             }
 
         },
 
-        parseEngineSyncResponse: function(response) {
+        parseEngineSyncResponse: function(response, flowKey) {
             
             response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                containers[item.pageContainerId] = $.extend(containers[item.pageContainerId], item);
+                flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
 
             }, this);
 
             response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                components[item.pageComponentId] = $.extend(components[item.pageComponentId], item);
+                flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
                 
             }, this);
 
         },
 
-        parseNavigationResponse: function (id, response) {
+        parseNavigationResponse: function (id, response, flowKey) {
 
-            navigation = {};
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
 
-            navigation[id] = {
+            flowModel[flowKey].navigation = {};
+
+            flowModel[flowKey].navigation[id] = {
                 culture: response.culture,
                 developerName: response.developerName,
                 label: response.label,
                 tags: response.tags
-            }
+            };
 
-            navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
-            
+            flowModel[flowKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+
         },
 
-        getChildren: function (containerId) {
+        getLabel: function (flowKey) {
+
+            return flowModel[flowKey].label;
+
+        },
+
+        getChildren: function (containerId, flowKey) {
 
             if (containerId == 'root') {
 
-                return manywho.utils.getAll(containers, null, 'parent');
+                return manywho.utils.getAll(flowModel[flowKey].containers, null, 'parent');
 
             }
 
             var children = [];
-            var container = containers[containerId];
+            var container = flowModel[flowKey].containers[containerId];
 
             if (container != null) {
 
-                children = children.concat(manywho.utils.getAll(containers, containerId, 'parent'));
-                children = children.concat(manywho.utils.getAll(components, containerId, 'pageContainerId'));
+                children = children.concat(manywho.utils.getAll(flowModel[flowKey].containers, containerId, 'parent'));
+                children = children.concat(manywho.utils.getAll(flowModel[flowKey].components, containerId, 'pageContainerId'));
 
             }
 
@@ -198,33 +204,33 @@
 
         },
 
-        getContainer: function (containerId) {
+        getContainer: function (containerId, flowKey) {
 
-            return containers[containerId];
-
-        },
-
-        getComponent: function (componentId) {
-
-            return components[componentId];
+            return flowModel[flowKey].containers[containerId];
 
         },
 
-        getComponents: function () {
+        getComponent: function (componentId, flowKey) {
 
-            return components;
-
-        },
-
-        getOutcome: function (outcomeId) {
-
-            return outcomes[outcomeId.toLowerCase()];
+            return flowModel[flowKey].components[componentId];
 
         },
 
-        getOutcomes: function (pageObjectId) {
+        getComponents: function (flowKey) {
 
-            var outcomesArray = manywho.utils.convertToArray(outcomes) || [];
+            return flowModel[flowKey].components;
+
+        },
+
+        getOutcome: function (outcomeId, flowKey) {
+
+            return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+
+        },
+
+        getOutcomes: function (pageObjectId, flowKey) {
+
+            var outcomesArray = manywho.utils.convertToArray(flowModel[flowKey].outcomes) || [];
 
             return outcomesArray.filter(function (outcome) {
 
@@ -235,73 +241,94 @@
 
         },
 
-        getWait: function() {
-
-            return wait;
-
-        },
-
-        getNavigation: function (navigationId) {
+        getNavigation: function (navigationId, flowKey) {
 
             if (navigationId) {
 
-                return navigation[navigationId];
+                return flowModel[flowKey].navigation[navigationId];
 
-            }
-            else {
-
-                return navigation[this.getDefaultNavigationId()];
-
-            }            
-
-        },
-
-        getDefaultNavigationId: function() {
-
-            return Object.keys(navigation)[0];
-
-        },
-
-        getItem: function(id) {
-
-            var item = this.getContainer(id);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getComponent(id);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getOutcome(id);
-            if (item != null) {
-                return item;
-            }
-
-            item = this.getNavigation(id);
-            if (item != null) {
-                return item;
             }
 
         },
 
+        getWait: function(flowKey) {
+
+            return flowModel[flowKey].wait;
+
+        },
+        
+        getDefaultNavigationId: function(flowKey) {
+
+            if (flowModel[flowKey].navigation) {
+
+                return Object.keys(flowModel[flowKey].navigation)[0];
+
+            }
+
+        },
+
+        getItem: function(id, flowKey) {
+
+            var item = this.getContainer(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getComponent(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getOutcome(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+            item = this.getNavigation(id, flowKey);
+            if (item != null) {
+                return item;
+            }
+
+        },
+        
         setComponentInputResponseRequest: function (componentId, contentValue, objectData) {
 
             this.componentInputResponseRequests[componentId].contentValue = contentValue;
             this.componentInputResponseRequests[componentId].objectData = objectData;
 
         },
+        
+        setModal: function(flowKey, modalKey) {
 
-        getTenantId: function () {
+            if(!flowModel[flowKey]) flowModel[flowKey] = {};
 
-            return this.tenantId;
+            flowModel[flowKey].modal = modalKey;
 
         },
 
-        setTenantId: function (tenantId) {
+        getModal: function(flowKey) {
 
-            this.tenantId = tenantId;
+            if (flowModel[flowKey]) {
+
+                return flowModel[flowKey].modal;
+
+            }
+
+        },
+
+        getParentForModal: function(modalKey) {
+
+            for (flowKey in flowModel) {
+
+                if (manywho.utils.isEqual(flowModel[flowKey].modal, modalKey, true)) {
+
+                    return flowKey;
+
+                }
+
+            }
+
+            return null;
 
         },
 

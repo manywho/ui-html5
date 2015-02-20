@@ -28,7 +28,7 @@
 
         },
 
-        renderRows: function (objectData, outcomes, displayColumns, selectedRows, onRowClicked) {
+        renderRows: function (flowKey, objectData, outcomes, displayColumns, selectedRows, onRowClicked) {
 
             var outcomeComponent = manywho.component.getByName('outcome');
 
@@ -44,7 +44,7 @@
 
                         return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId }, outcomes.map(function (outcome) {
 
-                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
+                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey }, null);
 
                         }, this));
 
@@ -81,7 +81,7 @@
             ].join(' ');
 
             var rows = [this.renderHeaderRow(this.props.displayColumns)];
-            rows = rows.concat(this.renderRows(this.props.model.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
+            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.model.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
             
             return React.DOM.div({ className: 'table-responsive' },
                 React.DOM.table({ className: tableClassNames },

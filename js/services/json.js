@@ -2,18 +2,38 @@ manywho.json = (function (manywho) {
 
     return {
 
-        generateInitializationRequest: function(flowId, stateId, annotations, inputs, mode, reportingMode) {
+        generateFlowInputs: function (inputsData, objectData, typeElementDeveloperName) {
+
+            var inputs = [];
+
+            for (var property in inputsData) {
+                inputs.push({
+                    'contentType': 'Content' + (typeof inputsData[property]).charAt(0).toUpperCase() + (typeof inputsData[property]).substring(1).toLowerCase(),
+                    'contentValue': inputsData[property],
+                    'developerName': property,
+                    'objectData': objectData || null,
+                    'typeElementDeveloperName': typeElementDeveloperName || null
+                });
+            }
+
+            return inputs;
+
+        },
+
+        generateInitializationRequest: function(flowId, stateId, annotations, inputs, playerUrl, mode, reportingMode) {
 
             return {
                 'flowId': {
                     'id': flowId.id,
-                    'versionId': flowId.versionid
+                    'versionId': flowId.versionid || flowId.versionId || null
                 },
                 'stateId': stateId || null,
                 'annotations': annotations || null,
                 'inputs': inputs || null,
-                'mode': mode || null,
-                'reportingMode': reportingMode || null
+                'playerUrl': playerUrl || null,
+                'joinPlayerUrl': playerUrl || null,
+                'mode': mode || '',
+                'reportingMode': reportingMode || ''
             }
         },
 
@@ -32,7 +52,8 @@ manywho.json = (function (manywho) {
                     },
                     'selectedOutcomeId': selectedOutcomeId || null
                 },
-                'mode': mode || null
+                'mode': mode || null,
+                'navigationElementId': null
             }
         },
 

@@ -18,8 +18,9 @@
     <link rel="stylesheet" href="css/input.css" />
     <link rel="stylesheet" href="css/outcome.css" />
     <link rel="stylesheet" href="css/loading.css" />
-    <link rel="stylesheet" href="css/pagination.css" />
+    <link rel="stylesheet" href="css/modal.css" />
     <link rel="stylesheet" href="css/group.css" />
+    <link rel="stylesheet" href="css/pagination.css" />
     <!-- endbuild -->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -54,6 +55,8 @@
     <script src="js/services/settings.js"></script>
     <script src="js/services/json.js"></script>
     <script src="js/services/utils.js"></script>
+    <script src="js/services/authorization.js"></script>
+    <script src="js/services/callbacks.js"></script>
 
     <script src="js/components/main.js"></script>
     <script src="js/components/navigation.js"></script>
@@ -71,30 +74,28 @@
     <script src="js/components/table-small.js"></script>
     <script src="js/components/pagination.js"></script>
     <script src="js/components/wait.js"></script>
+    <script src="js/components/modal.js"></script>
     <!-- endbuild -->
 
     <!-- options -->
 </head>
 <body>    
-
     <div id="manywho"></div>
 
     <script>
         var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+        
+        manywho.settings.initialize({
+            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+            playerUrl: document.URL
+        });
 
         var options = {
-            tenantId: queryParameters['tenant-id'],
-            flowId: {
-                id: queryParameters['flow-id'],
-                versionId: queryParameters['flow-version-id']
-            },
-            stateId: queryParameters['join'],
-            navigationElementId: queryParameters['navigation-element-id'],
             authentication: {
                 sessionId: queryParameters['session-token'],
-                sessionUrl: queryParameters['session-url'],
-                token: queryParameters['authorization']
+                sessionUrl: queryParameters['session-url']
             },
+            navigationElementId: queryParameters['navigation-element-id'],
             mode: queryParameters['mode'],
             reportingMode: queryParameters['reporting-mode'],
             trackLocation: false,
@@ -104,10 +105,16 @@
             },
             inputs: null,
             annotations: null
-        };
+        }
 
-        manywho.settings.initialize($.extend(options, window.devOptions || {}));
-        manywho.engine.initialize();        
+        manywho.engine.initialize(queryParameters['tenant-id'],
+            queryParameters['flow-id'],
+            queryParameters['flow-version-id'],
+            'main', 
+            queryParameters['join'],
+            queryParameters['authorization'],
+            options);
     </script>
+
 </body>
 </html>

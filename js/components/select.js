@@ -22,11 +22,11 @@
 
         handleChange: function(e) {
 
-            var model = manywho.model.getComponent(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, true);
-            manywho.component.handleEvent(this, model);
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
+            manywho.component.handleEvent(this, model, this.props.flowKey);
 
         },
 
@@ -37,9 +37,9 @@
             var options = [];
             var isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id);
-            var state = manywho.state.getComponent(this.props.id);
-            var loading = manywho.state.getLoading(this.props.id);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
             var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;

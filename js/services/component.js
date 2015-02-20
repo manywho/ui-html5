@@ -17,10 +17,10 @@ manywho.component = (function (manywho) {
     return {
 
         contentTypes: {
-            string: "CONTENTSTRING",
-            number: "CONTENTNUMBER",
-            boolean: "CONTENTBOOLEAN",
-            password: "CONTENTPASSWORD"
+            string: 'CONTENTSTRING',
+            number: 'CONTENTNUMBER',
+            boolean: 'CONTENTBOOLEAN',
+            password: 'CONTENTPASSWORD'
         },
 
         register: function (name, component) {
@@ -41,30 +41,30 @@ manywho.component = (function (manywho) {
 
         },
 
-        getChildComponents: function (children, id) {
+        getChildComponents: function (children, id, flowKey) {
 
             return children.map(function (item) {
 
                 var component = this.get(item);                
-                return React.createElement(component, { id: item.id, parentId: id });
+                return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey });
 
             }, this);
 
         },
 
-        getOutcomes: function(outcomes)
+        getOutcomes: function(outcomes, flowKey)
         {
 
             return outcomes.map(function (item) {
-                return React.createElement(components['outcome'], { id: item.id });
+                return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey });
             });
 
         },
 
-        handleEvent: function (component, model) {
+        handleEvent: function (component, model, flowKey) {
 
             if (model.hasEvents) {
-                manywho.engine.sync(true);
+                manywho.engine.sync(flowKey);
                 manywho.collaboration.sync(manywho.state.getState().id);
             }
 
@@ -150,6 +150,23 @@ manywho.component = (function (manywho) {
             }
 
             return displayColumns;
+
+        },
+
+        appendFlowContainer: function (flowKey) {
+
+            var container = document.getElementById(flowKey);
+
+            if (!container) {
+
+                container = document.createElement('div');
+                container.setAttribute('id', flowKey);
+                container.className = 'mw-bs';
+                document.body.appendChild(container);
+
+            }
+
+            return container;
 
         }
 
