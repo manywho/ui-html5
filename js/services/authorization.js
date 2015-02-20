@@ -38,9 +38,9 @@ manywho.authorization = (function (manywho) {
             if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
                 if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
-
-                    // Navigate the user to the oauth provider
+                    
                     window.location = response.authorizationContext.loginUrl;
+                    return;
 
                 }
 

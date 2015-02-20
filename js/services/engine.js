@@ -98,12 +98,78 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                return processObjectDataRequests(manywho.model.getComponents(flowKey));
+                return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             });
         
     }
  
+    function joinWithAuthorization(callback, flowKey) {
+
+        var self = this;
+        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+        var state = manywho.state.getState(flowKey);
+
+        manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
+            .then(function (response) {
+
+                return isAuthorized(response, flowKey);
+
+            })
+            .then(function (response) {
+
+                self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
+
+                manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+                //manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
+
+                var deferreds = [response];
+
+                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
+                    deferreds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id, manywho.utils.extractTenantId(flowKey)));
+                }
+
+                if (response.currentStreamId) {
+                    // Add create social stream ajax call to defereds here
+                }
+
+                return $.when.apply($, deferreds);
+
+            }, function (response) {
+
+                // Authorization failed, retry
+                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+            })
+            .then(function (response, navigation, stream) {
+
+                if (navigation) {
+
+                    manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0], flowKey);
+
+                }
+
+                if (stream) {
+                    // TODO                    
+                }
+
+            })
+            .then(function () {
+
+                var container = manywho.component.appendFlowContainer(flowKey);
+                React.unmountComponentAtNode(container);
+
+                self.render(flowKey);
+
+            })
+            .then(function () {
+
+                return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+
+            });
+
+    }
+
     function moveWithAuthorization(callback, invokeRequest, flowKey) {
 
         var self = this;
@@ -298,42 +364,20 @@ manywho.engine = (function (manywho) {
         join: function (tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options) {
 
             var self = this;
-            var flowKey = null;
+            var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, stateId, container);
+            
+            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
+            manywho.state.setState(stateId, null, null, flowKey);
 
-            manywho.ajax.join(stateId, tenantId, authenticationToken)
-                .then(function (response) {
-
-                    flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
-                    manywho.settings.initializeFlow(options, flowKey);
-                    return response;
-
-                })
-                .then(function (response) {
-
-                    return isAuthorized(response, flowKey);
-
-                })
-                .then(function (response) {
-
-                    onInitialize(response, flowKey);
-
-                }, function (response) {
-
-                    var invokeRequest = manywho.json.generateInvokeRequest({
-                        id: response.stateId,
-                        token: response.stateToken,
-                        currentMapElementId: response.currentMapElementId
-                    }, 'FORWARD');
-
-                    manywho.authorization.invokeAuthorization(response, flowKey, {
-                        execute: initializeWithAuthorization,
-                        context: self,
-                        args: [invokeRequest, flowKey],
-                        name: 'invoke',
-                        type: 'done'
-                    });
-
-                });
+            joinWithAuthorization.call(this,
+                {
+                    execute: joinWithAuthorization,
+                    context: this,
+                    args: [flowKey],
+                    name: 'invoke',
+                    type: 'done'
+                },
+                flowKey);
                         
         },
 
