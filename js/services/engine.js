@@ -336,13 +336,13 @@ manywho.engine = (function (manywho) {
 
             var self = this;
 
-            manywho.state.setIsLoading(id, true);
+            manywho.state.setIsLoading(id, true, flowKey);
             self.render(flowKey);
 
             return manywho.ajax.dispatchObjectDataRequest(request, manywho.model.getTenantId(flowKey), limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
                     
-                    manywho.state.setIsLoading(id, false);
+                    manywho.state.setIsLoading(id, false, flowKey);
                     manywho.model.getComponent(id, flowKey).objectData = response.objectData;
 
                     self.render(flowKey);
