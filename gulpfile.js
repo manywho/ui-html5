@@ -183,11 +183,11 @@ gulp.task('html-dist', function () {
                 .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('test', function () {
+gulp.task('dist', function () {
 
-    return gulp.src('dist/**')
-            .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
-    .pipe(gulp.dest('./dist/'));
+    runSequence('clean-dist',
+                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
+                'html-dist');
 
 });
 
