@@ -205,7 +205,7 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(aws);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
-    return gulp.src(['dist/**', '!*.html'])
+    return gulp.src(['dist/**', '!dist/*.html'])
                 .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
