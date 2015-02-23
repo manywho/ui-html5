@@ -107,13 +107,15 @@
             annotations: null
         }
 
-        manywho.engine.initialize(queryParameters['tenant-id'],
-            queryParameters['flow-id'],
-            queryParameters['flow-version-id'],
+        manywho.engine.initialize(
+            queryParameters['tenant-id'] || devOptions.tenantId,
+            queryParameters['flow-id'] || devOptions.flowId.id,
+            queryParameters['flow-version-id'] || devOptions.flowId.versionId,
             'main', 
-            queryParameters['join'],
+            queryParameters['join'] || devOptions.stateId,
             queryParameters['authorization'],
-            options);
+            options
+        );
     </script>
 
 </body>
