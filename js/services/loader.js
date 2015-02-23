@@ -28,19 +28,19 @@
 
                     if (data[hash].match('\.css$')) {
 
-                        appendStylesheet(data[hash]);
+                        appendStylesheet(manywho.cdnUrl + data[hash]);
 
                     }
                     else if (data[hash].match('\.js$')) {
 
-                        appendScript(data[hash]);
+                        appendScript(manywho.cdnUrl + data[hash]);
 
                     }
 
                 }
 
                 // Load the default paper theme manually
-                appendStylesheet('css/themes/mw-paper.css');
+                appendStylesheet(manywho.cdnUrl + 'css/themes/mw-paper.css');
 
                 var timer = setInterval(function () {
 
