@@ -22,7 +22,7 @@
 
         initialize: function() {
             
-            $.getJSON('hashes.json', function (data) {
+            $.getJSON(manywho.cdnUrl + 'hashes.json', function (data) {
                 
                 for (hash in data) {
 
