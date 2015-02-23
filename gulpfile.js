@@ -217,8 +217,6 @@ gulp.task('deploy-cdn', function () {
     return gulp.src(['dist/**', '!dist/*.html'])
                 .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png', 'js/loader.min.js'] }))
                 .pipe(revall.manifest({ fileName: 'hashes.json' }))
-                .pipe(gulp.dest('./dist/'))
-                .pipe(gulp.src(['dist/**', '!dist/*.html']))
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(publisher.cache())
