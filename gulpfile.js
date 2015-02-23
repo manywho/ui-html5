@@ -183,11 +183,11 @@ gulp.task('html-dist', function () {
                 .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('dist', function () {
+gulp.task('test', function () {
 
-    runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
-                'html-dist');
+    return gulp.src('dist/**')
+            .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
+    .pipe(gulp.dest('./dist/'));
 
 });
 
@@ -205,8 +205,8 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(aws);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
-    return gulp.src(['dist/**'])
-                .pipe(revall())
+    return gulp.src(['dist/**', '!*.html'])
+                .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(publisher.cache())
@@ -229,7 +229,7 @@ gulp.task('deploy-players', function () {
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
     return gulp.src(['dist/default.html'])
-                .pipe(rename(tenantId + '.default'))
+                .pipe(rename(tenantId + '.' + argv.player))
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
