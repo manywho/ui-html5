@@ -5,8 +5,10 @@
     <meta charset="utf-8" />
     <title>ManyWho React UI</title>
 
+    <!-- build:bootstrap -->
     <link rel="stylesheet" href="css/mw-bootstrap.css" />
     <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
+    <!-- endbuild -->
     
     <!-- build:css -->
     <link rel="stylesheet" href="css/lib/bootstrap-chosen.css" />
@@ -78,45 +80,57 @@
     <!-- endbuild -->
 
     <!-- options -->
+
+    <script>
+        function initializeManyWho() {
+
+            var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+            manywho.settings.initialize({
+                adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                playerUrl: document.URL
+            });
+
+            var options = {
+                authentication: {
+                    sessionId: queryParameters['session-token'],
+                    sessionUrl: queryParameters['session-url']
+                },
+                navigationElementId: queryParameters['navigation-element-id'],
+                mode: queryParameters['mode'],
+                reportingMode: queryParameters['reporting-mode'],
+                trackLocation: false,
+                replaceUrl: false,
+                collaboration: {
+                    isEnabled: false
+                },
+                inputs: null,
+                annotations: null
+            }
+
+            var settings = window.devOptions || {};
+
+            manywho.engine.initialize(
+                queryParameters['tenant-id'] || settings.tenant,
+                queryParameters['flow-id'] || settings.flow,
+                queryParameters['flow-version-id'] || settings.version,
+                'main',
+                queryParameters['join'] || settings.state,
+                queryParameters['authorization'],
+                options
+            );
+
+        }
+    </script>
 </head>
 <body>    
     <div id="manywho"></div>
 
+    <!-- build:loader -->
     <script>
-        var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
-        
-        manywho.settings.initialize({
-            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
-            playerUrl: document.URL
-        });
-
-        var options = {
-            authentication: {
-                sessionId: queryParameters['session-token'],
-                sessionUrl: queryParameters['session-url']
-            },
-            navigationElementId: queryParameters['navigation-element-id'],
-            mode: queryParameters['mode'],
-            reportingMode: queryParameters['reporting-mode'],
-            trackLocation: false,
-            replaceUrl: false,
-            collaboration: {
-                isEnabled: false
-            },
-            inputs: null,
-            annotations: null
-        }
-
-        manywho.engine.initialize(
-            queryParameters['tenant-id'] || devOptions.tenantId,
-            queryParameters['flow-id'] || devOptions.flowId.id,
-            queryParameters['flow-version-id'] || devOptions.flowId.versionId,
-            'main', 
-            queryParameters['join'] || devOptions.stateId,
-            queryParameters['authorization'],
-            options
-        );
+        initializeManyWho();
     </script>
+    <!-- endbuild -->
 
 </body>
 </html>
