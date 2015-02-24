@@ -15,7 +15,6 @@ var gulp = require('gulp'),
     runSequence = require('run-sequence'),
     order = require("gulp-order"),
     awspublish = require('gulp-awspublish'),
-    cloudfront = require("gulp-cloudfront"),
     rename = require("gulp-rename"),
     replace = require('gulp-replace'),
     argv = require('yargs').argv;
@@ -226,12 +225,11 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(aws);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
-    return gulp.src(['js/**', 'css/**', 'hashes.json'])          
+    return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(publisher.cache())
                 .pipe(awspublish.reporter())
-                .pipe(cloudfront(aws));
 
 });
 
