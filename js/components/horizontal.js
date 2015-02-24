@@ -19,16 +19,8 @@
 
     manywho.styling.registerContainer("horizontal_flow", function (item, container) {
         
-        var classes = [];
-
         var columnSpan = Math.floor(12 / Math.max(1, container.childCount));
-        classes.push('col-sm-' + columnSpan);
-
-        if (item.order == 0) {
-            classes.push('mw-horizontal-first-child');
-        }
-
-        return classes;
+        return ['col-sm-' + columnSpan];
 
     });
 
