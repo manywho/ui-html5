@@ -238,7 +238,7 @@ gulp.task('deploy-players', function () {
     var aws = {
         key: process.env.BAMBOO_AWSKEY,
         secret: process.env.BAMBOO_AWSSECRET,
-        bucket: process.env.BAMBOO_CDNBUCKET,
+        bucket: process.env.BAMBOO_PLAYERSBUCKET,
         region: process.env.BAMBOO_CDNREGION,
     };
 
