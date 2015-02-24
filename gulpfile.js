@@ -244,11 +244,10 @@ gulp.task('deploy-players', function () {
 
     var tenantId = argv.tenant;
     var publisher = awspublish.create(aws);
-    var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
+    var headers = {};
 
     return gulp.src(['dist/default.html'])
                 .pipe(rename(tenantId + '.' + argv.player))
-                .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
 
