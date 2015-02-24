@@ -22,7 +22,7 @@
 
         initialize: function() {
             
-            $.getJSON(manywho.cdnUrl + 'hashes.json', function (data) {
+            $.getJSON(manywho.cdnUrl + '/hashes.json', function (data) {
                 
                 for (hash in data) {
 
@@ -40,7 +40,7 @@
                 }
 
                 // Load the default paper theme manually
-                appendStylesheet(manywho.cdnUrl + 'css/themes/mw-paper.css');
+                appendStylesheet(manywho.cdnUrl + '/css/themes/mw-paper.css');
 
                 var timer = setInterval(function () {
 
