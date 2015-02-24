@@ -28,7 +28,7 @@ manywho.authorization = (function (manywho) {
 
             }
 
-            return true
+            return true;
 
         },
 
@@ -48,7 +48,7 @@ manywho.authorization = (function (manywho) {
                     key: null,
                     id: null,
                     versionId: null
-                }
+                };
 
                 // Get the authentication Flow and follow all of the steps
                 manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))

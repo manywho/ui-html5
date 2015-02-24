@@ -212,16 +212,7 @@ manywho.engine = (function (manywho) {
     
     function setIsWaiting(invokeType, flowKey) {
 
-        if (manywho.utils.isEqual(invokeType, 'wait', true)) {
-
-            waiting[flowKey] = true;
-
-        }
-        else {
-
-            waiting[flowKey] = false;
-
-        }
+        waiting[flowKey] = manywho.utils.isEqual(invokeType, 'wait', true);
 
     }
 

@@ -42,7 +42,7 @@
                 onChange: this.handleChange,
                 id: this.props.id,
                 maxLength: model.maxSize
-            }
+            };
 
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";
