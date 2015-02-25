@@ -66,7 +66,7 @@
                 navigationItems[item.id] = $.extend({}, item, data);
 
                 if (item.navigationItems != null) {
-                    navigationItems[item.id].items = getNavigationItems(item.navigationItems);
+                    navigationItems[item.id].items = getNavigationItems(item.navigationItems, dataResponse);
                 }
 
             }, this);

@@ -188,7 +188,7 @@ gulp.task('html-dist', function () {
                     js: '',
                     log: '',
                     bootstrap: '',
-                    loader: process.env.BAMBOO_CDNURL + 'js/loader.min.js'
+                    loader: process.env.BAMBOO_CDNURL + '/js/loader.min.js'
                 }))
                 .pipe(rename('default.html'))
                 .pipe(gulp.dest('./dist/'));

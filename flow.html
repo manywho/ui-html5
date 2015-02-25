@@ -65,8 +65,21 @@
 
                 var settings = window.devOptions || {};
 
+                var tenantId = queryParameters['tenant-id'] || settings.tenant;
+                if (!tenantId) {
+
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+
+                                    return path && path.length > 0;
+
+                                })[0];
+
+                }
+
                 manywho.engine.initialize(
-                    queryParameters['tenant-id'] || settings.tenant,
+                    tenantId,
                     queryParameters['flow-id'] || settings.flow,
                     queryParameters['flow-version-id'] || settings.version,
                     'main',
@@ -132,6 +145,5 @@
         manywho.initialize();
     </script>
     <!-- endbuild -->
-
 </body>
 </html>
