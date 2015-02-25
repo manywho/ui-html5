@@ -387,7 +387,10 @@ manywho.engine = (function (manywho) {
                 .then(function (response) {
 
                     manywho.state.setLoading(id, null, flowKey);
-                    manywho.model.getComponent(id, flowKey).objectData = response.objectData;
+
+                    var component = manywho.model.getComponent(id, flowKey);
+                    component.objectData = response.objectData;
+                    component.objectDataRequest.hasMoreResults = response.hasMoreResults;
                     
                 })
                .fail(function (xhr, status, error) {

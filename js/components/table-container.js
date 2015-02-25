@@ -55,13 +55,21 @@
 
     }
 
-    function renderFooter(pageIndex, hasMoreResults) {
+    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev) {
 
         var footerElements = [];
 
         if (pageIndex > 1 || hasMoreResults) {
 
-            footerElements.push(React.createElement(manywho.component.getByName('pagination'), { pageIndex: 1, hasMoreResults: hasMoreResults, containerClasses: 'pull-right' }));
+            footerElements.push(React.createElement(manywho.component.getByName('pagination'),
+                {
+                    pageIndex: pageIndex,
+                    hasMoreResults: hasMoreResults,
+                    containerClasses: 'pull-right',
+                    onNext: onNext,
+                    onPrev: onPrev
+                }
+            ));
 
         }
 
@@ -98,7 +106,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search);
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
 
         },
 
@@ -162,6 +170,34 @@
 
         },
 
+        onNext: function() {
+
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+                        
+            if (!state.page) {
+
+                state.page = 1;
+
+            }
+
+            state.page++;
+            manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
+
+            this.search();
+
+        },
+
+        onPrev: function() {
+
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            state.page--;
+
+            manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
+
+            this.search();
+
+        },
+
         getInitialState: function () {
 
             return {
@@ -191,7 +227,7 @@
             var isValid = true;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
             var displayColumns = getDisplayColumns(model.columns, this.state.outcomes);
             var objectDataRequest = model.objectDataRequest || {};
@@ -242,7 +278,7 @@
             return React.DOM.div({ className: classNames }, [
                 renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
-                renderFooter(1, objectDataRequest.hasMoreResults),
+                renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
                 React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible }, null)
             ]);
 
