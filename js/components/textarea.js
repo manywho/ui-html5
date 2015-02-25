@@ -44,7 +44,7 @@
             ].join(' ');
 
             return React.DOM.div({ className: classNames }, [
-                React.DOM.label({ 'for': this.props.id }, model.label),
+                React.DOM.label({ htmlFor: this.props.id }, model.label),
                 React.DOM.textarea(attributes, null),
                 React.DOM.span({ className: 'help-block' }, model.message)
             ]);

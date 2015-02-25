@@ -84,7 +84,7 @@
 
                 return React.DOM.div({ className: 'form-group ' + containerClassNames },
                         [
-                            React.DOM.label({ 'for': this.props.id }, model.label),
+                            React.DOM.label({ htmlFor: this.props.id }, model.label),
                             React.DOM.input(attributes, null),
                             React.DOM.span({className: 'help-block'}, model.message)
                         ]);
