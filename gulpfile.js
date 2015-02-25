@@ -17,6 +17,7 @@ var gulp = require('gulp'),
     awspublish = require('gulp-awspublish'),
     rename = require("gulp-rename"),
     replace = require('gulp-replace'),
+    aws = require('aws-sdk'),
     argv = require('yargs').argv;
 
 
@@ -214,7 +215,7 @@ gulp.task('dist', function () {
 // Deploy
 gulp.task('deploy-cdn', function () {
 
-    var aws = {
+    var distribution = {
         key: process.env.BAMBOO_AWSKEY,
         secret: process.env.BAMBOO_AWSSECRET,
         bucket: process.env.BAMBOO_CDNBUCKET,
@@ -222,7 +223,7 @@ gulp.task('deploy-cdn', function () {
         distributionId: process.env.BAMBOO_CDNDISTRIBUTIONID
     };
 
-    var publisher = awspublish.create(aws);
+    var publisher = awspublish.create(distribution);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
     return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js'])
@@ -233,9 +234,44 @@ gulp.task('deploy-cdn', function () {
 
 });
 
+gulp.task('invalidate', function (cb) {
+
+    console.log('Invalidating hashes.json');
+
+    var params = {
+        DistributionId: process.env.BAMBOO_CDNDISTRIBUTIONID,
+        InvalidationBatch: { 
+            CallerReference: 'deploy-' + Math.random(),
+            Paths: {
+                Quantity: 1,
+                Items: ['/js/hashes.json']
+            }
+        }
+    };
+
+    var cloudfront = new aws.CloudFront({
+        accessKeyId: process.env.BAMBOO_AWSKEY,
+        secretAccessKey: process.env.BAMBOO_AWSSECRET,
+        region: process.env.BAMBOO_CDNREGION,
+    });
+
+    cloudfront.createInvalidation(params, function (err, data) {
+
+        if (err) {
+
+            console.log(err, err.stack);
+
+        }
+
+        cb();
+        
+    });
+
+});
+
 gulp.task('deploy-players', function () {
 
-    var aws = {
+    var distribution = {
         key: process.env.BAMBOO_AWSKEY,
         secret: process.env.BAMBOO_AWSSECRET,
         bucket: process.env.BAMBOO_PLAYERSBUCKET,
@@ -243,12 +279,20 @@ gulp.task('deploy-players', function () {
     };
 
     var tenantId = argv.tenant;
-    var publisher = awspublish.create(aws);
+    var publisher = awspublish.create(distribution);
     var headers = {};
 
     return gulp.src(['dist/default.html'])
                 .pipe(rename(tenantId + '.' + argv.player))
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
+
+});
+
+gulp.task('deploy', function () {
+
+    runSequence('deploy-cdn',
+                'deploy-players',
+                'invalidate');
 
 });
