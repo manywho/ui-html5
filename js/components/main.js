@@ -2,7 +2,6 @@
 
     var main = React.createClass({
                 
-
         render: function () {
             
             log.info("Rendering Main");
@@ -27,7 +26,7 @@
                 'container main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : ''
             ].join(' ');
-
+            
             return React.DOM.div({ className: 'full-height' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
                         React.DOM.div({ className: classNames }, [
@@ -35,6 +34,9 @@
                             outcomeElements
                         ]),
                         modal,
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
                         React.createElement(manywho.component.getByName('wait'), { wait: wait })
                     ]);
 
