@@ -67,15 +67,16 @@
                     attributes.checked = "checked";
                 }
 
-                return React.DOM.div({ className: containerClassNames}, [
-                            React.DOM.div({ className: 'checkbox ' },
-                                React.DOM.label(null, [
-                                    React.DOM.input(attributes, null),
-                                    model.label
-                                ])
-                            ),
-                            React.DOM.span({className: 'help-block'}, model.message)
-                        ]);
+                return React.DOM.div({ className: containerClassNames},
+                    [
+                        React.DOM.div({ className: 'checkbox ' },
+                            React.DOM.label(null, [
+                                React.DOM.input(attributes, null),
+                                model.label
+                            ])
+                        ),
+                        React.DOM.span({className: 'help-block'}, model.message)
+                    ]);
 
             }
             else {
@@ -83,11 +84,11 @@
                 attributes.className = 'form-control';
 
                 return React.DOM.div({ className: 'form-group ' + containerClassNames },
-                        [
-                            React.DOM.label({ htmlFor: this.props.id }, model.label),
-                            React.DOM.input(attributes, null),
-                            React.DOM.span({className: 'help-block'}, model.message)
-                        ]);
+                    [
+                        React.DOM.label({ htmlFor: this.props.id }, model.label),
+                        React.DOM.input(attributes, null),
+                        React.DOM.span({className: 'help-block'}, model.message)
+                    ]);
 
             }                       
 
