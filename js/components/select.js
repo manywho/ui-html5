@@ -41,7 +41,7 @@
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
-            var objectData = manywho.utils.convertToArray($.extend(model.objectData, state.objectData));
+            var objectData = model.objectData;
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             if (objectData) {

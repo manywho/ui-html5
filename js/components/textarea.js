@@ -5,7 +5,7 @@
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey));
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
 
