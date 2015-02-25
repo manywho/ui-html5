@@ -88,6 +88,7 @@
             flowModel[flowKey].outcomes = {};
             flowModel[flowKey].label = null;
             flowModel[flowKey].wait = null;
+            flowModel[flowKey].notifications = []
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -125,6 +126,34 @@
                     flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
 
                 }, this);
+
+            }
+
+            if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
+
+                var notificationKey = flowKey;
+                if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
+
+                    notificationKey = this.getParentForModal(flowKey);
+
+                }
+
+                flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
+
+                flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
+                    manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
+                    .map(function (item) {
+
+                        return {
+                            message: item,
+                            position: 'center',
+                            type: 'danger',
+                            timeout: '0',
+                            dismissible: true
+                        }
+
+                    })
+                );
 
             }
             
@@ -238,6 +267,31 @@
                     || ((manywho.utils.isNullOrWhitespace(pageObjectId) || manywho.utils.isEqual(pageObjectId, 'root', true)) && manywho.utils.isNullOrWhitespace(outcome.pageObjectBindingId));
 
             });
+
+        },
+
+        getNotifications: function(flowKey, position) {
+
+            if (flowModel[flowKey].notifications) {
+
+                return flowModel[flowKey].notifications.filter(function (notification) {
+
+                    return manywho.utils.isEqual(notification.position, position, true);
+
+                });
+
+            }
+
+            return [];
+
+        },
+
+        removeNotification: function(flowKey, notification) {
+
+            var index = flowModel[flowKey].notifications.indexOf(notification);
+            flowModel[flowKey].notifications.splice(index, 1);
+
+            manywho.engine.render(flowKey);
 
         },
 
