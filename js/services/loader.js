@@ -47,7 +47,7 @@
                     if (manywho.utils) {
 
                         clearInterval(timer);
-                        initializeManyWho();
+                        manywho.initialize();
                         
                     }
 
