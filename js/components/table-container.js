@@ -112,8 +112,6 @@
 
         onRowClicked: function (e) {
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
             if (!areBulkActionsDefined(this.state.outcomes)) {
 
                 // Don't select the row if there aren't any bulk actions defined
@@ -256,7 +254,7 @@
                                 
                 content = React.DOM.div({ className: 'table-error' }, [
                     React.DOM.p({ className: 'lead' }, loading.error),
-                    React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry'),
+                    React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry')
                 ]);                
 
             }

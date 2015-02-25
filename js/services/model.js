@@ -160,7 +160,7 @@
             switch (engineInvokeResponse.invokeType.toLowerCase())
             {
                 case "wait":
-                    flowModel[flowKey].wait = { message: engineInvokeResponse.waitMessage }
+                    flowModel[flowKey].wait = { message: engineInvokeResponse.waitMessage };
                     break;
             }
 

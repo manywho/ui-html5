@@ -10,7 +10,7 @@
 
             }, this)[0];
 
-            return React.DOM.option({ value: item.externalId, selected: item.isSelected }, label.contentValue);
+            return React.DOM.option({ value: item.externalId, defaultValue: item.isSelected }, label.contentValue);
 
         }
 
@@ -65,7 +65,7 @@
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
                         React.DOM.label({ 'for': this.props.id }, model.label),
                         React.DOM.div({ className: 'input-wrapper' }, [
-                            React.createElement(Chosen, { children: options, onChange: this.handleChange, containerClasses: 'select', }),
+                            React.createElement(Chosen, { children: options, onChange: this.handleChange, containerClasses: 'select' }),
                             React.DOM.span({ className: iconClassNames }, null)
                         ]),
                         React.DOM.span({ className: 'help-block' }, model.message)
