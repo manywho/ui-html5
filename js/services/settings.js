@@ -1,6 +1,12 @@
 manywho.settings = (function (manywho, $) {
 
-    var globals = {};
+    var globals = {
+        paging: {
+            table: 10,
+            select: 250
+        }
+    };
+
     var flows = {};
 
     var themes = {

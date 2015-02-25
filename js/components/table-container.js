@@ -98,7 +98,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, 10, state.search);
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search);
 
         },
 

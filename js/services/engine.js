@@ -11,8 +11,9 @@ manywho.engine = (function (manywho) {
         });
 
         return $.when.apply($, requestComponents.map(function (component) {
-
-            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey)
+            
+            var limit = manywho.settings.global('paging.' + component.componentType);
+            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey, limit)
 
         }));
 
@@ -391,7 +392,7 @@ manywho.engine = (function (manywho) {
                 })
                .fail(function (xhr, status, error) {
 
-                   manywho.state.setLoading(id, { error: error });
+                   manywho.state.setLoading(id, { error: error }, flowKey);
 
                })
                .always(function () {
