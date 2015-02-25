@@ -46,7 +46,7 @@ manywho.component = (function (manywho) {
             return children.map(function (item) {
 
                 var component = this.get(item);                
-                return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey });
+                return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey, key: item.id });
 
             }, this);
 
@@ -56,7 +56,7 @@ manywho.component = (function (manywho) {
         {
 
             return outcomes.map(function (item) {
-                return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey });
+                return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey, key: item.id });
             });
 
         },

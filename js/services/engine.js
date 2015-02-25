@@ -91,8 +91,6 @@ manywho.engine = (function (manywho) {
             .then(function () {
 
                 var container = manywho.component.appendFlowContainer(flowKey);
-                React.unmountComponentAtNode(container);
-
                 self.render(flowKey);
 
             })
@@ -157,8 +155,6 @@ manywho.engine = (function (manywho) {
             .then(function () {
 
                 var container = manywho.component.appendFlowContainer(flowKey);
-                React.unmountComponentAtNode(container);
-
                 self.render(flowKey);
 
             })
@@ -184,19 +180,26 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
-                manywho.collaboration.move(manywho.state.getState(flowKey).id);
-
-                React.unmountComponentAtNode(document.getElementById(flowKey));
-                self.render(flowKey);
+                //manywho.collaboration.move(manywho.state.getState(flowKey).id);
 
                 manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
 
-                if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)
-                    && manywho.utils.isEqual(response.invokeType, 'done', true)) {
-
+                if (manywho.utils.isModal(flowKey)) {
+                                        
                     var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                    manywho.model.setModal(parentFlowKey, null);
+                    
+                    if (manywho.utils.isEqual(response.invokeType, 'done', true)) {
+
+                        manywho.model.setModal(parentFlowKey, null);                        
+
+                    }
+
                     manywho.engine.render(parentFlowKey);
+
+                }
+                else {
+
+                    manywho.engine.render(flowKey);
 
                 }
 
@@ -454,10 +457,7 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            var element = manywho.utils.extractElement(flowKey);
-            var component = manywho.component.getByName(element);
-
-            React.render(React.createElement(component, { flowKey: flowKey } ), document.getElementById(flowKey));
+            React.render(React.createElement(manywho.component.getByName('main'), { flowKey: flowKey }), document.getElementById(flowKey));
             
         }
 

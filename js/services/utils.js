@@ -178,6 +178,12 @@ manywho.utils = (function (manywho, $) {
 
             return flowKey.split('|')[3];
 
+        },
+
+        isModal: function (flowKey) {
+
+            return this.isEqual(this.extractElement(flowKey), 'modal', true);
+
         }
 
     }
