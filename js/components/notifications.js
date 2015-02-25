@@ -6,8 +6,9 @@
 
             var models = manywho.model.getNotifications(this.props.flowKey, this.props.position);
             var notificationComponent = manywho.component.getByName('notification');
-        
-            return React.DOM.ul({ className: this.props.position + '-notifications notifications' }, models.map(function (item) {
+            var padding = (models.length > 0) ? '20px' : null;
+
+            return React.DOM.ul({ className: this.props.position + '-notifications notifications', style: { padding: padding } }, models.map(function (item) {
 
                 return React.DOM.li(null, React.createElement(notificationComponent, { model: item, flowKey: this.props.flowKey }));
 
