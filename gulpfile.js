@@ -243,7 +243,7 @@ gulp.task('invalidate', function (cb) {
             CallerReference: 'deploy-' + Math.random(),
             Paths: {
                 Quantity: 1,
-                Items: ['/js/hashes.json']
+                Items: ['/hashes.json']
             }
         }
     };
