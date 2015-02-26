@@ -229,7 +229,6 @@ gulp.task('deploy-cdn', function () {
     return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
-                .pipe(publisher.cache())
                 .pipe(awspublish.reporter())
 
 });
