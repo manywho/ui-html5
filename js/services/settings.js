@@ -10,7 +10,7 @@ manywho.settings = (function (manywho, $) {
     var flows = {};
 
     var themes = {
-        uri: '/css/themes'
+        url: '/css/themes'
     }
 
     var events = {
