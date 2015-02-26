@@ -302,11 +302,15 @@ manywho.engine = (function (manywho) {
             if(manywho.utils.isModal(flowKey)) {
 
                 parentFlowKey = manywho.model.getParentForModal(flowKey);
+                manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
+                this.render(parentFlowKey);
+
+            } else {
+
+                manywho.state.setLoading('main', { message: 'Executing...' }, flowKey);
+                this.render(flowKey);
 
             }
-
-            manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
-            this.render(parentFlowKey);
 
             var invokeRequest = manywho.json.generateInvokeRequest(
                 manywho.state.getState(flowKey),
