@@ -29,7 +29,7 @@
             var element = null;
 
             if (item.items != null) {
-                var childListItemElement = React.DOM.ul({ className: 'dropdown-menu', role: 'menu' }, getListElements(item.items));
+                var childListItemElement = React.DOM.ul({ className: 'dropdown-menu', role: 'menu' }, getListElements(item.items, clickHandler));
 
                 element = React.DOM.li({ className: 'dropdown' }, [
                     React.DOM.a({ href: '#', 'data-toggle': 'dropdown' }, [
