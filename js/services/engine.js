@@ -45,6 +45,10 @@ manywho.engine = (function (manywho) {
             manywho.settings.flow('mode', flowKey)
         );
 
+        var container = manywho.component.appendFlowContainer(flowKey);
+        manywho.state.setLoading('main', { message: 'Initializing...' }, flowKey);
+        self.render(flowKey);
+
         manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
@@ -91,7 +95,8 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                var container = manywho.component.appendFlowContainer(flowKey);
+                manywho.state.setLoading('main', null, flowKey);
+
                 self.render(flowKey);
 
             })
@@ -108,6 +113,10 @@ manywho.engine = (function (manywho) {
         var self = this;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var state = manywho.state.getState(flowKey);
+
+        var container = manywho.component.appendFlowContainer(flowKey);
+        manywho.state.setLoading('main', { message: 'Joining...' }, flowKey);
+        self.render(flowKey);
 
         manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
@@ -155,7 +164,8 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                var container = manywho.component.appendFlowContainer(flowKey);
+                manywho.state.setLoading('main', null, flowKey);
+
                 self.render(flowKey);
 
             })
@@ -185,6 +195,8 @@ manywho.engine = (function (manywho) {
 
                 manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
 
+
+
                 if (manywho.utils.isModal(flowKey)) {
                                         
                     var parentFlowKey = manywho.model.getParentForModal(flowKey);
@@ -195,12 +207,14 @@ manywho.engine = (function (manywho) {
 
                     }
 
-                    manywho.engine.render(parentFlowKey);
+                    self.render(parentFlowKey);
 
                 }
                 else {
 
-                    manywho.engine.render(flowKey);
+                    manywho.state.setLoading('main', null, flowKey);
+
+                    self.render(flowKey);
 
                 }
 
@@ -255,6 +269,8 @@ manywho.engine = (function (manywho) {
                         
                         var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
 
+                        manywho.model.initializeModel(flowKey);
+
                         manywho.settings.initializeFlow(options, flowKey);
                         manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
@@ -282,6 +298,15 @@ manywho.engine = (function (manywho) {
             // In the model.js, there are componentInputResponseRequests entries for each component
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
+
+            if(manywho.utils.isModal(flowKey)) {
+
+                parentFlowKey = manywho.model.getParentForModal(flowKey);
+
+            }
+
+            manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
+            this.render(parentFlowKey);
 
             var invokeRequest = manywho.json.generateInvokeRequest(
                 manywho.state.getState(flowKey),
@@ -360,6 +385,8 @@ manywho.engine = (function (manywho) {
 
             var self = this;
             var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, stateId, container);
+
+            manywho.model.initializeModel(flowKey);
             
             manywho.state.setAuthenticationToken(authenticationToken, flowKey);
             manywho.state.setState(stateId, null, null, flowKey);
@@ -452,8 +479,14 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            React.render(React.createElement(manywho.component.getByName('main'), { flowKey: flowKey }), document.getElementById(flowKey));
-            
+            if(manywho.utils.isModal(flowKey)) {
+
+                flowKey = manywho.model.getParentForModal(flowKey);
+
+            }
+
+            React.render(React.createElement(manywho.component.getByName('main'), {flowKey: flowKey}), document.getElementById(flowKey));
+
         }
 
     }

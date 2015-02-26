@@ -20,15 +20,9 @@ manywho.authorization = (function (manywho) {
 
         isAuthorized: function(response, flowKey) {
 
-            if (response.authorizationContext != null
+            return !(response.authorizationContext != null
                 && response.authorizationContext.directoryId != null
-                && manywho.utils.isNullOrWhitespace(manywho.state.getAuthenticationToken(flowKey))) {
-
-                return false;
-
-            }
-
-            return true;
+                && manywho.utils.isNullOrWhitespace(manywho.state.getAuthenticationToken(flowKey)));
 
         },
 
@@ -43,6 +37,9 @@ manywho.authorization = (function (manywho) {
                     return;
 
                 }
+
+                manywho.state.setLoading('main', { message: 'Executing...' }, flowKey);
+                manywho.engine.render(flowKey);
 
                 var authenticationFlow = {
                     key: null,
@@ -76,6 +73,8 @@ manywho.authorization = (function (manywho) {
 
                         authenticationFlow.key = manywho.utils.getFlowKey(manywho.settings.global('adminTenantId'), authenticationFlow.id, authenticationFlow.versionId, response.stateId, 'modal');
 
+                        manywho.model.initializeModel(authenticationFlow.key);
+
                         manywho.callbacks.register(authenticationFlow.key, {
                             execute: setAuthenticationToken,
                             type: 'done',
@@ -100,6 +99,7 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function () {
 
+                        manywho.state.setLoading('main', null, flowKey);
                         manywho.model.setModal(flowKey, authenticationFlow.key);
                         manywho.component.appendFlowContainer(flowKey);
                         manywho.engine.render(flowKey);

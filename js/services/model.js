@@ -81,14 +81,12 @@
 
         parseEngineResponse: function (engineInvokeResponse, flowKey) {
 
-            if (!flowModel[flowKey]) flowModel[flowKey] = {};
-
             flowModel[flowKey].containers = {};
             flowModel[flowKey].components = {};
             flowModel[flowKey].outcomes = {};
             flowModel[flowKey].label = null;
             flowModel[flowKey].wait = null;
-            flowModel[flowKey].notifications = []
+            flowModel[flowKey].notifications = [];
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -184,8 +182,6 @@
 
         parseNavigationResponse: function (id, response, flowKey) {
 
-            if(!flowModel[flowKey]) flowModel[flowKey] = {};
-
             flowModel[flowKey].navigation = {};
 
             flowModel[flowKey].navigation[id] = {
@@ -206,6 +202,12 @@
         },
 
         getChildren: function (containerId, flowKey) {
+
+            if(flowModel[flowKey] === undefined || flowModel[flowKey].containers === undefined) {
+
+                return [];
+
+            }
 
             if (containerId == 'root') {
 
@@ -259,6 +261,12 @@
 
         getOutcomes: function (pageObjectId, flowKey) {
 
+            if (flowModel[flowKey] === undefined || flowModel[flowKey].outcomes === undefined) {
+
+                return [];
+
+            }
+
             var outcomesArray = manywho.utils.convertToArray(flowModel[flowKey].outcomes) || [];
 
             return outcomesArray.filter(function (outcome) {
@@ -307,7 +315,11 @@
 
         getWait: function(flowKey) {
 
-            return flowModel[flowKey].wait;
+            if (flowModel[flowKey].wait) {
+
+                return flowModel[flowKey].wait
+
+            }
 
         },
         
@@ -354,8 +366,6 @@
         
         setModal: function(flowKey, modalKey) {
 
-            if(!flowModel[flowKey]) flowModel[flowKey] = {};
-
             flowModel[flowKey].modal = modalKey;
 
         },
@@ -389,6 +399,16 @@
         isContainer: function (item) {
 
             return !manywho.utils.isNullOrWhitespace(item.containerType);
+
+        },
+
+        initializeModel: function (flowKey) {
+
+            if (!flowModel[flowKey]) {
+
+                flowModel[flowKey] = {};
+
+            }
 
         }
 

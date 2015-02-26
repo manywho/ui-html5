@@ -10,6 +10,14 @@
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var wait = manywho.model.getWait(this.props.flowKey);
 
+            var loading = manywho.state.getLoading('main', this.props.flowKey);
+
+            if (loading && loading.message) {
+                var message = loading.message;
+            }
+
+            var isWaitVisible = loading && !loading.error;
+
             var modalKey = manywho.model.getModal(this.props.flowKey);
             var modal = null;
 
@@ -37,7 +45,7 @@
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
-                        React.createElement(manywho.component.getByName('wait'), { wait: wait })
+                        React.createElement(manywho.component.getByName('wait'), { wait: wait, isVisible: isWaitVisible , message: message })
                     ]);
 
         }

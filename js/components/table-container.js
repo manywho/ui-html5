@@ -227,6 +227,11 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
+
+            if (loading && loading.message) {
+                var message = loading.message;
+            }
+
             var displayColumns = getDisplayColumns(model.columns, this.state.outcomes);
             var objectDataRequest = model.objectDataRequest || {};
             var isWaitVisible = loading && !loading.error;
@@ -277,7 +282,7 @@
                 renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
                 renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
-                React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible }, null)
+                React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: message }, null)
             ]);
 
         }
