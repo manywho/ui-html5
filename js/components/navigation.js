@@ -3,7 +3,7 @@
     function getHeaderElement(id, navigation) {
 
         var children = [
-            React.DOM.button({ type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#' + id }, [
+            React.DOM.button({ type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#' + id, ref: 'toggle' }, [
                 React.DOM.span({ type: 'button', className: 'sr-only' }, 'Toggle navigation'),
                 React.DOM.span({ type: 'button', className: 'icon-bar' }),
                 React.DOM.span({ type: 'button', className: 'icon-bar' }),
@@ -56,6 +56,7 @@
 
         handleClick: function(e) {
 
+            this.refs.toggle.getDOMNode().click();
             manywho.engine.navigate(this.props.id, e.target.id, this.props.flowKey);
 
         },
