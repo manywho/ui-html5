@@ -366,6 +366,9 @@ manywho.engine = (function (manywho) {
 
         navigate: function(navigationId, navigationElementId, flowKey) {
 
+            manywho.state.setLoading('main', { message: 'Navigating...' }, flowKey);
+            this.render(flowKey);
+
             var invokeRequest = manywho.json.generateNavigateRequest(
                 manywho.state.getState(flowKey),
                 navigationId,
