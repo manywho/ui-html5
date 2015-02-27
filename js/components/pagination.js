@@ -6,14 +6,14 @@
 
             log.info("Rendering Pagination");
             
-            var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev }
+            var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev };
             if (this.props.pageIndex <= 1) {
 
                 previousAttributes.disabled = 'disabled';
 
             }
 
-            var nextAttributes = { className: 'btn btn-default', onClick: this.props.onNext }
+            var nextAttributes = { className: 'btn btn-default', onClick: this.props.onNext };
             if (!this.props.hasMoreResults) {
 
                 nextAttributes.disabled = 'disabled';
