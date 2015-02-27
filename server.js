@@ -6,61 +6,62 @@ function handler(req, res) {
 }
 
 app.listen(4444);
+console.log('Collaboration server listening on 4444');
 
 io.on('connection', function (socket) {
 
     socket.on('join', function (data) {
 
-        console.log('join: ' + data.user);
+        console.log('User: ' + data.user + ' joined room: ' + data.flowKey);
         
-        socket.join(data.state);
-        socket.broadcast.to(data.state).emit('joined', { user: data.user });
+        socket.join(data.flowKey);
+        socket.broadcast.to(data.flowKey).emit('joined', data);
 
     });
 
     socket.on('left', function (data) {
 
-        console.log('left: ' + data.user);
+        console.log('User: ' + data.user + ' left room: ' + data.flowKey);
 
-        socket.leave(data.state);
-        socket.broadcast.to(data.state).emit('left', data);
+        socket.leave(data.flowKey);
+        socket.broadcast.to(data.flowKey).emit('left', data);
 
     });
 
     socket.on('change', function (data) {
 
-        console.log('change: ' + data.id);
+        console.log('Change to: ' + data.id + ' in room: ' + data.flowKey);
 
-        socket.broadcast.to(data.state).emit('change', data);
+        socket.broadcast.to(data.flowKey).emit('change', data);
 
     });
 
     socket.on('sync', function (data) {
 
-        console.log('sync: ' + data.state);
+        console.log('Sync: ' + data.flowKey  + ' in room: ' + data.flowKey);
 
-        socket.broadcast.to(data.state).emit('sync', data);
+        socket.broadcast.to(data.flowKey).emit('sync', data);
 
     });
 
     socket.on('move', function (data) {
 
-        console.log('move: ' + data.state);
+        console.log('Move: ' + data.flowKey  + ' in room: ' + data.flowKey);
 
-        socket.broadcast.to(data.state).emit('move', data);
+        socket.broadcast.to(data.flowKey).emit('move', data);
 
     });
 
     socket.on('getValues', function (data) {
 
-        console.log('get values for: ' + data.id);
+        console.log('Get values for socket: ' + data.id + ' in room: ' + data.flowKey);
 
         var targetId = data.owner;
 
         // If a user isn't specified to get the latest values from then go to the first user in the room
         if (!targetId) {
 
-            var clientIds = Object.keys(io.nsps['/'].adapter.rooms[data.state]);
+            var clientIds = Object.keys(io.nsps['/'].adapter.rooms[data.flowKey]);
             if (clientIds.length > 1) {
 
                 targetId = clientIds[0];
@@ -74,6 +75,8 @@ io.on('connection', function (socket) {
     });
 
     socket.on('setValues', function (data) {
+
+        console.log('Set values for socket: ' + data.id + ' in room: ' + data.flowKey);
 
         io.to(data.id).emit('setValues', data);
 

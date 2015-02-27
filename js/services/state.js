@@ -92,7 +92,7 @@ manywho.state = (function (manywho) {
             components[flowKey][id] = $.extend(components[flowKey][id], values)
 
             if (push) {
-                manywho.collaboration.push(id, values, state.id);
+                manywho.collaboration.push(id, values, flowKey);
             }
 
         },

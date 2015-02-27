@@ -4,6 +4,9 @@ manywho.settings = (function (manywho, $) {
         paging: {
             table: 10,
             select: 250
+        },
+        collaboration: {
+            uri: 'http://localhost:4444'
         }
     };
 
