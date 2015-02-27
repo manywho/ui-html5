@@ -2,6 +2,32 @@
 
     var main = React.createClass({
                 
+        onEnter: function(e) {
+
+            if (e.keyCode == 13) {
+
+                var outcome = manywho.model.getOutcomes(null, this.props.flowKey)
+                    .sort(function (a, b) {
+
+                        return a.order - b.order;
+
+                    })
+                    .filter(function (outcome) {
+
+                        return manywho.utils.isEqual(outcome.pageActionBindingType, 'save', true);
+
+                    })[0];
+
+                if (outcome) {
+
+                    manywho.engine.move(outcome, this.props.flowKey);
+
+                }
+
+            }
+
+        },
+
         render: function () {
             
             log.info("Rendering Main");
@@ -37,7 +63,7 @@
             
             return React.DOM.div({ className: 'full-height' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
-                        React.DOM.div({ className: classNames }, [
+                        React.DOM.div({ className: classNames, onKeyUp: this.onEnter }, [
                             componentElements,
                             outcomeElements
                         ]),
