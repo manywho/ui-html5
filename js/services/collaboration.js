@@ -1,100 +1,112 @@
 manywho.collaboration = (function (manywho) {
 
     var socket = null;
-    var isInitialized = false;
-    var isEnabled = false;
+    var rooms = {};
+
+    function onDisconnect() {
+
+        for (flowKey in rooms) {
+
+            socket.to(flowKey).emit('left', { user: rooms[flowKey].user, flowKey: flowKey });
+
+        }
+
+    }
+
+    function onJoined(data) {
+
+        log.info(data.user + ' has joined ' + data.flowKey);
+        
+        manywho.model.addNotification(data.flowKey, {
+            message: data.user + ' has joined',
+            position: 'right',
+            type: 'success',
+            timeout: '100000',
+            dismissible: false
+        });
+
+    }
+
+    function onLeft(data) {
+
+        log.info(data.user + ' has left ' + data.flowKey);
+
+        manywho.model.addNotification(data.flowKey, {
+            message: data.user + ' has left',
+            position: 'right',
+            type: 'danger',
+            timeout: '1000',
+            dismissible: false
+        });
+
+    }
+
+    function onChange(data) {
+
+        log.info('change to: ' + data.id + ' in ' + data.flowKey);
+
+        manywho.state.setComponent(data.id, data.values, data.flowKey, false);
+        manywho.engine.render(data.flowKey);
+
+    }
+
+    function onMove(data) {
+
+        log.info('re-joining ' + data.flowKey);
+
+        // Re-join the flow here so that we sync with the latest state from the manywho server
+        manywho.engine.join(data.flowKey).then(function () {
+
+            socket.emit('getValues', data);
+
+        });
+
+    }
+
+    function onSync(data) {
+
+        log.info('syncing ' + data.flowKey);
+        manywho.engine.sync(data.flowKey);
+
+    }
+
+    function onGetValues(data) {
+
+        log.info('get values from: ' + data.owner + ' in ' + data.flowKey);
+        socket.emit('setValues', { flowKey: data.flowKey, id: data.id, components: manywho.state.getComponents(data.flowKey) });
+
+    }
+
+    function onSetValues(data) {
+
+        log.info('setting values in ' + data.flowKey);
+        manywho.state.setComponents(data.components, data.flowKey);
+        manywho.engine.render(data.flowKey);
+
+    }
 
     return {
 
-        user: 'username',
+        initialize: function (enable, flowKey) {
 
-        initialize: function (enable) {
+            if (!socket && enable) {
 
-            if (!isInitialized && enable) {
+                rooms[flowKey] = { isEnabled: true };
 
-                isInitialized = true;
-                isEnabled = true;
-
-                var self = this;
-
-                socket = io.connect(manywho.settings.get('collaboration.uri'));
-
-                socket.on('connect', function () {
-                    
-                    socket.emit('join', { state: manywho.state.getState().id, user: self.user });
-
-                });
-
-                socket.on('disconnect', function () {
-
-                    socket.emit('left', { state: manywho.state.getState().id, user: self.user });
-
-                });
-
-                socket.on('joined', function (data) {
-
-                    log.info(data.user + ' has joined');
-                    $.bootstrapGrowl(data.user + ' has joined', { ele: '.mw-bs', type: 'success', allow_dismiss: false, width: 300 });
-
-                });
-
-                socket.on('left', function (data) {
-
-                    log.info(data.user + ' has left');
-                    $.bootstrapGrowl(data.user + ' has left', { ele: '.mw-bs', type: 'danger', allow_dismiss: false, width: 300 });
-
-                });
-
-                socket.on('change', function (data) {
-
-                    log.info('change to: ' + data.id);
-
-                    manywho.state.setComponent(data.id, data.values, false);
-                    manywho.engine.render();
-
-                });
-
-                socket.on('move', function (data) {
-
-                    log.info('re-joining');
-
-                    // Re-join the flow here so that we sync with the latest state from the manywho server
-                    manywho.engine.join(data.state).then(function () {
-
-                        socket.emit('getValues', { state: data.state, id: socket.id, owner: data.owner });
-
-                    });
-
-                });
-
-                socket.on('sync', function (data) {
-
-                    log.info('syncing');
-
-                    manywho.engine.sync();
-
-                });
-
-                socket.on('getValues', function (data) {
-
-                    log.info('get values from: ' + data.owner);
-
-                    socket.emit('setValues', { state: data.state, id: data.id, components: manywho.state.getComponents() });
-
-                });
-
-                socket.on('setValues', function (data) {
-
-                    log.info('setting values');
-
-                    manywho.state.setComponents(data.components);
-                    manywho.engine.render();
-
-                });
+                socket = io.connect(manywho.settings.global('collaboration.uri'));
+               
+                socket.on('disconnect', onDisconnect);
+                socket.on('joined', onJoined);
+                socket.on('left', onLeft);
+                socket.on('change', onChange);
+                socket.on('move', onMove);
+                socket.on('sync', onSync);
+                socket.on('getValues', onGetValues);
+                socket.on('setValues', onSetValues);
 
                 window.addEventListener("beforeunload", function (event) {
 
-                    socket.emit('left', { state: 'stateid', user: '' });
+                    onDisconnect();
 
                 });
 
@@ -102,53 +114,80 @@ manywho.collaboration = (function (manywho) {
 
         },
 
-        enable: function() {
+        enable: function(flowKey) {
 
-            isEnabled = true;
+            rooms[flowKey].isEnabled = true;
 
-        },
+            if (!socket) {
 
-        disable: function() {
-
-            isEnabled = false;
-
-        },
-
-        push: function (id, values, stateId) {
-
-            if (isEnabled && isInitialized) {
-
-                socket.emit('change', { state: stateId, user: '', id: id, values: values });
+                this.initialize(true, flowKey);
 
             }
 
         },
 
-        sync: function (stateId) {
+        disable: function(flowKey) {
 
-            if (isEnabled && isInitialized) {
+            rooms[flowKey].isEnabled = false;
 
-                socket.emit('sync', { state: stateId, owner: socket.id });
+        },
+
+        join: function(user, flowKey) {
+
+            if (socket && rooms[flowKey].isEnabled) {
+
+                rooms[flowKey].user = user;
+                socket.emit('join', { flowKey: flowKey, user: user });
 
             }
 
         },
 
-        move: function (stateId) {
+        leave: function(flowKey) {
 
-            if (isEnabled && isInitialized) {
+            if (socket && rooms[flowKey].isEnabled) {
 
-                socket.emit('move', { state: stateId, owner: socket.id });
+                socket.emit('left', { flowKey: flowKey, user: user });
 
             }
 
         },
 
-        getValues: function (stateId) {
+        push: function (id, values, flowKey) {
 
-            if (isEnabled && isInitialized) {
+            if (socket && rooms[flowKey].isEnabled) {
 
-                socket.emit('getValues', { state: stateId, id: socket.id });
+                socket.emit('change', { id: id, values: values, flowKey: flowKey });
+
+            }
+
+        },
+
+        sync: function (flowKey) {
+
+            if (socket && rooms[flowKey].isEnabled) {
+
+                socket.emit('sync', { flowKey: flowKey, owner: socket.id });
+
+            }
+
+        },
+
+        move: function (flowKey) {
+
+            if (socket && rooms[flowKey].isEnabled) {
+
+                socket.emit('move', { flowKey: flowKey, owner: socket.id });
+
+            }
+
+        },
+
+        getValues: function (flowKey) {
+
+            if (socket && rooms[flowKey].isEnabled) {
+
+                socket.emit('getValues', { flowKey: flowKey, id: socket.id });
 
             }
 

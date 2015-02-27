@@ -65,7 +65,7 @@ manywho.component = (function (manywho) {
 
             if (model.hasEvents) {
                 manywho.engine.sync(flowKey);
-                manywho.collaboration.sync(manywho.state.getState().id);
+                manywho.collaboration.sync(flowKey);
             }
 
             component.forceUpdate();

@@ -303,6 +303,13 @@
 
         },
 
+        addNotification: function(flowKey, notification) {
+
+            flowModel[flowKey].notifications.push(notification);
+            manywho.engine.render(flowKey);
+
+        },
+
         getNavigation: function (navigationId, flowKey) {
 
             if (navigationId) {

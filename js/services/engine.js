@@ -60,7 +60,9 @@ manywho.engine = (function (manywho) {
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
 
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
-                //manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
+
+                manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
+                manywho.collaboration.join('user', flowKey);
 
                 var deferreds = [];
 
@@ -129,7 +131,9 @@ manywho.engine = (function (manywho) {
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
 
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
-                //manywho.collaboration.initialize(manywho.settings.get('collaboration.isEnabled'));
+
+                manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
+                manywho.collaboration.join('user', flowKey);
 
                 var deferreds = [response];
 
@@ -191,12 +195,10 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
-                //manywho.collaboration.move(manywho.state.getState(flowKey).id);
+                manywho.collaboration.move(flowKey);
 
                 manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
-
-
-
+                
                 if (manywho.utils.isModal(flowKey)) {
                                         
                     var parentFlowKey = manywho.model.getParentForModal(flowKey);
@@ -270,7 +272,6 @@ manywho.engine = (function (manywho) {
                         var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
 
                         manywho.model.initializeModel(flowKey);
-
                         manywho.settings.initializeFlow(options, flowKey);
                         manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
@@ -391,6 +392,7 @@ manywho.engine = (function (manywho) {
             var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, stateId, container);
 
             manywho.model.initializeModel(flowKey);
+            manywho.settings.initializeFlow(options, flowKey);
             
             manywho.state.setAuthenticationToken(authenticationToken, flowKey);
             manywho.state.setState(stateId, null, null, flowKey);
