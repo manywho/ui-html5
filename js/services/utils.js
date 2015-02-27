@@ -184,6 +184,11 @@ manywho.utils = (function (manywho, $) {
 
             return this.isEqual(this.extractElement(flowKey), 'modal', true);
 
+        },
+
+        removeLoadingIndicator: function(element) {
+
+            $('.' + element).remove();
         }
 
     }

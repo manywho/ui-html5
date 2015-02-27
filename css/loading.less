@@ -1,18 +1,82 @@
-﻿.mw-bs {
+﻿@-webkit-keyframes spin {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
 
-    .spin {
-        -webkit-animation: spin 1s infinite linear;
-        animation: spin 1s infinite linear;
-    }
- 
-    @-webkit-keyframes "spin" {
-      from { transform: scale( 1 ) rotate( 0deg );   }
-      to   { transform: scale( 1 ) rotate( 360deg ); }
-    }
+@-moz-keyframes spin {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
 
-     @keyframes "spin" {
-      from { transform: scale( 1 ) rotate( 0deg );   }
-      to   { transform: scale( 1 ) rotate( 360deg ); }
-    }
+@-o-keyframes spin {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
 
+@keyframes spin {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
+
+.mw-bs {
+
+  .spin {
+    -webkit-animation: spin 1s infinite linear;
+    animation: spin 1s infinite linear;
+  }
+
+}
+
+.loader {
+  -webkit-pointer-events: none;
+  pointer-events: none;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+
+  z-index: 2000;
+  position: fixed;
+  height: 90px;
+  width: 90px;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loader .loader-icon {
+  position: fixed;
+  z-index: 2000;
+  display: block;
+  position: absolute;
+  left: -30px;
+  top: -30px;
+  height: 90px;
+  width: 90px;
+  display: block;
+  border-width: 30px;
+  border-style: double;
+  border-color: #29d transparent transparent;
+  border-radius: 50%;
+
+  -webkit-animation: spin 1s linear infinite;
+  -moz-animation: spin 1s linear infinite;
+  -o-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+.loader .loader-icon:before {
+  content: ' ';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 50px;
+  width: 50px;
+  display: block;
+  border-width: 10px;
+  border-style: solid;
+  border-color: #29d transparent transparent;
+  border-radius: 50%;
 }

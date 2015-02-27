@@ -45,7 +45,8 @@ manywho.engine = (function (manywho) {
             manywho.settings.flow('mode', flowKey)
         );
 
-        var container = manywho.component.appendFlowContainer(flowKey);
+        manywho.utils.removeLoadingIndicator('loader');
+        manywho.component.appendFlowContainer(flowKey);
         manywho.state.setLoading('main', { message: 'Initializing...' }, flowKey);
         self.render(flowKey);
 
@@ -116,7 +117,8 @@ manywho.engine = (function (manywho) {
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var state = manywho.state.getState(flowKey);
 
-        var container = manywho.component.appendFlowContainer(flowKey);
+        manywho.utils.removeLoadingIndicator('loader');
+        manywho.component.appendFlowContainer(flowKey);
         manywho.state.setLoading('main', { message: 'Joining...' }, flowKey);
         self.render(flowKey);
 

@@ -14,7 +14,7 @@ manywho.settings = (function (manywho, $) {
 
     var themes = {
         url: '/css/themes'
-    }
+    };
 
     var events = {
         initialization: {},
@@ -25,7 +25,7 @@ manywho.settings = (function (manywho, $) {
         login: {},
         objectData: {},
         getFlowByName: {}
-    }
+    };
 
     // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
     function getValueByPath (obj, path) {
