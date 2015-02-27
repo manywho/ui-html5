@@ -30,7 +30,14 @@
                     'data-item': item.externalId
                 }
 
-                if (outcomes.length == 1) {
+                var isOutcomeDestructive = outcomes.filter(function (outcome) {
+
+                    return manywho.utils.isEqual(outcome.pageActionBindingType, 'remove', true)
+                        || manywho.utils.isEqual(outcome.pageActionBindingType, 'delete', true);
+
+                }).length > 0;
+
+                if (outcomes.length == 1 && !isOutcomeDestructive) {
 
                     attributes['data-outcome'] = outcomes[0].id;
                     attributes.onClick = this.onItemClick;
@@ -40,7 +47,7 @@
                 return React.DOM.a(attributes, [
                     React.DOM.table({ className: 'table table-small-item' }, displayColumns.map(function (column) {
 
-                        if (column == 'mw-outcomes' && outcomes.length > 1) {
+                        if (column == 'mw-outcomes' && (outcomes.length > 1 || isOutcomeDestructive)) {
 
                             return React.DOM.tr(null, [
                                 React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
