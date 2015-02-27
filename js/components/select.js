@@ -45,12 +45,19 @@
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             if (objectData) {
+
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId });
+
             }
 
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+            if ((typeof model.isValid !== 'undefined' && model.isValid == false)
+                || (loading && loading.error)) {
+
                 isValid = false;
+
             }
+
+            var message = model.message || (loading && loading.error);
 
             var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
@@ -59,7 +66,7 @@
 
             var iconClassNames = [
                 'glyphicon glyphicon-refresh select-loading-icon spin',
-                (loading) ? '' : 'hidden'
+                (loading && !loading.error) ? '' : 'hidden'
             ].join(' ');
 
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
@@ -68,7 +75,7 @@
                             React.createElement(Chosen, { children: options, onChange: this.handleChange, containerClasses: 'select' }),
                             React.DOM.span({ className: iconClassNames }, null)
                         ]),
-                        React.DOM.span({ className: 'help-block' }, model.message)
+                        React.DOM.span({ className: 'help-block' }, message)
             ]);
             
         }
