@@ -70,7 +70,7 @@ gulp.task('options', function () {
         flow: argv.flow,
         version: argv.version,
         state: argv.state
-    }
+    };
 
     var scriptTag = '<script>';
     scriptTag += 'var devOptions = ';
