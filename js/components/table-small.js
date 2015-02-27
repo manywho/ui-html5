@@ -25,7 +25,7 @@
             return objectData.map(function (item) {
 
                 var attributes = {
-                    className: 'list-group-item',
+                    className: 'list-group-item clearfix',
                     href: '#',
                     'data-item': item.externalId
                 }
@@ -37,7 +37,7 @@
 
                 }
 
-                return React.DOM.a(attributes,
+                return React.DOM.a(attributes, [
                     React.DOM.table({ className: 'table table-small-item' }, displayColumns.map(function (column) {
 
                         if (column == 'mw-outcomes' && outcomes.length > 1) {
@@ -71,8 +71,9 @@
 
                         }
 
-                    }, this))
-                );
+                    }, this)),
+                    React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null)
+                ]);
 
             }, this);
 
