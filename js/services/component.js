@@ -162,7 +162,7 @@ manywho.component = (function (manywho) {
                 container = document.createElement('div');
                 container.setAttribute('id', flowKey);
                 container.className = 'mw-bs';
-                document.body.appendChild(container);
+                document.getElementById('manywho').appendChild(container);
 
             }
 
