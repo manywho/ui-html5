@@ -79,8 +79,16 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                // Authorization failed, retry
-                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+                if (manywho.state.getSessionData(flowKey) != null) {
+
+                    manywho.authorization.authorizeBySession(response.authorizationContext.loginUrl, flowKey, callback);
+
+                } else {
+
+                    // Authorization failed, retry
+                    manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+                }
 
             })
             .then(function (navigation, stream) {
@@ -151,8 +159,16 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                // Authorization failed, retry
-                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+                if (manywho.state.getSessionData(flowKey) != null) {
+
+                    manywho.authorization.authorizeBySession(response.authorizationContext.loginUrl, flowKey, callback);
+
+                } else {
+
+                    // Authorization failed, retry
+                    manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+                }
 
             })
             .then(function (response, navigation, stream) {
@@ -272,6 +288,12 @@ manywho.engine = (function (manywho) {
                     .then(function (response) {
                         
                         var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
+
+                        if (options.authentication != null && options.authentication.sessionId != null) {
+
+                            manywho.state.setSessionData(options.authentication.sessionId);
+
+                        }
 
                         manywho.model.initializeModel(flowKey);
                         manywho.settings.initializeFlow(options, flowKey);
@@ -395,6 +417,12 @@ manywho.engine = (function (manywho) {
 
             var self = this;
             var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, stateId, container);
+
+            if (options.authentication != null && options.authentication.sessionId != null) {
+
+                manywho.state.setSessionData(options.authentication.sessionId);
+
+            }
 
             manywho.model.initializeModel(flowKey);
             manywho.settings.initializeFlow(options, flowKey);

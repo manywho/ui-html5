@@ -24,7 +24,8 @@ manywho.settings = (function (manywho, $) {
         join: {},
         login: {},
         objectData: {},
-        getFlowByName: {}
+        getFlowByName: {},
+        sessionAuthentication: {}
     };
 
     // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string

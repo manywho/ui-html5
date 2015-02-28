@@ -4,6 +4,7 @@ manywho.state = (function (manywho) {
     var components = {};
     var state = {};
     var authenticationToken = {};
+    var sessionId = {};
     var geoLocation = null;
 
     function assignGeoLocation(position) {
@@ -143,15 +144,30 @@ manywho.state = (function (manywho) {
 
         },
 
-        setAuthenticationToken: function(token, flowKey) {
+        setAuthenticationToken: function (token, flowKey) {
 
             authenticationToken[flowKey] = token;
 
         },
 
-        getAuthenticationToken: function(flowKey) {
+        getAuthenticationToken: function (flowKey) {
 
             return authenticationToken[flowKey];
+
+        },
+
+        getSessionData: function (flowKey) {
+
+            return sessionId[flowKey];
+
+        },
+
+        setSessionData: function (sessionID, sessionUrl, flowKey) {
+
+            sessionId[flowKey] = {
+                id: sessionID,
+                url: sessionUrl
+            };
 
         },
 

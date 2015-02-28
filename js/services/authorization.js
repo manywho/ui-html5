@@ -108,6 +108,26 @@ manywho.authorization = (function (manywho) {
 
             }
 
+        },
+
+        authorizeBySession: function (loginUrl, flowKey, doneCallback) {
+
+            var requestData = manywho.json.generateSessionRequest(manywho.state.getSessionData(flowKey).id, manywho.state.getSessionData(flowKey).url, loginUrl);
+            var state = manywho.state.getState(flowKey);
+
+            manywho.ajax.sessionAuthentication(manywho.utils.extractTenantId(flowKey), state.id, requestData)
+                .then(function (response) {
+
+                    manywho.callbacks.register(flowKey, {
+                        execute: setAuthenticationToken,
+                        type: 'done',
+                        args: [flowKey]
+                    });
+
+                    manywho.callbacks.register(flowKey, doneCallback);
+
+                })
+
         }
 
     }

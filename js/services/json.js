@@ -74,6 +74,19 @@ manywho.json = (function (manywho) {
                 }
             }
 
+        },
+
+        generateSessionRequest: function (sessionId, sessionUrl, loginUrl, username, password, token) {
+
+            return {
+                'sessionToken': sessionId,
+                'sessionUrl': sessionUrl,
+                'loginUrl': loginUrl,
+                'username': username || null,
+                'password': password || null,
+                'token': token | null
+            }
+
         }
 
     }

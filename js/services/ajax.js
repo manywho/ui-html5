@@ -195,6 +195,29 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        sessionAuthentication: function (tenantId, stateId, requestData, authenticationToken) {
+
+            log.info('Authenticating using session ID');
+
+            return $.ajax({
+                url: 'https://flow.manywho.com/api/run/1/authentication/' + stateId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(requestData),
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'sessionAuthentication');
+
+                }
+
+            })
+            .done(manywho.settings.event('sessionAuthentication.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('sessionAuthentication.fail'));
+        },
+
         ping: function (tenantId, stateId, stateToken, authenticationToken) {
 
             log.info('Pinging for changes');
