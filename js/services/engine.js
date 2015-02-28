@@ -291,7 +291,7 @@ manywho.engine = (function (manywho) {
 
                         if (options.authentication != null && options.authentication.sessionId != null) {
 
-                            manywho.state.setSessionData(options.authentication.sessionId);
+                            manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
 
                         }
 
@@ -420,7 +420,7 @@ manywho.engine = (function (manywho) {
 
             if (options.authentication != null && options.authentication.sessionId != null) {
 
-                manywho.state.setSessionData(options.authentication.sessionId);
+                manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
 
             }
 

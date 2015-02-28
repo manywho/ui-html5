@@ -114,17 +114,15 @@ manywho.authorization = (function (manywho) {
 
             var requestData = manywho.json.generateSessionRequest(manywho.state.getSessionData(flowKey).id, manywho.state.getSessionData(flowKey).url, loginUrl);
             var state = manywho.state.getState(flowKey);
+            manywho.callbacks.register(flowKey, doneCallback);
 
             manywho.ajax.sessionAuthentication(manywho.utils.extractTenantId(flowKey), state.id, requestData)
                 .then(function (response) {
 
-                    manywho.callbacks.register(flowKey, {
-                        execute: setAuthenticationToken,
-                        type: 'done',
-                        args: [flowKey]
-                    });
+                    manywho.state.setAuthenticationToken(response, flowKey);
 
-                    manywho.callbacks.register(flowKey, doneCallback);
+                    manywho.callbacks.execute(flowKey, 'done', null, [response]);
+
 
                 })
 

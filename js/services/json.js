@@ -84,7 +84,7 @@ manywho.json = (function (manywho) {
                 'loginUrl': loginUrl,
                 'username': username || null,
                 'password': password || null,
-                'token': token | null
+                'token': token || null
             }
 
         }
