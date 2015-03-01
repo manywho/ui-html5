@@ -7,6 +7,9 @@ manywho.settings = (function (manywho, $) {
         },
         collaboration: {
             uri: 'http://localhost:4444'
+        },
+        platform: {
+            uri: 'https://flow.manywho.com'
         }
     };
 
