@@ -11,7 +11,7 @@
 
         },
 
-        renderValues: function(title, id, values) {
+        renderStateValues: function(title, id, values) {
 
             var children = values.map(function (value) {
 
@@ -46,6 +46,32 @@
         
         },
 
+        renderLogEntries: function(entries) {
+
+            var isVisible = this.state['executionlog'];
+
+            return React.DOM.ul({ className: 'debug-root' }, [
+                React.DOM.li({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggle }, [
+                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
+                    React.DOM.h5({ className: 'debug-title' }, 'Execution Log')
+                ]),
+                React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
+                    React.DOM.table({ className: 'table' }, [
+                        React.DOM.tr(null, [React.DOM.th(null, 'Timestamp'), React.DOM.th(null, 'Message'), React.DOM.th(null, 'Data')])
+                    ].concat(entries.map(function(entry) {
+
+                        return React.DOM.tr(null, [
+                            React.DOM.td(null, entry.timestamp),
+                            React.DOM.td(null, entry.message),
+                            // TODO: display data
+                        ]);
+
+                    })))
+                )
+            ]);
+
+        },
+
         getInitialState: function() {
             
             return {};
@@ -54,16 +80,18 @@
                 
         render: function () {
                             
-            if (manywho.utils.isEqual(manywho.settings.flow('mode', this.props.flowKey), 'debug', true)) {
+            if (manywho.settings.isDebugEnabled(this.props.flowKey)) {
                 
                 log.info('Rendering Debug');
 
                 var preCommitStateValues = manywho.model.getPreCommitStateValues(this.props.flowKey) || [];
                 var stateValues = manywho.model.getStateValues(this.props.flowKey) || [];
+                var executionLog = manywho.model.getExecutionLog(this.props.flowKey) || {};
 
                 var children = [
-                    this.renderValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, this.toggleR),
-                    this.renderValues('State Values', 'statevalues', stateValues)
+                    this.renderStateValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, this.toggleR),
+                    this.renderStateValues('State Values', 'statevalues', stateValues),
+                    this.renderLogEntries(executionLog.entries || [])
                 ];
 
                 return React.DOM.div({ className: 'panel panel-default debug' }, [

@@ -31,6 +31,36 @@ manywho.engine = (function (manywho) {
 
     }
 
+    function loadNavigation(flowKey, stateToken, navigationId) {
+
+        return manywho.ajax.getNavigation(manywho.utils.extractStateId(flowKey), stateToken, navigationId, manywho.utils.extractTenantId(flowKey))
+                .then(function (navigation) {
+
+                    if (navigation) {
+
+                        manywho.model.parseNavigationResponse(navigationId, navigation, flowKey);
+
+                    }
+
+                });
+
+    }
+
+    function loadExecutionLog(flowKey, authenticationToken) {
+
+        return manywho.ajax.getExecutionLog(manywho.utils.extractTenantId(flowKey), manywho.utils.extractFlowId(flowKey), manywho.utils.extractStateId(flowKey), authenticationToken)
+                .then(function (executionLog) {
+
+                    if (executionLog) {
+
+                        manywho.model.setExecutionLog(executionLog);
+
+                    }
+
+                });
+
+    }
+
     function initializeWithAuthorization(callback, navigationElementReferences, currentStreamId, flowKey) {
 
         var self = this;
@@ -68,14 +98,22 @@ manywho.engine = (function (manywho) {
                 var deferreds = [];
 
                 if (navigationElementReferences && navigationElementReferences.length > 0) {
-                    deferreds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, navigationElementReferences[0].id, manywho.utils.extractTenantId(flowKey)));
+
+                    deferreds.push(loadNavigation(flowKey, response.stateToken, navigationElementReferences[0].id));
+
                 }
 
                 if (currentStreamId) {
                     // Add create social stream ajax call to defereds here
                 }
 
-                return $.when.apply($, deferreds);
+                if (manywho.settings.isDebugEnabled(flowKey)) {
+
+                    deferreds.push(loadExecutionLog(flowKey, authenticationToken));
+
+                }
+
+                return $.whenAll(deferreds);
 
             }, function (response) {
 
@@ -91,23 +129,9 @@ manywho.engine = (function (manywho) {
                 }
 
             })
-            .then(function (navigation, stream) {
-
-                if (navigation) {
-
-                    manywho.model.parseNavigationResponse(navigationElementReferences[0].id, navigation, flowKey);
-
-                }
-
-                if (stream) {
-                    // TODO                    
-                }
-
-            })
-            .then(function () {
+            .always(function () {
 
                 manywho.state.setLoading('main', null, flowKey);
-
                 self.render(flowKey);
 
             })
@@ -145,17 +169,25 @@ manywho.engine = (function (manywho) {
                 manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
                 manywho.collaboration.join('user', flowKey);
 
-                var deferreds = [response];
+                var deferreds = [];
 
-                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-                    deferreds.push(manywho.ajax.getNavigation(response.stateId, response.stateToken, response.navigationElementReferences[0].id, manywho.utils.extractTenantId(flowKey)));
+                if (navigationElementReferences && navigationElementReferences.length > 0) {
+
+                    deferreds.push(loadNavigation(flowKey, response.stateId, response.stateToken, navigationElementReferences[0].id));
+
                 }
 
-                if (response.currentStreamId) {
+                if (currentStreamId) {
                     // Add create social stream ajax call to defereds here
                 }
 
-                return $.when.apply($, deferreds);
+                if (manywho.settings.isDebugEnabled(flowKey)) {
+
+                    deferreds.push(loadExecutionLog(flowKey, response.stateId, authenticationToken));
+
+                }
+
+                return $.whenAll(deferreds);
 
             }, function (response) {
 
@@ -171,23 +203,9 @@ manywho.engine = (function (manywho) {
                 }
 
             })
-            .then(function (response, navigation, stream) {
-
-                if (navigation) {
-
-                    manywho.model.parseNavigationResponse(response.navigationElementReferences[0].id, navigation[0], flowKey);
-
-                }
-
-                if (stream) {
-                    // TODO                    
-                }
-
-            })
-            .then(function () {
+            .always(function () {
 
                 manywho.state.setLoading('main', null, flowKey);
-
                 self.render(flowKey);
 
             })
@@ -216,35 +234,40 @@ manywho.engine = (function (manywho) {
                 manywho.collaboration.move(flowKey);
 
                 manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
-                
+
                 if (manywho.utils.isModal(flowKey)) {
-                                        
+
                     var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                    
+
                     if (manywho.utils.isEqual(response.invokeType, 'done', true)) {
 
-                        manywho.model.setModal(parentFlowKey, null);                        
+                        manywho.model.setModal(parentFlowKey, null);
 
                     }
 
-                    self.render(parentFlowKey);
-
                 }
-                else {
-
-                    manywho.state.setLoading('main', null, flowKey);
-
-                    self.render(flowKey);
-
-                }
-
-                processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             }, function (response) {
 
                 manywho.authorization.invokeAuthorization(response, flowKey, callback);
 
-            });
+            })
+            .then(function() {
+
+                return loadExecutionLog(flowKey, authenticationToken);
+
+            })
+            .always(function () {
+                
+                manywho.state.setLoading('main', null, flowKey);
+                self.render(flowKey);                
+
+            })
+            .then(function () {
+
+                processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+
+            })
 
     }
     

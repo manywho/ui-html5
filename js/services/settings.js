@@ -26,6 +26,7 @@ manywho.settings = (function (manywho, $) {
         navigation: {},
         join: {},
         login: {},
+        log: {},
         objectData: {},
         getFlowByName: {},
         sessionAuthentication: {}
@@ -96,6 +97,12 @@ manywho.settings = (function (manywho, $) {
         theme: function (path) {
 
             return getValueByPath(themes, path.toLowerCase());
+
+        },
+
+        isDebugEnabled: function (flowKey) {
+
+            return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true);
 
         }
 

@@ -420,6 +420,18 @@
 
         },
 
+        getExecutionLog: function(flowKey) {
+
+            return flowModel[flowKey].executionLog;
+
+        },
+
+        setExecutionLog: function(flowKey, executionLog) {
+
+            flowModel[flowKey].executionLog = executionLog;
+
+        },
+
         isContainer: function (item) {
 
             return !manywho.utils.isNullOrWhitespace(item.containerType);

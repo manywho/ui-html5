@@ -233,6 +233,25 @@ manywho.ajax = (function (manywho) {
             })
             .fail(onError);
 
+        },
+
+        getExecutionLog: function (tenantId, flowId, stateId, authenticationToken) {
+
+            log.info('Getting Execution Log');
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/log/' + flowId + '/' + stateId,
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'log');
+
+                }
+            })
+            .done(manywho.settings.event('log.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('log.fail'));
+
         }
 
     }
