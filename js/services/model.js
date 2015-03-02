@@ -155,6 +155,17 @@
                     })
                 );
 
+                if (manywho.utils.isModal(flowKey)) {
+
+                    var parentFlowKey = manywho.model.getParentForModal(flowKey);
+                    manywho.state.setLoading('main', null, parentFlowKey);
+
+                } else {
+
+                    manywho.state.setLoading('main', null, flowKey);
+
+                }
+
             }
 
             flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
