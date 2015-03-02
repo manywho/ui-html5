@@ -37,7 +37,8 @@
             return React.DOM.ul({ className: 'debug-root' }, [
                 React.DOM.li({ className: 'debug-root-toggle', id: id, onClick: this.toggle }, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
-                    React.DOM.h5({ className: 'debug-title' }, title)
+                    React.DOM.h5({ className: 'debug-title' }, title),
+                    React.DOM.span({ className: 'label label-info' }, values.length)
                 ]),
                 React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
                     React.DOM.ul(null, children)
@@ -53,7 +54,8 @@
             return React.DOM.ul({ className: 'debug-root' }, [
                 React.DOM.li({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggle }, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
-                    React.DOM.h5({ className: 'debug-title' }, 'Execution Log')
+                    React.DOM.h5({ className: 'debug-title' }, 'Execution Log'),
+                    React.DOM.span({ className: 'label label-info' }, entries.length)
                 ]),
                 React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
                     React.DOM.table({ className: 'table' }, [
