@@ -181,7 +181,6 @@ gulp.task('js-loader-dist', function () {
 gulp.task('html-dist', function () {
 
     return gulp.src('flow.html')
-                .pipe(replace('baseUrl: \'\'', 'baseUrl: \'' + process.env.BAMBOO_BASEURL + '\''))
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(htmlreplace({
                     css: '',
