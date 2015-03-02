@@ -68,6 +68,7 @@
                             outcomeElements
                         ]),
                         modal,
+                        React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),

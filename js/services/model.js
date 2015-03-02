@@ -87,6 +87,8 @@
             flowModel[flowKey].label = null;
             flowModel[flowKey].wait = null;
             flowModel[flowKey].notifications = [];
+            flowModel[flowKey].stateValues = [];
+            flowModel[flowKey].preCommitStateValues = [];
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -154,6 +156,9 @@
                 );
 
             }
+
+            flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+            flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
             
             switch (engineInvokeResponse.invokeType.toLowerCase())
             {
@@ -400,6 +405,18 @@
             }
 
             return null;
+
+        },
+
+        getPreCommitStateValues: function(flowKey) {
+
+            return flowModel[flowKey].preCommitStateValues;
+
+        },
+
+        getStateValues: function (flowKey) {
+
+            return flowModel[flowKey].stateValues;
 
         },
 
