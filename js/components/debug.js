@@ -19,7 +19,7 @@
 
                 return React.DOM.li({ id: value.valueElementId, onClick: this.toggle}, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
-                    React.DOM.span({ className: 'debug-item-id' }, value.valueElementId),
+                    React.DOM.span({ className: 'debug-item-id' }, value.developerName),
                     React.DOM.ul({ className: 'table table-condensed ' + ((isVisible) ? null : 'hidden') }, Object.keys(value).map(function (key) {
 
                         return React.DOM.li(null, [
