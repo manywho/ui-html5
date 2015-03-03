@@ -225,7 +225,8 @@ manywho.engine = (function (manywho) {
 
         var self = this;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-        
+        var parentFlowKey = manywho.model.getParentForModal(flowKey) || flowKey;
+
         manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
@@ -236,19 +237,12 @@ manywho.engine = (function (manywho) {
 
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
                 manywho.collaboration.move(flowKey);
-
                 manywho.callbacks.execute(flowKey, response.invokeType, null, [response]);
 
-                if (manywho.utils.isModal(flowKey)) {
-
-                    var parentFlowKey = manywho.model.getParentForModal(flowKey);
-
-                    if (manywho.utils.isEqual(response.invokeType, 'done', true)) {
-
-                        manywho.model.setModal(parentFlowKey, null);
-
-                    }
-
+                if (manywho.utils.isModal(flowKey) && manywho.utils.isEqual(response.invokeType, 'done', true)) {
+                    
+                    manywho.model.setModal(parentFlowKey, null);
+                                       
                 }
 
             }, function (response) {
@@ -263,8 +257,8 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
                 
-                manywho.state.setLoading('main', null, flowKey);
-                self.render(flowKey);                
+                manywho.state.setLoading('main', null, parentFlowKey);
+                self.render(parentFlowKey);
 
             })
             .always(function () {
