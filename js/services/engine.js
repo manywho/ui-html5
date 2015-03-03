@@ -4,18 +4,22 @@ manywho.engine = (function (manywho) {
 
     function processObjectDataRequests(components, flowKey) {
 
-        var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
+        if (components) {
 
-            return component.objectDataRequest != null;
+            var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
 
-        });
+                return component.objectDataRequest != null;
 
-        return $.when.apply($, requestComponents.map(function (component) {
-            
-            var limit = manywho.settings.global('paging.' + component.componentType);
-            return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey, limit)
+            });
 
-        }));
+            return $.when.apply($, requestComponents.map(function (component) {
+
+                var limit = manywho.settings.global('paging.' + component.componentType);
+                return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey, limit)
+
+            }));
+
+        }
 
     }
 
@@ -135,7 +139,7 @@ manywho.engine = (function (manywho) {
                 self.render(flowKey);
 
             })
-            .then(function () {
+            .always(function () {
 
                 return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
@@ -209,7 +213,7 @@ manywho.engine = (function (manywho) {
                 self.render(flowKey);
 
             })
-            .then(function () {
+            .always(function () {
 
                 return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
@@ -263,7 +267,7 @@ manywho.engine = (function (manywho) {
                 self.render(flowKey);                
 
             })
-            .then(function () {
+            .always(function () {
 
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
