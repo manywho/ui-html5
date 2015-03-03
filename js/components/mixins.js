@@ -20,6 +20,7 @@
 
                 if (outcome) {
 
+                    e.stopPropagation();
                     manywho.engine.move(outcome, this.props.flowKey);
 
                 }
