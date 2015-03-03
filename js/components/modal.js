@@ -1,14 +1,16 @@
 (function (manywho) {
 
     var modal = React.createClass({
-                
+               
+        mixins: [manywho.component.mixins.enterKeyHandler],
+
         renderModal: function() {
 
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
 
             return React.DOM.div({ className: 'modal show' }, [
-                React.DOM.div({ className: 'modal-dialog' }, [
+                React.DOM.div({ className: 'modal-dialog', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'modal-content' }, [
                         React.DOM.div({ className: 'modal-header' }, [
                             React.DOM.h4({ className: 'modal-title' }, manywho.model.getLabel(this.props.flowKey))

@@ -16,6 +16,8 @@ manywho.component = (function (manywho) {
 
     return {
 
+        mixins: {},
+
         contentTypes: {
             string: 'CONTENTSTRING',
             number: 'CONTENTNUMBER',
