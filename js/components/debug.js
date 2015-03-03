@@ -4,10 +4,44 @@
         
         toggle: function(e) {
 
+            e.stopPropagation();
+
             var toggled = {};
             toggled[e.currentTarget.id] = !this.state[e.currentTarget.id];
 
             this.setState(toggled);
+
+        },
+
+        renderObject: function(obj, id) {
+
+            if (obj) {
+
+                return Object.keys(obj).map(function (key) {
+
+                    if (typeof obj[key] === 'object' && obj[key]) {
+
+                        var isVisible = this.state[id + key];
+
+                        return React.DOM.li({ id: id + key, onClick: this.toggle }, [
+                            React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
+                            React.DOM.span({ className: 'debug-item-key debug-item-id' }, key + ': '),
+                            React.DOM.ul({ className: ((isVisible) ? null : 'hidden') }, this.renderObject(obj[key], id + key))
+                        ]);
+
+                    }
+                    else {
+
+                        return React.DOM.li(null, [
+                            React.DOM.span({ className: 'debug-item-key' }, key + ': '),
+                            React.DOM.span(null, obj[key] || 'null')
+                        ]);
+
+                    }
+
+                }, this);
+
+            }
 
         },
 
@@ -20,14 +54,7 @@
                 return React.DOM.li({ id: value.valueElementId, onClick: this.toggle}, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
                     React.DOM.span({ className: 'debug-item-id' }, value.developerName),
-                    React.DOM.ul({ className: 'table table-condensed ' + ((isVisible) ? null : 'hidden') }, Object.keys(value).map(function (key) {
-
-                        return React.DOM.li(null, [
-                            React.DOM.span({ className: 'debug-item-key' }, key + ': '),
-                            React.DOM.span(null, value[key] || 'null')
-                        ]);
-
-                    }))
+                    React.DOM.ul({ className: ((isVisible) ? null : 'hidden') }, this.renderObject(value, value.valueElementId))
                 ]);
 
             }, this);
