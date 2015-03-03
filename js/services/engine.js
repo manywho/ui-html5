@@ -175,13 +175,13 @@ manywho.engine = (function (manywho) {
 
                 var deferreds = [];
 
-                if (navigationElementReferences && navigationElementReferences.length > 0) {
+                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
 
-                    deferreds.push(loadNavigation(flowKey, response.stateId, response.stateToken, navigationElementReferences[0].id));
+                    deferreds.push(loadNavigation(flowKey, response.stateId, response.stateToken, response.navigationElementReferences[0].id));
 
                 }
 
-                if (currentStreamId) {
+                if (response.currentStreamId) {
                     // Add create social stream ajax call to defereds here
                 }
 
