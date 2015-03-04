@@ -2,6 +2,12 @@
 
     var feed = React.createClass({
 
+        onEnter: function(e) {
+
+            e.stopPropagation();
+
+        },
+
         renderInput: function() {
 
             return React.DOM.div({ className: 'input-group feed-post' }, [
@@ -69,7 +75,7 @@
 
                 var streamMessages = stream.messages || {};
 
-                return React.DOM.div({ className: 'panel panel-default feed' }, [
+                return React.DOM.div({ className: 'panel panel-default feed', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'panel-heading' }, React.DOM.h3({ className: 'panel-title' }, 'Feed')),
                     React.DOM.div({ className: 'panel-body' }, [
                         this.renderInput(),
