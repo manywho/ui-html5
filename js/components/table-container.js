@@ -107,6 +107,7 @@
 
             if (e.keyCode == 13) {
 
+                e.stopPropagation();
                 this.search();
 
             }
