@@ -55,9 +55,19 @@
 
     }
 
-    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev) {
+    function renderFooter(outcomes, flowKey, pageIndex, hasMoreResults, onNext, onPrev) {
 
         var footerElements = [];
+
+        if (outcomes) {
+
+            footerElements = footerElements.concat(outcomes.map(function (outcome) {
+
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey:  flowKey });
+
+            }));
+
+        }
 
         if (pageIndex > 1 || hasMoreResults) {
 
@@ -255,6 +265,9 @@
             var content = null;
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
 
+            var rowOutcomes = this.state.outcomes.filter(function(outcome) { return !outcome.isBulkAction });
+            var footerOutcomes = this.state.outcomes.filter(function(outcome) { return outcome.isBulkAction });
+
             if (loading && loading.error) {
                                 
                 content = React.DOM.div({ className: 'table-error' }, [
@@ -267,7 +280,7 @@
 
                 content = React.createElement(tableComponent, {
                     model: model,
-                    outcomes: this.state.outcomes,
+                    outcomes: rowOutcomes,
                     displayColumns: displayColumns,
                     onOutcome: this.onOutcome,
                     selectedRows: this.state.selectedRows,
@@ -281,7 +294,7 @@
             return React.DOM.div({ className: classNames }, [
                 renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
-                renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
+                renderFooter(footerOutcomes, this.props.flowKey, state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
                 React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: message }, null)
             ]);
 

@@ -54,11 +54,9 @@
 
         render: function () {
 
-            var self = this;
+            log.info('Rendering Outcome: ' + this.props.id);
 
-            log.info('Rendering Outcome: ' + self.props.id);
-
-            var model = manywho.model.getOutcome(self.props.id, self.props.flowKey);
+            var model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
             
             var classes = [
                 'outcome btn',
@@ -67,13 +65,6 @@
             ].join(' ');
 
             return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, model.label);
-            return React.DOM.button({
-                className: classes,
-                onClick: function(event) {
-                    manywho.engine.move(model, self.props.flowKey);
-                }
-
-            }, model.label);
 
         }
 
