@@ -95,6 +95,8 @@
     
     var table = React.createClass({
 
+        outcomes: null,
+
         onSearchChanged: function (e) {
 
             manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
@@ -122,7 +124,7 @@
 
         onRowClicked: function (e) {
 
-            if (!areBulkActionsDefined(this.state.outcomes)) {
+            if (!areBulkActionsDefined(this.outcomes)) {
 
                 // Don't select the row if there aren't any bulk actions defined
                 return;
@@ -209,7 +211,6 @@
         getInitialState: function () {
 
             return {
-                outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowKey),
                 selectedRows: [],
                 windowWidth: window.innerWidth
             }
@@ -227,7 +228,7 @@
             window.removeEventListener('resize', this.handleResize);
 
         },
-
+        
         render: function () {
 
             log.info('Rendering Table: ' + this.props.id);
@@ -238,14 +239,16 @@
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
+            this.outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+
             if (loading && loading.message) {
                 var message = loading.message;
             }
 
-            var displayColumns = getDisplayColumns(model.columns, this.state.outcomes);
+            var displayColumns = getDisplayColumns(model.columns, this.outcomes);
             var objectDataRequest = model.objectDataRequest || {};
             var isWaitVisible = loading && !loading.error;
-            var isSelectionEnabled = areBulkActionsDefined(this.state.outcomes) || model.isMultiSelect;
+            var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -265,8 +268,8 @@
             var content = null;
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
 
-            var rowOutcomes = this.state.outcomes.filter(function(outcome) { return !outcome.isBulkAction });
-            var footerOutcomes = this.state.outcomes.filter(function(outcome) { return outcome.isBulkAction });
+            var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
+            var footerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
             if (loading && loading.error) {
                                 

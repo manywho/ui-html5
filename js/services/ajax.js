@@ -100,6 +100,8 @@ manywho.ajax = (function (manywho) {
         
         invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
+            log.info('Invoking State: ' + engineInvokeRequest.stateId);
+
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/state/' + engineInvokeRequest.stateId,
                 type: 'POST',
