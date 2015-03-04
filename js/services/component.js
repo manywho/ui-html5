@@ -5,11 +5,22 @@ manywho.component = (function (manywho) {
     function getComponentType(item) {
 
         if ('containerType' in item) {
+
             return item.containerType;
+
         }
         else if ('componentType' in item) {
+
+            if (manywho.utils.isEqual(item.componentType, 'checkbox', true)) {
+
+                return 'INPUT';
+
+            }
+
             return item.componentType;
+
         }
+
         return null;
 
     }

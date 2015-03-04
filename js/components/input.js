@@ -63,7 +63,7 @@
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                if (Boolean(state.contentValue)) {
+                if (JSON.parse(state.contentValue.toLowerCase())) {
                     attributes.checked = "checked";
                 }
 
