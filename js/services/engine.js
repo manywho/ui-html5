@@ -52,16 +52,24 @@ manywho.engine = (function (manywho) {
 
     function loadNavigation(flowKey, stateToken, navigationId) {
 
-        return manywho.ajax.getNavigation(manywho.utils.extractStateId(flowKey), stateToken, navigationId, manywho.utils.extractTenantId(flowKey))
-                .then(function (navigation) {
+        if (navigationId) {
 
-                    if (navigation) {
+            return manywho.ajax.getNavigation(manywho.utils.extractStateId(flowKey), stateToken, navigationId, manywho.utils.extractTenantId(flowKey))
+                    .then(function (navigation) {
 
-                        manywho.model.parseNavigationResponse(navigationId, navigation, flowKey);
+                        if (navigation) {
 
-                    }
+                            manywho.model.parseNavigationResponse(navigationId, navigation, flowKey);
 
-                });
+                        }
+
+                    });
+
+        }
+
+        var deferred = new $.Deferred();
+        deferred.resolve();
+        return deferred;
 
     }
 
@@ -224,7 +232,7 @@ manywho.engine = (function (manywho) {
 
                 if (manywho.settings.isDebugEnabled(flowKey)) {
 
-                    deferreds.push(loadExecutionLog(flowKey, response.stateId, authenticationToken));
+                    deferreds.push(loadExecutionLog(flowKey, authenticationToken));
 
                 }
 
@@ -285,14 +293,26 @@ manywho.engine = (function (manywho) {
                                        
                 }
 
+                return response;
+
             }, function (response) {
 
                 manywho.authorization.invokeAuthorization(response, flowKey, callback);
 
             })
-            .then(function() {
+            .then(function (response) {
 
-                return loadExecutionLog(flowKey, authenticationToken);
+                var deferreds = [];
+
+                deferreds.push(loadNavigation(flowKey, response.stateToken, manywho.model.getDefaultNavigationId(flowKey)));
+
+                if (manywho.settings.isDebugEnabled(flowKey)) {
+
+                    deferreds.push(loadExecutionLog(flowKey, authenticationToken));
+
+                }                
+
+                return $.whenAll(deferreds);
 
             })
             .always(function () {

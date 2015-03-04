@@ -40,7 +40,7 @@
                 ]);
             }
             else {
-                element = React.DOM.li(null, [
+                element = React.DOM.li({ className: item.isCurrent && 'active' }, [
                     React.DOM.a({ className: 'dropdown-toggle', href: '#', onClick: clickHandler, id: item.id}, item.label)
                 ]);
             }
