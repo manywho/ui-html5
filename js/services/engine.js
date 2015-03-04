@@ -347,6 +347,13 @@ manywho.engine = (function (manywho) {
 
             options = options || {};
 
+            if (!tenantId || !flowId || !flowVersionId) {
+
+                log.error('tenantId, flowId & flowVersionId must be specified');
+                return;
+
+            }
+
             if (stateId) {
 
                 this.join(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options);
