@@ -252,6 +252,69 @@ manywho.ajax = (function (manywho) {
             .fail(onError)
             .fail(manywho.settings.event('log.fail'));
 
+        },
+
+        getSocialMe: function (tenantId, streamId, stateId, authenticationToken) {
+
+            log.info('Getting Social User, Me');
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/user/me',
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'social');
+
+                    xhr.setRequestHeader('ManyWhoState', stateId);
+
+                }
+            })
+            .done(manywho.settings.event('social.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('social.fail'));
+
+        },
+
+        getSocialFollowers: function (tenantId, streamId, stateId, authenticationToken) {
+
+            log.info('Getting Social Followers');
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/follower',
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'social');
+
+                    xhr.setRequestHeader('ManyWhoState', stateId);
+
+                }
+            })
+            .done(manywho.settings.event('social.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('social.fail'));
+
+        },
+
+        getSocialMessages: function (tenantId, streamId, stateId, pageSize, authenticationToken) {
+
+            log.info('Getting Social Messages');
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '?pageSize=' + pageSize,
+                type: 'GET',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'social');
+
+                    xhr.setRequestHeader('ManyWhoState', stateId);
+
+                }
+            })
+            .done(manywho.settings.event('social.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('social.fail'));
+
         }
 
     }

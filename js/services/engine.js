@@ -156,10 +156,6 @@ manywho.engine = (function (manywho) {
 
                 }
 
-                if (response.currentStreamId) {
-                    // Add create social stream ajax call to defereds here
-                }
-
                 if (manywho.settings.isDebugEnabled(flowKey)) {
 
                     deferreds.push(loadExecutionLog(flowKey, authenticationToken));
@@ -167,6 +163,13 @@ manywho.engine = (function (manywho) {
                 }
 
                 deferreds.push(initializeInvoke(flowKey, self));
+
+                if (response.currentStreamId) {
+
+                    manywho.social.initialize(flowKey, response.currentStreamId);
+
+                }
+
                 return $.whenAll(deferreds);
 
             }, function (response) {
@@ -219,13 +222,15 @@ manywho.engine = (function (manywho) {
 
                 }
 
-                if (response.currentStreamId) {
-                    // Add create social stream ajax call to defereds here
-                }
-
                 if (manywho.settings.isDebugEnabled(flowKey)) {
 
                     deferreds.push(loadExecutionLog(flowKey, response.stateId, authenticationToken));
+
+                }
+
+                if (response.currentStreamId) {
+                    
+                    manywho.social.initialize(flowKey, response.currentStreamId);
 
                 }
 
@@ -249,9 +254,6 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setLoading('main', null, flowKey);
                 self.render(flowKey);
-
-            })
-            .always(function () {
 
                 return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 

@@ -41,7 +41,8 @@
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
                         React.DOM.div({ className: classNames, onKeyUp: this.onEnter }, [
                             componentElements,
-                            outcomeElements
+                            outcomeElements,
+                            React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         modal,
                         React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey }),
