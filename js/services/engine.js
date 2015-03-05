@@ -319,6 +319,7 @@ manywho.engine = (function (manywho) {
                 
                 manywho.state.setLoading('main', null, parentFlowKey);
                 self.render(parentFlowKey);
+                manywho.component.focusInput(parentFlowKey);
 
             })
             .always(function () {

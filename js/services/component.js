@@ -181,6 +181,21 @@ manywho.component = (function (manywho) {
 
             return container;
 
+        },
+
+        focusInput: function (flowKey) {
+
+            if (manywho.settings.flow('autofocusinput', flowKey) && window.innerWidth > 768) {
+
+                var input = document.querySelector('input, textarea');
+                if (input) {
+
+                    input.focus();
+
+                }
+
+            }
+
         }
 
     }

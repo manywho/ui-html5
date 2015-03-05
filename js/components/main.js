@@ -4,6 +4,16 @@
          
         mixins: [manywho.component.mixins.enterKeyHandler],
 
+        componentDidMount: function() {
+
+            if (!manywho.model.getModal(this.props.flowKey)) {
+
+                manywho.component.focusInput(this.props.flowKey);
+
+            }
+
+        },
+
         render: function () {
             
             log.info("Rendering Main");
