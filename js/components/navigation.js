@@ -56,7 +56,12 @@
 
         handleClick: function(e) {
 
-            this.refs.toggle.getDOMNode().click();
+            if (!manywho.utils.isEqual(window.getComputedStyle(this.refs.toggle.getDOMNode()).display, 'none', true)) {
+
+                this.refs.toggle.getDOMNode().click();
+
+            }
+            
             manywho.engine.navigate(this.props.id, e.target.id, this.props.flowKey);
 
         },
