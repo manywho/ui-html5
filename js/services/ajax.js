@@ -317,6 +317,31 @@ manywho.ajax = (function (manywho) {
             .fail(onError)
             .fail(manywho.settings.event('social.fail'));
 
+        },
+
+        sendSocialMessage: function (tenantId, streamId, stateId, requestData, authenticationToken) {
+
+            log.info('Sending Social Message');
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/message',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(requestData),
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'social');
+
+                    xhr.setRequestHeader('ManyWhoState', stateId);
+
+                }
+            })
+            .done(manywho.settings.event('social.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('social.fail'));
+
         }
 
     }

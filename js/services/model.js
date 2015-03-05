@@ -85,7 +85,6 @@
             flowModel[flowKey].components = {};
             flowModel[flowKey].outcomes = {};
             flowModel[flowKey].label = null;
-            flowModel[flowKey].wait = null;
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
@@ -174,7 +173,7 @@
             switch (engineInvokeResponse.invokeType.toLowerCase())
             {
                 case "wait":
-                    flowModel[flowKey].wait = { message: engineInvokeResponse.waitMessage };
+                    manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
                     break;
             }
 
@@ -182,17 +181,21 @@
 
         parseEngineSyncResponse: function(response, flowKey) {
             
-            response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
+            if (response.mapElementInvokeResponses) {
 
-                flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
+                response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-            }, this);
+                    flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
 
-            response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
+                }, this);
 
-                flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
-                
-            }, this);
+                response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
+
+                    flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
+
+                }, this);
+
+            }
 
         },
 
@@ -335,17 +338,7 @@
             }
 
         },
-
-        getWait: function(flowKey) {
-
-            if (flowModel[flowKey].wait) {
-
-                return flowModel[flowKey].wait
-
-            }
-
-        },
-        
+                
         getDefaultNavigationId: function(flowKey) {
 
             if (flowModel[flowKey].navigation) {

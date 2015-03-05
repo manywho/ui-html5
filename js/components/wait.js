@@ -1,21 +1,26 @@
 ﻿(function (manywho) {
 
+    function arePropsSpecified(props) {
+
+        if (Object.keys(props).length == 1) {
+
+            return !props.hasOwnProperty('children');
+
+        }
+
+        return Object.keys(props).length > 0;
+
+    }
+
     var wait = React.createClass({
 
         render: function () {
 
             log.info('Rendering Wait');
             
-            var isVisible = this.props.isVisible;
-            var message = this.props.message;
-
-            if (this.props.wait) {
-
-                isVisible = true;
-                message = this.props.wait.message;
-
-            }
-
+            var isVisible = arePropsSpecified(this.props);
+            var message = isVisible && this.props.message;
+            
             var classNames = [
                 'wait',
                 (isVisible) ? '' : 'hidden'

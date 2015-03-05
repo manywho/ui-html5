@@ -299,7 +299,7 @@
                 renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
                 renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
-                React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: message }, null)
+                React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
             ]);
 
         }
