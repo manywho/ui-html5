@@ -28,7 +28,7 @@
 
     }
 
-    function renderHeader(isSearchEnabled, onSearchChanged, onSearchEntered, search) {
+    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
 
         var headerElements = [];
 
@@ -45,9 +45,19 @@
 
         }
 
+        if (outcomes) {
+
+            headerElements.push(React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
+
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
+
+            })));
+
+        }
+
         if (headerElements.length > 0) {
 
-            return React.DOM.div({ className: 'table-header' }, headerElements);
+            return React.DOM.div({ className: 'table-header clearfix' }, headerElements);
 
         }
 
@@ -55,19 +65,9 @@
 
     }
 
-    function renderFooter(outcomes, flowKey, pageIndex, hasMoreResults, onNext, onPrev) {
+    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev) {
 
         var footerElements = [];
-
-        if (outcomes) {
-
-            footerElements = footerElements.concat(outcomes.map(function (outcome) {
-
-                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey:  flowKey });
-
-            }));
-
-        }
 
         if (pageIndex > 1 || hasMoreResults) {
 
@@ -270,7 +270,7 @@
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
 
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
-            var footerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
+            var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
             if (loading && loading.error) {
                                 
@@ -296,9 +296,9 @@
             }
                        
             return React.DOM.div({ className: classNames }, [
-                renderHeader(model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
+                renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
-                renderFooter(footerOutcomes, this.props.flowKey, state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
+                renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
                 React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible, message: message }, null)
             ]);
 
