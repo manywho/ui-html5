@@ -5,11 +5,22 @@ manywho.component = (function (manywho) {
     function getComponentType(item) {
 
         if ('containerType' in item) {
+
             return item.containerType;
+
         }
         else if ('componentType' in item) {
+
+            if (manywho.utils.isEqual(item.componentType, 'checkbox', true)) {
+
+                return 'INPUT';
+
+            }
+
             return item.componentType;
+
         }
+
         return null;
 
     }
@@ -169,6 +180,21 @@ manywho.component = (function (manywho) {
             }
 
             return container;
+
+        },
+
+        focusInput: function (flowKey) {
+
+            if (manywho.settings.flow('autofocusinput', flowKey) && window.innerWidth > 768) {
+
+                var input = document.querySelector('input, textarea');
+                if (input) {
+
+                    input.focus();
+
+                }
+
+            }
 
         }
 
