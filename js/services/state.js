@@ -90,7 +90,7 @@ manywho.state = (function (manywho) {
 
         setComponent: function(id, values, flowKey, push) {
 
-            components[flowKey][id] = $.extend(components[flowKey][id], values)
+            components[flowKey][id] = $.extend(components[flowKey][id], values);
 
             if (push) {
                 manywho.collaboration.push(id, values, flowKey);

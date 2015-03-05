@@ -49,7 +49,7 @@
             }
 
             if (model.isRequired) {
-                attributes.required = "";
+                attributes.required = "required";
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
