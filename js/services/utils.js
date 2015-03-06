@@ -192,9 +192,11 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        removeLoadingIndicator: function(element) {
+        removeLoadingIndicator: function(id) {
 
-            $('.' + element).remove();
+            var element = document.getElementById(id);
+            element.parentNode.removeChild(element);
+
         }
 
     }

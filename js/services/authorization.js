@@ -101,7 +101,6 @@ manywho.authorization = (function (manywho) {
 
                         manywho.state.setLoading('main', null, flowKey);
                         manywho.model.setModal(flowKey, authenticationFlow.key);
-                        manywho.component.appendFlowContainer(flowKey);
                         manywho.engine.render(flowKey);
 
                     })

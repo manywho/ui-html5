@@ -6,6 +6,8 @@
 
         componentDidMount: function() {
 
+            manywho.utils.removeLoadingIndicator('loader');
+
             if (!manywho.model.getModal(this.props.flowKey)) {
 
                 manywho.component.focusInput(this.props.flowKey);
