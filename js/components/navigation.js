@@ -27,22 +27,31 @@
             var item = items[itemId];
 
             var element = null;
+            var classNames = [
+                 item.isCurrent && 'active',
+                 !item.isVisible && 'hidden',
+                 !item.isEnabled && 'disabled'
+            ]
 
             if (item.items != null) {
-                var childListItemElement = React.DOM.ul({ className: 'dropdown-menu', role: 'menu' }, getListElements(item.items, clickHandler));
 
-                element = React.DOM.li({ className: 'dropdown' }, [
+                classNames.push('dropdown');
+
+                element = React.DOM.li({ className: classNames.join(' ') }, [
                     React.DOM.a({ href: '#', 'data-toggle': 'dropdown' }, [
                         item.label,
                         React.DOM.span({ className: 'caret' }),
-                        childListItemElement
+                        React.DOM.ul({ className: 'dropdown-menu', role: 'menu' }, getListElements(item.items, clickHandler))
                     ])
                 ]);
+
             }
             else {
-                element = React.DOM.li({ className: item.isCurrent && 'active' }, [
+
+                element = React.DOM.li({ className: classNames.join(' ') }, [
                     React.DOM.a({ className: 'dropdown-toggle', href: '#', onClick: clickHandler, id: item.id}, item.label)
                 ]);
+
             }
             
             elements.push(element);
