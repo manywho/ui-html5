@@ -19,7 +19,7 @@
 
     }
 
-    function getListElements(items, clickHandler) {
+    function getNavElements(items, clickHandler) {
 
         var elements = [];
 
@@ -28,9 +28,9 @@
 
             var element = null;
             var classNames = [
-                 item.isCurrent && 'active',
-                 !item.isVisible && 'hidden',
-                 !item.isEnabled && 'disabled'
+                 (item.isCurrent) ? 'active' : '',
+                 (item.isVisible) ? '' : 'hidden',
+                 (item.isEnabled) ? '' : 'disabled'
             ]
 
             if (item.items != null) {
@@ -83,13 +83,16 @@
 
                 log.info("Rendering Navigation");
 
+                var navElements = getNavElements(navigation.items, this.handleClick);
+
+                navElements = navElements.concat(manywho.settings.global('navigation.components') || []);
+                navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
+
                 return React.DOM.nav({ className: 'navbar navbar-default' },
                             React.DOM.div({ className: 'container' }, [
                                 getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },
-                                    React.DOM.ul({ className: 'nav navbar-nav' },
-                                        getListElements(navigation.items, this.handleClick)
-                                    )
+                                    React.DOM.ul({ className: 'nav navbar-nav' }, navElements)
                                 )
                             ])
                         );
