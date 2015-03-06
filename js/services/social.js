@@ -87,7 +87,7 @@ manywho.social = (function (manywho) {
                     }
                     else {
 
-                        stream.messages.messages.push(response);
+                        stream.messages.messages.unshift(response);
 
                     }
                     

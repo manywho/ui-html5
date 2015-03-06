@@ -24,7 +24,14 @@
                 e.stopPropagation();
                 e.preventDefault();
 
-                manywho.social.sendMessage(this.props.flowKey, this.state.message);
+                var self = this;
+
+                manywho.social.sendMessage(this.props.flowKey, this.state.message)
+                    .done(function () {
+
+                        self.setState({ message: '' });
+
+                    });
 
             }           
 
@@ -37,9 +44,18 @@
                 e.stopPropagation();
                 e.preventDefault();
 
+                var self = this;
                 var messageId = e.currentTarget.getAttribute('data-message-id');
                 
-                manywho.social.sendMessage(this.props.flowKey, this.state.comments[messageId], messageId);
+                manywho.social.sendMessage(this.props.flowKey, this.state.comments[messageId], messageId)
+                    .done(function () {
+
+                        var state = self.state;
+                        state.comments[messageId] = '';
+
+                        self.setState(state);
+
+                    });
 
             }
 
@@ -49,7 +65,7 @@
 
             return React.DOM.div({ className: 'input-group feed-post' }, [
                 React.DOM.div({ className: 'input-group-btn feed-post-button' }, React.DOM.button({ className: 'btn btn-primary', onClick: this.onSendMessage }, 'Post')),
-                React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyUp: this.onSendMessage, onChange: this.onNewMessageChange, ref: 'newMessage' }, null)
+                React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyUp: this.onSendMessage, onChange: this.onNewMessageChange, value: this.state.message  }, null)
             ]);
 
         },
@@ -60,7 +76,7 @@
 
                 return React.DOM.div({ className: 'input-group feed-comment' }, [
                         React.DOM.span({ className: 'input-group-btn' }, React.DOM.button({ className: 'btn btn-primary', onClick: this.onSendComment, 'data-message-id': parentId }, 'Comment')),
-                        React.DOM.input({ className: 'form-control feed-comment-input', type: 'text', onKeyUp: this.onSendComment, onChange: this.onCommentChange, 'data-message-id': parentId }, null)
+                        React.DOM.input({ className: 'form-control feed-comment-input', type: 'text', onKeyUp: this.onSendComment, onChange: this.onCommentChange, value: this.state.comments[parentId], 'data-message-id': parentId }, null)
                     ])
                 
             }
