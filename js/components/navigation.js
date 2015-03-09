@@ -77,8 +77,12 @@
 
         handleScroll: function(e) {
 
-            var isFixed = manywho.settings.flow('navigation.isFixed', this.props.flowKey) || manywho.settings.global('navigation.isFixed');
-            if (isFixed) this.setState({ pageYOffset: window.pageYOffset });
+            var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
+            if (isFixed) {
+
+                this.setState({ pageYOffset: window.pageYOffset });
+
+            }
 
         },
 
