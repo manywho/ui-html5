@@ -8,6 +8,12 @@
 
         },
 
+        getNextPage: function(e) {
+
+            manywho.social.getMessages(this.props.flowKey);
+
+        },
+
         onNewMessageChange: function(e) {
 
             this.setState({ message: e.currentTarget.value });
@@ -144,6 +150,8 @@
                 var streamMessages = stream.messages || {};
                 var loading = manywho.state.getLoading('feed', this.props.flowKey);
                 
+                var isFooterVisible = streamMessages.nextPage && streamMessages.nextPage > 1;
+
                 return React.DOM.div({ className: 'panel panel-default feed', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'panel-heading clearfix' }, [
                         React.DOM.h3({ className: 'panel-title pull-left' }, 'Feed'),
@@ -153,9 +161,12 @@
                         this.renderInput(),
                         this.renderThread(streamMessages.messages, true)
                     ]),
+                    React.DOM.div({ className: 'panel-heading clearfix ' + (!isFooterVisible) ? 'hidden' : '' },
+                        React.DOM.button({ className: 'btn btn-default pull-right', onClick: this.getNextPage }, 'More')
+                    ),
                     React.createElement(manywho.component.getByName('wait'), loading, null)
                 ]);
-
+                
             }
 
             return null;
