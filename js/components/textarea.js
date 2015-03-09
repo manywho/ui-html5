@@ -22,7 +22,9 @@
                 placeholder: model.hintValue,
                 value: state.contentValue,
                 maxLength: model.maxSize,
-                onChange: this.handleChange
+                onChange: this.handleChange,
+                cols: model.width,
+                rows: model.height
             };
 
             if (!model.isEnabled) {
