@@ -31,7 +31,7 @@
                  (item.isCurrent) ? 'active' : '',
                  (item.isVisible) ? '' : 'hidden',
                  (item.isEnabled) ? '' : 'disabled'
-            ]
+            ];
 
             if (item.items != null) {
 
@@ -77,7 +77,8 @@
 
         handleScroll: function(e) {
 
-            this.setState({ pageYOffset: window.pageYOffset });
+            var isFixed = manywho.settings.flow('navigation.isFixed', this.props.flowKey) || manywho.settings.global('navigation.isFixed');
+            if (isFixed) this.setState({ pageYOffset: window.pageYOffset });
 
         },
 

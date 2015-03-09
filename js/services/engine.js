@@ -148,9 +148,9 @@ manywho.engine = (function (manywho) {
                 manywho.settings.initializeFlow(options, flowKey);
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
                 
-                if (options.authentication != null && options.authentication.sessionId != null) {
+                if (options.authentication != null && options.authentication.sessionid != null) {
 
-                    manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
+                    manywho.state.setSessionData(options.authentication.sessionid, options.authentication.sessionurl, flowKey);
 
                 }
 
