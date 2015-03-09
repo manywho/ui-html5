@@ -31,7 +31,7 @@
                  (item.isCurrent) ? 'active' : '',
                  (item.isVisible) ? '' : 'hidden',
                  (item.isEnabled) ? '' : 'disabled'
-            ]
+            ];
 
             if (item.items != null) {
 
@@ -77,7 +77,9 @@
 
         handleScroll: function(e) {
 
-            this.setState({ pageYOffset: window.pageYOffset });
+            if (manywho.settings.flow('fixedNavigation', this.props.flowKey)) {
+                this.setState({ pageYOffset: window.pageYOffset });
+            }
 
         },
 
