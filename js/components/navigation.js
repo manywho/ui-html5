@@ -75,6 +75,32 @@
 
         },
 
+        handleScroll: function(e) {
+
+            this.setState({ pageYOffset: window.pageYOffset });
+
+        },
+
+        getInitialState: function() {
+            
+            return {
+                pageYOffset: 0
+            };
+
+        },
+
+        componentDidMount: function () {
+
+            window.addEventListener('scroll', this.handleScroll);
+
+        },
+
+        componentWillUnmount: function () {
+
+            window.removeEventListener('scroll', this.handleScroll);
+
+        },
+
         render: function () {
 
             var navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
@@ -88,7 +114,7 @@
                 navElements = navElements.concat(manywho.settings.global('navigation.components') || []);
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
-                return React.DOM.nav({ className: 'navbar navbar-default' },
+                return React.DOM.nav({ className: 'navbar navbar-default', style: { top: this.state.pageYOffset } },
                             React.DOM.div({ className: 'container' }, [
                                 getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },
