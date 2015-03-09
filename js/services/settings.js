@@ -10,6 +10,9 @@ manywho.settings = (function (manywho, $) {
         },
         platform: {
             uri: 'https://flow.manywho.com'
+        },
+        navigation: {
+            isFixed: true
         }
     };
 

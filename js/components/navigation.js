@@ -77,9 +77,8 @@
 
         handleScroll: function(e) {
 
-            if (manywho.settings.flow('fixedNavigation', this.props.flowKey)) {
-                this.setState({ pageYOffset: window.pageYOffset });
-            }
+            var isFixed = manywho.settings.flow('navigation.isFixed', this.props.flowKey) || manywho.settings.global('navigation.isFixed');
+            if (isFixed) this.setState({ pageYOffset: window.pageYOffset });
 
         },
 
