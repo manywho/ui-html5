@@ -100,17 +100,17 @@ manywho.settings = (function (manywho, $) {
 
                 var flowValue = getValueByPath(flows[flowKey] || {}, path.toLowerCase());
 
-                if (flowValue) {
+                if (typeof flowValue != 'undefined') {
 
                     return flowValue
 
                 }
-                else if (globalValue) {
+                else if (typeof globalValue != 'undefined') {
 
                     return globalValue;
 
                 }
-                else if (defaultValue) {
+                else if (typeof defaultValue != 'undefined') {
 
                     return defaultValue;
 
