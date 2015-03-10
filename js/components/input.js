@@ -27,7 +27,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+            if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
                 var stateDate;
 
