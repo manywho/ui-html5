@@ -28,7 +28,7 @@ manywho.social = (function (manywho) {
 
                     streams[flowKey].followers = response;
 
-                    return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 10, authenticationToken);
+                    return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 1, 10, authenticationToken);
 
                 })
                 .then(function (response) {
@@ -45,6 +45,51 @@ manywho.social = (function (manywho) {
         getStream: function(flowKey) {
 
             return streams[flowKey];
+
+        },
+
+        refreshMessages: function(flowKey) {
+
+            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.engine.render(flowKey);
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var stateId = manywho.utils.extractStateId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+            var streamId = streams[flowKey].id;
+            
+            return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 1, 10, authenticationToken)
+                .then(function (response) {
+
+                    streams[flowKey].messages = response;
+
+                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.engine.render(flowKey);
+
+                });
+
+        },
+
+        getMessages: function(flowKey) {
+
+            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.engine.render(flowKey);
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var stateId = manywho.utils.extractStateId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+            var streamId = streams[flowKey].id;
+
+            return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, streams[flowKey].messages.nextPage, 10, authenticationToken)
+                .then(function (response) {
+
+                    streams[flowKey].messages.messages = streams[flowKey].messages.messages.concat(response.messages);
+                    streams[flowKey].messages.nextPage = response.nextPage;
+
+                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.engine.render(flowKey);
+
+                });
 
         },
 
@@ -87,6 +132,7 @@ manywho.social = (function (manywho) {
                     }
                     else {
 
+                        stream.messages.messages = stream.messages.messages || [];
                         stream.messages.messages.unshift(response);
 
                     }

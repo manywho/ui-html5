@@ -92,9 +92,33 @@ manywho.settings = (function (manywho, $) {
 
         },
 
-        global: function (path) {
+        global: function (path, flowKey, defaultValue) {
 
-            return getValueByPath(globals, path.toLowerCase());
+            var globalValue = getValueByPath(globals, path.toLowerCase());
+
+            if (flowKey) {
+
+                var flowValue = getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+
+                if (typeof flowValue != 'undefined') {
+
+                    return flowValue
+
+                }
+                else if (typeof globalValue != 'undefined') {
+
+                    return globalValue;
+
+                }
+                else if (typeof defaultValue != 'undefined') {
+
+                    return defaultValue;
+
+                }
+                
+            }
+
+            return globalValue;
 
         },
 

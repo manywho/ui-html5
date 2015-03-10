@@ -87,7 +87,8 @@
                 value: state.contentValue,
                 onChange: this.handleChange,
                 id: this.props.id,
-                maxLength: model.maxSize
+                maxLength: model.maxSize,
+                size: model.size
             };
 
             if (!model.isEnabled) {

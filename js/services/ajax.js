@@ -298,12 +298,12 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        getSocialMessages: function (tenantId, streamId, stateId, pageSize, authenticationToken) {
+        getSocialMessages: function (tenantId, streamId, stateId, page, pageSize, authenticationToken) {
 
             log.info('Getting Social Messages');
 
             return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '?pageSize=' + pageSize,
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '?page=' + page + '&pageSize=' + pageSize,
                 type: 'GET',
                 beforeSend: function (xhr) {
 

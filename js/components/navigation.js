@@ -77,8 +77,12 @@
 
         handleScroll: function(e) {
 
-            var isFixed = manywho.settings.flow('navigation.isFixed', this.props.flowKey) || manywho.settings.global('navigation.isFixed');
-            if (isFixed) this.setState({ pageYOffset: window.pageYOffset });
+            var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
+            if (isFixed) {
+
+                this.setState({ pageYOffset: window.pageYOffset });
+
+            }
 
         },
 
@@ -115,8 +119,10 @@
                 navElements = navElements.concat(manywho.settings.global('navigation.components') || []);
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
+                var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
+
                 return React.DOM.nav({ className: 'navbar navbar-default', style: { top: this.state.pageYOffset } },
-                            React.DOM.div({ className: 'container' }, [
+                            React.DOM.div({ className: (isFullWidth) ? '' : 'container' }, [
                                 getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },
                                     React.DOM.ul({ className: 'nav navbar-nav' }, navElements)
