@@ -2,13 +2,19 @@
 
     var feed = React.createClass({
 
-        refresh: function(e) {
+        onToggleFollow: function(e) {
+
+            manywho.social.toggleFollow(this.props.flowKey);
+
+        },
+
+        onRefresh: function(e) {
 
             manywho.social.refreshMessages(this.props.flowKey);
 
         },
 
-        getNextPage: function(e) {
+        onGetNextPage: function(e) {
 
             manywho.social.getMessages(this.props.flowKey);
 
@@ -130,6 +136,24 @@
 
         },
 
+        renderFollowers: function(followers) {
+
+            if (followers) {
+                
+                var followerElements = followers.map(function (follower) {
+
+                    return React.DOM.img({ className: 'feed-follower', src: follower.avatarUrl, title: follower.fullName, width: '32', height: '32' });
+
+                });
+
+                return React.DOM.div({ className: 'feed-followers' }, [ React.DOM.h4(null, 'Followers') ].concat(followerElements));
+
+            }
+
+            return null;
+
+        },
+
         getInitialState: function() {
 
             return {
@@ -143,32 +167,43 @@
 
             var stream = manywho.social.getStream(this.props.flowKey);
 
-            if (stream) {
+            if (stream && stream.me) {
 
                 log.info('Rendering Feed');
 
                 var streamMessages = stream.messages || {};
                 var loading = manywho.state.getLoading('feed', this.props.flowKey);
                 
+                var followCaption = (stream.me.isFollower) ? 'Un-Follow' : 'Follow';
                 var isFooterVisible = streamMessages.nextPage && streamMessages.nextPage > 1;
-
+                
                 return React.DOM.div({ className: 'panel panel-default feed', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'panel-heading clearfix' }, [
                         React.DOM.h3({ className: 'panel-title pull-left' }, 'Feed'),
-                        React.DOM.button({className: 'btn btn-default pull-right', onClick: this.refresh }, React.DOM.span({className: 'glyphicon glyphicon-refresh'}, null))
+                        React.DOM.div({ className: 'pull-right btn-group' }, [
+                            React.DOM.button({ className: 'btn btn-default', onClick: this.onToggleFollow }, [
+                                React.DOM.span({ className: 'glyphicon glyphicon-pushpin'}, null),
+                                ' ' + followCaption
+                            ]),
+                            React.DOM.button({ className: 'btn btn-default', onClick: this.onRefresh }, [
+                                React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null),
+                                ' Refresh'
+                            ])
+                        ])                        
                     ]),
                     React.DOM.div({ className: 'panel-body' }, [
+                        this.renderFollowers(stream.followers),
                         this.renderInput(),
                         this.renderThread(streamMessages.messages, true)
                     ]),
                     React.DOM.div({ className: 'panel-heading clearfix ' + (!isFooterVisible) ? 'hidden' : '' },
-                        React.DOM.button({ className: 'btn btn-default pull-right', onClick: this.getNextPage }, 'More')
+                        React.DOM.button({ className: 'btn btn-default pull-right', onClick: this.onGetNextPage }, 'More')
                     ),
                     React.createElement(manywho.component.getByName('wait'), loading, null)
                 ]);
                 
             }
-
+            
             return null;
 
         }
