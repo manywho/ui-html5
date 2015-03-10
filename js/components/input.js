@@ -30,17 +30,6 @@
             if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
                 var stateDate;
-
-                if (manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
-
-                    stateDate = new Date();
-
-                } else {
-
-                    stateDate = new Date(state.contentValue.toLowerCase());
-
-                }
-
                 var datepickerElement = this.refs.datepicker.getDOMNode();
 
                 $(datepickerElement).datepicker({
@@ -48,8 +37,17 @@
                     autoclose: true
                 });
 
-                datepickerElement.value = stateDate.toLocaleDateString();
-                $(datepickerElement).datepicker('update', stateDate);
+                if (!manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
+
+                    stateDate = new Date(state.contentValue.toLowerCase());
+                    datepickerElement.value = stateDate.toLocaleDateString();
+                    $(datepickerElement).datepicker('update', stateDate);
+
+                } else {
+
+                    datepickerElement.value = "";
+
+                }
 
             }
 
