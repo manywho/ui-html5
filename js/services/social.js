@@ -112,7 +112,7 @@ manywho.social = (function (manywho) {
 
             }
 
-            manywho.state.setLoading('feed', { message: 'sending' }, flowKey);
+            manywho.state.setLoading('feed', { message: 'Sending' }, flowKey);
             manywho.engine.render(flowKey);
 
             return manywho.ajax.sendSocialMessage(tenantId, stream.id, stateId, request, authenticationToken)
@@ -137,6 +137,35 @@ manywho.social = (function (manywho) {
 
                     }
                     
+                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.engine.render(flowKey);
+
+                });
+
+        },
+
+        toggleFollow: function(flowKey) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var stateId = manywho.utils.extractStateId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+            var stream = streams[flowKey];
+
+            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.engine.render(flowKey);
+
+            return manywho.ajax.follow(tenantId, stream.id, stateId, !stream.me.isFollower, authenticationToken)
+                .then(function (response) {
+
+                    stream.me.isFollower = !stream.me.isFollower;
+
+                    return manywho.ajax.getSocialFollowers(tenantId, stream.id, stateId, authenticationToken)
+
+                })
+                .then(function (response) {
+
+                    streams[flowKey].followers = response;
+
                     manywho.state.setLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
