@@ -37,7 +37,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, annotations, geolocation, mode) {
+        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, navigationElementId, annotations, geolocation, mode) {
 
             return {
                 'stateId': stateData.id,
@@ -53,7 +53,7 @@ manywho.json = (function (manywho) {
                     'selectedOutcomeId': selectedOutcomeId || null
                 },
                 'mode': mode || null,
-                'navigationElementId': null
+                'navigationElementId': navigationElementId || null
             }
         },
 
