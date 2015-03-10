@@ -362,7 +362,7 @@ manywho.engine = (function (manywho) {
 
             options = options || {};
 
-            if (!tenantId || !flowId || !flowVersionId) {
+            if (!tenantId && (!stateId || (!flowId && !flowVersionId))) {
 
                 log.error('tenantId, flowId & flowVersionId must be specified');
                 return;
