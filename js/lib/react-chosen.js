@@ -1,4 +1,4 @@
-(function(window, $) {
+(function (window, React, $) {
   var Chosen = React.createClass({
     displayName: 'Chosen',
 
@@ -52,4 +52,4 @@
 
     window.Chosen = Chosen;
 
-})(window, jQuery);
+})(window, React, jQuery);
