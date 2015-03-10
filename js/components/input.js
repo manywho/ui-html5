@@ -31,7 +31,7 @@
 
                 var stateDate;
 
-                if (state.contentValue.toLowerCase() == '1/1/0001 12:00:00 am') {
+                if (manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
 
                     stateDate = new Date();
 
@@ -41,19 +41,15 @@
 
                 }
 
-                $('.datepicker').datepicker({
+                var datepickerElement = this.refs.datepicker.getDOMNode();
+
+                $(datepickerElement).datepicker({
                     format: 'dd/mm/yyyy',
-                    autoclose: true,
-                    defaultViewDate: {
-                        year: stateDate.getFullYear() || null,
-                        month: stateDate.getMonth() || null,
-                        day: stateDate.getDay() || null
-                    }
+                    autoclose: true
                 });
 
-                this.refs.datepicker.getDOMNode().value = stateDate.toLocaleDateString();
-
-                this.render();
+                datepickerElement.value = stateDate.toLocaleDateString();
+                $(datepickerElement).datepicker('update', stateDate);
 
             }
 
@@ -61,7 +57,7 @@
 
         componentWillUnmount: function () {
 
-            $('.datepicker').datepicker('destroy');
+            if (this.refs.datepicker) this.refs.datepicker.getDOMNode().datepicker('destroy');
 
         },
 
