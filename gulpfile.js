@@ -162,7 +162,7 @@ gulp.task('bootstrap-themes-dist', function () {
 gulp.task('js-dist', function () {
 
     return gulp.src(['js/**/*.js', '!js/services/loader.js'])
-                .pipe(order(['services/*.js', 'components/*.js']))
+                .pipe(order(['services/*.js', 'lib/*.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
                 .pipe(uglify())
                 .pipe(gulp.dest('./dist/js'));
