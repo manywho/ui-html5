@@ -362,6 +362,8 @@ manywho.engine = (function (manywho) {
 
             options = options || {};
 
+            if (authenticationToken) authenticationToken = decodeURI(authenticationToken);
+
             if (!tenantId && (!stateId || (!flowId && !flowVersionId))) {
 
                 log.error('tenantId, flowId & flowVersionId must be specified');
