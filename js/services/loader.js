@@ -45,7 +45,7 @@
 
                 var timer = setInterval(function () {
 
-                    if (manywho.utils && window.log && window.React && $.fn.chosen && window.io && typeof $().emulateTransitionEnd == 'function') {
+                    if (manywho.utils && window.log && window.React && $.fn.chosen && window.io && $.fn.modal) {
 
                         clearInterval(timer);
                         manywho.initialize();
