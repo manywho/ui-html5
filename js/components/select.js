@@ -1,4 +1,4 @@
-﻿﻿(function (manywho) {
+﻿(function (manywho) {
 
     function renderOption (item) {
 
@@ -67,7 +67,7 @@
             if (!model.isEnabled) {
                 attributes.disabled = "disabled";
             }
-            
+
             attributes.placeholder = model.hintValue || "Please select an option";
 
             if (objectData) {
@@ -104,18 +104,18 @@
             ].join(' ');
 
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
-                        React.DOM.label({ 'for': this.props.id }, model.label),
-                        React.DOM.div({ className: 'input-wrapper' }, [
-                            React.createElement(Chosen, attributes),
-                            React.DOM.span({ className: iconClassNames }, null)
-                        ]),
-                        React.DOM.span({ className: 'help-block' }, message)
+                React.DOM.label({ 'for': this.props.id }, model.label),
+                React.DOM.div({ className: 'input-wrapper' }, [
+                    React.createElement(Chosen, attributes),
+                    React.DOM.span({ className: iconClassNames }, null)
+                ]),
+                React.DOM.span({ className: 'help-block' }, message)
             ]);
-            
+
         }
 
     });
 
     manywho.component.register("select", select);
 
-}(manywho));
+})(manywho);
