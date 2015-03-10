@@ -33,7 +33,8 @@ manywho.component = (function (manywho) {
             string: 'CONTENTSTRING',
             number: 'CONTENTNUMBER',
             boolean: 'CONTENTBOOLEAN',
-            password: 'CONTENTPASSWORD'
+            password: 'CONTENTPASSWORD',
+            datetime: 'CONTENTDATETIME'
         },
 
         register: function (name, component) {

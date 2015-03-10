@@ -12,6 +12,8 @@
                 return 'checkbox';
             case manywho.component.contentTypes.password:
                 return 'password';
+            case manywho.component.contentTypes.datetime:
+                return 'datetime';
             default:
                 return 'text';
         }
@@ -20,7 +22,51 @@
 
     var input = React.createClass({
 
-        handleChange: function(e) {
+        componentDidMount: function () {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
+            if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+
+                var stateDate;
+
+                if (state.contentValue.toLowerCase() == '1/1/0001 12:00:00 am') {
+
+                    stateDate = new Date();
+
+                } else {
+
+                    stateDate = new Date(state.contentValue.toLowerCase());
+
+                }
+
+                $('.datepicker').datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true,
+                    defaultViewDate: {
+                        year: stateDate.getFullYear() || null,
+                        month: stateDate.getMonth() || null,
+                        day: stateDate.getDay() || null
+                    }
+                });
+
+                this.refs.datepicker.getDOMNode().value = stateDate.toLocaleDateString();
+
+                this.render();
+
+            }
+
+        },
+
+        componentWillUnmount: function () {
+
+            $('.datepicker').datepicker('destroy');
+
+        },
+
+
+        handleChange: function (e) {
 
             manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
@@ -79,16 +125,23 @@
                         React.DOM.span({className: 'help-block'}, model.message)
                     ]);
 
-            }
-            else {
+            } else {
 
-                attributes.className = 'form-control';
+                attributes.className = 'form-control ';
+
+                if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+
+                    attributes.className += 'datepicker';
+                    attributes.ref = 'datepicker';
+                    attributes.readOnly = "readonly";
+
+                }
 
                 return React.DOM.div({ className: 'form-group ' + containerClassNames },
                     [
                         React.DOM.label({ htmlFor: this.props.id }, model.label),
                         React.DOM.input(attributes, null),
-                        React.DOM.span({className: 'help-block'}, model.message)
+                        React.DOM.span({ className: 'help-block' }, model.message)
                     ]);
 
             }                       
