@@ -100,6 +100,7 @@ manywho.engine = (function (manywho) {
             stateId,
             options.annotations,
             options.inputs,
+            manywho.settings.global('playerUrl'),
             options.mode,
             options.reportingMode
         );

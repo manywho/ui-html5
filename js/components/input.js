@@ -27,33 +27,27 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+            if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
                 var stateDate;
+                var datepickerElement = this.refs.datepicker.getDOMNode();
 
-                if (state.contentValue.toLowerCase() == '1/1/0001 12:00:00 am') {
+                $(datepickerElement).datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true
+                });
 
-                    stateDate = new Date();
+                if (!manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
+
+                    stateDate = new Date(state.contentValue.toLowerCase());
+                    datepickerElement.value = stateDate.toLocaleDateString();
+                    $(datepickerElement).datepicker('update', stateDate);
 
                 } else {
 
-                    stateDate = new Date(state.contentValue.toLowerCase());
+                    datepickerElement.value = "";
 
                 }
-
-                $('.datepicker').datepicker({
-                    format: 'dd/mm/yyyy',
-                    autoclose: true,
-                    defaultViewDate: {
-                        year: stateDate.getFullYear() || null,
-                        month: stateDate.getMonth() || null,
-                        day: stateDate.getDay() || null
-                    }
-                });
-
-                this.refs.datepicker.getDOMNode().value = stateDate.toLocaleDateString();
-
-                this.render();
 
             }
 
@@ -61,7 +55,7 @@
 
         componentWillUnmount: function () {
 
-            $('.datepicker').datepicker('destroy');
+            if (this.refs.datepicker) this.refs.datepicker.getDOMNode().datepicker('destroy');
 
         },
 
