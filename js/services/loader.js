@@ -1,4 +1,4 @@
-(function (manywho, $) {
+(function (manywho, window, $) {
     
     function appendScript(url) {
 
@@ -45,7 +45,7 @@
 
                 var timer = setInterval(function () {
 
-                    if (manywho.utils) {
+                    if (manywho.utils && window.log && window.React && $.fn.chosen && window.io && $.fn.modal) {
 
                         clearInterval(timer);
                         manywho.initialize();
@@ -62,7 +62,7 @@
 
     manywho.loader.initialize();
 
-}(manywho, jQuery));
+}(manywho, window, jQuery));
 
 
 
