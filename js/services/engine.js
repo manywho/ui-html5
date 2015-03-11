@@ -198,7 +198,12 @@ manywho.engine = (function (manywho) {
             })
             .then(function () {
 
-                manywho.state.setLoading('main', null, flowKey);
+                if (!getIsWaiting(flowKey)) {
+
+                    manywho.state.setLoading('main', null, flowKey);
+
+                }
+
                 self.render(flowKey);
 
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
@@ -265,7 +270,12 @@ manywho.engine = (function (manywho) {
 
                 if (isAuthenticated) {
 
-                    manywho.state.setLoading('main', null, flowKey);
+                    if (!getIsWaiting(flowKey)) {
+
+                        manywho.state.setLoading('main', null, flowKey);
+
+                    }
+
                     self.render(flowKey);
 
                     return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
@@ -328,7 +338,12 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
                 
-                manywho.state.setLoading('main', null, parentFlowKey);
+                if (!getIsWaiting(parentFlowKey)) {
+
+                    manywho.state.setLoading('main', null, parentFlowKey);
+
+                }
+                
                 self.render(parentFlowKey);
                 manywho.component.focusInput(parentFlowKey);
 
@@ -586,7 +601,7 @@ manywho.engine = (function (manywho) {
                         }
                         else {
 
-                            setTimeout(function () { self.ping(); }, 10000);
+                            setTimeout(function () { self.ping(flowKey); }, 10000);
 
                         }
 
