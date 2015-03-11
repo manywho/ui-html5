@@ -173,10 +173,13 @@ manywho.component = (function (manywho) {
 
             if (!container) {
 
+                var manywhoContainer = document.getElementById('manywho');
+
                 container = document.createElement('div');
                 container.setAttribute('id', flowKey);
                 container.className = 'mw-bs';
-                document.getElementById('manywho').appendChild(container);
+                container.style.height = manywhoContainer.clientHeight + 'px';
+                manywhoContainer.appendChild(container);
 
             }
 
