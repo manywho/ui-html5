@@ -104,7 +104,10 @@
             ].join(' ');
 
             return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
-                React.DOM.label({ 'for': this.props.id }, model.label),
+                React.DOM.label({ 'for': this.props.id }, [
+                    model.label,
+                    (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
+                ]),
                 React.DOM.div({ className: 'input-wrapper' }, [
                     React.createElement(Chosen, attributes),
                     React.DOM.span({ className: iconClassNames }, null)

@@ -46,7 +46,10 @@
             ].join(' ');
 
             return React.DOM.div({ className: classNames }, [
-                React.DOM.label({ htmlFor: this.props.id }, model.label),
+                React.DOM.label({ htmlFor: this.props.id }, [
+                    model.label,
+                    (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
+                ]),
                 React.DOM.textarea(attributes, null),
                 React.DOM.span({ className: 'help-block' }, model.message)
             ]);
