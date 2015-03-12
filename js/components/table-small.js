@@ -69,9 +69,19 @@
 
                             if (selectedProperty) {
 
+                                var element = React.DOM.span(null, selectedProperty.contentValue);
+
+                                if (this.props.isFiles &&
+                                    (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
+                                    || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+
+                                    element = React.DOM.a({ href: selectedProperty.contentValue }, selectedProperty.contentValue);
+
+                                }
+
                                 return React.DOM.tr(null, [
                                     React.DOM.th({ className: 'table-small-column table-small-label' }, column.label),
-                                    React.DOM.td({ className: 'table-small-column' }, React.DOM.span(null, selectedProperty.contentValue))
+                                    React.DOM.td({ className: 'table-small-column' }, element)
                                 ]);
 
                             }

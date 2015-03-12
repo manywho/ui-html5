@@ -147,6 +147,6 @@
 
     });
     
-    manywho.component.register("input", input);
+    manywho.component.register('input', input, ['checkbox']);
 
 }(manywho));

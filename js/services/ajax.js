@@ -20,6 +20,40 @@ manywho.ajax = (function (manywho) {
 
     }
 
+    function dispatchDataRequest(url, eventPrefix, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
+
+        request.listFilter = request.listFilter || {};
+        request.listFilter.limit = limit;
+        request.listFilter.search = search || null;
+
+        if (orderBy) {
+            request.listFilter.orderBy = orderBy;
+            request.listFilter.orderByDirection = orderByDirection;
+        }
+
+        if (page > 0) {
+            request.listFilter.offset = page * request.listFilter.limit;
+        }
+        
+        return $.ajax({
+            url: manywho.settings.global('platform.uri') + url,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            processData: true,
+            data: JSON.stringify(request),
+            beforeSend: function (xhr) {
+
+                beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix);
+
+            }
+        })
+        .done(manywho.settings.event(eventPrefix + '.done'))
+        .fail(onError)
+        .fail(manywho.settings.event(eventPrefix + '.fail'));
+
+    }
+
     return {
 
         login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId, authenticationToken) {
@@ -163,37 +197,51 @@ manywho.ajax = (function (manywho) {
         
         dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
-            request.listFilter = request.listFilter || {};           
-            request.listFilter.limit = limit;
-            request.listFilter.search = search || null;
+            log.info('Dispatching object data request');
             
-            if (orderBy) {
-                request.listFilter.orderBy = orderBy;
-                request.listFilter.orderByDirection = orderByDirection;
-            }
+            return dispatchDataRequest('/api/service/1/data', 'objectData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
-            if (page > 0) {
-                request.listFilter.offset = page * request.listFilter.limit;
-            }
+        },
+
+        dispatchFileDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             log.info('Dispatching object data request');
 
+            return dispatchDataRequest('/api/service/1/file', 'fileData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
+
+        },
+
+        uploadFile: function(formData, tenantId, authenticationToken, onProgress) {
+
+            var deferred = $.Deferred();
+
             return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/service/1/data',
+                url: manywho.settings.global('platform.uri') + '/api/service/1/file/content',
                 type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify(request),
+                data: formData,
+                dataType: false,
+                contentType: false,
+                processData: false,
+                success: deferred.resolve,
+                error: deferred.reject,
+                xhr: function() {
+
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", onProgress, false);
+                    return xhr;
+
+                },
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'objectData');
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'fileData');
 
                 }
             })
-            .done(manywho.settings.event('objectData.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('objectData.fail'));
+            
+            return deferred.promise()
+                    .done(manywho.settings.event('fileData.done'))
+                    .fail(onError)
+                    .fail(manywho.settings.event('fileData.fail'));
 
         },
 

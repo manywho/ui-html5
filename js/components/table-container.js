@@ -97,6 +97,7 @@
 
         outcomes: null,
 
+
         onSearchChanged: function (e) {
 
             manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
@@ -209,6 +210,15 @@
 
         },
 
+        onUploadComplete: function() {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
+            manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+
+        },
+
         getInitialState: function () {
 
             return {
@@ -246,11 +256,11 @@
                 var message = loading.message;
             }
 
-            var displayColumns = getDisplayColumns(model.columns, this.outcomes);
-            var objectDataRequest = model.objectDataRequest || {};
+            var displayColumns = getDisplayColumns(model.columns, this.outcomes);            
             var isWaitVisible = loading && !loading.error;
             var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
+            var hasMoreResults = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
 
@@ -290,15 +300,19 @@
                     selectedRows: this.state.selectedRows,
                     onRowClicked: this.onRowClicked,
                     isSelectionEnabled: isSelectionEnabled,
-                    flowKey: this.props.flowKey
+                    flowKey: this.props.flowKey,
+                    isFiles: manywho.utils.isEqual(model.componentType, 'files', true)
                 });
 
             }
                        
+            var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
+
             return React.DOM.div({ className: classNames }, [
+                (model.fileDataRequest) ? fileUpload : null,    
                 renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                 content,
-                renderFooter(state.page || 1, objectDataRequest.hasMoreResults, this.onNext, this.onPrev),
+                renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
                 React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
             ]);
 
@@ -306,6 +320,6 @@
 
     });
 
-    manywho.component.register("table", table);
+    manywho.component.register("table", table, ['files']);
 
 }(manywho));

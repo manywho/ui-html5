@@ -59,7 +59,18 @@
 
                         if (selectedProperty) {
 
-                            return React.DOM.td(null, React.DOM.span(null, selectedProperty.contentValue));
+                            if (this.props.isFiles && 
+                                (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true) 
+                                || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+
+                                return React.DOM.td(null, React.DOM.a({ href: selectedProperty.contentValue }, selectedProperty.contentValue));
+
+                            }
+                            else {
+
+                                return React.DOM.td(null, React.DOM.span(null, selectedProperty.contentValue));
+
+                            }                            
 
                         }
 

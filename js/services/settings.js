@@ -13,6 +13,10 @@ manywho.settings = (function (manywho, $) {
         },
         navigation: {
             isFixed: true
+        },
+        files: {
+            downloadUriPropertyId: '6611067a-7c86-4696-8845-3cdc79c73289',
+            downloadUriPropertyName: 'Download Uri'
         }
     };
 
@@ -31,6 +35,7 @@ manywho.settings = (function (manywho, $) {
         login: {},
         log: {},
         objectData: {},
+        fileData: {},
         getFlowByName: {},
         sessionAuthentication: {},
         social: {},

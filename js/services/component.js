@@ -1,6 +1,7 @@
 manywho.component = (function (manywho) {
 
     var components = {};
+    var aliases = {};
 
     function getComponentType(item) {
 
@@ -10,12 +11,6 @@ manywho.component = (function (manywho) {
 
         }
         else if ('componentType' in item) {
-
-            if (manywho.utils.isEqual(item.componentType, 'checkbox', true)) {
-
-                return 'INPUT';
-
-            }
 
             return item.componentType;
 
@@ -37,19 +32,43 @@ manywho.component = (function (manywho) {
             datetime: 'CONTENTDATETIME'
         },
 
-        register: function (name, component) {
+        register: function (name, component, alias) {
 
             components[name.toLowerCase()] = component;
+
+            if (alias) {
+
+                alias.forEach(function (aliasName) {
+
+                    aliases[aliasName.toLowerCase()] = name.toLowerCase();
+
+                });
+
+            }
 
         },
 
         get: function(item) {
 
-            return components[getComponentType(item).toLowerCase()];
+            var componentType = getComponentType(item).toLowerCase();
+
+            if (aliases[componentType]) {
+
+                componentType = aliases[componentType];
+
+            }
+
+            return components[componentType];
 
         },
         
         getByName: function (name) {
+
+            if (aliases[name.toLowerCase()]) {
+
+                name = aliases[name.toLowerCase()];
+
+            }
 
             return components[name.toLowerCase()];
 
