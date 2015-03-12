@@ -10,7 +10,10 @@
 
             }, this)[0];
 
-            return React.DOM.option({ value: item.externalId, selected: item.isSelected ? 'selected': '' }, label.contentValue);
+            var isSelected = item.isSelected
+                || (this.state && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
+
+            return React.DOM.option({ value: item.externalId, selected: isSelected ? 'selected' : '' }, label.contentValue);
 
         }
 
@@ -72,7 +75,7 @@
 
             if (objectData) {
 
-                options = objectData.map(renderOption, { column: columnTypeElementPropertyId });
+                options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
                 attributes.children = options;
                 var selectedOption = getSelectedOption(options);
 
