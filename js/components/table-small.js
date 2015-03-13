@@ -18,6 +18,21 @@
 
         },
 
+        componentDidUpdate: function() {
+
+            var chevrons = document.querySelectorAll('.table-small-chevron');
+
+            for (var i = 0; i < chevrons.length; i++) {
+            
+                var $chevron = $(chevrons[i]);
+                var parentHeight = $chevron.parent().height();
+                                
+                $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
+
+            }
+            
+        },
+
         renderRows: function(objectData, outcomes, displayColumns) {
 
             var outcomeComponent = manywho.component.getByName('outcome');
