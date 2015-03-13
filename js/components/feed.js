@@ -65,15 +65,19 @@
                 var self = this;
                 var messageId = e.currentTarget.getAttribute('data-message-id');
                 
-                manywho.social.sendMessage(this.props.flowKey, this.state.comments[messageId], messageId)
-                    .done(function () {
+                if (!manywho.utils.isNullOrWhitespace(this.state.comments[messageId])) {
 
-                        var state = self.state;
-                        state.comments[messageId] = '';
+                    manywho.social.sendMessage(this.props.flowKey, this.state.comments[messageId], messageId)
+                        .done(function () {
 
-                        self.setState(state);
+                            var state = self.state;
+                            state.comments[messageId] = '';
 
-                    });
+                            self.setState(state);
+
+                        });
+
+                }
 
             }
 
