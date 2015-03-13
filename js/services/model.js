@@ -111,6 +111,14 @@
 
                         flowModel[flowKey].components[item.id] = item;
 
+                        if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+
+                            flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+
+                        }
+
+                        flowModel[flowKey].containers[item.pageContainerId].childCount++
+
                         if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
                             flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
 

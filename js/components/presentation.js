@@ -20,7 +20,9 @@
 
         render: function () {
 
-            return React.DOM.div(null, null);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "presentation", this.props.flowKey).join(' ');
+
+            return React.DOM.div({ className: classes }, null);
 
         }
 

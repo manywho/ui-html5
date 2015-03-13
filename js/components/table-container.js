@@ -274,7 +274,9 @@
                 (isSmall) ? 'table-container-small': '',
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
-            ].join(' ');
+            ]
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey))
+            .join(' ');
 
             var content = null;
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');

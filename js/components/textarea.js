@@ -43,7 +43,9 @@
                 'form-group',
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
-            ].join(' ');
+            ]
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "textarea", this.props.flowKey))
+            .join(' ');
 
             return React.DOM.div({ className: classNames }, [
                 React.DOM.label({ htmlFor: this.props.id }, [

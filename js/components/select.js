@@ -115,7 +115,9 @@
             var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
-            ].join(' ');
+            ]
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "select", this.props.flowKey))
+            .join(' ');
 
             var iconClassNames = [
                 'glyphicon glyphicon-refresh select-loading-icon spin',

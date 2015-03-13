@@ -112,7 +112,9 @@
             var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
-            ].join(' ');
+            ]
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "input", this.props.flowKey))
+            .join(' ');
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 

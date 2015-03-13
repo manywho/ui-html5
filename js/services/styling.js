@@ -26,7 +26,7 @@ manywho.styling = (function (manywho) {
 
             }
 
-            return classes.join(' ');
+            return classes;
 
         },
 
