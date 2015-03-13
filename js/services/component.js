@@ -105,37 +105,6 @@ manywho.component = (function (manywho) {
 
         },
 
-        getSelectedOptions: function (model, selectedOptions) {
-
-            var selectedObjectData = null;
-
-            if (selectedOptions) {
-
-                for (option in selectedOptions) {
-
-                    if (!manywho.utils.isNullOrWhitespace(selectedOptions[option].value)) {
-
-                        selectedObjectData = model.objectData.filter(function (item) {
-
-                            return manywho.utils.isEqual(item.externalId, selectedOptions[option].value, true);
-
-                        })
-                        .map(function (item) {
-
-                            item.isSelected = true;
-                            return item;
-
-                        });
-
-                    }
-
-                }
-
-            }
-
-            return selectedObjectData;
-        },
-
         getSelectedRows: function (model, selectedIds) {
 
             var selectedObjectData = null;

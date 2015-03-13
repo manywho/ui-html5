@@ -483,7 +483,7 @@ manywho.engine = (function (manywho) {
             );
             var self = this;
             
-            return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey))
+            return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey))
                 .then(function (response) {
 
                     self.parseResponse(response, manywho.model.parseEngineSyncResponse, flowKey);

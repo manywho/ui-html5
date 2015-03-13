@@ -11,7 +11,7 @@
             }, this)[0];
 
             var isSelected = item.isSelected
-                || (this.state && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
+                || (this.state && this.state.objectData && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
 
             return React.DOM.option({ value: item.externalId, selected: isSelected ? 'selected' : '' }, label.contentValue);
 
@@ -33,10 +33,26 @@
 
     var select = React.createClass({
 
-        handleChange: function(e) {
+        handleChange: function(e, args) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var selectedObjectData = manywho.component.getSelectedOptions(model, e.target.selectedOptions);
+            var selectedObjectData = null;
+
+            if (!manywho.utils.isNullOrWhitespace(args.selected)) {
+
+                selectedObjectData = model.objectData.filter(function (item) {
+
+                    return manywho.utils.isEqual(item.externalId, args.selected, true);
+
+                })
+                .map(function (item) {
+
+                    item.isSelected = true;
+                    return item;
+
+                });
+
+            }
 
             manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
             manywho.component.handleEvent(this, model, this.props.flowKey);
