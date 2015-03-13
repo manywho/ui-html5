@@ -62,7 +62,19 @@
 
         handleChange: function (e) {
 
-            manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+
+                manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
+
+            }
+            else {
+
+                manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+
+            }
+            
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
