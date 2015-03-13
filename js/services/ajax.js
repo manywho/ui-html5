@@ -32,7 +32,7 @@ manywho.ajax = (function (manywho) {
         }
 
         if (page > 0) {
-            request.listFilter.offset = page * request.listFilter.limit;
+            request.listFilter.offset = (page - 1) * request.listFilter.limit;
         }
         
         return $.ajax({
