@@ -152,12 +152,7 @@ manywho.utils = (function (manywho, $) {
 
         getFlowKey: function (tenantId, flowId, flowVersionId, stateId, element) {
 
-            var args = Array.prototype.slice.call(arguments).filter(function(item) {
-              
-                return item;
-
-            });
-
+            var args = Array.prototype.slice.call(arguments);
             return args.join('|');
 
         },

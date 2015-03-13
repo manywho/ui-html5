@@ -20,7 +20,7 @@ manywho.json = (function (manywho) {
 
         },
 
-        generateInitializationRequest: function(flowId, stateId, annotations, inputs, playerUrl, mode, reportingMode) {
+        generateInitializationRequest: function(flowId, stateId, annotations, inputs, playerUrl, joinUrl, mode, reportingMode) {
 
             return {
                 'flowId': {
@@ -31,7 +31,7 @@ manywho.json = (function (manywho) {
                 'annotations': annotations || null,
                 'inputs': inputs || null,
                 'playerUrl': playerUrl || null,
-                'joinPlayerUrl': playerUrl || null,
+                'joinPlayerUrl': joinUrl || null,
                 'mode': mode || '',
                 'reportingMode': reportingMode || ''
             }

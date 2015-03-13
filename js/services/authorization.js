@@ -64,7 +64,7 @@ manywho.authorization = (function (manywho) {
 
                         // Convert the input data into a proper parsable format
                         var inputData = manywho.json.generateFlowInputs(inputObject);
-                        var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.global('playerUrl'));
+                        var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.global('playerUrl'), manywho.settings.global('joinUrl'));
 
                         return manywho.ajax.initialize(requestData, manywho.settings.global('adminTenantId'));
 

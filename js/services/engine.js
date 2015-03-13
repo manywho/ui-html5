@@ -111,6 +111,7 @@ manywho.engine = (function (manywho) {
             options.annotations,
             options.inputs,
             manywho.settings.global('playerUrl'),
+            manywho.settings.global('joinUrl'),
             options.mode,
             options.reportingMode
         );
