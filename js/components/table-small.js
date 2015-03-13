@@ -75,7 +75,7 @@
                                     (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
                                     || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
 
-                                    element = React.DOM.a({ href: selectedProperty.contentValue }, selectedProperty.contentValue);
+                                    element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info' }, 'Download');
 
                                 }
 
