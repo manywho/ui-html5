@@ -127,8 +127,8 @@
                                 React.DOM.span({ className: 'feed-created-date' }, createdDate.toLocaleString()),
                             ]),
                             React.DOM.span({ className: 'feed-message-text' }, message.text),
-                            this.renderCommenting(isCommentingEnabled, message.id),
-                            this.renderThread(message.comments, false)
+                            this.renderThread(message.comments, false),
+                            this.renderCommenting(isCommentingEnabled, message.id)
                         ])
                     ]);
 
