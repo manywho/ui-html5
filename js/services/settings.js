@@ -17,6 +17,9 @@ manywho.settings = (function (manywho, $) {
         files: {
             downloadUriPropertyId: '6611067a-7c86-4696-8845-3cdc79c73289',
             downloadUriPropertyName: 'Download Uri'
+        },
+        dependencies: {
+            content: 'https://tinymce.cachefly.net/4.1/tinymce.min.js'
         }
     };
 

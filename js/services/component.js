@@ -58,7 +58,16 @@ manywho.component = (function (manywho) {
 
             }
 
-            return components[componentType];
+            if (components.hasOwnProperty(componentType)) {
+
+                return components[componentType];
+
+            }
+            else {
+
+                log.error('Component of type: ' + componentType + ' could not be found');
+
+            }
 
         },
         
