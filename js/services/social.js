@@ -112,6 +112,29 @@ manywho.social = (function (manywho) {
 
             }
 
+            var mentionedWhos = message.match(/@\[[A-za-z0-9 ]*\]/, 'ig');
+            if (mentionedWhos) {
+
+                request.mentionsWhos = mentionedWhos.filter(function (value, index, self) {
+
+                    return self.indexOf(value) === index;
+
+                })
+                .map(function (value) {
+
+                    return value.substring(2, value.length - 1);
+
+                });
+
+                request.messageText = request.messageText.replace(/@\[[A-za-z0-9 ]*\]/, function (match) {
+
+                    return match.substring(2, match.length - 1);
+
+                }, 'ig');
+
+                debugger;
+            }
+
             manywho.state.setLoading('feed', { message: 'Sending' }, flowKey);
             manywho.engine.render(flowKey);
 
@@ -170,6 +193,17 @@ manywho.social = (function (manywho) {
                     manywho.engine.render(flowKey);
 
                 });
+
+        },
+
+        getUsers: function (flowKey, name) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var stateId = manywho.utils.extractStateId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+            var stream = streams[flowKey];
+
+            return manywho.ajax.getSocialUsers(tenantId, stream.id, stateId, name, authenticationToken);
 
         }
 
