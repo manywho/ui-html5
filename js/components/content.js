@@ -3,9 +3,10 @@
     var content = React.createClass({
 
         changeInterval: null,
+        skipSetContent: false,
 
         initializeEditor: function() {
-
+            
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -65,7 +66,7 @@
             window.clearInterval(this.changeInterval);
 
         },
-
+        
         handleChange: function (e) {
 
             var content = tinymce.get(this.props.id).getContent();
@@ -74,6 +75,8 @@
             if (!manywho.utils.isEqual(content, state.contentValue, false)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
+                this.skipSetContent = true;
+
                 manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
             }
@@ -116,6 +119,13 @@
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "content", this.props.flowKey))
             .join(' ');
+
+            if (this.state.isInitialized && state.contentValue && state.contentValue.length > 0 && !this.skipSetContent) {
+
+                tinymce.get(this.props.id).setContent(state.contentValue);
+                this.skipSetContent = false;
+
+            }
 
             return React.DOM.div({ className: classNames }, [
                 React.DOM.label({ htmlFor: this.props.id }, [
