@@ -13,7 +13,17 @@
              var test = tinymce.init({
                 selector: 'textarea#' + this.props.id,
                 width: model.width,
-                height: model.height
+                height: model.height,
+                plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
+                setup: function (editor) {
+
+                    editor.on('init', function () {
+
+                         this.getDoc().body.style.fontSize = manywho.settings.global('richtext.fontsize', self.props.flowKey, '13px');
+
+                     });
+
+                 }
             });
 
             this.changeInterval = window.setInterval(this.handleChange, 1000);
@@ -36,7 +46,7 @@
 
                 var self = this;
                 var script = document.createElement('script');
-                script.src = manywho.settings.global('dependencies.content');
+                script.src = manywho.settings.global('richtext.url');
 
                 script.onload = function () {
 
