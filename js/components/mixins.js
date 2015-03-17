@@ -4,7 +4,7 @@
 
         onEnter: function (e) {
 
-            if (e.keyCode == 13) {
+            if (e.keyCode == 13 && (e.target.className && e.target.className.indexOf('feed') == -1)) {
 
                 var outcome = manywho.model.getOutcomes(null, this.props.flowKey)
                     .sort(function (a, b) {

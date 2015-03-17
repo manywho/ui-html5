@@ -36,9 +36,10 @@
 
         onKeyPress: function(e) {
 
+            e.stopPropagation();
+
             if (e.charCode == 13 && !e.shiftKey) {
 
-                e.stopPropagation();
                 e.preventDefault();
 
                 if (this.state.mentionIsVisible) {
@@ -56,11 +57,13 @@
 
             if (e.charCode == 38 && this.state.mentionIsVisible) {
 
+                e.preventDefault();
                 this.setState({ mentionSelected: Math.max(this.state.selected--, 0) });
 
             }
             else if (e.charCode == 40 && this.state.mentionIsVisible) {
 
+                e.preventDefault();
                 this.setState({ mentionSelected: Math.min(this.state.selected++, this.state.mentionUsers.length) });
 
             }
