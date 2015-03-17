@@ -46,8 +46,8 @@ body {
     }
 
     .row {
-        margin-right: 0;
-        margin-left: 0;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
 
     .mw-vertical_flow {
@@ -85,6 +85,11 @@ body {
 
     .container-label {
         font-size: 2em;
+    }
+
+    .container-label:empty {
+        display: none;
+        margin: 0;
     }
 
 }

@@ -10,6 +10,12 @@
 
         if (data != null) {
 
+            if (item.hasOwnProperty('contentType') && item.contentType == null) {
+
+                item.contentType = manywho.component.contentTypes.string;
+
+            }
+
             return $.extend({}, item, data);
 
         }

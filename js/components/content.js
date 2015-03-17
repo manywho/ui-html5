@@ -12,8 +12,6 @@
 
              var test = tinymce.init({
                 selector: 'textarea#' + this.props.id,
-                width: model.width,
-                height: model.height,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
                 setup: function (editor) {
 
