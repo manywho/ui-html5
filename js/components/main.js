@@ -41,7 +41,7 @@
             var classNames = [
                 'main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
-                (isFullWidth) ? 'container-fluid' : 'container'
+                (isFullWidth) ? 'container-fluid full-width' : 'container'
             ].join(' ');
             
             return React.DOM.div({ className: 'full-height' }, [
