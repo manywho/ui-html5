@@ -26,7 +26,8 @@ manywho.settings = (function (manywho, $) {
                 "searchreplace wordcount code insertdatetime",
                 "table directionality emoticons paste textcolor"
             ]
-        }
+        },
+        isFullWidth: false
     };
 
     var flows = {};
