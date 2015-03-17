@@ -80,14 +80,14 @@
             };
 
             if (model.isRequired) {
-                attributes.required = "required";
+                attributes.required = '';
             }
 
-            if (!model.isEnabled) {
-                attributes.disabled = "disabled";
+            if (!model.isEnabled || !model.isEditable) {
+                attributes.disabled = 'disabled';
             }
 
-            attributes.placeholder = model.hintValue || "Please select an option";
+            attributes.placeholder = model.hintValue || 'Please select an option';
 
             if (objectData) {
 
@@ -116,7 +116,7 @@
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "select", this.props.flowKey))
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
             .join(' ');
 
             var iconClassNames = [
@@ -140,6 +140,6 @@
 
     });
 
-    manywho.component.register("select", select);
+    manywho.component.register('select', select);
 
 })(manywho);

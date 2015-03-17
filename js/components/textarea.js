@@ -28,11 +28,15 @@
             };
 
             if (!model.isEnabled) {
-                attributes.disabled = "disabled";
+                attributes.disabled = 'disabled';
             }
 
             if (model.isRequired) {
-                attributes.required = "";
+                attributes.required = '';
+            }
+
+            if (!model.isEditable) {
+                attributes.readOnly = '';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -44,7 +48,7 @@
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "textarea", this.props.flowKey))
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'textarea', this.props.flowKey))
             .join(' ');
 
             return React.DOM.div({ className: classNames }, [
@@ -60,6 +64,6 @@
 
     });
 
-    manywho.component.register("textarea", textarea);
+    manywho.component.register('textarea', textarea);
 
 }(manywho));

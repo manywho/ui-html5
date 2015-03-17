@@ -98,11 +98,15 @@
             };
 
             if (!model.isEnabled) {
-                attributes.disabled = "disabled";
+                attributes.disabled = 'disabled';
             }
 
             if (model.isRequired) {
-                attributes.required = "required";
+                attributes.required = '';
+            }
+
+            if (!model.isEditable) {
+                attributes.readOnly = '';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -113,13 +117,13 @@
                 (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "input", this.props.flowKey))
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
                 if (JSON.parse(state.contentValue.toLowerCase())) {
-                    attributes.checked = "checked";
+                    attributes.checked = 'checked';
                 }
 
                 return React.DOM.div({ className: containerClassNames},

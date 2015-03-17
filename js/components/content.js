@@ -111,11 +111,15 @@
             };
 
             if (!model.isEnabled) {
-                attributes.disabled = "disabled";
+                attributes.disabled = 'disabled';
             }
 
             if (model.isRequired) {
-                attributes.required = "";
+                attributes.required = '';
+            }
+
+            if (!model.isEditable) {
+                attributes.readOnly = '';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -127,7 +131,7 @@
                 (model.isVisible && this.state.isInitialized) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "content", this.props.flowKey))
+            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))
             .join(' ');
 
             if (this.state.isInitialized && state.contentValue && state.contentValue.length > 0 && !this.skipSetContent) {
@@ -150,6 +154,6 @@
 
     });
 
-    manywho.component.register("content", content);
+    manywho.component.register('content', content);
 
 }(manywho, window));
