@@ -132,7 +132,6 @@ manywho.social = (function (manywho) {
 
                 }, 'ig');
 
-                debugger;
             }
 
             manywho.state.setLoading('feed', { message: 'Sending' }, flowKey);
