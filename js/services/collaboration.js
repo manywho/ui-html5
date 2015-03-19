@@ -21,7 +21,7 @@ manywho.collaboration = (function (manywho) {
             message: data.user + ' has joined',
             position: 'right',
             type: 'success',
-            timeout: '100000',
+            timeout: '2000',
             dismissible: false
         });
 
@@ -35,7 +35,7 @@ manywho.collaboration = (function (manywho) {
             message: data.user + ' has left',
             position: 'right',
             type: 'danger',
-            timeout: '1000',
+            timeout: '2000',
             dismissible: false
         });
 
@@ -54,8 +54,14 @@ manywho.collaboration = (function (manywho) {
 
         log.info('re-joining ' + data.flowKey);
 
+        var tenantId = manywho.utils.extractTenantId(data.flowKey);
+        var flowId = manywho.utils.extractFlowId(data.flowKey);
+        var flowVersionId = manywho.utils.extractFlowVersionId(data.flowKey);
+        var stateId = manywho.utils.extractStateId(data.flowKey);
+        var element = manywho.utils.extractElement(data.flowKey);
+
         // Re-join the flow here so that we sync with the latest state from the manywho server
-        manywho.engine.join(data.flowKey).then(function () {
+        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, manywho.state.getAuthenticationToken(flowKey)).then(function () {
 
             socket.emit('getValues', data);
 
@@ -111,6 +117,12 @@ manywho.collaboration = (function (manywho) {
                 });
 
             }
+
+        },
+
+        isEnabled: function(flowKey) {
+
+            return rooms[flowKey] && rooms[flowKey].isEnabled;
 
         },
 

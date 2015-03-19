@@ -175,6 +175,12 @@ manywho.utils = (function (manywho, $) {
 
         },
 
+        extractFlowVersionId: function (flowKey) {
+
+            return flowKey.split('|')[2];
+
+        },
+
         extractStateId: function (flowKey) {
 
             return flowKey.split('|')[3];

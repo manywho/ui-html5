@@ -97,9 +97,17 @@ manywho.component = (function (manywho) {
         getOutcomes: function(outcomes, flowKey)
         {
 
-            return outcomes.map(function (item) {
-                return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey, key: item.id });
-            });
+            return outcomes
+                .sort(function (a, b) {
+
+                    return a.order - b.order;
+
+                })
+                .map(function (item) {
+
+                    return React.createElement(components['outcome'], { id: item.id, flowKey: flowKey, key: item.id });
+
+                });
 
         },
 

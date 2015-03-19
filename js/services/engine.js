@@ -247,8 +247,12 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
-                manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
-                manywho.collaboration.join('user', flowKey);
+                if (!manywho.collaboration.isEnabled(flowKey)) {
+
+                    manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
+                    manywho.collaboration.join('user', flowKey);
+
+                }
 
                 var deferreds = [];
 
@@ -487,8 +491,18 @@ manywho.engine = (function (manywho) {
             return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey))
                 .then(function (response) {
 
-                    self.parseResponse(response, manywho.model.parseEngineSyncResponse, flowKey);
-                    return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+                    if (manywho.utils.isEqual(response.invokeType, 'wait', true)) {
+
+                        // The engine is currently busy (processing a parallel request on this state), try again
+                        setTimeout(function () { self.sync(flowKey) }, 100);
+
+                    }
+                    else {
+
+                        self.parseResponse(response, manywho.model.parseEngineSyncResponse, flowKey);
+                        return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+
+                    }
 
                 });
 
@@ -524,7 +538,7 @@ manywho.engine = (function (manywho) {
             var self = this;
             var flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, stateId, container);
 
-            if (options.authentication != null && options.authentication.sessionId != null) {
+            if (options && options.authentication != null && options.authentication.sessionId != null) {
 
                 manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
 

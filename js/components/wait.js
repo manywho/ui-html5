@@ -15,11 +15,15 @@
     var wait = React.createClass({
 
         render: function () {
-
-            log.info('Rendering Wait');
             
             var isVisible = arePropsSpecified(this.props);
             var message = isVisible && this.props.message;
+
+            if (isVisible) {
+
+                log.info('Rendering Wait');
+
+            }
             
             var classNames = [
                 'wait',
