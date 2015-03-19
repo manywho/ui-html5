@@ -39,9 +39,9 @@
             var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
 
             var classNames = [
-                'container main',
+                'main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
-                (isFullWidth) ? 'full-width' : ''
+                (isFullWidth) ? 'container-fluid full-width' : 'container'
             ].join(' ');
             
             return React.DOM.div({ className: 'full-height' }, [
