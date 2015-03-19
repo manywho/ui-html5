@@ -11,16 +11,6 @@ http://manywho.com/sharedsource
 
 All that basically says is that if you want to use this code, make sure you use it with our platform.
 
-All of the code in this project is the code that we actually use for our tooling - and it breaks out like this:
-
-- run: the code that's used when you run your flow. This is the most important code for most customers as it's the code that allows end users to interact with your flows.
-
-- draw: this is our designer tooling.  Yes, that's a player too! We built our point-and-click tooling using our own platform. The draw folder shows how you can embed flows into existing applications - in this case - a design tool.
-
-- build: this is our developer tooling.  While not technically a player, it also embeds a flow (the login flow) - again, to illustrate how you can embed flows into existing applications and tools.
-
-We'll be providing more information over time.  Please stay tuned as we develop this project out!
-
 ##Development Setup
 1. Install [nodejs](http://nodejs.org/)
 2. Install gulp cli `npm install gulp -g`
@@ -43,4 +33,9 @@ e.g. `gulp refresh --tenant=<tenant id> --flow=<flow id> --version=<flow version
 
 If you don't have a state id you can get it entering `manywho.state.getState().id` in the browser console once the flow is running.
 
-You can start the socket.io server (for realtime collaboration) by running `node server`
+You can then view the flow by opening http://localhost:3000/
+
+You can start the socket.io server (for realtime collaboration) by running `node server`. This will marshall state values between connected clients that have joined the same state.
+
+##Docs
+Some more information about the HTML5 player can be found here: https://developers.manywho.com/display/MA/Players
