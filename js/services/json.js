@@ -37,7 +37,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, navigationElementId, annotations, geolocation, mode) {
+        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, navigationElementId, annotations, location, mode) {
 
             return {
                 'stateId': stateData.id,
@@ -45,7 +45,7 @@ manywho.json = (function (manywho) {
                 'currentMapElementId': stateData.currentMapElementId,
                 'invokeType': invokeType,
                 'annotations': annotations || null,
-                'geoLocation': geolocation || null,
+                'geoLocation': location || null,
                 'mapElementInvokeRequest': {
                     'pageRequest': {
                         'pageComponentInputResponses': pageComponentInputResponses || null
@@ -57,7 +57,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateNavigateRequest: function (stateData, navigationId, navigationElementId, annotations, geolocation) {
+        generateNavigateRequest: function (stateData, navigationId, navigationElementId, annotations, location) {
 
             return {
                 'stateId': stateData.id,
@@ -67,7 +67,7 @@ manywho.json = (function (manywho) {
                 'navigationElementId': navigationId,
                 'selectedNavigationItemId': navigationElementId,
                 'annotations': annotations || null,
-                'geoLocation': geolocation || null,
+                'geoLocation': location || null,
                 'mapElementInvokeRequest': {
                     'pageRequest': null,
                     'selectedOutcomeId': null

@@ -5,7 +5,7 @@ manywho.state = (function (manywho) {
     var state = {};
     var authenticationToken = {};
     var sessionId = {};
-    var geoLocation = null;
+    var location = {};
 
     function assignGeoLocation(position) {
 
@@ -28,15 +28,7 @@ manywho.state = (function (manywho) {
 
     function trackUserPosition() {
 
-        navigator.geolocation.getCurrentPosition(
-            function (position) {
-                assignGeoLocation(domId, position);
-            },
-            null,
-            {
-                timeout: 60000
-            }
-        );
+
 
     }
 
@@ -70,9 +62,35 @@ manywho.state = (function (manywho) {
             
         },
 
-        getGeoLocation: function() {
+        getLocation: function (flowKey) {
 
-            return geoLocation;
+            return location[flowKey];
+
+        },
+
+        setLocation: function(flowKey) {
+
+            if ("geolocation" in navigator && manywho.settings.global('trackLocation', flowKey, false)) {
+
+                navigator.geolocation.getCurrentPosition(function (position) {
+
+                    if (position != null && position.coords != null) {
+
+                        location[flowKey] = {
+                            latitude: manywho.utils.getNumber(position.coords.latitude),
+                            longitude: manywho.utils.getNumber(position.coords.longitude),
+                            accuracy: manywho.utils.getNumber(position.coords.accuracy),
+                            altitude: manywho.utils.getNumber(position.coords.altitude),
+                            altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
+                            heading: manywho.utils.getNumber(position.coords.heading),
+                            speed: manywho.utils.getNumber(position.coords.speed)
+                        }
+
+                    }
+
+                }, null, { timeout: 60000 });
+
+            }
 
         },
 

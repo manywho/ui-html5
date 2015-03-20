@@ -163,7 +163,7 @@ manywho.engine = (function (manywho) {
                     null,
                     navigationId,
                     manywho.settings.flow('annotations', flowKey),
-                    manywho.state.getGeoLocation(),
+                    manywho.state.getLocation(flowKey),
                     manywho.settings.flow('mode', flowKey)
                 );
                 
@@ -183,6 +183,8 @@ manywho.engine = (function (manywho) {
 
                 manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
                 manywho.collaboration.join('user', flowKey);
+
+                manywho.state.setLocation(flowKey);
 
                 var deferreds = [];
 
@@ -254,6 +256,8 @@ manywho.engine = (function (manywho) {
 
                 }
 
+                manywho.state.setLocation(flowKey);
+
                 var deferreds = [];
 
                 if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
@@ -319,7 +323,9 @@ manywho.engine = (function (manywho) {
                 moveResponse = response;
 
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
+
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+                manywho.state.setLocation(flowKey);
 
                 manywho.collaboration.move(flowKey);
                 
@@ -453,7 +459,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.model.getDefaultNavigationId(flowKey),
                 manywho.settings.flow('annotations', flowKey),
-                manywho.state.getGeoLocation(),
+                manywho.state.getLocation(flowKey),
                 manywho.settings.flow('mode', flowKey)
             );
 
@@ -483,7 +489,7 @@ manywho.engine = (function (manywho) {
                 null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.settings.flow('annotations', flowKey),
-                null,
+                manywho.state.getLocation(flowKey),
                 manywho.settings.flow('mode', flowKey)
             );
             var self = this;
@@ -518,7 +524,8 @@ manywho.engine = (function (manywho) {
                 navigationId,
                 navigationElementId,
                 manywho.settings.flow('annotations', flowKey),
-                null);
+                manywho.state.getLocation(flowKey)
+            );
 
             moveWithAuthorization.call(this,
                 {
