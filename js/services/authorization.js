@@ -47,14 +47,12 @@ manywho.authorization = (function (manywho) {
                     versionId: null
                 };
 
-                // Get the authentication Flow and follow all of the steps
                 manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
                     .then(function (data) {
 
                         authenticationFlow.id = data.id.id;
                         authenticationFlow.versionId = data.id.versionId;
                         
-                        // Construct the inputs to invoke the Authentication Flow
                         var inputObject = {
                             loginUrl: response.authorizationContext.loginUrl,
                             ManyWhoTenantId: manywho.utils.extractTenantId(flowKey),
@@ -62,7 +60,6 @@ manywho.authorization = (function (manywho) {
                             StateId: manywho.utils.extractStateId(flowKey)
                         };
 
-                        // Convert the input data into a proper parsable format
                         var inputData = manywho.json.generateFlowInputs(inputObject);
                         var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.global('playerUrl'), manywho.settings.global('joinUrl'));
 
@@ -75,12 +72,14 @@ manywho.authorization = (function (manywho) {
 
                         manywho.model.initializeModel(authenticationFlow.key);
 
+                        // When the authentication flow is "DONE" call setAuthenticationToken
                         manywho.callbacks.register(authenticationFlow.key, {
                             execute: setAuthenticationToken,
                             type: 'done',
                             args: [flowKey]
                         });
 
+                        // Then execute the callback that we were given
                         manywho.callbacks.register(authenticationFlow.key, doneCallback);
 
                         var invokeRequest = manywho.json.generateInvokeRequest({
@@ -119,11 +118,9 @@ manywho.authorization = (function (manywho) {
                 .then(function (response) {
 
                     manywho.state.setAuthenticationToken(response, flowKey);
-
                     manywho.callbacks.execute(flowKey, 'done', null, [response]);
 
-
-                })
+                });
 
         }
 

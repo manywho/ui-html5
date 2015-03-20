@@ -66,6 +66,7 @@ manywho.component = (function (manywho) {
             else {
 
                 log.error('Component of type: ' + componentType + ' could not be found');
+                throw 'Component of type: ' + componentType + ' could not be found';
 
             }
 
@@ -85,12 +86,18 @@ manywho.component = (function (manywho) {
 
         getChildComponents: function (children, id, flowKey) {
 
-            return children.map(function (item) {
+            return children
+                .sort(function (a, b) {
 
-                var component = this.get(item);                
-                return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey, key: item.id });
+                    return a.order - b.order;
 
-            }, this);
+                })
+                .map(function (item) {
+
+                    var component = this.get(item);                
+                    return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey, key: item.id });
+
+                }, this);
 
         },
 
@@ -114,8 +121,11 @@ manywho.component = (function (manywho) {
         handleEvent: function (component, model, flowKey) {
 
             if (model.hasEvents) {
+
+                // Re-sync with the server here so that any events attached to the component are processed
                 manywho.engine.sync(flowKey);
                 manywho.collaboration.sync(flowKey);
+
             }
 
             component.forceUpdate();
@@ -155,7 +165,6 @@ manywho.component = (function (manywho) {
 
         getDisplayColumns: function (columns) {
 
-            // TODO: This should error if no display columns are found
             var displayColumns = null;
 
             if (columns) {
@@ -165,6 +174,12 @@ manywho.component = (function (manywho) {
                     return column.isDisplayValue;
 
                 });
+
+            }
+
+            if (!displayColumns || displayColumns.length == 0) {
+
+                throw 'No display columns found';
 
             }
 
@@ -194,6 +209,8 @@ manywho.component = (function (manywho) {
 
         focusInput: function (flowKey) {
 
+            // focus the first input or textarea control on larger screen devices, this should help stop a keyboard from becoming visible
+            // on mobile devices when the flow first renders
             if (manywho.settings.flow('autofocusinput', flowKey) && window.innerWidth > 768) {
 
                 var input = document.querySelector('input, textarea');

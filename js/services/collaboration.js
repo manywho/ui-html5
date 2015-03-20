@@ -120,9 +120,9 @@ manywho.collaboration = (function (manywho) {
 
         },
 
-        isEnabled: function(flowKey) {
+        isInitialized: function (flowKey) {
 
-            return rooms[flowKey] && rooms[flowKey].isEnabled;
+            return rooms.hasOwnProperty(flowKey);
 
         },
 
