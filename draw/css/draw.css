@@ -1,0 +1,16 @@
+body ul {
+  padding-left: 0;
+}
+body li {
+  list-style: none;
+}
+body .execute-buttons {
+  height: 10px;
+  margin-right: 1em;
+}
+body .execute-buttons a {
+  color: #ffffff !important;
+}
+body .element-button {
+  width: 100%;
+}

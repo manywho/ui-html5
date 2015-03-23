@@ -1,0 +1,42 @@
+#page-builder {
+  width: 1200px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+#page-builder .ui-draggable {
+  cursor: move;
+}
+#page-builder h1 {
+  text-align: center;
+}
+#page-builder .nav-builder {
+  min-height: 4em;
+  margin: 1em;
+  display: inline-block;
+}
+#page-builder .nav-builder input {
+  display: table;
+  vertical-align: middle;
+}
+#page-builder .section-header {
+  color: #ffffff;
+  background-color: #646464;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  height: 2em;
+}
+#page-builder .component-button {
+  width: 11em;
+  margin-top: 1em;
+}
+#page-builder .canvas {
+  margin: 0.5em;
+  border: 1px dashed grey;
+  min-height: 700px;
+}
+#page-builder .configuration-container {
+  border: 1px solid grey;
+  min-height: 700px;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <meta charset="UTF-8">
+    <title>Page Builder</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/draw.css" />
+</head>
+<body>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img alt="ManyWho Flow Designer" src="https://cdn.manywho.com/images/designer-logo.png" class="logo" />
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Flows</a></li>
+                    <li><a href="#">Page Layouts</a></li>
+                    <li><a href="#">Navigation Bar</a></li>
+                    <li><a href="#">Values</a></li>
+                    <li><a href="#">Types</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Assets</a></li>
+                    <li>
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" href="#">Options <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Docs</a></li>
+                            <li><a href="#">Build</a></li>
+                            <li><a href="#">Translate</a></li>
+                            <li><a href="#">Versions</a></li>
+                            <li><a href="#">Print</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Create Sub-Tenant</a></li>
+                            <li><a href="#">Sub-Tenants</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Sign Out</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="execute-buttons"><a class="btn btn-success" href="#">Run</a></li>
+                    <li class="execute-buttons"><a class="btn btn-warning" href="#">Activate</a></li>
+                    <li class="execute-buttons"><a class="btn btn-danger" href="#">Save and Close</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="draw-tool container-fluid">
+        <div class="row-fluid">
+            <div class="col-md-2">
+                <h1>Flow Title Here</h1>
+                <ul id="element-list">
+                    <li><a class="btn btn-default element-button" href="#" id="step-element">Step</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="page-element">Page</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="decision-element">Decision</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="operator-element">Operator</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="message-element">Message</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="load-element">Load</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="save-element">Save</a></li>
+                    <li><a class="btn btn-default element-button" href="#" id="swimlane-element">Swimlane</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10">
+                <h1>Stuff</h1>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
