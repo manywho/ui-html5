@@ -38,6 +38,12 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var selectedObjectData = null;
 
+            model.objectData.map(function (item) {
+
+                item.isSelected = false;
+
+            });
+
             if (!manywho.utils.isNullOrWhitespace(args.selected)) {
 
                 selectedObjectData = model.objectData.filter(function (item) {
