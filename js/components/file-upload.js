@@ -33,7 +33,8 @@
                 self.setState({
                     isUploadDisabled: false,
                     isProgressVisible: false,
-                    progress: 0
+                    progress: 0,
+                    fileName: ''
                 });
 
                 if (self.props.onUploadComplete) {
