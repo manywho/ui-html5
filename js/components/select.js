@@ -41,6 +41,7 @@
             model.objectData = model.objectData.map(function (item) {
 
                 item.isSelected = false;
+                return item;
 
             });
 
