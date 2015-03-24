@@ -37,6 +37,9 @@
                     fileName: ''
                 });
 
+                self.refs.upload.getDOMNode().value = "";
+                self.props.fileDataRequest = null;
+
                 if (self.props.onUploadComplete) {
 
                     self.props.onUploadComplete();
