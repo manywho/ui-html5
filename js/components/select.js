@@ -38,7 +38,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var selectedObjectData = null;
 
-            model.objectData.map(function (item) {
+            model.objectData = model.objectData.map(function (item) {
 
                 item.isSelected = false;
 
