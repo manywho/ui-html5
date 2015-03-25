@@ -1,5 +1,20 @@
 (function (manywho) {
 
+    function centerChevrons() {
+
+        var chevrons = document.querySelectorAll('.table-small-chevron');
+
+        for (var i = 0; i < chevrons.length; i++) {
+
+            var $chevron = $(chevrons[i]);
+            var parentHeight = $chevron.parent().height();
+
+            $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
+
+        }
+
+    }
+
     var tableSmall = React.createClass({
 
         onOutcomeClick: function(e, outcome) {
@@ -18,20 +33,9 @@
 
         },
 
-        componentDidUpdate: function() {
+        componentDidUpdate: centerChevrons,
 
-            var chevrons = document.querySelectorAll('.table-small-chevron');
-
-            for (var i = 0; i < chevrons.length; i++) {
-            
-                var $chevron = $(chevrons[i]);
-                var parentHeight = $chevron.parent().height();
-                                
-                $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
-
-            }
-            
-        },
+        componentDidMount: centerChevrons,
 
         renderRows: function(objectData, outcomes, displayColumns) {
 
