@@ -4,7 +4,7 @@
         
         onUpload: function (e) {
 
-            if (this.state.fileName != null && this.state.fileName != '' && this.props.fileDataRequest != null) {
+            if (!manywho.utils.isNullOrWhitespace(this.state.fileName) && this.state.fileName != '' && !manywho.utils.isNullOrWhitespace(this.props.fileDataRequest)) {
 
                 this.setState({
                     isUploadDisabled: true,
@@ -37,10 +37,10 @@
                             isFileSelected: false,
                             isProgressVisible: false,
                             progress: 0,
-                            fileName: ''
+                            fileName: null
                         });
 
-                        self.refs.upload.getDOMNode().value = "";
+                        self.refs.upload.getDOMNode().value = '';
                         self.props.fileDataRequest = null;
 
                         if (self.props.onUploadComplete) {
