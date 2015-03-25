@@ -29,6 +29,28 @@
 
         }
 
+    };
+
+    manywho.component.mixins.collapse =  {
+
+        getInitialState: function () {
+
+            return { isVisible: true };
+
+        },
+
+        getIconClasses: function() {
+
+            return this.state.isVisible ? 'glyphicon glyphicon-menu-right container-toggle' : 'glyphicon glyphicon-menu-down container-toggle';
+
+        },
+
+        toggleVisibility: function () {
+
+            this.setState({ isVisible: !this.state.isVisible });
+
+        }
+
     }
 
 }(manywho));
