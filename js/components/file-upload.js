@@ -4,7 +4,7 @@
         
         onUpload: function (e) {
 
-            if (!manywho.utils.isNullOrWhitespace(this.state.fileName) && this.state.fileName != '' && !manywho.utils.isNullOrWhitespace(this.props.fileDataRequest)) {
+            if (!manywho.utils.isNullOrWhitespace(this.state.fileName) && !this.props.fileDataRequest) {
 
                 this.setState({
                     isUploadDisabled: true,
