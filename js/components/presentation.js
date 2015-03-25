@@ -16,13 +16,24 @@
             var node = this.getDOMNode();
             node.innerHTML = html;
 
+            var imgs = node.querySelectorAll('img')
+            if (imgs && imgs.length > 0) {
+
+                for (var i = 0; i < imgs.length; i++) {
+
+                    imgs[i].className += ' img-responsive';
+
+                }
+                
+            }
+            
         },
 
         render: function () {
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "presentation", this.props.flowKey).join(' ');
 
-            return React.DOM.div({ className: classes }, null);
+            return React.DOM.div({ className: classes, id: this.props.id }, null);
 
         }
 
