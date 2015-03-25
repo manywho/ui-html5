@@ -2,6 +2,18 @@
 
     var horizontal = React.createClass({
 
+        getInitialState: function () {
+
+            return { isVisible: true };
+
+        },
+
+        toggleVisibility: function () {
+
+            this.setState({ isVisible: !this.state.isVisible });
+
+        },
+
         render: function () {
 
             log.info('Rendering Horizontal: ' + this.props.id);
@@ -10,9 +22,15 @@
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            return React.DOM.div({ className: classes, id: this.props.id }, [
-                React.DOM.h3({ className: 'container-label' }, model.label),
-                React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))                
+            classes += this.state.isVisible ? '' : ' hidden';
+            var iconClasses = this.state.isVisible ? 'glyphicon glyphicon-menu-right container-toggle' : 'glyphicon glyphicon-menu-down container-toggle';
+
+            return React.DOM.div({}, [
+                React.DOM.div({ className: classes, id: this.props.id }, [
+                    React.DOM.span({ className: iconClasses, onClick: this.toggleVisibility }),
+                    React.DOM.h3({ className: 'container-label' }, model.label),
+                    React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
+                ])
             ]);
 
         }
