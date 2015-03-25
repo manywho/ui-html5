@@ -295,6 +295,7 @@
             else {
 
                 content = React.createElement(tableComponent, {
+                    id: this.props.id,
                     model: model,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,

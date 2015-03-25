@@ -2,6 +2,46 @@
 
     var flowModel = {};
 
+    function decodeEntities(item, textArea) {
+
+        if (item.contentValue) {
+
+            textArea.innerHtml = item.contentValue;
+            item.contentValue = textArea.textContent;
+            textArea.textContent = '';
+
+        }
+
+        if (item.objectData) {
+
+            item.objectData.forEach(function (objectData) {
+
+                if (objectData.properties) {
+
+                    objectData.properties = objectData.properties.map(function (prop) {
+
+                        if (prop.contentValue) {
+
+                            textArea.innerHtml = prop.contentValue;
+                            prop.contentValue = textArea.textContent;
+                            textArea.textContent = '';
+
+                        }
+
+                        return prop;
+
+                    });
+
+                }
+
+            });
+
+        }
+
+        return item;
+
+    }
+
     function updateData(collection, item, key) {
 
         log.info("Updating item: " + item.id);
@@ -113,6 +153,8 @@
 
                     }, this);
 
+                    var decodeTextArea = document.createElement('textarea');
+
                     engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
                         flowModel[flowKey].components[item.id] = item;
@@ -126,7 +168,9 @@
                         flowModel[flowKey].containers[item.pageContainerId].childCount++
 
                         if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+
                             flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                            flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
 
                         }
 
