@@ -9,7 +9,7 @@ manywho.settings = (function (manywho, $) {
             uri: 'https://realtime.manywho.com'
         },
         platform: {
-            uri: 'https://flow.manywho.com'
+            uri: ''
         },
         navigation: {
             isFixed: true
