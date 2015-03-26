@@ -256,6 +256,33 @@
                 var message = loading.message;
             }
 
+            var objectData = model.objectData;
+
+            if (state.objectData) {
+
+                objectData = model.objectData.map(function (modelItem) {
+
+                    var stateObjectData = state.objectData.filter(function (stateItem) {
+
+                        return manywho.utils.isEqual(modelItem.externalId, stateItem.externalId) && manywho.utils.isEqual(modelItem.internalId, stateItem.internalId);
+
+                    })[0];
+
+                    if (stateObjectData) {
+
+                        return $.extend({}, modelItem, stateObjectData);
+
+                    }
+                    else {
+
+                        return modelItem;
+
+                    }
+
+                });
+
+            }
+
             var displayColumns = getDisplayColumns(model.columns, this.outcomes);            
             var isWaitVisible = loading && !loading.error;
             var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
@@ -297,6 +324,7 @@
                 content = React.createElement(tableComponent, {
                     id: this.props.id,
                     model: model,
+                    objectData: objectData,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
                     onOutcome: this.onOutcome,

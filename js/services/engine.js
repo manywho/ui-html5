@@ -586,8 +586,6 @@ manywho.engine = (function (manywho) {
                     var component = manywho.model.getComponent(id, flowKey);
                     component.objectData = response.objectData;
                     component.objectDataRequest.hasMoreResults = response.hasMoreResults;
-
-                    manywho.state.setComponent(id, component, flowKey, false);
                     
                 })
                .fail(function (xhr, status, error) {
@@ -618,8 +616,6 @@ manywho.engine = (function (manywho) {
                     var component = manywho.model.getComponent(id, flowKey);
                     component.objectData = response.objectData;
                     component.fileDataRequest.hasMoreResults = response.hasMoreResults;
-
-                    manywho.state.setComponent(id, component, flowKey, false);
 
                 })
                .fail(function (xhr, status, error) {

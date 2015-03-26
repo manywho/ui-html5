@@ -77,14 +77,14 @@
                 var id = this.state.currentCellEdit.split('|')[1];
                 var propertyId = this.state.currentCellEdit.split('|')[0];
 
-                var objectData = setPropertyValue(this.props.model.objectData, id, propertyId, this.state.currentCellEditValue);
+                var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
                 manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
 
             }
 
             this.setState({
                 currentCellEdit: e.currentTarget.id + '|' + e.currentTarget.parentElement.id,
-                currentCellEditValue: getPropertyValue(this.props.model.objectData, e.currentTarget.parentElement.id, e.currentTarget.id)
+                currentCellEditValue: getPropertyValue(this.props.objectData, e.currentTarget.parentElement.id, e.currentTarget.id)
             });
 
         },
@@ -107,7 +107,7 @@
                     var id = this.state.currentCellEdit.split('|')[1];
                     var propertyId = this.state.currentCellEdit.split('|')[0];
 
-                    var objectData = setPropertyValue(this.props.model.objectData, id, propertyId, this.state.currentCellEditValue);
+                    var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
                     manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
 
                     this.setState({
@@ -208,18 +208,9 @@
                 'table table-bordered',
                 (this.props.isSelectionEnabled) ? 'table-hover' : ''
             ].join(' ');
-
-            var objectData = this.props.model.objectData || [];
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-
-            if (state && state.objectData && state.objectData.length > 0) {
-
-                objectData = state.objectData;
-
-            }            
-
+            
             var rows = [this.renderHeaderRow(this.props.displayColumns)];
-            rows = rows.concat(this.renderRows(this.props.flowKey, objectData, this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
+            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
             
             return React.DOM.div({ className: 'table-responsive' },
                 React.DOM.table({ className: tableClassNames },

@@ -119,7 +119,7 @@
 
             log.info('Rendering Table-Small');
             
-            var items = this.renderRows(this.props.model.objectData || [], this.props.outcomes, this.props.displayColumns);
+            var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
             return React.DOM.div({ className: 'list-group' }, items);
 
         }
