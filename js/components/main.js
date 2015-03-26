@@ -14,6 +14,12 @@
 
             }
 
+            window.addEventListener("beforeunload", function (event) {
+
+                manywho.engine.sync(this.props.flowKey);
+
+            }.bind(this));
+
         },
 
         render: function () {
