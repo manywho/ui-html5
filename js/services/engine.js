@@ -382,7 +382,7 @@ manywho.engine = (function (manywho) {
     
     function setIsWaiting(invokeType, flowKey) {
 
-        waiting[flowKey] = manywho.utils.isEqual(invokeType, 'wait', true);
+        waiting[flowKey] = (manywho.utils.isEqual(invokeType, 'wait', true) || manywho.utils.isEqual(invokeType, 'status', true))
 
     }
 
@@ -644,6 +644,25 @@ manywho.engine = (function (manywho) {
             }
 
             setIsWaiting(response.invokeType, flowKey);
+
+            if (getIsWaiting(flowKey)) {
+
+                var waitData = {};
+                if (manywho.utils.isEqual(response.invokeType, 'wait', true)) {
+
+                    waitData.message = response.waitMessage;
+
+                }
+                else if (manywho.utils.isEqual(response.invokeType, 'status', true)) {
+
+                    waitData.message = response.notAuthorizedMessage;
+
+                }
+
+                manywho.state.setLoading('main', waitData, flowKey);
+
+            }
+
             manywho.engine.ping(flowKey);
 
         },
