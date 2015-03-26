@@ -39,15 +39,17 @@
 
         },
 
-        getIconClasses: function() {
+        toggleVisibility: function () {
 
-            return this.state.isVisible ? 'glyphicon glyphicon-menu-right container-toggle' : 'glyphicon glyphicon-menu-down container-toggle';
+            if (manywho.settings.global('collapsable', this.props.flowKey)) {
+                this.setState({ isVisible: !this.state.isVisible });
+            }
 
         },
 
-        toggleVisibility: function () {
+        getContainerHeaderClasses: function () {
 
-            this.setState({ isVisible: !this.state.isVisible });
+            return manywho.settings.global('collapsable', this.props.flowKey) ? 'container-label clickable-section' : 'container-label';
 
         }
 
