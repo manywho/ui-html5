@@ -6,7 +6,7 @@
 
         if (item.contentValue) {
 
-            textArea.innerHtml = item.contentValue;
+            textArea.innerHTML = item.contentValue;
             item.contentValue = textArea.textContent;
             textArea.textContent = '';
 
@@ -22,7 +22,7 @@
 
                         if (prop.contentValue) {
 
-                            textArea.innerHtml = prop.contentValue;
+                            textArea.innerHTML = prop.contentValue;
                             prop.contentValue = textArea.textContent;
                             textArea.textContent = '';
 
