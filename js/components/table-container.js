@@ -258,7 +258,7 @@
 
             var objectData = model.objectData;
 
-            if (state.objectData) {
+            if (model.objectData && state.objectData) {
 
                 objectData = model.objectData.map(function (modelItem) {
 
