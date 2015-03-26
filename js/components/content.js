@@ -50,7 +50,7 @@
 
                     self.initializeEditor();
 
-                }
+                };
 
                 window.document.body.appendChild(script);
 

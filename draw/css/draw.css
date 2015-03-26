@@ -1,3 +1,10 @@
+body #graph {
+  min-height: 900px;
+  border: 2px solid grey;
+}
+body #graph-outline {
+  border: 2px solid grey;
+}
 body ul {
   padding-left: 0;
 }

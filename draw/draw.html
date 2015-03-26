@@ -5,7 +5,9 @@
     <title>Page Builder</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/draw.css" />
+
 </head>
 <body>
 
@@ -61,18 +63,28 @@
                     <li><a class="btn btn-default element-button" href="#" id="step-element">Step</a></li>
                     <li><a class="btn btn-default element-button" href="#" id="page-element">Page</a></li>
                     <li><a class="btn btn-default element-button" href="#" id="decision-element">Decision</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="operator-element">Operator</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="message-element">Message</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="load-element">Load</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="save-element">Save</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="swimlane-element">Swimlane</a></li>
                 </ul>
+                <div id="graph-outline"></div>
             </div>
             <div class="col-md-10">
-                <h1>Stuff</h1>
+                <div id="graph"></div>
             </div>
         </div>
     </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        mxBasePath = 'mxgraph/src';
+
+    </script>
+    <script src="mxgraph/src/js/mxClient.js"
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/draw.js"></script>
+    <script src="js/graph.js"></script>
 
 </body>
 </html>
