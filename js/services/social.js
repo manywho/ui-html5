@@ -95,6 +95,12 @@ manywho.social = (function (manywho) {
 
         sendMessage: function (flowKey, message, repliedTo, mentionedUsers) {
 
+            if (manywho.utils.isNullOrWhitespace(message)) {
+
+                return;
+
+            }
+
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
