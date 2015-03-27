@@ -16,6 +16,8 @@ manywho.graph = (function() {
         graph.setTooltips(false);
         graph.setAllowLoops(false);
         graph.edgeLabelsMovable = false;
+        graph.htmlLabels = true;
+        graph.keepEdgesInBackground = true;
 
         options.MIN_HOTSPOT_SIZE = 16;
         options.DEFAULT_HOTSPOT = 1;
@@ -92,6 +94,12 @@ manywho.graph = (function() {
         createStartElement: function () {
 
             this.addElement('123456', 'Start', 10, 200, 50, 50, 'start');
+
+        },
+
+        getGraphObject: function () {
+
+            return graph;
 
         },
 

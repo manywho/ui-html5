@@ -4,7 +4,7 @@ manywho.graph.style = (function() {
 
     return {
 
-        registerBaseStyle: function (graph)  {
+        createBaseStyle: function ()  {
 
             var baseStyle = {};
 
@@ -27,23 +27,30 @@ manywho.graph.style = (function() {
 
             styles['base'] = baseStyle;
 
-            graph.getStylesheet().putCellStyle('base', styles['base']);
+            this.registerStyle('base');
 
         },
 
-        registerBaseOutcomeStyle: function (graph) {
+        createBaseOutcomeStyle: function () {
 
-            graph.connectionHandler.getConnectImage = function (cell) {
+            manywho.graph.getGraphObject().connectionHandler.getConnectImage = function (cell) {
 
                 return new mxImage(cell.style['portimage'], 16, 16);
 
             };
             // Centers the port icon on the target port
-            graph.connectionHandler.targetConnectImage = true;
+            manywho.graph.getGraphObject().connectionHandler.targetConnectImage = true;
+
+            var outcomeStyle = manywho.graph.getGraphObject().getStylesheet().getDefaultEdgeStyle();
+
+            outcomeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
+            outcomeStyle[mxConstants.STYLE_STROKEWIDTH] = '2';
+            outcomeStyle[mxConstants.STYLE_FONTFAMILY] = '"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif';
+            outcomeStyle[mxConstants.STYLE_ROUNDED] = true;
 
         },
 
-        registerStartStyle: function (graph) {
+        createStartStyle: function () {
 
             var startStyle = {};
 
@@ -57,55 +64,67 @@ manywho.graph.style = (function() {
 
             styles['start'] = $.extend({}, styles['base'], startStyle);
 
-            graph.getStylesheet().putCellStyle('start', styles['start']);
+            this.registerStyle('start');
 
         },
 
-        registerStepStyle: function (graph) {
+        createStepStyle: function () {
+
+            mxUtils.makeDraggable(document.getElementById('step'), manywho.graph.getGraphObject(), function(graph, event, cell, x, y) {
+
+                manywho.graph.addElement(null, 'Test', x, y, 120, 60, 'step');
+
+            }, document.getElementById('step'));
 
             var stepStyle = {};
 
-            stepStyle[mxConstants.STYLE_IMAGE_WIDTH] = '16';
-            stepStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '24';
+            stepStyle[mxConstants.STYLE_IMAGE_WIDTH] = '12';
+            stepStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '18';
             stepStyle[mxConstants.STYLE_IMAGE] = 'https://cdn.manywho.com/extensions/glyphicons/glyphicons_242_google_maps_white.png';
             stepStyle[mxConstants.STYLE_FILLCOLOR] = '#0099CC';
             stepStyle[mxConstants.STYLE_STROKECOLOR] = '#0099CC';
 
             styles['step'] = $.extend({}, styles['base'], stepStyle);
 
-            graph.getStylesheet().putCellStyle('step', styles['step']);
+            this.registerStyle('step');
 
         },
 
-        registerPageStyle: function (graph) {
+        createPageStyle: function () {
 
             var pageStyle = {};
 
-            pageStyle[mxConstants.STYLE_IMAGE_WIDTH] = '22';
-            pageStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '22';
+            pageStyle[mxConstants.STYLE_IMAGE_WIDTH] = '15';
+            pageStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '15';
             pageStyle[mxConstants.STYLE_IMAGE] = 'https://cdn.manywho.com/extensions/glyphicons/glyphicons_156_show_thumbnails_white.png';
             pageStyle[mxConstants.STYLE_FILLCOLOR] = '#33B5E5';
             pageStyle[mxConstants.STYLE_STROKECOLOR] = '#33B5E5';
 
             styles['input'] = $.extend({}, styles['base'], pageStyle);
 
-            graph.getStylesheet().putCellStyle('input', styles['input']);
+            this.registerStyle('input');
 
         },
 
-        registerDecisionStyle: function (graph) {
+        createDecisionStyle: function () {
 
             var decisionStyle = {};
 
-            decisionStyle[mxConstants.STYLE_IMAGE_WIDTH] = '26';
-            decisionStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '26';
+            decisionStyle[mxConstants.STYLE_IMAGE_WIDTH] = '15';
+            decisionStyle[mxConstants.STYLE_IMAGE_HEIGHT] = '15';
             decisionStyle[mxConstants.STYLE_IMAGE] = 'https://cdn.manywho.com/extensions/glyphicons/glyphicons_198_ok_white.png';
             decisionStyle[mxConstants.STYLE_FILLCOLOR] = '#9933CC';
             decisionStyle[mxConstants.STYLE_STROKECOLOR] = '#9933CC';
 
             styles['decision'] = $.extend({}, styles['base'], decisionStyle);
 
-            graph.getStylesheet().putCellStyle('decision', styles['decision']);
+            this.registerStyle('decision');
+
+        },
+
+        registerStyle: function (name) {
+
+            manywho.graph.getGraphObject().getStylesheet().putCellStyle(name, styles[name]);
 
         },
 
@@ -117,12 +136,12 @@ manywho.graph.style = (function() {
 
         initialize : function (graph) {
 
-            this.registerBaseStyle(graph);
-            this.registerBaseOutcomeStyle(graph);
-            this.registerStartStyle(graph);
-            this.registerStepStyle(graph);
-            this.registerPageStyle(graph);
-            this.registerDecisionStyle(graph);
+            this.createBaseStyle();
+            this.createBaseOutcomeStyle();
+            this.createStartStyle();
+            this.createStepStyle();
+            this.createPageStyle();
+            this.createDecisionStyle();
 
         }
 
