@@ -2,7 +2,7 @@
 <html>
     <head lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <meta charset="UTF-8">
-    <title>Page Builder</title>
+    <title>Draw</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/jquery-ui.css">
@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">
@@ -58,13 +58,14 @@
     <div class="draw-tool container-fluid">
         <div class="row-fluid">
             <div class="col-md-2">
-                <h1>Flow Title Here</h1>
+                <h1 id="flow-title">Flow Title Here</h1>
+                <p id="flow-description"></p>
+                <div id="graph-outline"></div>
                 <ul id="element-list">
                     <li><a class="btn btn-default element-button" href="#" id="step-element">Step</a></li>
                     <li><a class="btn btn-default element-button" href="#" id="page-element">Page</a></li>
                     <li><a class="btn btn-default element-button" href="#" id="decision-element">Decision</a></li>
                 </ul>
-                <div id="graph-outline"></div>
             </div>
             <div class="col-md-10">
                 <div id="graph"></div>
@@ -72,6 +73,9 @@
         </div>
     </div>
 
+    <script>
+        var manywho = {};
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">
@@ -79,12 +83,12 @@
         mxBasePath = 'mxgraph/src';
 
     </script>
-    <script src="mxgraph/src/js/mxClient.js"
+    <script src="mxgraph/src/js/mxClient.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.min.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/draw.js"></script>
-    <script src="js/graph.js"></script>
+    <script src="js/components/graph.js"></script>
 
 </body>
 </html>
