@@ -126,13 +126,6 @@
 
         onRowClicked: function (e) {
 
-            if (!areBulkActionsDefined(this.outcomes)) {
-
-                // Don't select the row if there aren't any bulk actions defined
-                return;
-
-            }
-
             var selectedRows = this.state.selectedRows;
 
             if (selectedRows.indexOf(e.currentTarget.id) == -1) {
