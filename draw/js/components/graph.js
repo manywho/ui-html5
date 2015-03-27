@@ -31,6 +31,21 @@ manywho.graph = (function() {
 
     }
 
+    function addGraphEvents() {
+
+        document.getElementById('graph').addEventListener('mousewheel', function(event) {
+
+            event.preventDefault();
+            if (event.wheelDelta > 0) {
+                graph.zoomIn();
+            } else {
+                graph.zoomOut();
+            }
+
+        });
+
+    }
+
     return {
 
         initialize: function () {
@@ -48,12 +63,15 @@ manywho.graph = (function() {
 
             setDefaultGraphSettings();
 
+            addGraphEvents();
+
             editor.setGraphContainer(container);
 
             var outln = new mxOutline(graph, outline);
 
-
             this.createStartElement();
+
+            this.element.initialize();
 
             this.getFlowGraph('1348bbad-ef09-4f72-b1bc-74b9e1f6852f');
         },

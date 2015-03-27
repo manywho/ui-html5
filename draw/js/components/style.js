@@ -70,12 +70,6 @@ manywho.graph.style = (function() {
 
         createStepStyle: function () {
 
-            mxUtils.makeDraggable(document.getElementById('step'), manywho.graph.getGraphObject(), function(graph, event, cell, x, y) {
-
-                manywho.graph.addElement(null, 'Test', x, y, 120, 60, 'step');
-
-            }, document.getElementById('step'));
-
             var stepStyle = {};
 
             stepStyle[mxConstants.STYLE_IMAGE_WIDTH] = '12';

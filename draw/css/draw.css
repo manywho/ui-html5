@@ -1,6 +1,9 @@
 body .draw-tool {
   margin-top: 5em;
 }
+body #flow-title {
+  margin-top: 0;
+}
 body #graph {
   min-height: 900px;
   border: 2px solid grey;
