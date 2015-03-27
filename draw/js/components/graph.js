@@ -3,29 +3,6 @@ manywho.graph = (function() {
     var editor = new mxEditor();
     var graph = editor.graph;
 
-    var testGraph = '{"tenantId":null,"mapElements":[{"id":"157d4e8f-6482-42d6-bfbc-eb339972833e","groupElementId":null,"x":510,"y":240,"outcomes":[{"id":"df9b2fec-39af-4fe3-b44f-54108e20d054","developerName":"Go","developerSummary":null,"label":"Go","nextMapElementId":"be195bac-6969-467c-863b-6bb1a9e613af","pageActionType":"","isBulkAction":false,"pageActionBindingType":"SAVE","pageObjectBindingId":null,"order":0,"comparison":null,"flowOut":null}],"elementType":"message","developerName":"Test SMS","developerSummary":""},{"id":"3d1f4bd9-2645-42c5-b9b7-455b35fea576","groupElementId":null,"x":290,"y":340,"outcomes":null,"elementType":"input","developerName":"Test Dropdown","developerSummary":""},{"id":"5f39e544-e8f5-462f-a754-a07cf73c1857","groupElementId":null,"x":290,"y":240,"outcomes":null,"elementType":"operator","developerName":"Assign SMS","developerSummary":""},{"id":"b0f3d0d6-dc9d-4182-a30c-d07656ddcfc0","groupElementId":null,"x":430,"y":60,"outcomes":[{"id":"50e2bb5a-6d8b-4d45-90a7-c827175b244c","developerName":"Go","developerSummary":null,"label":"Go","nextMapElementId":"be195bac-6969-467c-863b-6bb1a9e613af","pageActionType":"","isBulkAction":false,"pageActionBindingType":"SAVE","pageObjectBindingId":null,"order":0,"comparison":null,"flowOut":null}],"elementType":"message","developerName":"Multiple SMS","developerSummary":""},{"id":"b766739d-f53e-4def-9d49-5586d120300e","groupElementId":null,"x":290,"y":420,"outcomes":null,"elementType":"step","developerName":"test","developerSummary":""},{"id":"b93e34c4-6091-436f-8f9c-6910a5567a7f","groupElementId":null,"x":140,"y":240,"outcomes":[{"id":"37ded79f-60db-4954-b4bf-29ebc3100eef","developerName":"Go","developerSummary":null,"label":"Go","nextMapElementId":"3d1f4bd9-2645-42c5-b9b7-455b35fea576","pageActionType":"","isBulkAction":false,"pageActionBindingType":"SAVE","pageObjectBindingId":null,"order":0,"comparison":null,"flowOut":null}],"elementType":"START","developerName":"Start","developerSummary":""},{"id":"be195bac-6969-467c-863b-6bb1a9e613af","groupElementId":null,"x":710,"y":240,"outcomes":null,"elementType":"step","developerName":"asd","developerSummary":""}],"groupElements":null,"editingToken":"34cc9f8a-4821-4a25-bd7b-31e41bcb2e53","id":null,"developerName":"Test Flow 2","developerSummary":"","startMapElementId":"b93e34c4-6091-436f-8f9c-6910a5567a7f","allowJumping":false,"authorization":null}';
-
-    function setDefaultVertexStyle() {
-        var style = {};
-
-        style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
-        style[mxConstants.STYLE_ROUNDED] = true;
-        style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
-        style[mxConstants.STYLE_RESIZABLE] = 0;
-        style[mxConstants.STYLE_OVERFLOW] = 'hidden';
-        style[mxConstants.STYLE_WHITE_SPACE] = 'wrap';
-        style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
-        style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
-        style['portimage'] = 'https://cdn.manywho.com/extensions/glyphicons/outcomeport.png';
-        style[mxConstants.STYLE_FONTFAMILY] = 'Helvetica Neue, Helvetica, Arial, sans-serif';
-        style[mxConstants.STYLE_FONTSIZE] = '12';
-        style[mxConstants.STYLE_FONTCOLOR] = '#ffffff';
-        style[mxConstants.STYLE_FILLCOLOR] = '#888888';
-        style[mxConstants.STYLE_STROKECOLOR] = '#999999';
-
-        graph.getStylesheet().putDefaultVertexStyle(style);
-    }
-
     function setDefaultGraphSettings() {
 
         var options = {};
@@ -37,6 +14,8 @@ manywho.graph = (function() {
         graph.setConnectable(true);
         graph.setAllowDanglingEdges(false);
         graph.setTooltips(false);
+        graph.setAllowLoops(false);
+        graph.edgeLabelsMovable = false;
 
         options.MIN_HOTSPOT_SIZE = 16;
         options.DEFAULT_HOTSPOT = 1;
@@ -47,18 +26,6 @@ manywho.graph = (function() {
         options.SHADOWCOLOR = '#C0C0C0';
 
         $.extend(mxConstants, options);
-
-    }
-
-    function setOutcomeConnectionStyle() {
-
-        graph.connectionHandler.getConnectImage = function (cell) {
-
-            return new mxImage(cell.style['portimage'], 16, 16);
-
-        };
-        // Centers the port icon on the target port
-        graph.connectionHandler.targetConnectImage = true;
 
     }
 
@@ -75,19 +42,16 @@ manywho.graph = (function() {
             keyHandler.bindAction(46, 'delete');
             keyHandler.bindAction(65, 'selectAll', 1);
 
+            this.style.initialize(graph);
+
             setDefaultGraphSettings();
-
-            setDefaultVertexStyle();
-
-            setOutcomeConnectionStyle();
 
             editor.setGraphContainer(container);
 
             var outln = new mxOutline(graph, outline);
 
-            /*var v1 = this.addElement('123', 'Hello,', 20, 20, 100, 50);
-            var v2 = this.addElement('234', 'World!', 200, 150, 100, 50);
-            var e1 = this.createOutcome('345', 'How are you?', this.getElementById('123'), this.getElementById('234'));*/
+
+            this.createStartElement();
 
             this.getFlowGraph('1348bbad-ef09-4f72-b1bc-74b9e1f6852f');
         },
@@ -125,6 +89,12 @@ manywho.graph = (function() {
 
         },
 
+        createStartElement: function () {
+
+            this.addElement('123456', 'Start', 10, 200, 50, 50, 'start');
+
+        },
+
         getFlowGraph: function (flowId) {
 
             var self = this;
@@ -159,7 +129,7 @@ manywho.graph = (function() {
             try {
                 var mapElements =  metadata.map(function (mapElement) {
 
-                    return self.addElement(mapElement.id, mapElement.developerName, mapElement.x, mapElement.y, 100, 50, mapElement.elementType);
+                    return self.addElement(mapElement.id, mapElement.developerName, mapElement.x, mapElement.y, 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
 
                 });
 
