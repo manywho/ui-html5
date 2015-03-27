@@ -2,6 +2,7 @@ manywho.graph = (function() {
 
     var editor = new mxEditor();
     var graph = editor.graph;
+    var model = {};
 
     function setDefaultGraphSettings() {
 
@@ -140,26 +141,27 @@ manywho.graph = (function() {
 
                 document.getElementById('flow-title').innerHTML = data.developerName;
                 document.getElementById('flow-description').innerHTML = data.developerSummary;
-                self.render(data.mapElements);
+                model = data.mapElements;
+                self.render();
 
             })
 
         },
 
-        render: function (metadata) {
+        render: function () {
 
             var self = this;
 
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
             try {
-                var mapElements =  metadata.map(function (mapElement) {
+                var mapElements =  model.map(function (mapElement) {
 
                     return self.addElement(mapElement.id, mapElement.developerName, mapElement.x, mapElement.y, 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
 
                 });
 
-                metadata.forEach(function (mapElement) {
+                model.forEach(function (mapElement) {
 
                     if (mapElement.outcomes && mapElement.outcomes.length > 0) {
 
