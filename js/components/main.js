@@ -55,6 +55,7 @@
                         React.DOM.div({ className: classNames, onKeyUp: this.onEnter }, [
                             componentElements,
                             outcomeElements,
+                            React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         modal,
