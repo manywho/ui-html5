@@ -47,6 +47,7 @@
             var classNames = [
                 'main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
+                (componentElements.length + outcomeElements.length == 0 && loading != null) ? 'main-empty-loading' : '',
                 (isFullWidth) ? 'container-fluid full-width' : 'container'
             ].join(' ');
             
@@ -55,6 +56,7 @@
                         React.DOM.div({ className: classNames, onKeyUp: this.onEnter }, [
                             componentElements,
                             outcomeElements,
+                            React.createElement(manywho.component.getByName('wait'), loading, null),
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         modal,
@@ -62,7 +64,6 @@
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
-                        React.createElement(manywho.component.getByName('wait'), loading, null)
                     ]);
 
         }
