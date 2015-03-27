@@ -512,6 +512,50 @@
 
             }
 
+        },
+
+        getContentValue: function (properties, name) {
+
+            if (properties != null) {
+
+                var value = null;
+
+                properties.filter(function (property) {
+
+                    if (property.developerName == name) {
+
+                        value = property.contentValue;
+
+                    }
+
+                });
+
+                return value;
+
+            }
+
+        },
+
+        getObjectData: function (properties, name) {
+
+            if (properties != null) {
+
+                var objectData = null;
+
+                properties.filter(function (property) {
+
+                    if (property.developerName == name) {
+
+                        objectData = property.objectData;
+
+                    }
+
+                });
+
+                return objectData;
+
+            }
+
         }
 
     }
