@@ -95,7 +95,7 @@
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
 
-            if (engineInvokeResponse.mapElementInvokeResponses) {
+            if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -170,7 +170,7 @@
                         })
                     );
 
-                    if (manywho.utils.isModal(flowKey)) {
+                    if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                         var parentFlowKey = manywho.model.getParentForModal(flowKey);
                         manywho.state.setLoading('main', null, parentFlowKey);
@@ -185,14 +185,17 @@
 
             }
 
-            flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
-            flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
-            
-            switch (engineInvokeResponse.invokeType.toLowerCase())
-            {
-                case "wait":
-                    manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
-                    break;
+            flowModel[flowKey].preCommitStateValues = engineInvokeResponse && engineInvokeResponse.preCommitStateValues;
+            flowModel[flowKey].stateValues = engineInvokeResponse && engineInvokeResponse.stateValues;
+
+            if (engineInvokeResponse) {
+
+                switch (engineInvokeResponse.invokeType.toLowerCase()) {
+                    case "wait":
+                        manywho.state.setLoading('main', {message: engineInvokeResponse.waitMessage}, flowKey);
+                        break;
+                }
+
             }
 
         },

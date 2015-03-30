@@ -1,4 +1,4 @@
-manywho.graph.ajax = (function () {
+manywho.draw.ajax = (function () {
 
     return {
 
@@ -23,6 +23,43 @@ manywho.graph.ajax = (function () {
                 manywho.graph.render();
 
             })
+
+        },
+
+        getFlowByName: function (flowName, tenantId) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/run/1/flow/name/' + flowName,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+
+                }
+            }).done(function(data) {
+                return data;
+            });
+
+        },
+
+        initialize: function (engineInitializationRequest, tenantId, authenticationToken) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/run/1',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(engineInitializationRequest),
+                beforeSend: function (xhr) {
+
+                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+
+                }
+            })
+                .done();
 
         }
     }

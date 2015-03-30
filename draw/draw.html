@@ -8,6 +8,26 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/yeti/bootstrap.min.css" />
     <link rel="stylesheet" href="css/draw.css" />
 
+
+    <link rel="stylesheet" href="../css/lib/bootstrap-chosen.css" />
+    <link rel="stylesheet" href="../css/lib/datepicker.css" />
+    <link rel="stylesheet" href="../css/wait.css" />
+    <link rel="stylesheet" href="../css/containers.css" />
+    <link rel="stylesheet" href="../css/select.css" />
+    <link rel="stylesheet" href="../css/textarea.css" />
+    <link rel="stylesheet" href="../css/table.css" />
+    <link rel="stylesheet" href="../css/input.css" />
+    <link rel="stylesheet" href="../css/outcome.css" />
+    <link rel="stylesheet" href="../css/loading.css" />
+    <link rel="stylesheet" href="../css/modal.css" />
+    <link rel="stylesheet" href="../css/group.css" />
+    <link rel="stylesheet" href="../css/pagination.css" />
+    <link rel="stylesheet" href="../css/notifications.css" />
+    <link rel="stylesheet" href="../css/navigation.css" />
+    <link rel="stylesheet" href="../css/feed.css" />
+    <link rel="stylesheet" href="../css/files.css" />
+    <link rel="stylesheet" href="../css/debug.css" />
+
 </head>
 <body class="clearfix">
 
@@ -55,29 +75,34 @@
         </div>
     </nav>
 
-    <div class="draw-tool container-fluid">
-        <div class="row-fluid clearfix">
-            <div class="col-md-2">
-                <h1 id="flow-title">Flow Title Here</h1>
-                <p id="flow-description"></p>
-                <div id="graph-outline"></div>
-                <ul id="element-list">
-                    <li><a class="btn btn-default element-button" href="#" id="step">Step</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="input">Page</a></li>
-                    <li><a class="btn btn-default element-button" href="#" id="decision">Decision</a></li>
-                </ul>
-            </div>
-            <div class="col-md-10">
-                <div id="graph"></div>
+    <div id="manywho">
+        <div class="mw-bs draw-tool container-fluid">
+            <div class="row-fluid clearfix">
+                <div class="col-md-2">
+                    <h1 id="flow-title">Flow Title Here</h1>
+                    <p id="flow-description"></p>
+                    <div id="graph-outline"></div>
+                    <ul id="element-list">
+                        <li><a class="btn btn-default element-button" href="#" id="step">Step</a></li>
+                        <li><a class="btn btn-default element-button" href="#" id="input">Page</a></li>
+                        <li><a class="btn btn-default element-button" href="#" id="decision">Decision</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                    <div id="graph"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        var manywho = {};
+        var manywho = {
+            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf'
+
+        };
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">
 
         mxBasePath = 'mxgraph/src';
@@ -85,12 +110,64 @@
     </script>
     <script src="mxgraph/src/js/mxClient.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/loglevel/1.2.0/loglevel.min.js"></script>
     <script src="js/draw.js"></script>
     <script src="js/components/graph.js"></script>
     <script src="js/components/style.js"></script>
     <script src="js/components/element.js"></script>
     <script src="js/components/ajax.js"></script>
+
+    <script>
+        log.enableAll()
+    </script>
+
+    <script src="../js/lib/react-chosen.js"></script>
+    <script src="../js/lib/datepicker.js"></script>
+    <script src="../js/lib/jquery.plugins.js"></script>
+
+    <script src="../js/services/ajax.js"></script>
+    <script src="../js/services/model.js"></script>
+    <script src="../js/services/component.js"></script>
+    <script src="../js/services/styling.js"></script>
+    <script src="../js/services/collaboration.js"></script>
+    <script src="../js/services/state.js"></script>
+    <script src="../js/services/engine.js"></script>
+    <script src="../js/services/theming.js"></script>
+    <script src="../js/services/settings.js"></script>
+    <script src="../js/services/json.js"></script>
+    <script src="../js/services/utils.js"></script>
+    <script src="../js/services/authorization.js"></script>
+    <script src="../js/services/callbacks.js"></script>
+    <script src="../js/services/social.js"></script>
+
+    <script src="../js/components/mixins.js"></script>
+    <script src="../js/components/main.js"></script>
+    <script src="../js/components/navigation.js"></script>
+    <script src="../js/components/group.js"></script>
+    <script src="../js/components/inline.js"></script>
+    <script src="../js/components/vertical.js"></script>
+    <script src="../js/components/horizontal.js"></script>
+    <script src="../js/components/presentation.js"></script>
+    <script src="../js/components/input.js"></script>
+    <script src="../js/components/textarea.js"></script>
+    <script src="../js/components/content.js"></script>
+    <script src="../js/components/outcome.js"></script>
+    <script src="../js/components/select.js"></script>
+    <script src="../js/components/table-container.js"></script>
+    <script src="../js/components/table-large.js"></script>
+    <script src="../js/components/table-small.js"></script>
+    <script src="../js/components/feed.js"></script>
+    <script src="../js/components/pagination.js"></script>
+    <script src="../js/components/wait.js"></script>
+    <script src="../js/components/modal.js"></script>
+    <script src="../js/components/notifications.js"></script>
+    <script src="../js/components/file-upload.js"></script>
+    <script src="../js/components/debug.js"></script>
+
+    <script>
+        manywho.draw.initialize();
+    </script>
 
 </body>
 </html>

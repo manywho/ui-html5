@@ -127,6 +127,16 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
+
+                if (manywho.utils.isEqual(container, 'modal', true)) {
+
+                    var mainKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, 'main');
+                    manywho.model.initializeModel(mainKey);
+                    manywho.model.parseEngineResponse(null, mainKey);
+                    manywho.model.setModal(mainKey, flowKey);
+
+                }
+
                 streamId = response.currentStreamId;
 
                 if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
@@ -442,8 +452,10 @@ manywho.engine = (function (manywho) {
             if(manywho.utils.isModal(flowKey)) {
 
                 parentFlowKey = manywho.model.getParentForModal(flowKey);
-                manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
-                this.render(parentFlowKey);
+                if(parentFlowKey) {
+                    manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
+                    this.render(parentFlowKey);
+                }
 
             } else {
 
@@ -678,13 +690,13 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            if(manywho.utils.isModal(flowKey)) {
+            if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                 flowKey = manywho.model.getParentForModal(flowKey);
 
             }
 
-            React.render(React.createElement(manywho.component.getByName('main'), {flowKey: flowKey}), document.getElementById(flowKey));
+            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), document.getElementById(flowKey));
 
         }
 

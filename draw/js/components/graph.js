@@ -12,6 +12,8 @@ manywho.graph = (function() {
         graph.minimumContainerSize = new mxRectangle(0, 0, document.getElementById('graph').clientWidth, document.getElementById('graph').clientHeight);
 
         graph.setCellsResizable(true);
+        graph.setCellsEditable(false);
+        graph.setEdgeLabelsMovable(false);
         graph.setConnectable(true);
         graph.setAllowDanglingEdges(false);
         graph.setTooltips(false);
@@ -36,13 +38,44 @@ manywho.graph = (function() {
 
     function addGraphEvents() {
 
-        document.getElementById('graph').addEventListener('mousewheel', function(event) {
+        var graphElement = document.getElementById('graph');
+
+        // Mouse wheel event that zooms in or out according to the wheel's delta
+        graphElement.addEventListener('mousewheel', function (event) {
 
             event.preventDefault();
             if (event.wheelDelta > 0) {
                 graph.zoomIn();
             } else {
                 graph.zoomOut();
+            }
+
+        });
+
+
+        // Triple click functionality that resizes the graph to actual size
+        var clickTimer;
+
+        graphElement.addEventListener('dblclick', function (event) {
+
+            clickTimer = setTimeout(function () {
+                clickTimer = null;
+            }, 200)
+
+        });
+
+        graphElement.addEventListener('click', function (event) {
+
+            if (clickTimer) graph.zoomActual();
+
+        });
+
+        graph.addListener(mxEvent.DOUBLE_CLICK, function (event, cell) {
+
+            if (cell.properties.cell) {
+
+                alert('Call edit map element flow');
+
             }
 
         });
@@ -72,7 +105,7 @@ manywho.graph = (function() {
 
             this.element.initialize();
 
-            manywho.graph.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea');
+            manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea');
         },
 
         addElement: function (id, value, x, y, width, height, style) {
@@ -132,6 +165,7 @@ manywho.graph = (function() {
 
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
+            
             try {
                 var mapElements =  model.map(function (mapElement) {
 
@@ -146,7 +180,7 @@ manywho.graph = (function() {
 
                         mapElement.outcomes.forEach(function (outcome) {
 
-                            self.createOutcome(outcome.id, outcome.label, self.getElementById(mapElement.id), self.getElementById(outcome.nextMapElementId));
+                            self.createOutcome(outcome.id, outcome.label, self.getElementById(mapElement.id), self.getElementById(outcome.nextMapElementId), 'outcome');
 
                         })
 
