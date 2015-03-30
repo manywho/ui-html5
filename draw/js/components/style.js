@@ -54,7 +54,7 @@ manywho.graph.style = (function() {
 
             var startStyle = {};
 
-            startStyle[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+            startStyle[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
             startStyle[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
             startStyle[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
             startStyle[mxConstants.STYLE_FILLCOLOR] = '#52A652';

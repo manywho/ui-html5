@@ -2,11 +2,12 @@ manywho.graph.element = (function() {
 
     return {
 
-        addElementsDraggable: function(name) {
+        addDraggableElements: function(name) {
 
             var dragImage = document.getElementById(name).cloneNode(true);
             dragImage.style.width = '120px';
-            dragImage.style.width = '60px';
+            dragImage.style.marginLeft = '-60px';
+            dragImage.style.marginTop = '-30px';
 
             mxUtils.makeDraggable(document.getElementById(name), manywho.graph.getGraphObject(), function(graph, event, cell, x, y) {
 
@@ -18,9 +19,9 @@ manywho.graph.element = (function() {
 
         initialize: function() {
 
-            this.addElementsDraggable('step');
-            this.addElementsDraggable('input');
-            this.addElementsDraggable('decision');
+            this.addDraggableElements('step');
+            this.addDraggableElements('input');
+            this.addDraggableElements('decision');
 
         }
 
