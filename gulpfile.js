@@ -173,6 +173,13 @@ gulp.task('js-dist', function () {
 
 });
 
+gulp.task('js-vendor-dist', function () {
+
+    return gulp.src(['js/vendor/*.js'])
+                .pipe(gulp.dest('./dist/js/vendor'));
+
+});
+
 gulp.task('js-loader-dist', function () {
 
     return gulp.src(['js/services/loader.js'])
@@ -200,7 +207,7 @@ gulp.task('html-dist', function () {
 
 gulp.task('rev-dist', function () {
 
-    return gulp.src(['dist/**', '!dist/*.html'])
+    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js'])
                 .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png', 'js/loader.min.js'] }))
                 .pipe(gulp.dest('./dist/'))
                 .pipe(revall.manifest({ fileName: 'hashes.json' }))
@@ -210,7 +217,7 @@ gulp.task('rev-dist', function () {
 gulp.task('dist', function () {
 
     runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
+                ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist', 'js-vendor-dist'],
                 'html-dist',
                 'rev-dist');
 
