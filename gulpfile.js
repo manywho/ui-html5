@@ -117,7 +117,7 @@ gulp.task('clean-dist', function () {
 
 gulp.task('less-dist', function () {
 
-    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css'])
+    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css', 'css/lib/datepicker.css'])
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
