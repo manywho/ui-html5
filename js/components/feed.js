@@ -132,15 +132,21 @@
 
         render: function () {
 
-            var mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.users.map(function(user, index) {
+            var mention = null;
 
-                return React.DOM.li({
-                    className: 'list-group-item ' + ((index == this.state.selectedIndex) ? 'active' : null),
-                    id: index,
-                    onClick: this.onMentionClick
-                }, user.fullName);
+            if (this.state.users) {
 
-            }, this));
+                mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.users.map(function (user, index) {
+
+                    return React.DOM.li({
+                        className: 'list-group-item ' + ((index == this.state.selectedIndex) ? 'active' : null),
+                        id: index,
+                        onClick: this.onMentionClick
+                    }, user.fullName);
+
+                }, this));
+
+            }
 
             return React.DOM.div({ className: 'input-group feed-post' }, [
                 React.DOM.div({ className: 'input-group-btn feed-post-button' },
