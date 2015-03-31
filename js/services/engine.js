@@ -97,6 +97,21 @@ manywho.engine = (function (manywho) {
                 });
 
     }
+
+    function onInitializeFailed(response) {
+        
+        var container = document.getElementById('manywho');
+        container.className += 'mw-bs';
+
+        var alert = document.createElement('div');
+        alert.className = 'alert alert-danger initialize-error';
+        alert.innerText = response.statusText;
+
+        container.insertBefore(alert, container.children[0]);
+
+        return response;
+
+    }
     
     function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, flowKey) {
 
@@ -153,9 +168,9 @@ manywho.engine = (function (manywho) {
 
                 return isAuthorized(response, flowKey);
 
-            })
+            }, onInitializeFailed)
             .then(function (response) {
-                
+
                 var invokeRequest = manywho.json.generateInvokeRequest(
                     manywho.state.getState(flowKey),
                     'FORWARD',
@@ -166,7 +181,7 @@ manywho.engine = (function (manywho) {
                     manywho.state.getLocation(flowKey),
                     manywho.settings.flow('mode', flowKey)
                 );
-                
+
                 return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey));
 
 
@@ -210,7 +225,7 @@ manywho.engine = (function (manywho) {
 
             })
             .then(function () {
-                
+
                 manywho.state.setLoading('main', null, flowKey);
                 self.render(flowKey);
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
@@ -234,7 +249,7 @@ manywho.engine = (function (manywho) {
 
                 return isAuthorized(response, flowKey);
 
-            })
+            }, onInitializeFailed)
             .then(function (response) {
 
                 isAuthenticated = true;
