@@ -18,6 +18,8 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     replace = require('gulp-replace'),
     aws = require('aws-sdk'),
+    gutil = require('gulp-util'),
+    sourcemaps = require('gulp-sourcemaps'),
     argv = require('yargs').argv;
 
 
@@ -164,7 +166,9 @@ gulp.task('js-dist', function () {
     return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
                 .pipe(order(['services/*.js', 'lib/*.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
-                .pipe(uglify())
+                .pipe(sourcemaps.init())
+                .pipe(uglify().on('error', gutil.log))
+                .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest('./dist/js'));
 
 });
@@ -225,7 +229,7 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(distribution);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
-    return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js'])
+    return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())

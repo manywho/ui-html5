@@ -33,23 +33,6 @@ permissions and limitations under the License.
 
         },
 
-        componentDidUpdate: function() {
-
-            var navHeight = 0;
-            var nav = document.querySelector('#' + this.props.flowKey + ' nav');
-
-            if (nav) {
-
-                navHeight = Math.max($(nav).outerHeight() - $(nav), )
-
-            }
-
-            
-
-            $('#' + this.props.flowKey).height();
-
-        },
-
         render: function () {
             
             log.info("Rendering Main");
