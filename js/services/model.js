@@ -147,6 +147,7 @@ permissions and limitations under the License.
             flowModel[flowKey].preCommitStateValues = [];
             flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
             flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+            flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
             if (engineInvokeResponse.mapElementInvokeResponses) {
 

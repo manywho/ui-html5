@@ -67,6 +67,7 @@ permissions and limitations under the License.
                             componentElements,
                             outcomeElements,
                             React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),
+                            React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey }),
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         modal,
