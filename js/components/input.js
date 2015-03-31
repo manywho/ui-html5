@@ -55,7 +55,11 @@
 
         componentWillUnmount: function () {
 
-            if (this.refs.datepicker) this.refs.datepicker.getDOMNode().datepicker('destroy');
+            if (this.refs.datepicker) {
+
+                $(this.refs.datepicker.getDOMNode()).datepicker('destroy');
+
+            }
 
         },
 
@@ -106,7 +110,7 @@
             }
 
             if (!model.isEditable) {
-                attributes.readOnly = '';
+                attributes.readOnly = 'readonly';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -145,7 +149,6 @@
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
-                    attributes.readOnly = "readonly";
 
                 }
 

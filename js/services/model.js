@@ -6,7 +6,7 @@
 
         if (item.contentValue) {
 
-            textArea.innerHtml = item.contentValue;
+            textArea.innerHTML = item.contentValue;
             item.contentValue = textArea.textContent;
             textArea.textContent = '';
 
@@ -22,7 +22,7 @@
 
                         if (prop.contentValue) {
 
-                            textArea.innerHtml = prop.contentValue;
+                            textArea.innerHTML = prop.contentValue;
                             prop.contentValue = textArea.textContent;
                             textArea.textContent = '';
 
@@ -134,6 +134,8 @@
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
+            flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
+            flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
 
             if (engineInvokeResponse.mapElementInvokeResponses) {
 
@@ -231,13 +233,6 @@
 
             flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
             flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
-            
-            switch (engineInvokeResponse.invokeType.toLowerCase())
-            {
-                case "wait":
-                    manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
-                    break;
-            }
 
         },
 
@@ -432,6 +427,18 @@
             if (item != null) {
                 return item;
             }
+
+        },
+        
+        getInvokeType: function(flowKey) {
+
+            return flowModel[flowKey].invokeType;
+
+        },
+
+        getWaitMessage: function (flowKey) {
+
+            return flowModel[flowKey].waitMessage;
 
         },
         

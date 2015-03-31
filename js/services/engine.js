@@ -210,15 +210,9 @@ manywho.engine = (function (manywho) {
 
             })
             .then(function () {
-
-                if (!getIsWaiting(flowKey)) {
-
-                    manywho.state.setLoading('main', null, flowKey);
-
-                }
-
+                
+                manywho.state.setLoading('main', null, flowKey);
                 self.render(flowKey);
-
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             });
@@ -289,14 +283,8 @@ manywho.engine = (function (manywho) {
 
                 if (isAuthenticated) {
 
-                    if (!getIsWaiting(flowKey)) {
-
-                        manywho.state.setLoading('main', null, flowKey);
-
-                    }
-
+                    manywho.state.setLoading('main', null, flowKey);
                     self.render(flowKey);
-
                     return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
                 }
@@ -358,13 +346,8 @@ manywho.engine = (function (manywho) {
 
             })
             .always(function () {
-                
-                if (!getIsWaiting(parentFlowKey)) {
-
-                    manywho.state.setLoading('main', null, parentFlowKey);
-
-                }
-                
+                               
+                manywho.state.setLoading('main', null, flowKey);
                 self.render(parentFlowKey);
                 manywho.component.focusInput(parentFlowKey);
 
@@ -380,18 +363,6 @@ manywho.engine = (function (manywho) {
 
     }
     
-    function setIsWaiting(invokeType, flowKey) {
-
-        waiting[flowKey] = manywho.utils.isEqual(invokeType, 'wait', true);
-
-    }
-
-    function getIsWaiting(flowKey) {
-
-        return waiting[flowKey];
-
-    }
-
     return {
 
         initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options) {
@@ -643,14 +614,18 @@ manywho.engine = (function (manywho) {
                 manywho.utils.replaceBrowserUrl(response);
             }
 
-            setIsWaiting(response.invokeType, flowKey);
-            manywho.engine.ping(flowKey);
+            if (manywho.utils.isEqual(response.invokeType, 'wait', true) ||
+                manywho.utils.isEqual(response.invokeType, 'status', true)) {
+
+                manywho.engine.ping(flowKey);
+            }
 
         },
 
         ping: function (flowKey) {
 
-            if (getIsWaiting(flowKey)) {
+            if (manywho.utils.isEqual(manywho.model.getInvokeType(flowKey), 'wait', true) ||
+                manywho.utils.isEqual(manywho.model.getInvokeType(flowKey), 'status', true)) {
 
                 var state = manywho.state.getState(flowKey);
                 var self = this;

@@ -77,9 +77,9 @@ gulp.task('options', function () {
     scriptTag += JSON.stringify(options);
     scriptTag += '</script>';
 
-    gulp.src('flow.html')
+    gulp.src('default.html')
         .pipe(replace('<!-- options -->', scriptTag))
-        .pipe(rename('flow-run.html'))
+        .pipe(rename('default-run.html'))
         .pipe(gulp.dest('.'));
 
 });
@@ -96,7 +96,7 @@ gulp.task('browser-sync', function () {
     browserSync.init(files, {
         server: {
             baseDir: '.',
-            index: 'flow-run.html'
+            index: 'default-run.html'
         },
         ghostMode: false
     });
@@ -180,7 +180,7 @@ gulp.task('js-loader-dist', function () {
 
 gulp.task('html-dist', function () {
 
-    return gulp.src('flow.html')
+    return gulp.src('default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(htmlreplace({
                     css: '',

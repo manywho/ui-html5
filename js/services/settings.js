@@ -9,7 +9,7 @@ manywho.settings = (function (manywho, $) {
             uri: 'https://realtime.manywho.com'
         },
         platform: {
-            uri: 'https://flow.manywho.com'
+            uri: ''
         },
         navigation: {
             isFixed: true
@@ -92,8 +92,8 @@ manywho.settings = (function (manywho, $) {
 
         initialize: function(custom, handlers) {
 
-            globals = $.extend(globals, custom);
-            events = $.extend(events, handlers);
+            globals = $.extend(true, globals, custom);
+            events = $.extend(true, events, handlers);
 
             toLowerCaseKeys(globals);
             toLowerCaseKeys(events);
