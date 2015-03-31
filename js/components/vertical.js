@@ -12,12 +12,12 @@
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey);
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            classes += this.state.isVisible ? '' : ' hidden';
             var labelClasses = this.getContainerHeaderClasses();
+            var contentClass = this.state.isVisible ? '' : ' hidden';
             
-            return React.DOM.div({}, [
+            return React.DOM.div({ className: classes, id: this.props.id }, [
                 React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, model.label),
-                React.DOM.div({ className: classes, id: this.props.id }, [
+                React.DOM.div({ className: contentClass }, [
                     manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
             ]);
