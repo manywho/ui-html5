@@ -35,14 +35,19 @@
 
         getInitialState: function () {
 
-            return { isVisible: true };
+            return {
+                isVisible: true,
+                icon: 'glyphicon glyphicon-menu-down'
+            };
 
         },
 
         toggleVisibility: function () {
 
             if (manywho.settings.global('collapsable', this.props.flowKey)) {
+
                 this.setState({ isVisible: !this.state.isVisible });
+
             }
 
         },
