@@ -186,6 +186,7 @@ gulp.task('html-dist', function () {
 
     return gulp.src('default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
+                .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
                 .pipe(htmlreplace({
                     css: '',
                     js: '',
