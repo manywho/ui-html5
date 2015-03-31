@@ -14,10 +14,11 @@
 
             var contentClass = this.state.isVisible ? '' : ' hidden';
             var labelClasses = this.getContainerHeaderClasses();
+            var labelContent = manywho.settings.global('collapsable', this.props.flowKey) && model.label ? [model.label, React.DOM.i({ className: this.state.icon })] : model.label;
             
             return React.DOM.div({ className: classes, id: this.props.id }, [
-                React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, model.label),
-                React.DOM.div({ className: contentClass }, [
+                React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, labelContent),
+                React.DOM.div({ className: contentClass, id: this.props.id }, [
                     manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
             ]);

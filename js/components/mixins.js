@@ -37,16 +37,33 @@
 
             return {
                 isVisible: true,
-                icon: 'glyphicon glyphicon-menu-down'
+                icon: 'toggle-icon glyphicon glyphicon-menu-down'
             };
 
         },
 
-        toggleVisibility: function () {
+        toggleVisibility: function (event) {
+
+            event.preventDefault();
 
             if (manywho.settings.global('collapsable', this.props.flowKey)) {
 
-                this.setState({ isVisible: !this.state.isVisible });
+                if (this.state.isVisible) {
+
+                    this.setState({
+                        isVisible: false,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-right'
+                    });
+
+                } else {
+
+                    this.setState({
+                        isVisible: true,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-down'
+                    });
+
+                }
+
 
             }
 
