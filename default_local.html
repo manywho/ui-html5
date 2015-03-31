@@ -58,7 +58,10 @@
                 manywho.settings.initialize({
                     adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
-                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    platform: {
+                        uri: 'https://flow.manywho.com'
+                    }
                 });
 
                 var options = {
