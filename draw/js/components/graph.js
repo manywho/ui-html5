@@ -91,17 +91,26 @@ manywho.graph = (function() {
 
         });
 
-        graph.addListener(mxEvent.D);
+        var keyHandler = new mxKeyHandler(graph);
+        keyHandler.bindKey(46, function (event) {
 
-        var keyHandler = new mxDefaultKeyHandler(editor);
-        keyHandler.bindAction(46, function (event) {
-            if(event.target) {
-                alert('delete');
+            if (graph.getSelectionCells().length > 0) {
+
+                if (graph.getSelectionCells()[0].style == 'outcome') {
+
+                    alert('Delete outcome: ' + graph.getSelectionCells()[0].value);
+
+                } else {
+
+                    alert('Delete map element: ' + graph.getSelectionCells()[0].value);
+
+                }
             }
+
         });
-        keyHandler.bindAction(65, function(event) {
-            alert('selectAll');
-        }, 1);
+
+        var defaultKeyHandler = new mxDefaultKeyHandler(editor);
+        defaultKeyHandler.bindAction(65, 'selectAll', 1);
 
     }
 
