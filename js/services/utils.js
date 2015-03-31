@@ -196,7 +196,12 @@ manywho.utils = (function (manywho, $) {
         removeLoadingIndicator: function(id) {
 
             var element = document.getElementById(id);
-            element.parentNode.removeChild(element);
+
+            if (element) {
+
+                element.parentNode.removeChild(element);
+
+            }            
 
         }
 
