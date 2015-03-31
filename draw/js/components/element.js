@@ -11,7 +11,8 @@ manywho.graph.element = (function() {
 
             mxUtils.makeDraggable(document.getElementById(name), manywho.graph.getGraphObject(), function(graph, event, cell, x, y) {
 
-                manywho.graph.addElement(null, 'Test', x, y, 120, 60, name);
+                alert('Call system flow for type: ' + event.srcElement.id);
+                manywho.graph.addElement(null, name, x, y, 120, 60, name);
 
             }, dragImage);
 

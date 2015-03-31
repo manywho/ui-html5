@@ -31,6 +31,7 @@ manywho.graph = (function() {
         options.SHADOWCOLOR = '#C0C0C0';
 
         mxGraphHandler.prototype.guidesEnabled = true;
+        mxPanningHandler.prototype.useLeftButtonForPanning = true;
 
         $.extend(mxConstants, options);
 
@@ -74,15 +75,33 @@ manywho.graph = (function() {
 
             if (cell.properties.cell) {
 
-                alert('Call edit map element flow');
+                alert('Call edit map element flow of name: ' + cell.properties.cell.value);
 
             }
 
         });
 
+        graph.connectionHandler.addListener(mxEvent.CONNECT, function (sender, event) {
+
+            alert('Call system flow to connect outcome from ' + sender.previous.cell.value + ' to ' + event.properties.target.value);
+
+        });
+
+        graph.addListener(mxEvent.DOUBLE_CLICK, function () {
+
+        });
+
+        graph.addListener(mxEvent.D);
+
         var keyHandler = new mxDefaultKeyHandler(editor);
-        keyHandler.bindAction(46, 'delete');
-        keyHandler.bindAction(65, 'selectAll', 1);
+        keyHandler.bindAction(46, function (event) {
+            if(event.target) {
+                alert('delete');
+            }
+        });
+        keyHandler.bindAction(65, function(event) {
+            alert('selectAll');
+        }, 1);
 
     }
 
