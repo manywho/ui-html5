@@ -164,37 +164,37 @@ manywho.utils = (function (manywho, $) {
         getFlowKey: function (tenantId, flowId, flowVersionId, stateId, element) {
 
             var args = Array.prototype.slice.call(arguments);
-            return args.join('|');
+            return args.join('_');
 
         },
 
         extractElement: function (flowKey) {
 
-            return flowKey.split('|')[4];
+            return flowKey.split('_')[4];
 
         },
 
         extractTenantId: function (flowKey) {
 
-            return flowKey.split('|')[0];
+            return flowKey.split('_')[0];
 
         },
 
         extractFlowId: function (flowKey) {
 
-            return flowKey.split('|')[1];
+            return flowKey.split('_')[1];
 
         },
 
         extractFlowVersionId: function (flowKey) {
 
-            return flowKey.split('|')[2];
+            return flowKey.split('_')[2];
 
         },
 
         extractStateId: function (flowKey) {
 
-            return flowKey.split('|')[3];
+            return flowKey.split('_')[3];
 
         },
 

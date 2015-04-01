@@ -233,6 +233,12 @@ manywho.component = (function (manywho) {
 
             }
 
+        },
+
+        scrollToTop: function (flowKey) {
+
+            window.scroll(0, document.getElementById(flowKey).offsetTop);
+
         }
 
     }
