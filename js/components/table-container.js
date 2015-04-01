@@ -345,7 +345,7 @@ permissions and limitations under the License.
             var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
 
             return React.DOM.div({ className: classNames }, [
-                this.getLabel(model.label, model.isRequired),
+                (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.h3({ className: 'container-label' }, model.label),
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     (model.fileDataRequest) ? fileUpload : null,    
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
