@@ -37,7 +37,12 @@ permissions and limitations under the License.
             
             if (document.documentElement.className.indexOf('manywho') != -1) {
 
-                if (this.refs.container.getDOMNode().clientHeight <= window.innerHeight) {
+                var container = this.refs.container.getDOMNode();
+                var nav = this.refs.nav.getDOMNode();
+
+                var height = container.clientHeight + ((nav) ? nav.clientHeight : 0);
+
+                if (height <= window.innerHeight) {
 
                     document.body.style.height = "100%";
                     document.documentElement.style.height = "100%";
@@ -83,7 +88,7 @@ permissions and limitations under the License.
             ].join(' ');
             
             return React.DOM.div({ className: 'full-height', ref: 'container' }, [
-                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
+                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
                         React.DOM.div({ className: classNames, onKeyUp: this.onEnter, ref: 'main' }, [
                             componentElements,
                             outcomeElements,
