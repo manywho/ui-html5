@@ -57,7 +57,7 @@ permissions and limitations under the License.
 
             event.preventDefault();
 
-            if (manywho.settings.global('collapsable', this.props.flowKey)) {
+            if (manywho.settings.global('collapsible', this.props.flowKey)) {
 
                 if (this.state.isVisible) {
 
@@ -80,9 +80,24 @@ permissions and limitations under the License.
 
         },
 
-        getContainerHeaderClasses: function () {
+        getLabel: function(label, required) {
 
-            return manywho.settings.global('collapsable', this.props.flowKey) ? 'container-label clickable-section' : 'container-label';
+            if (!manywho.utils.isNullOrWhitespace(label)) {
+
+                var labelClasses = manywho.settings.global('collapsible', this.props.flowKey) ? 'container-label clickable-section' : 'container-label';
+                var labelContent = manywho.settings.global('collapsible', this.props.flowKey) && label ? [React.DOM.i({ className: this.state.icon }), label] : [label];
+
+                if (required) {
+
+                    labelContent.push(React.DOM.span({ className: 'input-required' }, ' *'));
+
+                }
+
+                return React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, labelContent);
+
+            }
+
+            return null;
 
         }
 

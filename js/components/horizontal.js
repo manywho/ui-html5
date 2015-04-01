@@ -24,11 +24,9 @@ permissions and limitations under the License.
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
             var contentClass = this.state.isVisible ? '' : ' hidden';
-            var labelClasses = this.getContainerHeaderClasses();
-            var labelContent = manywho.settings.global('collapsable', this.props.flowKey) && model.label ? [model.label, React.DOM.i({ className: this.state.icon })] : model.label;
-
+            
             return React.DOM.div({ className: classes, id: this.props.id }, [
-                React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, labelContent),
+                this.getLabel(model.label),
                 React.DOM.div({ className: contentClass, id: this.props.id }, [
                     React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
                 ])
