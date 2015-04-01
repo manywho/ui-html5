@@ -2,7 +2,6 @@ manywho.graph = (function() {
 
     var editor = new mxEditor();
     var graph = editor.graph;
-    var model = {};
 
     function setDefaultGraphSettings() {
 
@@ -37,83 +36,6 @@ manywho.graph = (function() {
 
     }
 
-    function addGraphEvents() {
-
-        var graphElement = document.getElementById('graph');
-
-        // Mouse wheel event that zooms in or out according to the wheel's delta
-        graphElement.addEventListener('mousewheel', function (event) {
-
-            event.preventDefault();
-            if (event.wheelDelta > 0) {
-                graph.zoomIn();
-            } else {
-                graph.zoomOut();
-            }
-
-        });
-
-
-        // Triple click functionality that resizes the graph to actual size
-        var clickTimer;
-
-        graphElement.addEventListener('dblclick', function (event) {
-
-            clickTimer = setTimeout(function () {
-                clickTimer = null;
-            }, 200)
-
-        });
-
-        graphElement.addEventListener('click', function (event) {
-
-            if (clickTimer) graph.zoomActual();
-
-        });
-
-        graph.addListener(mxEvent.DOUBLE_CLICK, function (event, cell) {
-
-            if (cell.properties.cell) {
-
-                alert('Call edit map element flow of name: ' + cell.properties.cell.value);
-
-            }
-
-        });
-
-        graph.connectionHandler.addListener(mxEvent.CONNECT, function (sender, event) {
-
-            alert('Call system flow to connect outcome from ' + sender.previous.cell.value + ' to ' + event.properties.target.value);
-
-        });
-
-        graph.addListener(mxEvent.DOUBLE_CLICK, function () {
-
-        });
-
-        var keyHandler = new mxKeyHandler(graph);
-        keyHandler.bindKey(46, function (event) {
-
-            if (graph.getSelectionCells().length > 0) {
-
-                if (graph.getSelectionCells()[0].style == 'outcome') {
-
-                    alert('Delete outcome: ' + graph.getSelectionCells()[0].value);
-
-                } else {
-
-                    alert('Delete map element: ' + graph.getSelectionCells()[0].value);
-
-                }
-            }
-
-        });
-
-        var defaultKeyHandler = new mxDefaultKeyHandler(editor);
-        defaultKeyHandler.bindAction(65, 'selectAll', 1);
-
-    }
-
     return {
 
         initialize: function () {
@@ -121,11 +43,11 @@ manywho.graph = (function() {
             var container = document.getElementById('graph');
             var outline = document.getElementById('graph-outline');
 
-            this.style.initialize(graph);
-
             setDefaultGraphSettings();
 
-            addGraphEvents();
+            this.events.initialize();
+
+            this.style.initialize(graph);
 
             editor.setGraphContainer(container);
 
@@ -171,38 +93,27 @@ manywho.graph = (function() {
 
         getGraphObject: function () {
 
-            return graph;
-
-        },
-
-        getModel: function () {
-
-            return model;
-
-        },
-
-        setModel: function (metadata) {
-
-            model = metadata;
+            return editor;
 
         },
 
         render: function () {
 
             var self = this;
+            var model = manywho.graph.model.getModel();
 
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
             
             try {
-                var mapElements =  model.map(function (mapElement) {
+                var mapElements =  model.mapElements.map(function (mapElement) {
 
                     mapElement.elementType = mapElement.elementType.toLowerCase();
                     return self.addElement(mapElement.id, mapElement.developerName, mapElement.x, mapElement.y, mapElement.elementType == 'start' ? 60 : 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
 
                 });
 
-                model.forEach(function (mapElement) {
+                model.mapElements.forEach(function (mapElement) {
 
                     if (mapElement.outcomes && mapElement.outcomes.length > 0) {
 

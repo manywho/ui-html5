@@ -19,7 +19,7 @@ manywho.draw.ajax = (function () {
 
                 document.getElementById('flow-title').innerHTML = data.developerName;
                 document.getElementById('flow-description').innerHTML = data.developerSummary;
-                manywho.graph.setModel(data.mapElements);
+                manywho.graph.model.setModel(data);
                 manywho.graph.render();
 
             })
