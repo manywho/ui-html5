@@ -108,6 +108,7 @@ permissions and limitations under the License.
 
         outcomes: null,
 
+        mixins: [manywho.component.mixins.collapse],
 
         onSearchChanged: function (e) {
 
@@ -344,11 +345,14 @@ permissions and limitations under the License.
             var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
 
             return React.DOM.div({ className: classNames }, [
-                (model.fileDataRequest) ? fileUpload : null,    
-                renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
-                content,
-                renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
-                React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                this.getLabel(model.label, model.isRequired),
+                React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
+                    (model.fileDataRequest) ? fileUpload : null,    
+                    renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
+                    content,
+                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
+                    React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                ])
             ]);
 
         }
