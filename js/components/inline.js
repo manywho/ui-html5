@@ -27,7 +27,6 @@ permissions and limitations under the License.
             
             return React.DOM.div({ className: classes, id: this.props.id }, [
                 this.getLabel(model.label),
-                React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, labelContent),
                 React.DOM.div({ className: contentClass, id: this.props.id }, [
                     manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
