@@ -10,23 +10,20 @@ permissions and limitations under the License.
 */
 
 (function (manywho) {
-    
-    var status = React.createClass({
+
+    var voting = React.createClass({
 
         render: function () {
 
-            var isVisible = manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'wait', true)
-                            || manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'status', true);
+            var isVisible = manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'waiting_on_votes', true);
             
-            var message = manywho.model.getWaitMessage(this.props.flowKey);
-
             if (isVisible) {
 
-                log.info('Rendering Status');
+                log.info('Rendering Voting');
 
-                return React.DOM.div({ className: 'status' },
+                return React.DOM.div({ className: 'voting' },
                     React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),
-                    React.DOM.p({ className: 'lead' }, message)
+                    React.DOM.p({ className: 'lead' }, 'Waiting on Votes')
                 );
 
             }
@@ -35,11 +32,11 @@ permissions and limitations under the License.
                 return null;
 
             }
-            
+
         }
 
     });
 
-    manywho.component.register("status", status);
+    manywho.component.register("voting", voting);
 
 }(manywho));

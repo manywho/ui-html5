@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 manywho.engine = (function (manywho) {
 
     var waiting = {};
@@ -97,6 +108,21 @@ manywho.engine = (function (manywho) {
                 });
 
     }
+
+    function onInitializeFailed(response) {
+        
+        var container = document.getElementById('manywho');
+        container.className += 'mw-bs';
+
+        var alert = document.createElement('div');
+        alert.className = 'alert alert-danger initialize-error';
+        alert.innerText = response.statusText;
+
+        container.insertBefore(alert, container.children[0]);
+
+        return response;
+
+    }
     
     function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, flowKey) {
 
@@ -153,9 +179,9 @@ manywho.engine = (function (manywho) {
 
                 return isAuthorized(response, flowKey);
 
-            })
+            }, onInitializeFailed)
             .then(function (response) {
-                
+
                 var invokeRequest = manywho.json.generateInvokeRequest(
                     manywho.state.getState(flowKey),
                     'FORWARD',
@@ -166,7 +192,7 @@ manywho.engine = (function (manywho) {
                     manywho.state.getLocation(flowKey),
                     manywho.settings.flow('mode', flowKey)
                 );
-                
+
                 return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey));
 
 
@@ -210,7 +236,7 @@ manywho.engine = (function (manywho) {
 
             })
             .then(function () {
-                
+
                 manywho.state.setLoading('main', null, flowKey);
                 self.render(flowKey);
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
@@ -234,7 +260,7 @@ manywho.engine = (function (manywho) {
 
                 return isAuthorized(response, flowKey);
 
-            })
+            }, onInitializeFailed)
             .then(function (response) {
 
                 isAuthenticated = true;

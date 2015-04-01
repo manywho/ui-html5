@@ -18,6 +18,8 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     replace = require('gulp-replace'),
     aws = require('aws-sdk'),
+    gutil = require('gulp-util'),
+    sourcemaps = require('gulp-sourcemaps'),
     argv = require('yargs').argv;
 
 
@@ -115,7 +117,7 @@ gulp.task('clean-dist', function () {
 
 gulp.task('less-dist', function () {
 
-    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css'])
+    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css', 'css/lib/datepicker.css'])
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
@@ -161,11 +163,20 @@ gulp.task('bootstrap-themes-dist', function () {
 
 gulp.task('js-dist', function () {
 
-    return gulp.src(['js/**/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
+    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
                 .pipe(order(['services/*.js', 'lib/*.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
-                .pipe(uglify())
+                .pipe(sourcemaps.init())
+                .pipe(uglify().on('error', gutil.log))
+                .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest('./dist/js'));
+
+});
+
+gulp.task('js-vendor-dist', function () {
+
+    return gulp.src(['js/vendor/*.js'])
+                .pipe(gulp.dest('./dist/js/vendor'));
 
 });
 
@@ -182,6 +193,7 @@ gulp.task('html-dist', function () {
 
     return gulp.src('default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
+                .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
                 .pipe(htmlreplace({
                     css: '',
                     js: '',
@@ -195,7 +207,7 @@ gulp.task('html-dist', function () {
 
 gulp.task('rev-dist', function () {
 
-    return gulp.src(['dist/**', '!dist/*.html'])
+    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js'])
                 .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png', 'js/loader.min.js'] }))
                 .pipe(gulp.dest('./dist/'))
                 .pipe(revall.manifest({ fileName: 'hashes.json' }))
@@ -205,7 +217,7 @@ gulp.task('rev-dist', function () {
 gulp.task('dist', function () {
 
     runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist'],
+                ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist', 'js-vendor-dist'],
                 'html-dist',
                 'rev-dist');
 
@@ -225,7 +237,7 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(distribution);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
-    return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js'])
+    return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
