@@ -375,7 +375,9 @@ manywho.engine = (function (manywho) {
                                
                 manywho.state.setLoading('main', null, flowKey);
                 self.render(parentFlowKey);
+
                 manywho.component.focusInput(parentFlowKey);
+                window.scroll(0, 0);
 
                 manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
                 moveResponse = null;
