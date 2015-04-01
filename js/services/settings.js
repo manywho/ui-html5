@@ -38,7 +38,8 @@ manywho.settings = (function (manywho, $) {
                 "table directionality emoticons paste textcolor"
             ]
         },
-        isFullWidth: false
+        isFullWidth: false,
+        collapsable: false
     };
 
     var flows = {};

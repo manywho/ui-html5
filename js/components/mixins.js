@@ -40,6 +40,52 @@ permissions and limitations under the License.
 
         }
 
+    };
+
+    manywho.component.mixins.collapse =  {
+
+        getInitialState: function () {
+
+            return {
+                isVisible: true,
+                icon: 'toggle-icon glyphicon glyphicon-menu-down'
+            };
+
+        },
+
+        toggleVisibility: function (event) {
+
+            event.preventDefault();
+
+            if (manywho.settings.global('collapsable', this.props.flowKey)) {
+
+                if (this.state.isVisible) {
+
+                    this.setState({
+                        isVisible: false,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-right'
+                    });
+
+                } else {
+
+                    this.setState({
+                        isVisible: true,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-down'
+                    });
+
+                }
+
+
+            }
+
+        },
+
+        getContainerHeaderClasses: function () {
+
+            return manywho.settings.global('collapsable', this.props.flowKey) ? 'container-label clickable-section' : 'container-label';
+
+        }
+
     }
 
 }(manywho));
