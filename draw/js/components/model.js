@@ -35,7 +35,7 @@ manywho.graph.model = (function () {
 
         updateModel: function () {
 
-            var graph = manywho.graph.getGraphObject();
+            var graph = manywho.graph.getGraphObject().graph;
             var cells = graph.getChildVertices(graph.getDefaultParent());
 
             var updatedElements = cells.map

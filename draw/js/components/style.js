@@ -33,15 +33,15 @@ manywho.graph.style = (function() {
 
         createBaseOutcomeStyle: function () {
 
-            manywho.graph.getGraphObject().connectionHandler.getConnectImage = function (cell) {
+            manywho.graph.getGraphObject().graph.connectionHandler.getConnectImage = function (cell) {
 
                 return new mxImage(cell.style['portimage'], 16, 16);
 
             };
             // Centers the port icon on the target port
-            manywho.graph.getGraphObject().connectionHandler.targetConnectImage = true;
+            manywho.graph.getGraphObject().graph.connectionHandler.targetConnectImage = true;
 
-            var outcomeStyle = manywho.graph.getGraphObject().getStylesheet().getDefaultEdgeStyle();
+            var outcomeStyle = manywho.graph.getGraphObject().graph.getStylesheet().getDefaultEdgeStyle();
 
             outcomeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
             outcomeStyle[mxConstants.STYLE_STROKEWIDTH] = '2';
@@ -118,7 +118,7 @@ manywho.graph.style = (function() {
 
         registerStyle: function (name) {
 
-            manywho.graph.getGraphObject().getStylesheet().putCellStyle(name, styles[name]);
+            manywho.graph.getGraphObject().graph.getStylesheet().putCellStyle(name, styles[name]);
 
         },
 

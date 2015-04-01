@@ -9,6 +9,8 @@ manywho.graph.events = (function () {
             // Mouse wheel event that zooms in or out according to the wheel's delta
             graphElement.addEventListener('mousewheel', function (event) {
 
+                var graph = manywho.graph.getGraphObject().graph;
+
                 event.preventDefault();
                 if (event.wheelDelta > 0) {
                     graph.zoomIn();
@@ -40,6 +42,7 @@ manywho.graph.events = (function () {
 
             // Triple click functionality that resizes the graph to actual size
             var clickTimer;
+            var graph = manywho.graph.getGraphObject().graph;
 
             graphElement.addEventListener('dblclick', function (event) {
 
