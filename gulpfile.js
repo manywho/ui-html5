@@ -191,6 +191,13 @@ gulp.task('js-loader-dist', function () {
 
 gulp.task('html-dist', function () {
 
+    return gulp.src('default.html')
+        .pipe(gulp.dest('./dist/'));
+
+});
+
+gulp.task('html-replace', function () {
+
     return gulp.src('dist/default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
@@ -201,7 +208,6 @@ gulp.task('html-dist', function () {
                     bootstrap: '',
                     loader: process.env.BAMBOO_CDNURL + '/js/loader.min.js'
                 }))
-                .pipe(rename('default.html'))
                 .pipe(gulp.dest('./dist/'));
 });
 
@@ -218,6 +224,7 @@ gulp.task('dist', function () {
 
     runSequence('clean-dist',
                 ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist', 'js-vendor-dist'],
+                'html-dist',
                 'rev-dist');
 
 });
