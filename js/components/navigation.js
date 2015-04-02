@@ -97,7 +97,7 @@ permissions and limitations under the License.
             }
 
         },
-
+        
         getInitialState: function() {
             
             return {
@@ -143,7 +143,6 @@ permissions and limitations under the License.
 
                 if (!manywho.utils.isEmbedded() && manywho.utils.isSmallScreen(this.props.flowKey)) {
 
-                    classNames.push('nav-fixed');
                     inlineStyles = null;
 
                 }
