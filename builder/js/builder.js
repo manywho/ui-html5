@@ -1,4 +1,5 @@
-var builder = (function () {
+manywho.builder = (function () {
+
 
 
 })();

@@ -11,6 +11,7 @@ manywho.graph = (function() {
         graph.minimumContainerSize = new mxRectangle(0, 0, document.getElementById('graph').clientWidth, document.getElementById('graph').clientHeight);
 
         graph.setCellsResizable(true);
+        graph.setAutoSizeCells(true);
         graph.setCellsEditable(false);
         graph.setEdgeLabelsMovable(false);
         graph.setConnectable(true);
@@ -21,9 +22,16 @@ manywho.graph = (function() {
         graph.htmlLabels = true;
         graph.keepEdgesInBackground = true;
 
+
         graph.convertValueToString = function (cell) {
 
             return cell.value.name;
+
+        };
+
+        graph.getTooltipForCell = function (cell) {
+
+            return cell.value.summary;
 
         };
 
@@ -146,6 +154,9 @@ manywho.graph = (function() {
                     }
 
                 });
+
+                mapElements.push(self.addElement('123', {name: 'This is some test huge text to make sure cells are automatically resized'}, 100, 400, 120, 60, 'base'));
+
             }
             finally
             {

@@ -30,7 +30,7 @@ manywho.graph.events = (function () {
 
                 if (cell.properties.cell) {
 
-                    alert('Call edit map element flow of name: ' + cell.properties.cell.value);
+                    alert('Call edit map element flow of name: ' + cell.properties.cell.value.name);
 
                 }
 
@@ -66,7 +66,7 @@ manywho.graph.events = (function () {
 
             graph.connectionHandler.addListener(mxEvent.CONNECT, function (sender, event) {
 
-                alert('Call system flow to connect outcome from ' + sender.previous.cell.value + ' to ' + event.properties.target.value);
+                alert('Call system flow to connect outcome from ' + sender.previous.cell.value + ' to ' + event.properties.target.value.name);
 
             });
 
@@ -86,11 +86,11 @@ manywho.graph.events = (function () {
 
                     if (manywho.utils.isEqual(graph.getSelectionCells()[0].style, 'outcome', true)) {
 
-                        alert('Delete outcome: ' + graph.getSelectionCells()[0].value);
+                        alert('Delete outcome: ' + graph.getSelectionCells()[0].value.name);
 
                     } else {
 
-                        alert('Delete map element: ' + graph.getSelectionCells()[0].value);
+                        alert('Delete map element: ' + graph.getSelectionCells()[0].value.name);
 
                     }
                 }
