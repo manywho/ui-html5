@@ -42,27 +42,40 @@ permissions and limitations under the License.
     function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
 
         var headerElements = [];
+        var searchElement = null;
+        var outcomesElement = null;
 
         if (isSearchEnabled) {
 
-            headerElements.push(React.DOM.div({ className: 'input-group table-search' }, [
+            searchElement = React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
                         React.DOM.button({ className: 'btn btn-default', onClick: search },
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
-            ]));
+            ]);
 
         }
 
         if (outcomes) {
 
-            headerElements.push(React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
+            outcomesElement =  React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
 
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
 
-            })));
+            }));
+
+        }
+
+        if (document.getElementById(flowKey).clientWidth < 768) {
+
+            headerElements = [outcomesElement, searchElement];
+
+        }
+        else {
+
+            headerElements = [searchElement, outcomesElement];
 
         }
 
