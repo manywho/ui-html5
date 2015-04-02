@@ -22,6 +22,14 @@ manywho.graph = (function() {
         graph.htmlLabels = true;
         graph.keepEdgesInBackground = true;
 
+        graph.cellLabelChanged = function (cell, newValue, autoSize) {
+
+            autoSize = true;
+
+            this.apply(this, arguments);
+
+        };
+
 
         graph.convertValueToString = function (cell) {
 
@@ -63,11 +71,11 @@ manywho.graph = (function() {
 
             this.style.initialize(graph);
 
+            this.element.initialize();
+
             editor.setGraphContainer(container);
 
             var outln = new mxOutline(graph, outline);
-
-            this.element.initialize();
 
             manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea');
 
@@ -75,12 +83,15 @@ manywho.graph = (function() {
 
         addElement: function (id, value, x, y, width, height, style) {
 
+            var cell;
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
 
             try {
 
-                graph.insertVertex(parent, id, value, x, y, width, height, style.toLowerCase());
+                cell = graph.insertVertex(parent, id, null, x, y, width, height, style.toLowerCase());
+
+                cell.value = value;
 
             }
             finally
@@ -89,15 +100,19 @@ manywho.graph = (function() {
                 graph.getModel().endUpdate();
 
             }
+
+            return cell;
 
         },
 
         createOutcome: function (id, value, origin, target, style) {
 
+            var outcome;
+
             graph.getModel().beginUpdate();
             try {
 
-                graph.insertEdge(graph.getDefaultParent(), id, value, origin, target, style);
+                outcome = graph.insertEdge(graph.getDefaultParent(), id, value, origin, target, style);
 
             }
             finally
@@ -106,6 +121,8 @@ manywho.graph = (function() {
                 graph.getModel().endUpdate();
 
             }
+
+            return outcome;
 
         },
 
