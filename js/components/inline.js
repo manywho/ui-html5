@@ -26,7 +26,6 @@ permissions and limitations under the License.
             var contentClass = (this.state && this.state.isVisible) ? '' : ' hidden';
             
             return React.DOM.div({ className: classes, id: this.props.id }, [
-                this.getLabel(model.label),
                 React.DOM.div({ className: contentClass, id: this.props.id }, [
                     manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
