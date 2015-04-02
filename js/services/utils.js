@@ -214,6 +214,18 @@ manywho.utils = (function (manywho, $) {
 
             }            
 
+        },
+
+        isEmbedded: function () {
+
+            return !document.documentElement.classList.contains('manywho');
+
+        },
+
+        isSmallScreen: function (flowKey) {
+
+            return document.getElementById(flowKey).clientWidth < 768;
+
         }
 
     }

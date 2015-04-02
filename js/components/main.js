@@ -35,7 +35,7 @@ permissions and limitations under the License.
 
         componentDidUpdate: function() {
             
-            if (document.documentElement.className.indexOf('manywho') != -1) {
+            if (!manywho.utils.isEmbedded()) {
 
                 var main = this.refs.main.getDOMNode();
                 var nav = this.refs.nav.getDOMNode();
