@@ -1,5 +1,55 @@
 manywho.graph.events = (function () {
 
+    // Defines a new class for all icons
+    function mxIconSet (state) {
+        this.images = [];
+        var graph = state.view.graph;
+
+        // Icon1
+        var img = mxUtils.createImage('http://png-1.findicons.com/files/icons/1722/gnome_2_18_icon_theme/16/stock_draw_line_connector_ends_with_arrow.png');
+        img.setAttribute('title', 'Create Outcome');
+        img.style.position = 'absolute';
+        img.style.cursor = 'pointer';
+        img.style.width = '16px';
+        img.style.height = '16px';
+        img.style.left = (state.x + state.width) + 'px';
+        img.style.top = (state.y - 16) + 'px';
+
+        mxEvent.addGestureListeners(img,
+            mxUtils.bind(this, function(evt)
+            {
+                // Disables dragging the image
+                mxEvent.consume(evt);
+            })
+        );
+
+        mxEvent.addListener(img, 'click',
+            mxUtils.bind(this, function(evt)
+            {
+                graph.removeCells([state.cell]);
+                mxEvent.consume(evt);
+                this.destroy();
+            })
+        );
+
+        state.view.graph.container.appendChild(img);
+        this.images.push(img);
+
+        mxIconSet.prototype.destroy = function()
+        {
+            if (this.images != null)
+            {
+                for (var i = 0; i < this.images.length; i++)
+                {
+                    var img = this.images[i];
+                    img.parentNode.removeChild(img);
+                }
+            }
+
+            this.images = null;
+        };
+    }
+
     var graphElement;
 
     return {
@@ -114,6 +164,84 @@ manywho.graph.events = (function () {
 
         },
 
+        registerDragIcons: function () {
+
+            var graph = manywho.graph.getGraphObject().graph;
+
+            // Defines the tolerance before removing the icons
+            var iconTolerance = 20;
+
+            graph.addMouseListener(
+                {
+                    currentState: null,
+                    currentIconSet: null,
+                    mouseDown: function(sender, me)
+                    {
+                        // Hides icons on mouse down
+                        if (this.currentState != null)
+                        {
+                            this.dragLeave(me.getEvent(), this.currentState);
+                            this.currentState = null;
+                        }
+                    },
+                    mouseMove: function(sender, me)
+                    {
+                        if (this.currentState != null && (me.getState() == this.currentState ||
+                            me.getState() == null))
+                        {
+                            var tol = iconTolerance;
+                            var tmp = new mxRectangle(me.getGraphX() - tol,
+                                me.getGraphY() - tol, 2 * tol, 2 * tol);
+
+                            if (mxUtils.intersects(tmp, this.currentState))
+                            {
+                                return;
+                            }
+                        }
+
+                        var tmp = graph.view.getState(me.getCell());
+
+                        // Ignores everything but vertices
+                        if (graph.isMouseDown || (tmp != null && !graph.getModel().isVertex(tmp.cell)))
+                        {
+                            tmp = null;
+                        }
+
+                        if (tmp != this.currentState)
+                        {
+                            if (this.currentState != null)
+                            {
+                                this.dragLeave(me.getEvent(), this.currentState);
+                            }
+
+                            this.currentState = tmp;
+
+                            if (this.currentState != null)
+                            {
+                                this.dragEnter(me.getEvent(), this.currentState);
+                            }
+                        }
+                    },
+                    mouseUp: function(sender, me) { },
+                    dragEnter: function(evt, state)
+                    {
+                        if (this.currentIconSet == null)
+                        {
+                            this.currentIconSet = new mxIconSet(state);
+                        }
+                    },
+                    dragLeave: function(evt, state)
+                    {
+                        if (this.currentIconSet != null)
+                        {
+                            this.currentIconSet.destroy();
+                            this.currentIconSet = null;
+                        }
+                    }
+                });
+
+        },
+
         initialize: function () {
 
             graphElement = document.getElementById('graph');
@@ -124,6 +252,7 @@ manywho.graph.events = (function () {
             this.registerTripleClick();
             this.registerKeyboardShortcuts();
             this.registerCellMove();
+            this.registerDragIcons();
 
         }
 

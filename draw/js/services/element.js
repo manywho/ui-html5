@@ -2,7 +2,7 @@ manywho.graph.element = (function() {
 
     return {
 
-        addDraggableElements: function(name) {
+        addDraggableElements: function (name) {
 
             var dragImage = document.getElementById(name).cloneNode(true);
 
@@ -10,16 +10,16 @@ manywho.graph.element = (function() {
             dragImage.style.marginLeft = '-60px';
             dragImage.style.marginTop = '-30px';
 
-            mxUtils.makeDraggable(document.getElementById(name), manywho.graph.getGraphObject(), function(graph, event, cell, x, y) {
+            mxUtils.makeDraggable(document.getElementById(name), manywho.graph.getGraphObject().graph, function(graph, event, cell, x, y) {
 
                 alert('Call system flow for type: ' + event.srcElement.id);
-                manywho.graph.addElement(null, name, x, y, 120, 60, name);
+                manywho.graph.addElement(null, name, x-60, y-30, 120, 60, name);
 
             }, dragImage);
 
         },
 
-        initialize: function() {
+        initialize: function () {
 
             this.addDraggableElements('step');
             this.addDraggableElements('input');
