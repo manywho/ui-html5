@@ -198,7 +198,7 @@ gulp.task('html-dist', function () {
 
 gulp.task('html-replace', function () {
 
-    return gulp.src('dist/default.html')
+    gulp.src('dist/default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
                 .pipe(htmlreplace({
