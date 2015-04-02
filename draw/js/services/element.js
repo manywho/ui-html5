@@ -5,6 +5,7 @@ manywho.graph.element = (function() {
         addDraggableElements: function(name) {
 
             var dragImage = document.getElementById(name).cloneNode(true);
+
             dragImage.style.width = '120px';
             dragImage.style.marginLeft = '-60px';
             dragImage.style.marginTop = '-30px';

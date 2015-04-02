@@ -21,8 +21,14 @@ manywho.graph = (function() {
         graph.htmlLabels = true;
         graph.keepEdgesInBackground = true;
 
-        options.MIN_HOTSPOT_SIZE = 16;
-        options.DEFAULT_HOTSPOT = 1;
+        graph.convertValueToString = function (cell) {
+
+            return cell.value.name;
+
+        };
+
+        mxConstants.MIN_HOTSPOT_SIZE = 16;
+        mxConstants.DEFAULT_HOTSPOT = 1;
 
         options.HIGHLIGHT_COLOR = '#99CC00';
         options.VERTEX_SELECTION_COLOR = '#DFF0D8';
@@ -30,7 +36,7 @@ manywho.graph = (function() {
         options.SHADOWCOLOR = '#C0C0C0';
 
         mxGraphHandler.prototype.guidesEnabled = true;
-        mxPanningHandler.prototype.useLeftButtonForPanning = true;
+        //mxPanningHandler.prototype.useLeftButtonForPanning = true;
 
         $.extend(mxConstants, options);
 
@@ -56,18 +62,24 @@ manywho.graph = (function() {
             this.element.initialize();
 
             manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea');
+
         },
 
         addElement: function (id, value, x, y, width, height, style) {
 
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
+
             try {
+
                 graph.insertVertex(parent, id, value, x, y, width, height, style.toLowerCase());
+
             }
             finally
             {
+
                 graph.getModel().endUpdate();
+
             }
 
         },
@@ -76,11 +88,15 @@ manywho.graph = (function() {
 
             graph.getModel().beginUpdate();
             try {
+
                 graph.insertEdge(graph.getDefaultParent(), id, value, origin, target, style);
+
             }
             finally
             {
+
                 graph.getModel().endUpdate();
+
             }
 
         },
@@ -100,7 +116,7 @@ manywho.graph = (function() {
         render: function () {
 
             var self = this;
-            var model = manywho.graph.model.getModel();
+            var model = manywho.draw.model.getModel();
 
             var parent = graph.getDefaultParent();
             graph.getModel().beginUpdate();
@@ -109,7 +125,11 @@ manywho.graph = (function() {
                 var mapElements =  model.mapElements.map(function (mapElement) {
 
                     mapElement.elementType = mapElement.elementType.toLowerCase();
-                    return self.addElement(mapElement.id, mapElement.developerName, mapElement.x, mapElement.y, mapElement.elementType == 'start' ? 60 : 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
+
+                    return self.addElement(mapElement.id, {
+                            name: mapElement.developerName,
+                            summary: mapElement.developerSummary
+                        }, mapElement.x, mapElement.y, manywho.utils.isEqual(mapElement.elementType, 'start', true) ? 60 : 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
 
                 });
 

@@ -84,7 +84,7 @@ manywho.graph.events = (function () {
 
                 if (graph.getSelectionCells().length > 0) {
 
-                    if (graph.getSelectionCells()[0].style == 'outcome') {
+                    if (manywho.utils.isEqual(graph.getSelectionCells()[0].style, 'outcome', true)) {
 
                         alert('Delete outcome: ' + graph.getSelectionCells()[0].value);
 
@@ -102,6 +102,18 @@ manywho.graph.events = (function () {
 
         },
 
+        registerCellMove: function () {
+
+            var graph = manywho.graph.getGraphObject().graph;
+
+            graph.addListener(mxEvent.CELLS_MOVED, function (graph, event) {
+
+                manywho.draw.model.updateModel();
+
+            });
+
+        },
+
         initialize: function () {
 
             graphElement = document.getElementById('graph');
@@ -111,6 +123,7 @@ manywho.graph.events = (function () {
             this.registerDoubleClick();
             this.registerTripleClick();
             this.registerKeyboardShortcuts();
+            this.registerCellMove();
 
         }
 
