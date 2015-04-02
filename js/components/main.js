@@ -35,12 +35,12 @@ permissions and limitations under the License.
 
         componentDidUpdate: function() {
             
-            if (document.documentElement.className.indexOf('manywho') != -1) {
+            if (!manywho.utils.isEmbedded()) {
 
-                var container = this.refs.container.getDOMNode();
+                var main = this.refs.main.getDOMNode();
                 var nav = this.refs.nav.getDOMNode();
 
-                var height = container.clientHeight + ((nav) ? nav.clientHeight : 0);
+                var height = main.clientHeight + ((nav) ? nav.clientHeight : 0);
 
                 if (height <= window.innerHeight) {
 

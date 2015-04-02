@@ -141,7 +141,7 @@ permissions and limitations under the License.
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                if (state.contentValue == "true" || state.contentValue === true) {
+                if ((typeof state.contentValue == "string" && manywho.utils.isEqual(state.contentValue, "true", true)) || state.contentValue === true) {
                     attributes.checked = 'checked';
                 }
 
