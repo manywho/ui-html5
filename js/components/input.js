@@ -56,7 +56,11 @@ permissions and limitations under the License.
 
                 } else {
 
-                    datepickerElement.value = "";
+                    stateDate = new Date();
+                    datepickerElement.value = stateDate.toLocaleDateString();
+                    var stateValue = { contentValue: stateDate.toLocaleDateString() };
+
+                    manywho.state.setComponent(this.props.id, stateValue, this.props.flowKey, true);
 
                 }
 
