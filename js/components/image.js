@@ -15,9 +15,12 @@
 
         render: function () {
 
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-            return React.DOM.img({ className: 'img-responsive', src: model.content, id: this.props.id }, null);
+            return React.DOM.div({ className: classes }, [
+                React.DOM.img({ className: 'img-responsive' , src: model.content, id: this.props.id }, null)
+            ]);
 
         }
 
