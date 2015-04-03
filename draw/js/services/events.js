@@ -169,7 +169,7 @@ manywho.graph.events = (function () {
             var graph = manywho.graph.getGraphObject().graph;
 
             // Defines the tolerance before removing the icons
-            var iconTolerance = 20;
+            var iconTolerance = 30;
 
             graph.addMouseListener(
                 {
@@ -239,6 +239,23 @@ manywho.graph.events = (function () {
                         }
                     }
                 });
+
+        },
+
+        changeTheme: function (select) {
+
+            var themeUrl = 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/' + select.value + '/bootstrap.min.css';
+            document.getElementById('theme').href = themeUrl;
+
+        },
+
+        registerNavClickEvent: function (name) {
+
+            document.getElementById(name).addEventListener('click', function(event) {
+
+
+
+            });
 
         },
 

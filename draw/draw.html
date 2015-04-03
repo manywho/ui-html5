@@ -5,7 +5,7 @@
     <title>Draw</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/superhero/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/yeti/bootstrap.min.css" id="theme" />
     <link rel="stylesheet" href="css/draw.css" />
 
 
@@ -67,9 +67,27 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="execute-buttons"><a class="btn btn-success" href="#">Run</a></li>
-                    <li class="execute-buttons"><a class="btn btn-warning" href="#">Activate</a></li>
-                    <li class="execute-buttons"><a class="btn btn-danger" href="#">Save and Close</a></li>
+                    <select class="select" onchange="manywho.graph.events.changeTheme(this)">
+                        <option value="cerulean">Cerulean</option>
+                        <option value="cosmo">Cosmo</option>
+                        <option value="cyborg">Cyborg</option>
+                        <option value="darkly">Darkly</option>
+                        <option value="flatly">Flatly</option>
+                        <option value="journal">Journal</option>
+                        <option value="lumen">Lumen</option>
+                        <option value="paper">Paper</option>
+                        <option value="readable">Readable</option>
+                        <option value="sandstone">Sandstone</option>
+                        <option value="simplex">Simplex</option>
+                        <option value="slate">Slate</option>
+                        <option value="spacelab">Spacelab</option>
+                        <option value="superhero">Superhero</option>
+                        <option value="united">United</option>
+                        <option selected value="yeti">Yeti</option>
+                    </select>
+                    <li class="execute-buttons"><p class="navbar-btn"><a class="btn btn-success" href="#">Run</a></p></li>
+                    <li class="execute-buttons"><p class="navbar-btn"><a class="btn btn-warning" href="#">Activate</a></p></li>
+                    <li class="execute-buttons"><p class="navbar-btn"><a class="btn btn-danger" href="#">Save and Close</a></p></li>
                 </ul>
             </div>
         </div>
@@ -98,7 +116,10 @@
     <script>
         var manywho = {
 
-            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf'
+            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+            platform: {
+                uri: 'https://flow.manywho.com'
+            }
 
         };
     </script>
