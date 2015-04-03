@@ -86,13 +86,7 @@ permissions and limitations under the License.
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
                 (isFullWidth) ? 'container-fluid full-width' : 'container'
             ];
-
-            if (!manywho.utils.isEmbedded() && manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
-
-                classNames.push('nav-fixed-padding');
-
-            }
-            
+                        
             return React.DOM.div({ className: 'full-height', ref: 'container' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
                         React.DOM.div({ className: classNames.join(' '), onKeyUp: this.onEnter, ref: 'main' }, [
