@@ -19,7 +19,7 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             return React.DOM.div({ className: classes }, [
-                React.DOM.img({ className: 'img-responsive' , src: model.content, id: this.props.id }, null)
+                React.DOM.img({ className: 'img-responsive' , src: model.content, alt: model.developerName, id: this.props.id }, null)
             ]);
 
         }
