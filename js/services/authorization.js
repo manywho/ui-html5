@@ -11,23 +11,23 @@ permissions and limitations under the License.
 
 manywho.authorization = (function (manywho) {
 
-    function setAuthenticationToken(callback, flowKey, response) {
-        
-        var authenticationToken = response.outputs.filter(function (output) {
-
-            return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
-
-        }).map(function (output) {
-
-            return output.contentValue;
-
-        })[0];
-        
-        manywho.state.setAuthenticationToken(authenticationToken, flowKey);
-
-    }
-
     return {
+
+        setAuthenticationToken: function (callback, flowKey, response) {
+
+            var authenticationToken = response.outputs.filter(function (output) {
+
+                return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
+
+            }).map(function (output) {
+
+                return output.contentValue;
+
+            })[0];
+
+            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
+
+        },
 
         isAuthorized: function(response, flowKey) {
 
@@ -85,7 +85,7 @@ manywho.authorization = (function (manywho) {
 
                         // When the authentication flow is "DONE" call setAuthenticationToken
                         manywho.callbacks.register(authenticationFlow.key, {
-                            execute: setAuthenticationToken,
+                            execute: manywho.authorization.setAuthenticationToken,
                             type: 'done',
                             args: [flowKey]
                         });

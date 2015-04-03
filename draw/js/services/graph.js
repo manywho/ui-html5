@@ -67,17 +67,17 @@ manywho.graph = (function() {
 
             setDefaultGraphSettings();
 
-            this.events.initialize();
+            manywho.graph.events.initialize();
 
-            this.style.initialize(graph);
+            manywho.graph.style.initialize(graph);
 
-            this.element.initialize();
+            manywho.graph.element.initialize();
 
             editor.setGraphContainer(container);
 
             var outln = new mxOutline(graph, outline);
 
-            manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea');
+            manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main'));
 
         },
 

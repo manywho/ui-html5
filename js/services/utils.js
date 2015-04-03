@@ -226,6 +226,12 @@ manywho.utils = (function (manywho, $) {
 
             return document.getElementById(flowKey).clientWidth < 768;
 
+        },
+
+        isDrawTool: function (flowKey) {
+
+            return this.isEqual(manywho.model.getParentForModal(flowKey), 'draw_draw_draw_main', true);
+
         }
 
     }

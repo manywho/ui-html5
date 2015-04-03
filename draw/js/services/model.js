@@ -52,7 +52,7 @@ manywho.draw.model = (function () {
 
             });
 
-            manywho.draw.ajax.updateFlowGraph(model);
+            manywho.draw.ajax.updateFlowGraph(model, manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main'));
 
         }
 

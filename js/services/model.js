@@ -145,11 +145,12 @@ permissions and limitations under the License.
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
-            flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
-            flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
-            flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
+
+                flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
+                flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+                flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
@@ -179,7 +180,7 @@ permissions and limitations under the License.
 
                         }
 
-                        flowModel[flowKey].containers[item.pageContainerId].childCount++
+                        flowModel[flowKey].containers[item.pageContainerId].childCount++;
 
                         if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
 
@@ -241,16 +242,16 @@ permissions and limitations under the License.
 
                 }
 
-            }
+                flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+                flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
 
-            flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
-            flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
-            
-            switch (engineInvokeResponse.invokeType.toLowerCase())
-            {
-                case "wait":
-                    manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
-                    break;
+                switch (engineInvokeResponse.invokeType.toLowerCase())
+                {
+                    case "wait":
+                        manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
+                        break;
+                }
+
             }
 
         },
@@ -497,6 +498,12 @@ permissions and limitations under the License.
             }
 
             return null;
+
+        },
+
+        getModalForFlow: function (flowKey) {
+
+            return flowModel[flowKey].modal;
 
         },
 

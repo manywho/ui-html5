@@ -85,7 +85,7 @@ manywho.component = (function (manywho) {
         
         getByName: function (name) {
 
-            if (aliases[name.toLowerCase()]) {
+            if (name && aliases[name.toLowerCase()]) {
 
                 name = aliases[name.toLowerCase()];
 

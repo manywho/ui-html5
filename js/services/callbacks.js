@@ -11,7 +11,7 @@ permissions and limitations under the License.
 
 manywho.callbacks = (function (manywho) {
 
-    var callbacks = {}
+    var callbacks = {};
 
     return {
 
@@ -33,7 +33,7 @@ manywho.callbacks = (function (manywho) {
                         return false;
 
                     }
-                    
+
                     if (name && !manywho.utils.isEqual(item.name, name, true)) {
 
                         return false;

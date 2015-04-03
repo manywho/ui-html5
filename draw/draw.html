@@ -41,7 +41,7 @@
 
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="#">Flows</a></li>
+                    <li><a id="flow" href="#">Flows</a></li>
                     <li><a href="#">Page Layouts</a></li>
                     <li><a href="#">Navigation Bar</a></li>
                     <li><a href="#">Values</a></li>
@@ -94,7 +94,7 @@
     </nav>
 
     <div id="manywho">
-        <div class="mw-bs draw-tool container-fluid">
+        <div id="draw-tool" class="mw-bs container-fluid">
             <div class="row-fluid clearfix">
                 <div class="col-md-2">
                     <h1 id="flow-title">Flow Title Here</h1>
@@ -111,16 +111,68 @@
                 </div>
             </div>
         </div>
+        <div id="draw-modal">
+        </div>
     </div>
 
     <script>
+
         var manywho = {
+            cdnUrl: '',
+            initialize: function () {
 
-            adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
-            platform: {
-                uri: 'https://flow.manywho.com'
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    platform: {
+                        uri: 'https://flow.manywho.com'
+                    }
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    trackLocation: false,
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    autoFocusInput: true,
+                    inputs: null,
+                    annotations: null,
+                    collapsible: true,
+                    navigation: {
+                        isFixed: true
+                    }
+                };
+
+                var settings = window.devOptions || {};
+
+                var tenantId = queryParameters['tenant-id'] || settings.tenant;
+                if (!tenantId) {
+
+                    tenantId = window.location.pathname
+                            .split('/')
+                            .filter(function (path) {
+
+                                return path && path.length > 0;
+
+                            })[0];
+
+                }
+
+
+                manywho.draw.initialize()
+
             }
-
         };
     </script>
 
@@ -190,7 +242,7 @@
     <script src="../js/components/debug.js"></script>
 
     <script>
-        manywho.draw.initialize();
+        manywho.initialize();
     </script>
 
 </body>

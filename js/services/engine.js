@@ -353,7 +353,7 @@ manywho.engine = (function (manywho) {
 
                 manywho.collaboration.move(flowKey);
                 
-                if (manywho.utils.isModal(flowKey) && manywho.utils.isEqual(response.invokeType, 'done', true)) {
+                if (manywho.utils.isModal(flowKey) && manywho.utils.isEqual(response.invokeType, 'done', true) && !manywho.utils.isDrawTool(flowKey)) {
                     
                     manywho.model.setModal(parentFlowKey, null);
                                        
@@ -382,12 +382,17 @@ manywho.engine = (function (manywho) {
 
             })
             .always(function () {
-                               
-                manywho.state.setLoading('main', null, flowKey);
-                self.render(parentFlowKey);
 
-                manywho.component.focusInput(parentFlowKey);
-                manywho.component.scrollToTop(parentFlowKey);
+                manywho.state.setLoading('main', null, flowKey);
+
+                if (!manywho.utils.isDrawTool(flowKey)) {
+
+                    self.render(parentFlowKey);
+
+                    manywho.component.focusInput(parentFlowKey);
+                    manywho.component.scrollToTop(parentFlowKey);
+
+                }
 
                 manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
                 moveResponse = null;
@@ -419,7 +424,7 @@ manywho.engine = (function (manywho) {
             if (stateId) {
 
                 this.join(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options);
-                
+
             }
             else {
 
@@ -441,6 +446,94 @@ manywho.engine = (function (manywho) {
 
         },
 
+        initializeSystemFlow: function(flowName, drawKey, inputs, callbacks) {
+
+            var self = this;
+
+            var authenticationToken = manywho.state.getAuthenticationToken(drawKey);
+
+            var flowKey;
+
+            manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
+                .then(function (response) {
+
+                    var initializationRequest = manywho.json.generateInitializationRequest(
+                        { id: response.id.id, versionId: response.id.versionId },
+                        null,
+                        null,
+                        inputs,
+                        manywho.settings.global('playerUrl'),
+                        manywho.settings.global('joinUrl'),
+                        '',
+                        ''
+                    );
+
+                    flowKey = manywho.utils.getFlowKey(manywho.settings.global('adminTenantId'), response.id.id, response.id.versionId, null, 'modal');
+
+                    manywho.model.initializeModel(drawKey);
+                    manywho.model.parseEngineResponse(null, drawKey);
+                    manywho.model.setModal(drawKey, flowKey);
+
+                    return manywho.ajax.initialize(initializationRequest, manywho.settings.global('adminTenantId'), authenticationToken);
+                })
+                .then(function (response) {
+
+                    manywho.settings.initializeFlow(null, flowKey);
+                    manywho.model.initializeModel(flowKey);
+
+                    manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+
+                    manywho.component.appendFlowContainer(flowKey);
+                    manywho.state.setLoading('modal', { message: 'Initializing...' }, flowKey);
+                    self.render(flowKey);
+
+                    callbacks.forEach(function (callback) {
+                        manywho.callbacks.register(flowKey, callback);
+                    });
+
+                    var invokeRequest = manywho.json.generateInvokeRequest(
+                        manywho.state.getState(flowKey),
+                        'FORWARD',
+                        null,
+                        null,
+                        null,
+                        manywho.settings.flow('annotations', flowKey),
+                        manywho.state.getLocation(flowKey),
+                        manywho.settings.flow('mode', flowKey)
+                    );
+
+                    return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey));
+
+                })
+                .then(function (response) {
+
+                    self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
+
+                    manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+
+                    manywho.state.setLocation(flowKey);
+
+                    var deferreds = [];
+
+                    if (manywho.settings.isDebugEnabled(flowKey)) {
+
+                        deferreds.push(loadExecutionLog(flowKey, authenticationToken));
+
+                    }
+
+                    return $.whenAll(deferreds);
+
+                })
+                .then(function () {
+
+                    manywho.state.setLoading('modal', null, flowKey);
+                    self.render(flowKey);
+                    processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
+
+                });
+
+        },
+
         move: function(outcome, flowKey) {
 
             // Validate all of the components on the page here...
@@ -448,9 +541,9 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            if(manywho.utils.isModal(flowKey)) {
+            if(manywho.utils.isModal(flowKey) && !manywho.utils.isDrawTool(flowKey)) {
 
-                parentFlowKey = manywho.model.getParentForModal(flowKey);
+                var parentFlowKey = manywho.model.getParentForModal(flowKey);
                 if(parentFlowKey) {
                     manywho.state.setLoading('main', { message: 'Executing...' }, parentFlowKey);
                     this.render(parentFlowKey);
@@ -693,13 +786,19 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+            var container = document.getElementById(flowKey);
+
+            if (manywho.utils.isDrawTool(flowKey)) {
+
+                container = document.getElementById('draw-modal');
+
+            } else if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                 flowKey = manywho.model.getParentForModal(flowKey);
 
             }
 
-            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), document.getElementById(flowKey));
+            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), container);
 
         }
 
