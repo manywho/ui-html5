@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 manywho.settings = (function (manywho, $) {
 
     var globals = {
@@ -6,10 +17,10 @@ manywho.settings = (function (manywho, $) {
             select: 250
         },
         collaboration: {
-            uri: 'http://localhost:4444'
+            uri: 'https://realtime.manywho.com'
         },
         platform: {
-            uri: 'https://flow.manywho.com'
+            uri: ''
         },
         navigation: {
             isFixed: true
@@ -27,7 +38,8 @@ manywho.settings = (function (manywho, $) {
                 "table directionality emoticons paste textcolor"
             ]
         },
-        isFullWidth: false
+        isFullWidth: false,
+        collapsible: false
     };
 
     var flows = {};
@@ -92,8 +104,8 @@ manywho.settings = (function (manywho, $) {
 
         initialize: function(custom, handlers) {
 
-            globals = $.extend(globals, custom);
-            events = $.extend(events, handlers);
+            globals = $.extend(true, globals, custom);
+            events = $.extend(true, events, handlers);
 
             toLowerCaseKeys(globals);
             toLowerCaseKeys(events);

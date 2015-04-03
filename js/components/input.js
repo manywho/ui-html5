@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
 
     function getInputType(contentType) {
@@ -45,7 +56,11 @@
 
                 } else {
 
-                    datepickerElement.value = "";
+                    stateDate = new Date();
+                    datepickerElement.value = stateDate.toLocaleDateString();
+                    var stateValue = { contentValue: stateDate.toLocaleDateString() };
+
+                    manywho.state.setComponent(this.props.id, stateValue, this.props.flowKey, true);
 
                 }
 
@@ -55,7 +70,11 @@
 
         componentWillUnmount: function () {
 
-            if (this.refs.datepicker) this.refs.datepicker.getDOMNode().datepicker('destroy');
+            if (this.refs.datepicker) {
+
+                $(this.refs.datepicker.getDOMNode()).datepicker('destroy');
+
+            }
 
         },
 
@@ -106,7 +125,7 @@
             }
 
             if (!model.isEditable) {
-                attributes.readOnly = '';
+                attributes.readOnly = 'readonly';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -122,7 +141,7 @@
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                if (JSON.parse(state.contentValue.toLowerCase())) {
+                if ((typeof state.contentValue == "string" && manywho.utils.isEqual(state.contentValue, "true", true)) || state.contentValue === true) {
                     attributes.checked = 'checked';
                 }
 
@@ -145,7 +164,6 @@
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
-                    attributes.readOnly = "readonly";
 
                 }
 

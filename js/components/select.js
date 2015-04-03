@@ -1,4 +1,15 @@
-﻿(function (manywho) {
+﻿/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
+(function (manywho) {
 
     function renderOption (item) {
 
@@ -21,13 +32,22 @@
 
     }
 
-    function getSelectedOption (options) {
+    function getSelectedOptions (options) {
 
         return options.filter(function (value) {
 
-            return value.props.selected == "selected";
+            if (value.props) {
 
-        })[0];
+                return manywho.utils.isEqual(value.props.selected, "selected", true);
+
+            }
+            else {
+
+                return value.selected;
+
+            }           
+
+        });
 
     }
 
@@ -36,19 +56,26 @@
         handleChange: function(e, args) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var selectedObjectData = null;
 
-            model.objectData.map(function (item) {
+            model.objectData = model.objectData.map(function (item) {
 
                 item.isSelected = false;
+                return item;
 
             });
 
-            if (!manywho.utils.isNullOrWhitespace(args.selected)) {
+            var selectedObjectData = null;
+            var selectedOptions = getSelectedOptions(Array.prototype.slice.call(e.currentTarget.options));
+
+            if (selectedOptions && selectedOptions.length > 0) {
 
                 selectedObjectData = model.objectData.filter(function (item) {
 
-                    return manywho.utils.isEqual(item.externalId, args.selected, true);
+                    return (selectedOptions.filter(function (option) {
+
+                        return manywho.utils.isEqual(item.externalId, option.value, true);
+
+                    }).length > 0);                    
 
                 })
                 .map(function (item) {
@@ -86,11 +113,15 @@
             };
 
             if (model.isRequired) {
-                attributes.required = '';
+                attributes.required = 'required';
             }
 
             if (!model.isEnabled || !model.isEditable) {
                 attributes.disabled = 'disabled';
+            }
+
+            if (model.isMultiSelect) {
+                attributes.multiple = 'multiple';
             }
 
             attributes.placeholder = model.hintValue || 'Please select an option';
@@ -99,12 +130,13 @@
 
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
                 attributes.children = options;
-                var selectedOption = getSelectedOption(options);
 
-                if (selectedOption != null) {
-                    attributes.value = selectedOption.props.value;
-                } else {
+                var selectedOptions = getSelectedOptions(options);
+
+                if (selectedOptions && selectedOptions.length > 0) {
+
                     options.unshift(React.DOM.option({ value: '' }));
+
                 }
 
             }

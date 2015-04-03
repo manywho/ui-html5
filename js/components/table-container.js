@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
 
     function getDisplayColumns(columns, outcomes) {
@@ -31,27 +42,40 @@
     function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
 
         var headerElements = [];
+        var searchElement = null;
+        var outcomesElement = null;
 
         if (isSearchEnabled) {
 
-            headerElements.push(React.DOM.div({ className: 'input-group table-search' }, [
+            searchElement = React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
                         React.DOM.button({ className: 'btn btn-default', onClick: search },
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
-            ]));
+            ]);
 
         }
 
         if (outcomes) {
 
-            headerElements.push(React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
+            outcomesElement =  React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
 
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
 
-            })));
+            }));
+
+        }
+
+        if (document.getElementById(flowKey).clientWidth < 768) {
+
+            headerElements = [outcomesElement, searchElement];
+
+        }
+        else {
+
+            headerElements = [searchElement, outcomesElement];
 
         }
 
@@ -97,6 +121,7 @@
 
         outcomes: null,
 
+        mixins: [manywho.component.mixins.collapse],
 
         onSearchChanged: function (e) {
 
@@ -125,13 +150,6 @@
         },
 
         onRowClicked: function (e) {
-
-            if (!areBulkActionsDefined(this.outcomes)) {
-
-                // Don't select the row if there aren't any bulk actions defined
-                return;
-
-            }
 
             var selectedRows = this.state.selectedRows;
 
@@ -256,6 +274,33 @@
                 var message = loading.message;
             }
 
+            var objectData = model.objectData;
+
+            if (model.objectData && state.objectData) {
+
+                objectData = model.objectData.map(function (modelItem) {
+
+                    var stateObjectData = state.objectData.filter(function (stateItem) {
+
+                        return manywho.utils.isEqual(modelItem.externalId, stateItem.externalId) && manywho.utils.isEqual(modelItem.internalId, stateItem.internalId);
+
+                    })[0];
+
+                    if (stateObjectData) {
+
+                        return $.extend({}, modelItem, stateObjectData);
+
+                    }
+                    else {
+
+                        return modelItem;
+
+                    }
+
+                });
+
+            }
+
             var displayColumns = getDisplayColumns(model.columns, this.outcomes);            
             var isWaitVisible = loading && !loading.error;
             var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
@@ -295,7 +340,9 @@
             else {
 
                 content = React.createElement(tableComponent, {
+                    id: this.props.id,
                     model: model,
+                    objectData: objectData,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
                     onOutcome: this.onOutcome,
@@ -311,11 +358,14 @@
             var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
 
             return React.DOM.div({ className: classNames }, [
-                (model.fileDataRequest) ? fileUpload : null,    
-                renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
-                content,
-                renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
-                React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.h3({ className: 'container-label' }, model.label),
+                React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
+                    (model.fileDataRequest) ? fileUpload : null,    
+                    renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
+                    content,
+                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
+                    React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                ])
             ]);
 
         }

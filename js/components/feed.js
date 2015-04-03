@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
 
     var feedInput = React.createClass({
@@ -6,10 +17,16 @@
 
             var self = this;
 
-            this.props.send(this.state.text, this.props.messageId)
+            this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers)
                 .then(function () {
 
-                    self.setState({ text: '' });
+                    self.setState({
+                        text: '',
+                        mentionedUsers: {},
+                        users: [],
+                        selectedUser: null,
+                        selectedIndex: 0
+                    });
 
                 });
 
@@ -18,7 +35,7 @@
         onMentionClick: function(e) {
 
             this.setState({ 
-                mentionSelected: e.currentTarget.id
+                selectedUser: e.currentTarget.id
             });
 
             this.insertMention();
@@ -27,10 +44,16 @@
 
         insertMention: function() {
 
-            this.setState({
-                text: this.state.text.trim().replace(/@[A-Za-z]{2,}$/, '@[' + this.state.mentionUsers[this.state.mentionSelected].fullName + ']'),
-                mentionIsVisible: false
-            });
+            var state = {
+                text: this.state.text.trim().replace(/@[A-Za-z]{2,}$/, '@[' + this.state.users[this.state.selectedIndex].fullName + ']'),
+                mentionIsVisible: false,
+                mentionedUsers: this.state.mentionedUsers
+            }
+
+            var selectedUser = this.state.users[this.state.selectedIndex];
+            state.mentionedUsers[selectedUser.id] = selectedUser;
+            
+            this.setState(state);
 
         },
 
@@ -58,13 +81,13 @@
             if (e.charCode == 38 && this.state.mentionIsVisible) {
 
                 e.preventDefault();
-                this.setState({ mentionSelected: Math.max(this.state.selected--, 0) });
+                this.setState({ selectedUser: Math.max(this.state.selectedIndex--, 0) });
 
             }
             else if (e.charCode == 40 && this.state.mentionIsVisible) {
 
                 e.preventDefault();
-                this.setState({ mentionSelected: Math.min(this.state.selected++, this.state.mentionUsers.length) });
+                this.setState({ selectedUser: Math.min(this.state.selectedIndex++, this.state.users.length) });
 
             }
 
@@ -86,7 +109,9 @@
                         .then(function (response) {
 
                             self.setState({
-                                mentionUsers: response,
+                                users: response,
+                                selectedUser: null,
+                                selectedIndex: 0,
                                 mentionIsVisible: true
                             });
 
@@ -108,23 +133,31 @@
             return {
                 text: '',
                 mentionisVisible: false,
-                mentionUsers: [],
-                mentionSelected: 0
+                mentionedUsers: {},
+                users: [],
+                selectedUser: null,
+                selectedIndex: 0
             }
 
         },
 
         render: function () {
 
-            var mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.mentionUsers.map(function(user, index) {
+            var mention = null;
 
-                return React.DOM.li({
-                    className: 'list-group-item ' + ((index == this.state.mentionSelected) ? 'active' : null),
-                    id: index,
-                    onClick: this.onMentionClick
-                }, user.fullName);
+            if (this.state.users) {
 
-            }, this));
+                mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.users.map(function (user, index) {
+
+                    return React.DOM.li({
+                        className: 'list-group-item ' + ((index == this.state.selectedIndex) ? 'active' : null),
+                        id: index,
+                        onClick: this.onMentionClick
+                    }, user.fullName);
+
+                }, this));
+
+            }
 
             return React.DOM.div({ className: 'input-group feed-post' }, [
                 React.DOM.div({ className: 'input-group-btn feed-post-button' },
@@ -158,9 +191,9 @@
 
         },
 
-        onSendMessage: function(message, messageId) {
+        onSendMessage: function(message, messageId, mentionedUsers) {
 
-           return manywho.social.sendMessage(this.props.flowKey, message, messageId);
+            return manywho.social.sendMessage(this.props.flowKey, message, messageId, mentionedUsers);
 
         },
         
@@ -183,7 +216,7 @@
                                 React.DOM.span({ className: 'feed-sender' }, message.sender.fullName),
                                 React.DOM.span({ className: 'feed-created-date' }, createdDate.toLocaleString()),
                             ]),
-                            React.DOM.span({ className: 'feed-message-text' }, message.text),
+                            React.DOM.div({ className: 'feed-message-text', dangerouslySetInnerHTML: { __html: message.text } }, null),
                             this.renderThread(message.comments, false),
                             isCommentingEnabled && React.createElement(feedInput, { caption: 'Comment', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage }, null)
                         ])
@@ -233,11 +266,11 @@
                     React.DOM.div({ className: 'panel-heading clearfix' }, [
                         React.DOM.h3({ className: 'panel-title pull-left' }, 'Feed'),
                         React.DOM.div({ className: 'pull-right btn-group' }, [
-                            React.DOM.button({ className: 'btn btn-default', onClick: this.onToggleFollow }, [
+                            React.DOM.button({ className: 'btn btn-default btn-sm', onClick: this.onToggleFollow }, [
                                 React.DOM.span({ className: 'glyphicon glyphicon-pushpin'}, null),
                                 ' ' + followCaption
                             ]),
-                            React.DOM.button({ className: 'btn btn-default', onClick: this.onRefresh }, [
+                            React.DOM.button({ className: 'btn btn-default btn-sm', onClick: this.onRefresh }, [
                                 React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null),
                                 ' Refresh'
                             ])

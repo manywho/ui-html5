@@ -1,5 +1,55 @@
-﻿(function (manywho) {
+﻿/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
+(function (manywho) {
   
+    function getPropertyValue(objectData, id, propertyId) {
+
+        return objectData.filter(function (item) {
+
+            return manywho.utils.isEqual(item.externalId, id, true);
+
+        })
+        [0].properties.filter(function (item) {
+
+            return manywho.utils.isEqual(item.typeElementPropertyId, propertyId, true);
+
+        })
+        [0].contentValue;
+
+    }
+
+    function setPropertyValue(objectData, id, propertyId, value) {
+
+        return objectData.map(function (item) {
+
+            item.properties = item.properties.map(function (prop) {
+
+                if (manywho.utils.isEqual(prop.typeElementPropertyId, propertyId, true)
+                    && manywho.utils.isEqual(item.externalId, id, true)) {
+
+                    prop.contentValue = value;
+
+                }
+
+                return prop;
+
+            });
+
+            return item;
+
+        });
+
+    }
+    
     var tableLarge = React.createClass({
 
         renderHeaderRow: function(displayColumns) {
@@ -25,6 +75,60 @@
 
             var objectDataId = e.target.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
+
+        },
+
+        onCellClick: function(e) {
+
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (this.state.currentCellEdit) {
+
+                var id = this.state.currentCellEdit.split('|')[1];
+                var propertyId = this.state.currentCellEdit.split('|')[0];
+
+                var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
+                manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
+
+            }
+
+            this.setState({
+                currentCellEdit: e.currentTarget.id + '|' + e.currentTarget.parentElement.id,
+                currentCellEditValue: getPropertyValue(this.props.objectData, e.currentTarget.parentElement.id, e.currentTarget.id)
+            });
+
+        },
+
+        onCellChanged: function(e) {
+            
+            this.setState({ currentCellEditValue: e.currentTarget.value })
+
+        },
+
+        onCellKeyUp: function(e) {
+
+            if (e.keyCode == 13) {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (this.state.currentCellEdit) {
+                    
+                    var id = this.state.currentCellEdit.split('|')[1];
+                    var propertyId = this.state.currentCellEdit.split('|')[0];
+
+                    var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
+                    manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
+
+                    this.setState({
+                        currentCellEdit: null,
+                        currentCellEditValue: null
+                    });
+
+                }
+
+            }
 
         },
 
@@ -66,9 +170,18 @@
                                 return React.DOM.td(null, React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info btn-sm' }, 'Download'));
 
                             }
+                            else if (manywho.utils.isEqual(this.state.currentCellEdit, column.typeElementPropertyId + '|' + item.externalId, true)) {
+
+                                return React.DOM.td({ id: column.typeElementPropertyId },
+                                    React.DOM.input({ className: 'form-control input-sm', onChange: this.onCellChanged, onKeyUp: this.onCellKeyUp, ref: 'cellEditor', value: this.state.currentCellEditValue })
+                                );
+
+                            }
                             else {
 
-                                return React.DOM.td(null, React.DOM.span(null, selectedProperty.contentValue));
+                                return React.DOM.td({ id: column.typeElementPropertyId, onClick: column.isEditable && this.onCellClick },
+                                    React.DOM.span(null, selectedProperty.contentValue)
+                                );
 
                             }                            
 
@@ -82,17 +195,34 @@
 
         },
 
+        getInitialState: function() {
+
+            return {}
+
+        },
+
+        componentDidUpdate: function() {
+
+            if (this.refs.cellEditor) {
+
+                this.refs.cellEditor.getDOMNode().focus();
+
+            }
+
+        },
+
         render: function () {
 
             log.info('Rendering Table-Large');
                       
             var tableClassNames = [
                 'table table-bordered',
-                (this.props.isSelectionEnabled) ? 'table-hover' : ''
+                (this.props.isSelectionEnabled) ? 'table-hover' : '',
+                (this.props.model.isValid) ? '' : 'table-invalid'
             ].join(' ');
-
+            
             var rows = [this.renderHeaderRow(this.props.displayColumns)];
-            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.model.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
+            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
             
             return React.DOM.div({ className: 'table-responsive' },
                 React.DOM.table({ className: tableClassNames },

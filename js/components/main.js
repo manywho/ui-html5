@@ -1,3 +1,14 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
 
     var main = React.createClass({
@@ -11,6 +22,38 @@
             if (!manywho.model.getModal(this.props.flowKey)) {
 
                 manywho.component.focusInput(this.props.flowKey);
+
+            }
+
+            window.addEventListener("beforeunload", function (event) {
+
+                manywho.engine.sync(this.props.flowKey);
+
+            }.bind(this));
+
+        },
+
+        componentDidUpdate: function() {
+            
+            if (!manywho.utils.isEmbedded()) {
+
+                var main = this.refs.main.getDOMNode();
+                var nav = this.refs.nav.getDOMNode();
+
+                var height = main.clientHeight + ((nav) ? nav.clientHeight : 0);
+
+                if (height <= window.innerHeight) {
+
+                    document.body.style.height = "100%";
+                    document.documentElement.style.height = "100%";
+
+                }
+                else {
+
+                    document.body.style.height = "auto";
+                    document.documentElement.style.height = "auto";
+
+                }
 
             }
 
@@ -44,11 +87,13 @@
                 (isFullWidth) ? 'container-fluid full-width' : 'container'
             ].join(' ');
             
-            return React.DOM.div({ className: 'full-height' }, [
-                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
-                        React.DOM.div({ className: classNames, onKeyUp: this.onEnter }, [
+            return React.DOM.div({ className: 'full-height', ref: 'container' }, [
+                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
+                        React.DOM.div({ className: classNames, onKeyUp: this.onEnter, ref: 'main' }, [
                             componentElements,
                             outcomeElements,
+                            React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),
+                            React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey }),
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         modal,

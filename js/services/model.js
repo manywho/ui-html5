@@ -1,6 +1,57 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
 
     var flowModel = {};
+
+    function decodeEntities(item, textArea) {
+
+        if (item.contentValue) {
+
+            textArea.innerHTML = item.contentValue;
+            item.contentValue = textArea.textContent;
+            textArea.textContent = '';
+
+        }
+
+        if (item.objectData) {
+
+            item.objectData.forEach(function (objectData) {
+
+                if (objectData.properties) {
+
+                    objectData.properties = objectData.properties.map(function (prop) {
+
+                        if (prop.contentValue) {
+
+                            textArea.innerHTML = prop.contentValue;
+                            prop.contentValue = textArea.textContent;
+                            textArea.textContent = '';
+
+                        }
+
+                        return prop;
+
+                    });
+
+                }
+
+            });
+
+        }
+
+        return item;
+
+    }
 
     function updateData(collection, item, key) {
 
@@ -94,6 +145,9 @@
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
+            flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
+            flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+            flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
@@ -113,6 +167,8 @@
 
                     }, this);
 
+                    var decodeTextArea = document.createElement('textarea');
+
                     engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
                         flowModel[flowKey].components[item.id] = item;
@@ -126,7 +182,9 @@
                         flowModel[flowKey].containers[item.pageContainerId].childCount++
 
                         if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+
                             flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                            flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
 
                         }
 
@@ -185,17 +243,14 @@
 
             }
 
-            flowModel[flowKey].preCommitStateValues = engineInvokeResponse && engineInvokeResponse.preCommitStateValues;
-            flowModel[flowKey].stateValues = engineInvokeResponse && engineInvokeResponse.stateValues;
-
-            if (engineInvokeResponse) {
-
-                switch (engineInvokeResponse.invokeType.toLowerCase()) {
-                    case "wait":
-                        manywho.state.setLoading('main', {message: engineInvokeResponse.waitMessage}, flowKey);
-                        break;
-                }
-
+            flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+            flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
+            
+            switch (engineInvokeResponse.invokeType.toLowerCase())
+            {
+                case "wait":
+                    manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
+                    break;
             }
 
         },
@@ -394,6 +449,18 @@
 
         },
         
+        getInvokeType: function(flowKey) {
+
+            return flowModel[flowKey].invokeType;
+
+        },
+
+        getWaitMessage: function (flowKey) {
+
+            return flowModel[flowKey].waitMessage;
+
+        },
+        
         setComponentInputResponseRequest: function (componentId, contentValue, objectData) {
 
             this.componentInputResponseRequests[componentId].contentValue = contentValue;
@@ -468,6 +535,50 @@
             if (!flowModel[flowKey]) {
 
                 flowModel[flowKey] = {};
+
+            }
+
+        },
+
+        getContentValue: function (properties, name) {
+
+            if (properties != null) {
+
+                var value = null;
+
+                properties.filter(function (property) {
+
+                    if (property.developerName == name) {
+
+                        value = property.contentValue;
+
+                    }
+
+                });
+
+                return value;
+
+            }
+
+        },
+
+        getObjectData: function (properties, name) {
+
+            if (properties != null) {
+
+                var objectData = null;
+
+                properties.filter(function (property) {
+
+                    if (property.developerName == name) {
+
+                        objectData = property.objectData;
+
+                    }
+
+                });
+
+                return objectData;
 
             }
 

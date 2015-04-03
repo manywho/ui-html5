@@ -1,4 +1,30 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
 (function (manywho) {
+
+    function centerChevrons() {
+
+        var chevrons = document.querySelectorAll('.table-small-chevron');
+
+        for (var i = 0; i < chevrons.length; i++) {
+
+            var $chevron = $(chevrons[i]);
+            var parentHeight = $chevron.parent().height();
+
+            $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
+
+        }
+
+    }
 
     var tableSmall = React.createClass({
 
@@ -18,20 +44,9 @@
 
         },
 
-        componentDidUpdate: function() {
+        componentDidUpdate: centerChevrons,
 
-            var chevrons = document.querySelectorAll('.table-small-chevron');
-
-            for (var i = 0; i < chevrons.length; i++) {
-            
-                var $chevron = $(chevrons[i]);
-                var parentHeight = $chevron.parent().height();
-                                
-                $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
-
-            }
-            
-        },
+        componentDidMount: centerChevrons,
 
         renderRows: function(objectData, outcomes, displayColumns) {
 
@@ -115,7 +130,7 @@
 
             log.info('Rendering Table-Small');
             
-            var items = this.renderRows(this.props.model.objectData || [], this.props.outcomes, this.props.displayColumns);
+            var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
             return React.DOM.div({ className: 'list-group' }, items);
 
         }
