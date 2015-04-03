@@ -90,7 +90,7 @@ permissions and limitations under the License.
 
             var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
             
-            if (isFixed && !manywho.utils.isSmallScreen(this.props.flowKey)) {
+            if (isFixed && manywho.utils.isEmbedded()) {
 
                 this.setState({ pageYOffset: window.pageYOffset });
 
@@ -133,17 +133,29 @@ permissions and limitations under the License.
 
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
                 var classNames = ['navbar navbar-default'];
+                var inlineStyles = null;
 
-                var translateY = 'translateY(' + this.state.pageYOffset + 'px)';
-                var inlineStyles = { 
-                    WebkitTransform: translateY,
-                    OTransform: translateY,
-                    Transform: translateY
-                };
+                if (manywho.utils.isEmbedded()) {
 
-                if (!manywho.utils.isEmbedded() && manywho.utils.isSmallScreen(this.props.flowKey)) {
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
 
-                    inlineStyles = null;
+                        var translateY = 'translateY(' + this.state.pageYOffset + 'px)';
+                        inlineStyles = {
+                            WebkitTransform: translateY,
+                            OTransform: translateY,
+                            Transform: translateY
+                        };
+
+                    }
+
+                }
+                else {
+
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
+
+                        classNames.push('navbar-fixed-top');
+
+                    }
 
                 }
 
