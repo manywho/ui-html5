@@ -77,16 +77,20 @@ permissions and limitations under the License.
                 return React.DOM.a(attributes, [
                     React.DOM.table({ className: 'table table-small-item' }, displayColumns.map(function (column) {
 
-                        if (column == 'mw-outcomes' && (outcomes.length > 1 || isOutcomeDestructive)) {
+                        if (column == 'mw-outcomes') {
+                            
+                            if (outcomes.length > 1 || isOutcomeDestructive) {
 
-                            return React.DOM.tr(null, [
-                                React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
-                                React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
+                                return React.DOM.tr(null, [
+                                    React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
+                                    React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
 
-                                    return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
+                                        return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
 
-                                }))
-                            ]);
+                                    }))
+                                ]);
+
+                            }
 
                         }
                         else {
