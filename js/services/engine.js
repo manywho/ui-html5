@@ -101,7 +101,7 @@ manywho.engine = (function (manywho) {
 
                     if (executionLog) {
 
-                        manywho.model.setExecutionLog(executionLog);
+                        manywho.model.setExecutionLog(flowKey, executionLog);
 
                     }
 

@@ -98,7 +98,7 @@ permissions and limitations under the License.
                 React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
                     React.DOM.table({ className: 'table' }, [
                         React.DOM.tr(null, [React.DOM.th(null, 'Timestamp'), React.DOM.th(null, 'Message'), React.DOM.th(null, 'Data')])
-                    ].concat(entries.map(function(entry) {
+                    ].concat(manywho.utils.convertToArray(entries).map(function(entry) {
 
                         return React.DOM.tr(null, [
                             React.DOM.td(null, entry.timestamp),
