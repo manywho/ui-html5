@@ -190,7 +190,7 @@ manywho.component = (function (manywho) {
 
             if (!displayColumns || displayColumns.length == 0) {
 
-                throw 'No display columns found';
+                log.error('No display columns found');
 
             }
 

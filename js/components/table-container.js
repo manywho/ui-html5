@@ -337,6 +337,13 @@ permissions and limitations under the License.
                 ]);                
 
             }
+            else if (displayColumns.length == 0) {
+
+                content = React.DOM.div({ className: 'table-error' }, 
+                    React.DOM.p({ className: 'lead' }, 'No display columns have been defined for this table')
+                );
+
+            }
             else {
 
                 content = React.createElement(tableComponent, {
