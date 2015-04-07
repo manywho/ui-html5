@@ -15,16 +15,19 @@ permissions and limitations under the License.
 
         changeInterval: null,
         skipSetContent: false,
+        editor: null,
 
         initializeEditor: function() {
             
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-             var test = tinymce.init({
+            tinymce.init({
                 selector: 'textarea#' + this.props.id,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
                 setup: function (editor) {
+
+                    self.editor = editor;
 
                     editor.on('init', function () {
 
@@ -41,6 +44,29 @@ permissions and limitations under the License.
 
         },
 
+        statics: {
+            isLoadingTinyMce: false,
+
+            loadTinyMce: function (callback) {
+
+                manywho.component.getByName('content').isLoadingTinyMce = true;
+
+                var script = document.createElement('script');
+                script.src = manywho.settings.global('richtext.url');
+
+                script.onload = function () {
+
+                    manywho.component.getByName('content').isLoadingTinyMce = false;
+                    callback.apply();
+
+                };
+
+                window.document.body.appendChild(script);
+
+            }
+
+        },
+
         getInitialState: function() {
 
             return {
@@ -51,19 +77,35 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
+            var self = this;
+
             if (!window.tinymce) {
+                
+                var component = manywho.component.getByName('content');
 
-                var self = this;
-                var script = document.createElement('script');
-                script.src = manywho.settings.global('richtext.url');
+                if (!component.isLoadingTinyMce) {
+                                        
+                    component.loadTinyMce(function () {
 
-                script.onload = function () {
+                        self.initializeEditor();
 
-                    self.initializeEditor();
+                    });
 
                 }
+                else {
 
-                window.document.body.appendChild(script);
+                    setInterval(function () {
+
+                        if (window.tinymce) {
+
+                            self.initializeEditor();
+                            clearInterval(this);
+
+                        }
+
+                    }, 50);
+
+                }
 
             }
             else {
@@ -76,7 +118,7 @@ permissions and limitations under the License.
 
         componentWillUnmount: function () {
 
-            if (this.refs.editor) {
+            if (this.state.isInitialized && this.editor) {
 
                 tinymce.remove('textarea#' + this.props.id);
 
@@ -88,15 +130,19 @@ permissions and limitations under the License.
         
         handleChange: function (e) {
 
-            var content = tinymce.get(this.props.id).getContent();
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            if (this.state.isInitialized && this.editor) {
 
-            if (!manywho.utils.isEqual(content, state.contentValue, false)) {
+                var content = this.editor.getContent();
+                var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-                manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
-                this.skipSetContent = true;
+                if (!manywho.utils.isEqual(content, state.contentValue, false)) {
 
-                manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
+                    manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
+                    this.skipSetContent = true;
+
+                    manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
+
+                }
 
             }
 
