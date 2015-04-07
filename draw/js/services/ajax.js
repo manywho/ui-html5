@@ -26,7 +26,7 @@ manywho.draw.ajax = (function () {
                 processData: true,
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
 
                 }
             }).done(function (data) {
@@ -52,7 +52,7 @@ manywho.draw.ajax = (function () {
                 data: JSON.stringify(model),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
 
                 }
             }).done();
@@ -68,11 +68,32 @@ manywho.draw.ajax = (function () {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    xhr.setRequestHeader('ManyWhoTenant', tenantId);
+                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
 
                 }
             }).done(function(data) {
                 return data;
+            });
+
+        },
+
+        getTenantData: function () {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/admin/1/tenant?includeSubTenants=true',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
+
+                }
+            }).done(function(data) {
+                manywho.draw.model.setTenantId(data.id);
+                manywho.draw.model.setTenantName(data.daveloperName);
             });
 
         }

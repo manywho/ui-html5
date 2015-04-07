@@ -16,9 +16,39 @@ manywho.draw.model = (function () {
 
         },
 
+        getFlowId: function () {
+
+            return model.id;
+
+        },
+
         setFlowId: function (flowId) {
 
             model.id = { id: flowId };
+
+        },
+
+        getTenantId: function () {
+
+            return model.tenantId;
+
+        },
+
+        setTenantId: function (tenantId) {
+
+            model.tenantId = tenantId;
+
+        },
+
+        getTenantName: function () {
+
+            return model.tenantName;
+
+        },
+
+        setTenantName: function (tenantName) {
+
+            model.tenantName = tenantName;
 
         },
 

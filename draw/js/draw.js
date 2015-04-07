@@ -24,6 +24,11 @@ manywho.draw = (function() {
                     args: [drawKey]
                 },
                 {
+                    execute: manywho.draw.ajax.getTenantData,
+                    type: 'done',
+                    args: []
+                },
+                {
                     execute: manywho.graph.initialize,
                     type: 'done',
                     args: []

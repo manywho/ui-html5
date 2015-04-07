@@ -6,7 +6,7 @@ manywho.graph.events = (function () {
         var graph = state.view.graph;
 
         // Icon1
-        var img = mxUtils.createImage('http://png-1.findicons.com/files/icons/1722/gnome_2_18_icon_theme/16/stock_draw_line_connector_ends_with_arrow.png');
+        var img = mxUtils.createImage('http://png-1.findicons.com/files/icons/99/office/16/delete.png');
         img.setAttribute('title', 'Create Outcome');
         img.style.position = 'absolute';
         img.style.cursor = 'pointer';
