@@ -60,7 +60,7 @@ manywho.graph = (function() {
 
     return {
 
-        initialize: function () {
+        initialize: function (data) {
 
             var container = document.getElementById('graph');
             var outline = document.getElementById('graph-outline');

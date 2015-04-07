@@ -4,6 +4,8 @@ manywho.draw = (function() {
 
         initialize: function ()  {
 
+            this.registerNavClickEvent('flow');
+
             var drawKey = 'draw_draw_draw_main';
 
             var inputObject = {
@@ -27,13 +29,23 @@ manywho.draw = (function() {
                     execute: manywho.draw.ajax.getTenantData,
                     type: 'done',
                     args: []
-                },
-                {
+                }
+            ]);
+
+        },
+
+        registerNavClickEvent: function (name) {
+
+            document.getElementById(name).addEventListener('click', function(event) {
+
+                manywho.engine.initializeSystemFlow(name.toUpperCase(), 'draw_draw_draw_main', null, [{
                     execute: manywho.graph.initialize,
                     type: 'done',
                     args: []
-                }
-            ]);
+                }]);
+
+
+            });
 
         },
 

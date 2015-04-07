@@ -454,7 +454,7 @@ manywho.engine = (function (manywho) {
 
             var flowKey;
 
-            manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
+            manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken(drawKey))
                 .then(function (response) {
 
                     var initializationRequest = manywho.json.generateInitializationRequest(
@@ -464,7 +464,7 @@ manywho.engine = (function (manywho) {
                         inputs,
                         manywho.settings.global('playerUrl'),
                         manywho.settings.global('joinUrl'),
-                        '',
+                        null,
                         ''
                     );
 
@@ -497,12 +497,16 @@ manywho.engine = (function (manywho) {
                         null,
                         null,
                         null,
+                        null,
+                        null,
                         manywho.settings.flow('annotations', flowKey),
                         manywho.state.getLocation(flowKey),
                         manywho.settings.flow('mode', flowKey)
                     );
 
-                    return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey));
+                    var drawKey = manywho.model.getParentForModal(flowKey);
+
+                    return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), '');
 
                 })
                 .then(function (response) {
@@ -560,8 +564,10 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 'FORWARD',
                 outcome.id,
+                null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.model.getDefaultNavigationId(flowKey),
+                null,
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey),
                 manywho.settings.flow('mode', flowKey)

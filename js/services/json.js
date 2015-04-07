@@ -48,7 +48,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, pageComponentInputResponses, navigationElementId, annotations, location, mode) {
+        generateInvokeRequest: function(stateData, invokeType, selectedOutcomeId, selectedMapElementId, pageComponentInputResponses, navigationElementId, selectedNavigationElementId, annotations, location, mode) {
 
             return {
                 'stateId': stateData.id,
@@ -63,8 +63,10 @@ manywho.json = (function (manywho) {
                     },
                     'selectedOutcomeId': selectedOutcomeId || null
                 },
-                'mode': mode || null,
-                'navigationElementId': navigationElementId || null
+                'mode': mode || '',
+                'selectedMapElementId': selectedMapElementId || null,
+                'navigationElementId': navigationElementId || '',
+                'selectedNavigationElementId': selectedNavigationElementId || null
             }
         },
 
