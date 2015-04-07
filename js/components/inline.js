@@ -23,10 +23,9 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            var contentClass = this.state.isVisible ? '' : ' hidden';
+            var contentClass = (this.state && this.state.isVisible) ? '' : ' hidden';
             
             return React.DOM.div({ className: classes, id: this.props.id }, [
-                this.getLabel(model.label),
                 React.DOM.div({ className: contentClass, id: this.props.id }, [
                     manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
