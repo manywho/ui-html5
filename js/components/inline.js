@@ -13,14 +13,23 @@ permissions and limitations under the License.
 
     var inline = React.createClass({
 
+        mixins: [manywho.component.mixins.collapse],
+
         render: function () {
 
             log.info('Rendering Inline: ' + this.props.id);
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
+            var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            return React.createElement('div', { className: classes, id: this.props.id }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey));
+            var contentClass = (this.state && this.state.isVisible) ? '' : ' hidden';
+            
+            return React.DOM.div({ className: classes, id: this.props.id }, [
+                React.DOM.div({ className: contentClass, id: this.props.id }, [
+                    manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
+                ])
+            ]);
 
         }
 

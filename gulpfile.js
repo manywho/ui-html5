@@ -164,7 +164,7 @@ gulp.task('bootstrap-themes-dist', function () {
 gulp.task('js-dist', function () {
 
     return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
-                .pipe(order(['services/*.js', 'lib/*.js', 'components/*.js']))
+                .pipe(order(['services/*.js', 'lib/*.js', 'components/mixins.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
                 .pipe(sourcemaps.init())
                 .pipe(uglify().on('error', gutil.log))
@@ -192,6 +192,13 @@ gulp.task('js-loader-dist', function () {
 gulp.task('html-dist', function () {
 
     return gulp.src('default.html')
+        .pipe(gulp.dest('./dist/'));
+
+});
+
+gulp.task('html-replace', function () {
+
+    gulp.src('dist/default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
                 .pipe(htmlreplace({
@@ -201,7 +208,6 @@ gulp.task('html-dist', function () {
                     bootstrap: '',
                     loader: process.env.BAMBOO_CDNURL + '/js/loader.min.js'
                 }))
-                .pipe(rename('default.html'))
                 .pipe(gulp.dest('./dist/'));
 });
 
@@ -236,6 +242,10 @@ gulp.task('deploy-cdn', function () {
 
     var publisher = awspublish.create(distribution);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
+
+    if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
+        headers = null;
+    }
 
     return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
                 .pipe(awspublish.gzip())

@@ -32,13 +32,22 @@ permissions and limitations under the License.
 
     }
 
-    function getSelectedOption (options) {
+    function getSelectedOptions (options) {
 
         return options.filter(function (value) {
 
-            return value.props.selected == "selected";
+            if (value.props) {
 
-        })[0];
+                return manywho.utils.isEqual(value.props.selected, "selected", true);
+
+            }
+            else {
+
+                return value.selected;
+
+            }           
+
+        });
 
     }
 
@@ -47,7 +56,6 @@ permissions and limitations under the License.
         handleChange: function(e, args) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var selectedObjectData = null;
 
             model.objectData = model.objectData.map(function (item) {
 
@@ -56,11 +64,18 @@ permissions and limitations under the License.
 
             });
 
-            if (!manywho.utils.isNullOrWhitespace(args.selected)) {
+            var selectedObjectData = null;
+            var selectedOptions = getSelectedOptions(Array.prototype.slice.call(e.currentTarget.options));
+
+            if (selectedOptions && selectedOptions.length > 0) {
 
                 selectedObjectData = model.objectData.filter(function (item) {
 
-                    return manywho.utils.isEqual(item.externalId, args.selected, true);
+                    return (selectedOptions.filter(function (option) {
+
+                        return manywho.utils.isEqual(item.externalId, option.value, true);
+
+                    }).length > 0);                    
 
                 })
                 .map(function (item) {
@@ -98,11 +113,15 @@ permissions and limitations under the License.
             };
 
             if (model.isRequired) {
-                attributes.required = '';
+                attributes.required = 'required';
             }
 
             if (!model.isEnabled || !model.isEditable) {
                 attributes.disabled = 'disabled';
+            }
+
+            if (model.isMultiSelect) {
+                attributes.multiple = 'multiple';
             }
 
             attributes.placeholder = model.hintValue || 'Please select an option';
@@ -111,12 +130,13 @@ permissions and limitations under the License.
 
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
                 attributes.children = options;
-                var selectedOption = getSelectedOption(options);
 
-                if (selectedOption != null) {
-                    attributes.value = selectedOption.props.value;
-                } else {
+                var selectedOptions = getSelectedOptions(options);
+
+                if (selectedOptions && selectedOptions.length > 0) {
+
                     options.unshift(React.DOM.option({ value: '' }));
+
                 }
 
             }

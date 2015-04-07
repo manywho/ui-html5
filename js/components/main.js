@@ -33,6 +33,32 @@ permissions and limitations under the License.
 
         },
 
+        componentDidUpdate: function() {
+            
+            if (!manywho.utils.isEmbedded()) {
+
+                var main = this.refs.main.getDOMNode();
+                var nav = this.refs.nav.getDOMNode();
+
+                var height = main.clientHeight + ((nav) ? nav.clientHeight : 0);
+
+                if (height <= window.innerHeight) {
+
+                    document.body.style.height = "100%";
+                    document.documentElement.style.height = "100%";
+
+                }
+                else {
+
+                    document.body.style.height = "auto";
+                    document.documentElement.style.height = "auto";
+
+                }
+
+            }
+
+        },
+
         render: function () {
             
             log.info("Rendering Main");
@@ -59,11 +85,11 @@ permissions and limitations under the License.
                 'main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
                 (isFullWidth) ? 'container-fluid full-width' : 'container'
-            ].join(' ');
-            
-            return React.DOM.div({ className: 'full-height' }, [
-                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey }),
-                        React.DOM.div({ className: classNames, onKeyUp: this.onEnter, ref: 'main' }, [
+            ];
+                        
+            return React.DOM.div({ className: 'full-height', ref: 'container' }, [
+                        React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
+                        React.DOM.div({ className: classNames.join(' '), onKeyUp: this.onEnter, ref: 'main' }, [
                             componentElements,
                             outcomeElements,
                             React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),

@@ -217,7 +217,8 @@ permissions and limitations under the License.
                       
             var tableClassNames = [
                 'table table-bordered',
-                (this.props.isSelectionEnabled) ? 'table-hover' : ''
+                (this.props.isSelectionEnabled) ? 'table-hover' : '',
+                (this.props.model.isValid) ? '' : 'table-invalid'
             ].join(' ');
             
             var rows = [this.renderHeaderRow(this.props.displayColumns)];

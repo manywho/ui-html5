@@ -40,6 +40,67 @@ permissions and limitations under the License.
 
         }
 
+    };
+
+    manywho.component.mixins.collapse =  {
+
+        getInitialState: function () {
+
+            return {
+                isVisible: true,
+                icon: 'toggle-icon glyphicon glyphicon-menu-down'
+            };
+
+        },
+
+        toggleVisibility: function (event) {
+
+            event.preventDefault();
+
+            if (manywho.settings.global('collapsible', this.props.flowKey)) {
+
+                if (this.state.isVisible) {
+
+                    this.setState({
+                        isVisible: false,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-right'
+                    });
+
+                } else {
+
+                    this.setState({
+                        isVisible: true,
+                        icon: 'toggle-icon glyphicon glyphicon-menu-down'
+                    });
+
+                }
+
+
+            }
+
+        },
+
+        getLabel: function(label, required) {
+
+            if (!manywho.utils.isNullOrWhitespace(label)) {
+
+                var labelClasses = manywho.settings.global('collapsible', this.props.flowKey) ? 'container-label clickable-section' : 'container-label';
+                var labelContent = manywho.settings.global('collapsible', this.props.flowKey) && label ? [React.DOM.i({ className: this.state.icon }), label] : [label];
+
+                if (required) {
+
+                    labelContent.push(React.DOM.span({ className: 'input-required' }, ' *'));
+
+                }
+
+                return React.DOM.h3({ className: labelClasses, onClick: this.toggleVisibility }, labelContent);
+
+            }
+
+            return null;
+
+        }
+
     }
 
 }(manywho));

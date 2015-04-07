@@ -42,27 +42,40 @@ permissions and limitations under the License.
     function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
 
         var headerElements = [];
+        var searchElement = null;
+        var outcomesElement = null;
 
         if (isSearchEnabled) {
 
-            headerElements.push(React.DOM.div({ className: 'input-group table-search' }, [
+            searchElement = React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
                         React.DOM.button({ className: 'btn btn-default', onClick: search },
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
-            ]));
+            ]);
 
         }
 
         if (outcomes) {
 
-            headerElements.push(React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
+            outcomesElement =  React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
 
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
 
-            })));
+            }));
+
+        }
+
+        if (document.getElementById(flowKey).clientWidth < 768) {
+
+            headerElements = [outcomesElement, searchElement];
+
+        }
+        else {
+
+            headerElements = [searchElement, outcomesElement];
 
         }
 
@@ -108,6 +121,7 @@ permissions and limitations under the License.
 
         outcomes: null,
 
+        mixins: [manywho.component.mixins.collapse],
 
         onSearchChanged: function (e) {
 
@@ -344,11 +358,14 @@ permissions and limitations under the License.
             var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
 
             return React.DOM.div({ className: classNames }, [
-                (model.fileDataRequest) ? fileUpload : null,    
-                renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
-                content,
-                renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
-                React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.h3({ className: 'container-label' }, model.label),
+                React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
+                    (model.fileDataRequest) ? fileUpload : null,    
+                    renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
+                    content,
+                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
+                    React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                ])
             ]);
 
         }

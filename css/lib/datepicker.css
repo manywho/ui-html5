@@ -26,6 +26,7 @@
 .datepicker-dropdown {
     top: 0;
     left: 0;
+    z-index: 1101 !important;
 }
 .datepicker-dropdown:before {
     content: '';

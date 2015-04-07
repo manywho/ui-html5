@@ -13,7 +13,6 @@ permissions and limitations under the License.
 
 html, body {
     width: 100%;
-    height: 100%;
 }
 
 body {
@@ -98,12 +97,22 @@ body {
 
     .container-label {
         font-size: 2em;
-        margin-bottom: 1em;
+        border-bottom: 1px solid #DDDDDD;
     }
 
     .container-label:empty {
         display: none;
         margin: 0;
+    }
+
+    .clickable-section {
+        cursor: pointer;
+    }
+
+    .toggle-icon {
+        font-size: 0.5em;
+        margin-right: 0.5em;        
+        vertical-align: middle;
     }
 
 }

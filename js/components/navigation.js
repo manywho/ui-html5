@@ -89,14 +89,15 @@ permissions and limitations under the License.
         handleScroll: function(e) {
 
             var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
-            if (isFixed) {
+            
+            if (isFixed && manywho.utils.isEmbedded()) {
 
                 this.setState({ pageYOffset: window.pageYOffset });
 
             }
 
         },
-
+        
         getInitialState: function() {
             
             return {
@@ -131,8 +132,34 @@ permissions and limitations under the License.
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
+                var classNames = ['navbar navbar-default'];
+                var inlineStyles = null;
 
-                return React.DOM.nav({ className: 'navbar navbar-default', style: { top: this.state.pageYOffset } },
+                if (manywho.utils.isEmbedded()) {
+
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
+
+                        var translateY = 'translateY(' + this.state.pageYOffset + 'px)';
+                        inlineStyles = {
+                            WebkitTransform: translateY,
+                            OTransform: translateY,
+                            Transform: translateY
+                        };
+
+                    }
+
+                }
+                else {
+
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
+
+                        classNames.push('navbar-fixed-top');
+
+                    }
+
+                }
+
+                return React.DOM.nav({ className: classNames.join(' '), style: inlineStyles },
                             React.DOM.div({ className: (isFullWidth) ? '' : 'container' }, [
                                 getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },

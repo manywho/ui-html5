@@ -22,7 +22,7 @@ permissions and limitations under the License.
             
             var childElements = children.map(function(child) {
                 
-                return React.createElement('li', { className: (child.order == 0) ? 'active' : null }, 
+                return React.createElement('li', { className: (child.order == 0) ? 'active' : null },
                             React.createElement('a', { href: '#' + child.id, "data-toggle": "tab" }, child.label)
                         );
                 
