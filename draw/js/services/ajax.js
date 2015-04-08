@@ -16,7 +16,9 @@ manywho.draw.ajax = (function () {
 
     return {
 
-        getFlowGraph: function (flowId, tenantId, authenticationToken)  {
+        getFlowGraph: function (callback, tenantId, authenticationToken, response)  {
+
+            var flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
 
             $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/graph/flow/' + flowId,

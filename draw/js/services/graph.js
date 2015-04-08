@@ -77,7 +77,11 @@ manywho.graph = (function() {
 
             var outln = new mxOutline(graph, outline);
 
-            manywho.draw.ajax.getFlowGraph('dee8d123-53e4-41ed-aaf1-6ee12b2ed0ea', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main'));
+        },
+
+        clearGraph: function () {
+
+            graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
 
         },
 
@@ -141,6 +145,9 @@ manywho.graph = (function() {
         render: function () {
 
             var self = this;
+
+            self.clearGraph();
+
             var model = manywho.draw.model.getModel();
 
             var parent = graph.getDefaultParent();

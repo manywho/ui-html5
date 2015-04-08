@@ -454,6 +454,7 @@ manywho.engine = (function (manywho) {
 
             var flowKey;
 
+
             manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken(drawKey))
                 .then(function (response) {
 
@@ -474,7 +475,7 @@ manywho.engine = (function (manywho) {
                     manywho.model.parseEngineResponse(null, drawKey);
                     manywho.model.setModal(drawKey, flowKey);
 
-                    return manywho.ajax.initialize(initializationRequest, manywho.settings.global('adminTenantId'), authenticationToken);
+                    return manywho.ajax.initialize(initializationRequest, manywho.settings.global('adminTenantId'), '');
                 })
                 .then(function (response) {
 
@@ -483,7 +484,6 @@ manywho.engine = (function (manywho) {
 
                     manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
-                    manywho.component.appendFlowContainer(flowKey);
                     manywho.state.setLoading('modal', { message: 'Initializing...' }, flowKey);
                     self.render(flowKey);
 

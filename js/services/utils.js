@@ -232,6 +232,16 @@ manywho.utils = (function (manywho, $) {
 
             return this.isEqual(manywho.model.getParentForModal(flowKey), 'draw_draw_draw_main', true);
 
+        },
+
+        extractOutputValue: function (outputs, outputName) {
+
+            return outputs.filter(function (output) {
+
+                return manywho.utils.isEqual(output.developerName, outputName, true);
+
+            });
+
         }
 
     }

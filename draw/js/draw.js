@@ -4,6 +4,8 @@ manywho.draw = (function() {
 
         initialize: function ()  {
 
+            manywho.graph.initialize();
+
             this.registerNavClickEvent('flow');
 
             var drawKey = 'draw_draw_draw_main';
@@ -38,23 +40,52 @@ manywho.draw = (function() {
 
             document.getElementById(name).addEventListener('click', function(event) {
 
-                manywho.engine.initializeSystemFlow(name.toUpperCase(), 'draw_draw_draw_main', null, [{
-                    execute: manywho.graph.initialize,
-                    type: 'done',
-                    args: []
-                }]);
+                var inputs = [{
+                        contentType: "ContentString",
+                        contentValue: null,
+                        developerName: "Id",
+                        objectData: null,
+                        typeElementDeveloperName: null
+                    },
+                    {
+                        developerName: 'AuthenticationToken',
+                        contentValue: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
+                        contentType: 'ContentString',
+                        objectData: null,
+                        typeElementDeveloperName: null
+                    },
+                    {
+                        contentType: "ContentString",
+                        contentValue: "",
+                        developerName: "FlowId",
+                        objectData: null,
+                        typeElementDeveloperName: null
+                    }];
+
+                manywho.engine.initializeSystemFlow(name.toUpperCase(), 'draw_draw_draw_main', inputs, [
+                    {
+                        execute: manywho.draw.ajax.getFlowGraph,
+                        type: 'done',
+                        args: [manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main')]
+                    },
+                    {
+                        execute: manywho.draw.hideModal,
+                        type: 'done',
+                        args: ['draw_draw_draw_main']
+                    }]);
 
 
             });
 
         },
 
-        hideModal: function () {
+        hideModal: function (callback, drawKey) {
 
-            var modalKey = manywho.model.getModalForFlow('draw_draw_draw_main');
+            var modalKey = manywho.model.getModalForFlow(drawKey);
 
             var modal = document.getElementById(modalKey);
-            modal.parentNode.removeChild(modal);
+
+            if (modal) modal.parentNode.removeChild(modal);
 
         }
 
