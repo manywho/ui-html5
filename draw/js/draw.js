@@ -1,4 +1,4 @@
-manywho.draw = (function() {
+manywho.draw = ( function(manywho) {
 
     return {
 
