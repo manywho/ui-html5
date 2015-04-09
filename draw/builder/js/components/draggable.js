@@ -12,81 +12,46 @@
 
         },
 
-        onMouseMove: function (event) {
-
-
-        },
-
-        onMouseUp: function (event) {
-
-            this.setState({ dragging: false });
-
-        },
-
-        componentDidMount: function () {
-
-            document.addEventListener('mousemove', this.onMouseMove);
-            document.addEventListener('mouseup', this.onMouseUp);
-
-        },
-
         isHovering: function () {
 
             return this.state.hover && this.state.dragging ? 'active-canvas' : '';
 
         },
 
-        onDroppableEnter: function () {
+        onDroppableEnter: function (event) {
 
             this.setState({ hover: true });
 
         },
 
-        onDroppableLeave: function () {
+        onDroppableLeave: function (event) {
 
             this.setState({ hover: false });
 
         },
 
-        onDragStart: function (details) {
+        onDragStart: function (event) {
 
             this.setState({
-                currentDragItem: details,
+                currentDragItem: event,
                 dragging: true
             });
 
         },
 
-        onDragStop: function () {
-
-            this.setState({ currentDragItem: null });
-
-        },
-
-        onDrop: function (target) {
+        onDragStop: function (event) {
 
             this.setState({
-                lastDrop: {
-                    source: this.state.currentDragItem,
-                    target: target
-                },
-                currentDragItem: null
+                currentDragItem: null,
+                dragging: false
             });
 
         },
 
-        dropDescription: function () {
+        onDrop: function (event) {
 
-            var drop;
+            alert('dropped');
 
-            if (drop = this.state.lastDrop) {
-
-                return p({
-                    className: 'drop-description',
-                    children: "Dropped source " + drop.source.type + "-" + drop.source.index + " on target " + drop.target.index
-                })
-
-            }
         },
 
         render: function () {
@@ -151,7 +116,7 @@
 
         render: function () {
 
-            return React.DOM.li({ className: 'btn btn-default draggable component-button', draggable: 'true', onDragStart: this.props.onDragStart, onDragStop: this.props.onDragStop }, this.props.item);
+            return React.DOM.li({ className: 'btn btn-default draggable component-button', draggable: 'true', onDragStart: this.props.onDragStart, onDragEnd: this.props.onDragStop }, this.props.item);
 
         }
 
@@ -165,7 +130,7 @@
 
             var classes = this.props.isHovering();
 
-            return React.DOM.div({ id: 'canvas', className: classes, onMouseEnter: this.props.onDroppableEnter, onMouseLeave: this.props.onDroppableLeave, onDrop: this.props.onDrop }, []);
+            return React.DOM.div({ id: 'canvas', className: classes, onDragOver: this.props.onDroppableEnter, onDragLeave: this.props.onDroppableLeave, onDrop: this.props.onDrop }, []);
 
         }
 
