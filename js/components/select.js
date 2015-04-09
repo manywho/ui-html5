@@ -141,7 +141,7 @@ permissions and limitations under the License.
 
                 var selectedOptions = getSelectedOptions(options);
 
-                if (selectedOptions && selectedOptions.length > 0) {
+                if (selectedOptions && selectedOptions.length == 0) {
 
                     options.unshift(React.DOM.option({ value: '' }));
 
