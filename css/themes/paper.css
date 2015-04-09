@@ -2861,6 +2861,11 @@ select[multiple].form-group-lg .form-control {
   border-color: #e51c23;
   background-color: #f9bdbb;
 }
+.has-error .chosen-container {
+    border: 1px solid #e51c23;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
 .has-error .form-control-feedback {
   color: #e51c23;
 }

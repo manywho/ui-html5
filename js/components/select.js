@@ -24,7 +24,15 @@ permissions and limitations under the License.
             var isSelected = item.isSelected
                 || (this.state && this.state.objectData && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
 
-            return React.DOM.option({ value: item.externalId, selected: isSelected ? 'selected' : '' }, label.contentValue);
+            var attributes = { value: item.externalid };
+
+            if (isSelected) {
+
+                attributes.selected = 'selected'
+
+            }
+
+            return React.DOM.option(attributes, label.contentValue);
 
         }
 
@@ -133,7 +141,7 @@ permissions and limitations under the License.
 
                 var selectedOptions = getSelectedOptions(options);
 
-                if (selectedOptions && selectedOptions.length > 0) {
+                if (selectedOptions && selectedOptions.length == 0) {
 
                     options.unshift(React.DOM.option({ value: '' }));
 

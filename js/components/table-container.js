@@ -228,6 +228,26 @@ permissions and limitations under the License.
 
         },
 
+        uploadFile: function(fileData, progress) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            var request = new FormData();
+            request.append('FileDataRequest', JSON.stringify(model.fileDataRequest));
+            
+            fileData.forEach(function (file) {
+
+                request.append('FileData', file);
+
+            });
+
+            var tenantId = manywho.utils.extractTenantId(this.props.flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(this.props.flowKey);
+
+            return manywho.ajax.uploadFile(request, tenantId, authenticationToken, progress);                    
+
+        },
+
         onUploadComplete: function() {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -337,6 +357,13 @@ permissions and limitations under the License.
                 ]);                
 
             }
+            else if (displayColumns.length == 0) {
+
+                content = React.DOM.div({ className: 'table-error' }, 
+                    React.DOM.p({ className: 'lead' }, 'No display columns have been defined for this table')
+                );
+
+            }
             else {
 
                 content = React.createElement(tableComponent, {
@@ -355,7 +382,12 @@ permissions and limitations under the License.
 
             }
                        
-            var fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, fileDataRequest: model.fileDataRequest, onUploadComplete: this.onUploadComplete }, null);
+            var fileUpload = React.createElement(manywho.component.getByName('file-upload'), {
+                flowKey: this.props.flowKey,
+                fileDataRequest: model.fileDataRequest,
+                onUploadComplete: this.onUploadComplete,
+                upload: this.uploadFile
+            }, null);
 
             return React.DOM.div({ className: classNames }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.h3({ className: 'container-label' }, model.label),

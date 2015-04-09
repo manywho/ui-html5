@@ -11,23 +11,41 @@ permissions and limitations under the License.
 
 manywho.authorization = (function (manywho) {
 
-    function setAuthenticationToken(callback, flowKey, response) {
-        
-        var authenticationToken = response.outputs.filter(function (output) {
-
-            return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
-
-        }).map(function (output) {
-
-            return output.contentValue;
-
-        })[0];
-        
-        manywho.state.setAuthenticationToken(authenticationToken, flowKey);
-
-    }
-
     return {
+
+        setAuthenticationToken: function (callback, flowKey, response) {
+        
+            var authenticationToken = response.outputs.filter(function (output) {
+
+                return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
+
+            }).map(function (output) {
+
+                return output.contentValue;
+
+            })[0];
+        
+            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
+
+        },
+
+        setIsOAuthing: function(stateId, kind) {
+
+            localStorage.setItem(stateId + '_oauth_', JSON.stringify({ stateId: stateId, kind: kind }));
+
+        },
+
+        getIsOAuthing: function(stateId) {
+
+            localStorage.getItem(stateId + '_oauth_');
+
+        },
+
+        clearIsOAuthing: function(stateId) {
+
+            localStorage.removeItem(stateId + '_oauth_');
+
+        },
 
         isAuthorized: function(response, flowKey) {
 
@@ -37,13 +55,14 @@ manywho.authorization = (function (manywho) {
 
         },
 
-        invokeAuthorization: function (response, flowKey, doneCallback) {
+        invokeAuthorization: function (response, flowKey, kind, doneCallback) {
 
             // Check to see if the user has successfully authenticated
             if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
                 if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
                     
+                    this.setIsOAuthing(manywho.utils.extractStateId(flowKey), kind);
                     window.location = response.authorizationContext.loginUrl;
                     return;
 
@@ -57,6 +76,8 @@ manywho.authorization = (function (manywho) {
                     id: null,
                     versionId: null
                 };
+
+                var self = this;
 
                 manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
                     .then(function (data) {
@@ -85,7 +106,7 @@ manywho.authorization = (function (manywho) {
 
                         // When the authentication flow is "DONE" call setAuthenticationToken
                         manywho.callbacks.register(authenticationFlow.key, {
-                            execute: setAuthenticationToken,
+                            execute: self.setAuthenticationToken,
                             type: 'done',
                             args: [flowKey]
                         });
@@ -123,8 +144,9 @@ manywho.authorization = (function (manywho) {
 
             var requestData = manywho.json.generateSessionRequest(manywho.state.getSessionData(flowKey).id, manywho.state.getSessionData(flowKey).url, loginUrl);
             var state = manywho.state.getState(flowKey);
-            manywho.callbacks.register(flowKey, doneCallback);
 
+            manywho.callbacks.register(flowKey, doneCallback);
+            
             manywho.ajax.sessionAuthentication(manywho.utils.extractTenantId(flowKey), state.id, requestData)
                 .then(function (response) {
 
