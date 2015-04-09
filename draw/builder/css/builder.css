@@ -1,5 +1,5 @@
 #page-builder {
-  width: 1200px;
+  width: 1800px;
   margin: 0 auto;
   font-family: sans-serif;
 }
@@ -27,16 +27,22 @@
   width: 100%;
   height: 2em;
 }
+#page-builder #component-buttons ul {
+  padding-left: 0;
+}
 #page-builder .component-button {
-  width: 11em;
+  width: 8em;
   margin-top: 1em;
 }
-#page-builder .canvas {
-  margin: 0.5em;
+#page-builder #canvas {
+  margin-top: 0.5em;
   border: 1px dashed grey;
   min-height: 700px;
 }
-#page-builder .configuration-container {
+#page-builder #configuration {
   border: 1px solid grey;
   min-height: 700px;
+}
+#page-builder .active-canvas {
+  background-color: #88ed00;
 }
