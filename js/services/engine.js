@@ -454,7 +454,6 @@ manywho.engine = (function (manywho) {
 
             var flowKey;
 
-
             manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken(drawKey))
                 .then(function (response) {
 
@@ -485,7 +484,7 @@ manywho.engine = (function (manywho) {
                     manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
                     manywho.state.setLoading('modal', { message: 'Initializing...' }, flowKey);
-                    self.render(flowKey);
+                    self.renderModal(flowKey);
 
                     callbacks.forEach(function (callback) {
                         manywho.callbacks.register(flowKey, callback);
@@ -531,7 +530,7 @@ manywho.engine = (function (manywho) {
                 .then(function () {
 
                     manywho.state.setLoading('modal', null, flowKey);
-                    self.render(flowKey);
+                    self.renderModal(flowKey);
                     processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
                 });
@@ -794,17 +793,21 @@ manywho.engine = (function (manywho) {
 
             var container = document.getElementById(flowKey);
 
-            if (manywho.utils.isDrawTool(flowKey)) {
-
-                container = document.getElementById('draw-modal');
-
-            } else if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+            if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                 flowKey = manywho.model.getParentForModal(flowKey);
 
             }
 
             React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), container);
+
+        },
+
+        renderModal: function (modalKey) {
+
+            var container = document.getElementById('draw-modal');
+
+            React.render(React.createElement('modal', {flowKey: modalKey}), container);
 
         }
 
