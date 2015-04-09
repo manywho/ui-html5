@@ -56,7 +56,7 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function onAuthorizationFailed(response, flowKey, callback) {
+    function onAuthorizationFailed(response, flowKey, kind, callback) {
 
         if (manywho.state.getSessionData(flowKey) != null) {
 
@@ -65,7 +65,7 @@ manywho.engine = (function (manywho) {
         } else {
 
             // Authorization failed, retry
-            manywho.authorization.invokeAuthorization(response, flowKey, callback);
+            manywho.authorization.invokeAuthorization(response, flowKey, kind, callback);
 
         }
 
@@ -124,10 +124,9 @@ manywho.engine = (function (manywho) {
 
     }
     
-    function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, flowKey) {
+    function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, authenticationToken, flowKey) {
 
-        var self = this;
-        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+        var self = this;        
         var stateId = (flowKey) ? manywho.utils.extractStateId(flowKey) : null;
         var navigationId, streamId = null;
 
@@ -147,7 +146,9 @@ manywho.engine = (function (manywho) {
             manywho.state.setLoading('main', { message: 'Initializing...' }, flowKey);
             self.render(flowKey);
 
-        }
+            authenticationToken = authenticationToken || manywho.state.getAuthenticationToken(flowKey);
+
+        }       
 
         manywho.ajax.initialize(initializationRequest, tenantId, authenticationToken)
             .then(function (response) {
@@ -161,11 +162,12 @@ manywho.engine = (function (manywho) {
 
                 }
 
-                callback.args[5] = flowKey;
+                callback.args[6] = flowKey;
 
                 manywho.model.initializeModel(flowKey);
                 manywho.settings.initializeFlow(options, flowKey);
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
+                manywho.state.setAuthenticationToken(authenticationToken, flowKey);
 
                 if (options.authentication != null && options.authentication.sessionid != null) {
 
@@ -198,7 +200,7 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                onAuthorizationFailed(response, flowKey, callback);
+                onAuthorizationFailed(response, flowKey, 'Initialize', callback);
 
             })
             .then(function (response) {
@@ -302,7 +304,7 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                onAuthorizationFailed(response, flowKey, callback);
+                onAuthorizationFailed(response, flowKey, 'Join', callback);
 
             })
             .always(function () {
@@ -401,23 +403,29 @@ manywho.engine = (function (manywho) {
 
             if (!tenantId && (!stateId || (!flowId && !flowVersionId))) {
 
-                log.error('tenantId, flowId & flowVersionId must be specified');
+                log.error('tenantId & stateId, or tenatntId & flowId & flowVersionId must be specified');
                 return;
 
             }
 
-            if (stateId) {
+            var oauth = stateId && manywho.authorization.getIsOAuthing(stateId);
+            
+            if (stateId
+                && ((oauth && manywho.utils.isEqual(oauth.kind, 'join', true)) || !oauth)) {
 
+                manywho.authorization.clearIsOAuthing(stateId);
                 this.join(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options);
                 
             }
             else {
 
+                manywho.authorization.clearIsOAuthing(stateId);
+
                 initializeWithAuthorization.call(this,
                 {
                     execute: initializeWithAuthorization,
                     context: this,
-                    args: [tenantId, flowId, flowVersionId, container, options],
+                    args: [tenantId, flowId, flowVersionId, container, options, authenticationToken || null],
                     name: 'initialize',
                     type: 'done'
                 },
@@ -425,7 +433,8 @@ manywho.engine = (function (manywho) {
                 flowId,
                 flowVersionId,
                 container,
-                options);
+                options,
+                authenticationToken);
 
             }
 
