@@ -237,7 +237,7 @@ manywho.engine = (function (manywho) {
                 return $.whenAll(deferreds);
 
             })
-            .then(function () {
+            .always(function () {
 
                 manywho.state.setLoading('main', null, flowKey);
                 self.render(flowKey);
