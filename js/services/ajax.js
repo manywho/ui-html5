@@ -256,6 +256,40 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        uploadSocialFile: function(formData, streamId, tenantId, authenticationToken, onProgress) {
+
+            var deferred = $.Deferred();
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/file',
+                type: 'POST',
+                data: formData,
+                dataType: false,
+                contentType: false,
+                processData: false,
+                success: deferred.resolve,
+                error: deferred.reject,
+                xhr: function () {
+
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", onProgress, false);
+                    return xhr;
+
+                },
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'fileData');
+
+                }
+            })
+
+            return deferred.promise()
+                    .done(manywho.settings.event('fileData.done'))
+                    .fail(onError)
+                    .fail(manywho.settings.event('fileData.fail'));
+
+        },
+
         sessionAuthentication: function (tenantId, stateId, requestData, authenticationToken) {
 
             log.info('Authenticating using session ID');

@@ -104,7 +104,7 @@ manywho.social = (function (manywho) {
 
         },
 
-        sendMessage: function (flowKey, message, repliedTo, mentionedUsers) {
+        sendMessage: function (flowKey, message, repliedTo, mentionedUsers, attachments) {
 
             if (manywho.utils.isNullOrWhitespace(message)) {
 
@@ -121,6 +121,7 @@ manywho.social = (function (manywho) {
                 mentionedWhos: manywho.utils.convertToArray(mentionedUsers),
                 messageText: message,
                 senderId: stream.me.id,
+                uploadedFiles: attachments
             }
 
             if (repliedTo) {
@@ -204,6 +205,16 @@ manywho.social = (function (manywho) {
             var stream = streams[flowKey];
 
             return manywho.ajax.getSocialUsers(tenantId, stream.id, stateId, name, authenticationToken);
+
+        },
+
+        attachFiles: function (flowKey, formData, progress) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+            var stream = streams[flowKey];
+
+            return manywho.ajax.uploadSocialFile(formData, stream.id, tenantId, authenticationToken, progress);
 
         }
 
