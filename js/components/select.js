@@ -24,7 +24,7 @@ permissions and limitations under the License.
             var isSelected = item.isSelected
                 || (this.state && this.state.objectData && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
 
-            var attributes = { value: item.externalid };
+            var attributes = { value: item.externalId };
 
             if (isSelected) {
 
