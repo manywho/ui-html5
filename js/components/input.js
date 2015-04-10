@@ -173,7 +173,7 @@ permissions and limitations under the License.
                             model.label,
                             (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                         ]),
-                        React.DOM.input(attributes, null),,
+                        React.DOM.input(attributes, null),
                         React.DOM.span({ className: 'help-block' }, model.message)
                     ]);
                 

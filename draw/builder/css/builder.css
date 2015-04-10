@@ -19,13 +19,14 @@
   vertical-align: middle;
 }
 #page-builder .section-header {
-  color: #ffffff;
   background-color: #646464;
   font-weight: bold;
   text-align: center;
   display: inline-block;
   width: 100%;
-  height: 2em;
+}
+#page-builder .section-header h5 {
+  color: #ffffff !important;
 }
 #page-builder #component-buttons ul {
   padding-left: 0;
@@ -42,7 +43,8 @@
 #page-builder #configuration {
   border: 1px solid grey;
   min-height: 700px;
+  padding: 2em;
 }
 #page-builder .active-canvas {
-  background-color: #88ed00;
+  background-color: rgba(168, 255, 8, 0.56);
 }
