@@ -10,7 +10,7 @@
   text-align: center;
 }
 #page-builder .nav-builder {
-  min-height: 4em;
+  min-height: 2em;
   margin: 1em;
   display: inline-block;
 }
@@ -32,13 +32,15 @@
   padding-left: 0;
 }
 #page-builder .component-button {
-  width: 8em;
+  width: 9em;
   margin-top: 1em;
 }
 #page-builder #canvas {
-  margin-top: 0.5em;
+  margin-top: 10px;
+  padding-top: 1em;
   border: 1px dashed grey;
-  min-height: 700px;
+  height: calc(690px);
+  overflow-y: scroll;
 }
 #page-builder #configuration {
   border: 1px solid grey;
@@ -47,4 +49,20 @@
 }
 #page-builder .active-canvas {
   background-color: rgba(168, 255, 8, 0.56);
+}
+#page-builder .manywho-page-component {
+  width: 95%;
+  margin: 0 auto;
+  margin-bottom: 5px;
+}
+#page-builder .highlight {
+  border: 0.2em solid #00dba3;
+}
+#page-builder .component-bin {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 40px;
+}
+#page-builder .orange-background {
+  background-color: rgba(255, 189, 48, 0.63);
 }

@@ -1,18 +1,72 @@
 (function (manywho) {
 
+    function getChildIndex(parent, child) {
+
+        for (var i=0; i<parent.childNodes.length; i++) {
+            if (child.id == parent.childNodes[i].id) {
+                return i;
+            }
+        }
+
+    }
+
     var builder = React.createClass({
 
         getInitialState: function () {
 
             return {
                 currentDragItem: null,
+                currentSelectedItem: null,
                 hover: false,
                 dragging: false,
-                isVisible: {
-                    say: false,
-                    play: false
-                }
+                dragged: null,
+                canvasItems: [
+                    {
+                        name: 'Say1',
+                        text: 'This is some text that will be read to the caller',
+                        type: 'Say',
+                        active: false,
+                        id: 'Say0'
+                    },
+                    {
+                        name: 'Say2',
+                        text: 'This is some other text that will be read to the caller',
+                        type: 'Say',
+                        active: false,
+                        id: 'Say1'
+                    }
+                ]
             }
+
+        },
+
+        componentDidMount: function () {
+
+            var self = this;
+
+            document.getElementById('canvas').addEventListener('click', function (event) {
+
+                event.preventDefault();
+
+                var newState = self.clearSelectedComponents();
+
+                self.setState(newState);
+
+            });
+
+        },
+
+        clearSelectedComponents: function () {
+
+            return {
+                canvasItems: this.state.canvasItems.map(function (item) {
+
+                    item.active = false;
+                    return item;
+
+                }),
+                currentSelectedItem: null
+            };
 
         },
 
@@ -22,9 +76,229 @@
 
         },
 
+        clearDummys: function () {
+
+            return this.state.canvasItems.filter(function (item) {
+
+                return item.id != 'Dummy';
+
+            });
+
+        },
+
+        onComponentClick: function (event) {
+
+            var newState = {};
+
+            event.preventDefault();
+
+            event.nativeEvent.stopImmediatePropagation();
+
+            newState.canvasItems = this.state.canvasItems.map(function (item) {
+
+                item.active = false;
+
+                if (event.currentTarget.id == item.id) {
+
+                    item.active = true;
+
+                    newState.currentSelectedItem = item;
+
+                }
+
+                return item;
+
+            });
+
+            this.setState(newState);
+
+        },
+
+        onSave: function (event) {
+
+            var self = this;
+
+            var newState = {};
+
+            if (self.refs.componentName.getDOMNode().value != '' && self.refs.componentText.getDOMNode().value != '') {
+
+                newState.canvasItems = self.state.canvasItems.map(function (item) {
+
+                    if (self.state.currentSelectedItem.id == item.id) {
+
+                        item.name = self.refs.componentName.getDOMNode().value;
+                        item.text = self.refs.componentText.getDOMNode().value;
+
+                    }
+
+                    return item;
+
+                });
+
+                this.setState(newState);
+
+            }
+
+            return newState.canvasItems;
+
+        },
+
+        onNewComponentDragStart: function (event) {
+
+            var newState = this.clearSelectedComponents();
+
+            var data = {
+                name: event.currentTarget.innerHTML
+            };
+
+            newState.dragging = true;
+            newState.currentDragItem = data;
+
+            this.setState(newState);
+
+        },
+
+        onNewComponentDragEnd: function (event) {
+
+            var newState = {};
+
+            if(!this.state.hover) {
+
+                newState.canvasItems = this.state.canvasItems.filter(function (item) {
+
+                    return item.id.toLowerCase() != 'dummy';
+
+                });
+
+                newState.currentDragItem = null;
+
+            }
+
+            newState.dragging = false;
+
+            this.setState(newState);
+
+        },
+
+        onComponentDragStart: function (event) {
+
+            event.dataTransfer.effectAllowed = 'move';
+
+            var newState = this.clearSelectedComponents();
+
+            newState.dragging = true;
+
+            newState.currentDragItem = $.extend({}, this.state.canvasItems.filter(function (item) {
+
+                return event.currentTarget.id == item.id;
+
+            })[0]);
+
+            newState.canvasItems = this.state.canvasItems.map(function (item) {
+
+                if (event.currentTarget.id == item.id) {
+
+                    item.name = '';
+                    item.text = '';
+                    item.type = 'Dummy';
+                    item.active = false;
+                    item.id = 'Dummy';
+
+                }
+
+                return item;
+
+            });
+
+            this.setState(newState);
+
+        },
+
+        onComponentDragEnd: function (event) {
+
+            var self = this;
+
+            var newState = {};
+
+            if(!this.state.hover) {
+
+                newState.canvasItems = this.state.canvasItems.map(function (item) {
+
+                    if (item.id.toLowerCase() == 'dummy') {
+                        item.name = self.state.currentDragItem.name || '';
+                        item.text = self.state.currentDragItem.text || '';
+                        item.type = self.state.currentDragItem.name.toLowerCase();
+                        item.active = true;
+                        item.id = self.state.currentDragItem.id || self.state.currentDragItem.name.toLowerCase() + self.state.canvasItems.length;
+
+                        newState.currentSelectedItem = item;
+                    }
+
+                    return item;
+
+                });
+
+                newState.currentDragItem = null;
+
+            }
+
+            newState.dragging = false;
+
+            this.setState(newState);
+
+        },
+
+        onComponentOver: function (event) {
+
+            event.nativeEvent.stopImmediatePropagation();
+
+            if (this.state.dragging) {
+
+                var newState = {};
+
+                newState.canvasItems = this.clearDummys();
+
+                var index = getChildIndex(event.target.parentNode, event.target);
+
+                newState.canvasItems.splice(index, 0, {
+
+                    name: '',
+                    text: '',
+                    type: 'Dummy',
+                    active: false,
+                    id: 'Dummy'
+
+                });
+
+                this.setState(newState);
+
+            }
+
+        },
+
+        onComponentLeave: function (event) {
+
+
+
+        },
+
+        onComponentDelete: function (event) {
+
+
+
+        },
+
+        onBinOver: function (event) {
+
+            event.target.className += ' orange-background';
+
+        },
+
         onDroppableEnter: function (event) {
 
             event.preventDefault();
+
+            event.nativeEvent.stopImmediatePropagation();
 
             this.setState({ hover: true });
 
@@ -34,65 +308,83 @@
 
             event.preventDefault();
 
-            this.setState({ hover: false });
+            var newState = {};
 
-        },
+            if (this.state.dragging && !this.state.hover) {
 
-        onDragStart: function (event) {
+                newState.canvasItems = this.clearDummys();
 
-            var data = {
-                name: event.currentTarget.innerHTML,
-                id: event.currentTarget.id
-            };
+            }
 
-            event.dataTransfer.setData('component', JSON.stringify(data));
+            newState.hover = false;
 
-            this.setState({
-                currentDragItem: data,
-                dragging: true
-            });
-
-        },
-
-        onDragStop: function (event) {
-
-            this.setState({
-                dragging: false
-            });
+            this.setState(newState);
 
         },
 
         onDrop: function (event) {
 
             var data;
+            var self = this;
 
-            try {
+            var newState = {};
 
-                data = JSON.parse(event.dataTransfer.getData('component'));
+            newState.canvasItems = this.state.canvasItems.map(function (item) {
 
-            } catch (exception) {
-                return;
-            }
+                if (item.id.toLowerCase() == 'dummy') {
+                    item.name = self.state.currentDragItem.name || '';
+                    item.text = self.state.currentDragItem.text || '';
+                    item.type = self.state.currentDragItem.name.toLowerCase();
+                    item.active = true;
+                    item.id = self.state.currentDragItem.id || self.state.currentDragItem.name.toLowerCase() + self.state.canvasItems.length;
 
-            var componentVisibility = {};
-            componentVisibility[data.name.toLowerCase()] = true;
+                    newState.currentSelectedItem = item;
+                }
 
-            this.setState({
-                isVisible: componentVisibility
+                return item;
+
             });
 
-            alert('dropped ' + data.name);
+            newState.currentDragItem = null;
+            newState.dragging = false;
+            newState.hover = false;
+
+            this.setstate(newState);
+
+        },
+
+        renderConfiguration: function () {
+
+            if (this.state.currentSelectedItem) {
+
+                return React.DOM.div({}, [
+                    React.DOM.div({ className: 'form-group row' }, [
+                        React.DOM.label({}, [
+                            'Name',
+                            React.DOM.span({ className: 'input-required' }, ' *')
+                        ]),
+                        React.DOM.input({ className: 'form-control', defaultValue: this.state.currentSelectedItem.name, ref: "componentName"}, null),
+                        React.DOM.input({ type: 'hidden', ref: 'componentId' }, null)
+                    ]),
+                    React.DOM.div({ className: 'form-group row'}, [
+                        React.DOM.label({}, [
+                            'Content',
+                            React.DOM.span({ className: 'input-required' }, ' *')
+                        ]),
+                        React.DOM.textarea({ className: 'form-control', ref: "componentText", defaultValue: this.state.currentSelectedItem.text })
+                    ]),
+                    React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
+                ])
+
+            }
+
+            return [];
 
         },
 
         render: function () {
 
-            var sayClasses = 'form-group row-fluid ';
-            sayClasses +=  this.state.isVisible.say ? '': 'hidden';
-            var playClasses = 'form-group row-fluid ';
-            playClasses += this.state.isVisible.play ? '': 'hidden';
-            var buttonClasses = 'outcome btn btn-primary ';
-            buttonClasses += this.state.isVisible.say || this.state.isVisible.play ? '': 'hidden';
+            var configuration = this.renderConfiguration();
 
             return React.DOM.div({ className: 'row' }, [
                 React.DOM.div({ className: 'col-md-1' }, [
@@ -100,35 +392,35 @@
                         React.DOM.h5({}, 'Components')
                     ]),
                     React.DOM.div({ id: 'component-buttons' }, [
-                        React.createElement(manywho.builder.getComponentByName('list'), { onDragStart: this.onDragStart, onDragStop: this.onDragStop })
+                        React.createElement(manywho.builder.getComponentByName('list'), {
+                            onNewComponentDragStart: this.onNewComponentDragStart,
+                            onNewComponentDragEnd: this.onNewComponentDragEnd,
+                            onComponentDelete: this.onComponentDelete,
+                            onBinOver: this.onBinOver
+                        })
                     ])
                 ]),
                 React.DOM.div({ className: 'col-md-7' }, [
                     React.DOM.div({ className: 'section-header' }, [
                         React.DOM.h5({}, 'Canvas')
                     ]),
-                    React.createElement(manywho.builder.getComponentByName('canvas'), { onDrop: this.onDrop, onDroppableEnter: this.onDroppableEnter, onDroppableLeave: this.onDroppableLeave, isHovering: this.isHovering })
+                    React.createElement(manywho.builder.getComponentByName('canvas'), {
+                        isHovering: this.isHovering,
+                        canvasItems: this.state.canvasItems,
+                        onComponentDragStart: this.onComponentDragStart,
+                        onComponentDragEnd: this.onComponentDragEnd,
+                        onComponentClick: this.onComponentClick,
+                        onComponentOver: this.onComponentOver,
+                        onComponentLeave: this.onComponentLeave,
+                        onDrop: this.onDrop,
+                        onDroppableEnter: this.onDroppableEnter,
+                        onDroppableLeave: this.onDroppableLeave
+                    })
                 ]),React.DOM.div({ className: 'col-md-4' }, [
                     React.DOM.div({ className: 'section-header' }, [
                         React.DOM.h5({}, 'Configuration')
                     ]),
-                    React.DOM.div({ id: 'configuration' }, [
-                        React.DOM.div({ className: sayClasses }, [
-                            React.DOM.label({}, [
-                                'Text to say',
-                                React.DOM.span({ className: 'input-required' }, ' *')
-                            ]),
-                            React.DOM.textarea({ className: 'form-control', ref: "component-text"}, null)
-                        ]),
-                        React.DOM.div({ className: playClasses }, [
-                            React.DOM.label({}, [
-                                'Text to play',
-                                React.DOM.span({ className: 'input-required' }, ' *')
-                            ]),
-                            React.DOM.textarea({ className: 'form-control', ref: "component-text"}, null)
-                        ]),
-                        React.DOM.button({ className: buttonClasses, onClick: this.onClick }, 'Save')
-                    ])
+                    React.DOM.div({ id: 'configuration' }, configuration)
                 ])
             ]);
 
@@ -155,11 +447,20 @@
 
             var items = this.state.items.map(function (item) {
 
-                return React.createElement(manywho.builder.getComponentByName('draggable'), { item: item, onDragStart: self.props.onDragStart, onDragStop: self.props.onDragStop });
+                return React.createElement(manywho.builder.getComponentByName('draggable'), {
+                    item: item,
+                    onNewComponentDragStart: self.props.onNewComponentDragStart,
+                    onNewComponentDragEnd: self.props.onNewComponentDragEnd
+                });
 
             });
 
-            return React.DOM.ul({}, items);
+            return React.DOM.div({}, [
+                React.DOM.ul({}, items),
+                React.DOM.div({ className: 'component-bin'}, [
+                    React.DOM.i({ className: 'glyphicon glyphicon-trash', onDrop: this.props.onComponentDelete, onDragEnter: this.props.onBinOver, onDragLeave: this.props.onBinLeave }, '')
+                ])
+            ]);
 
         }
 
@@ -172,7 +473,12 @@
 
         render: function () {
 
-            return React.DOM.li({ className: 'btn btn-default draggable component-button', draggable: 'true', onDragStart: this.props.onDragStart, onDragEnd: this.props.onDragStop }, this.props.item);
+            return React.DOM.li({
+                className: 'btn btn-default draggable component-button',
+                draggable: 'true',
+                onDragStart: this.props.onNewComponentDragStart,
+                onDragEnd: this.props.onNewComponentDragEnd
+            }, this.props.item);
 
         }
 
@@ -183,11 +489,56 @@
 
     var canvas = React.createClass({
 
+        renderCanvasItems: function () {
+
+            var self = this;
+
+            return this.props.canvasItems.map(function (item) {
+
+                var componentClasses = 'manywho-page-component ';
+                componentClasses += item.active ? 'highlight ': ' ';
+
+                var dummyStyle = {};
+
+                if (item.type.toLowerCase() == 'dummy') {
+                    dummyStyle = { visibility: 'hidden' };
+                    componentClasses += 'orange-background';
+                }
+
+                return React.DOM.div({
+                    className: componentClasses,
+                    id: item.id,
+                    draggable: 'true',
+                    onDragStart: self.props.onComponentDragStart,
+                    onClick: self.props.onComponentClick,
+                    onDragEnter: self.props.onComponentOver,
+                    onDragLeave: self.props.onComponentLeave,
+                    onDragEnd: self.props.onComponentDragEnd
+                }, [
+                    React.DOM.div({  style: dummyStyle, className: 'manywho-page-component-controls'}, [
+                        React.DOM.span({ className: 'text-info manywho-field-label' }, item.name || 'Default Name')
+                    ]),
+                    React.DOM.div({style: dummyStyle}, [
+                        React.DOM.span({}, item.text || 'Default Text')
+                    ])
+                ]);
+
+            });
+
+        },
+
         render: function () {
 
             var classes = this.props.isHovering();
+            var canvasItems = this.renderCanvasItems();
 
-            return React.DOM.div({ id: 'canvas', className: classes, onDragOver: this.props.onDroppableEnter, onDragLeave: this.props.onDroppableLeave, onDrop: this.props.onDrop }, []);
+            return React.DOM.div({
+                id: 'canvas',
+                className: classes,
+                onDragOver: this.props.onDroppableEnter,
+                onDragLeave: this.props.onDroppableLeave,
+                onDrop: this.props.onDrop
+            }, canvasItems);
 
         }
 
