@@ -94,12 +94,12 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    setInterval(function () {
+                    var loaderInterval = setInterval(function () {
 
                         if (window.tinymce) {
 
                             self.initializeEditor();
-                            clearInterval(this);
+                            clearInterval(loaderInterval);
 
                         }
 
@@ -150,7 +150,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            log.info('Rendering Vertical: ' + this.props.id);
+            log.info('Rendering Content: ' + this.props.id);
             
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
