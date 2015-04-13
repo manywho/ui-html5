@@ -48,21 +48,21 @@ permissions and limitations under the License.
                     autoclose: true
                 });
 
-                if (!manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
+                if (state.contentValue.indexOf('01/01/0001') == -1
+                    && state.contentValue.indexOf('1/1/0001') == -1
+                    && state.contentValue.indexOf('0001-01-01') == -1) {
 
                     stateDate = new Date(state.contentValue.toLowerCase());
-                    datepickerElement.value = stateDate.toLocaleDateString();
-                    $(datepickerElement).datepicker('update', stateDate);
 
                 } else {
 
                     stateDate = new Date();
-                    datepickerElement.value = stateDate.toLocaleDateString();
-                    var stateValue = { contentValue: stateDate.toLocaleDateString() };
-
-                    manywho.state.setComponent(this.props.id, stateValue, this.props.flowKey, true);
 
                 }
+
+                datepickerElement.value = stateDate.toISOString();
+                $(datepickerElement).datepicker('update', stateDate);
+                manywho.state.setComponent(this.props.id, { contentValue: stateDate.toISOString() }, this.props.flowKey, true);
 
             }
 
