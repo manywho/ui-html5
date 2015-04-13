@@ -314,6 +314,16 @@
 
                 newState.canvasItems = this.clearDummys();
 
+                newState.canvasItems.splice(newState.canvasItems.length, 0, {
+
+                    name: '',
+                    text: '',
+                    type: 'Dummy',
+                    active: false,
+                    id: 'Dummy'
+
+                });
+
             }
 
             newState.hover = false;
@@ -349,7 +359,7 @@
             newState.dragging = false;
             newState.hover = false;
 
-            this.setstate(newState);
+            this.setState(newState);
 
         },
 
