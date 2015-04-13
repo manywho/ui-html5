@@ -334,7 +334,6 @@
 
         onDrop: function (event) {
 
-            var data;
             var self = this;
 
             var newState = {};
