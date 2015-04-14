@@ -294,6 +294,8 @@
 
             });
 
+            newState.enteredDroppable = false;
+
             event.target.className = 'glyphicon glyphicon-trash';
 
             this.setState(newState);
