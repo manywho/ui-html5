@@ -33,6 +33,18 @@ permissions and limitations under the License.
 
     var input = React.createClass({
 
+        componentDidUpdate: function() {
+
+            if (this.refs.datepicker) {
+
+                var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+                var date = new Date(state.contentValue);
+                $(this.refs.datepicker.getDOMNode()).datepicker('update', date);
+
+            }
+
+        },
+
         componentDidMount: function () {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
