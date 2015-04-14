@@ -19,7 +19,7 @@
                 currentSelectedItem: null,
                 hover: false,
                 dragging: false,
-                dragged: null,
+                enteredDroppable: false,
                 canvasItems: [
                     {
                         name: 'Say1',
@@ -175,6 +175,7 @@
             }
 
             newState.dragging = false;
+            newState.enteredDroppable = false;
 
             this.setState(newState);
 
@@ -242,6 +243,7 @@
 
             }
 
+            newState.enteredDroppable = false;
             newState.dragging = false;
 
             this.setState(newState);
@@ -284,7 +286,17 @@
 
         onComponentDelete: function (event) {
 
+            var newState = {}, self = this;
 
+            newState.canvasItems = this.state.canvasItems.filter(function (item) {
+
+                return item.id.toLowerCase() != self.state.currentDragItem.id.toLowerCase() && item.id.toLowerCase() != 'dummy';
+
+            });
+
+            event.target.className = 'glyphicon glyphicon-trash';
+
+            this.setState(newState);
 
         },
 
@@ -294,13 +306,50 @@
 
         },
 
+        onBinLeave: function (event) {
+
+            event.target.className = 'glyphicon glyphicon-trash';
+
+        },
+
+        onBinDragOver: function (event) {
+
+            event.preventDefault();
+
+        },
+
         onDroppableEnter: function (event) {
 
             event.preventDefault();
 
             event.nativeEvent.stopImmediatePropagation();
 
-            this.setState({ hover: true });
+            var newState = {};
+
+            if(!this.state.enteredDroppable) {
+
+                if (this.state.dragging && !this.state.hover) {
+
+                    newState.canvasItems = this.clearDummys();
+
+                    newState.canvasItems.splice(newState.canvasItems.length, 0, {
+
+                        name: '',
+                        text: '',
+                        type: 'Dummy',
+                        active: false,
+                        id: 'Dummy'
+
+                    });
+
+                }
+
+                newState.enteredDroppable = true;
+            }
+
+            newState.hover = true;
+
+            this.setState(newState);
 
         },
 
@@ -405,7 +454,9 @@
                             onNewComponentDragStart: this.onNewComponentDragStart,
                             onNewComponentDragEnd: this.onNewComponentDragEnd,
                             onComponentDelete: this.onComponentDelete,
-                            onBinOver: this.onBinOver
+                            onBinOver: this.onBinOver,
+                            onBinLeave: this.onBinLeave,
+                            onBinDragOver: this.onBinDragOver
                         })
                     ])
                 ]),
@@ -467,7 +518,7 @@
             return React.DOM.div({}, [
                 React.DOM.ul({}, items),
                 React.DOM.div({ className: 'component-bin'}, [
-                    React.DOM.i({ className: 'glyphicon glyphicon-trash', onDrop: this.props.onComponentDelete, onDragEnter: this.props.onBinOver, onDragLeave: this.props.onBinLeave }, '')
+                    React.DOM.i({ className: 'glyphicon glyphicon-trash', onDragOver: this.props.onBinDragOver, onDrop: this.props.onComponentDelete, onDragEnter: this.props.onBinOver, onDragLeave: this.props.onBinLeave }, '')
                 ])
             ]);
 
