@@ -25,6 +25,7 @@ body .execute-buttons a {
 }
 body .element-button {
   width: 100%;
+  margin-top: 0.4em;
 }
 body .mw-bs {
   /*.manywho-modal-footer {

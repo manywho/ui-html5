@@ -484,7 +484,7 @@ manywho.engine = (function (manywho) {
                     manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
                     manywho.state.setLoading('modal', { message: 'Initializing...' }, flowKey);
-                    self.renderModal(flowKey);
+                    self.render(flowKey);
 
                     callbacks.forEach(function (callback) {
                         manywho.callbacks.register(flowKey, callback);
@@ -530,7 +530,7 @@ manywho.engine = (function (manywho) {
                 .then(function () {
 
                     manywho.state.setLoading('modal', null, flowKey);
-                    self.renderModal(flowKey);
+                    self.render(flowKey);
                     processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
                 });
@@ -793,7 +793,19 @@ manywho.engine = (function (manywho) {
 
             var container = document.getElementById(flowKey);
 
-            if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+            /*if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+
+                flowKey = manywho.model.getParentForModal(flowKey);
+
+            }
+
+            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), container);*/
+
+            if (manywho.utils.isDrawTool(flowKey)) {
+
+                container = document.getElementById('draw-modal');
+
+            } else if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                 flowKey = manywho.model.getParentForModal(flowKey);
 
