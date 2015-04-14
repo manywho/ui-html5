@@ -63,26 +63,7 @@ manywho.settings = (function (manywho, $) {
         social: {},
         ping: {}
     };
-
-    // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
-    function getValueByPath(obj, path) {
-
-        try {
-
-            for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
-                obj = obj[path[i]];
-            }
-            return obj;
-
-        }
-        catch (ex) {
-
-            return undefined;
-
-        }
-
-    }
-
+    
     function toLowerCaseKeys(obj) {
 
         for (var prop in obj) {
@@ -121,11 +102,11 @@ manywho.settings = (function (manywho, $) {
 
         global: function (path, flowKey, defaultValue) {
 
-            var globalValue = getValueByPath(globals, path.toLowerCase());
+            var globalValue = manywho.utils.getValueByPath(globals, path.toLowerCase());
 
             if (flowKey) {
 
-                var flowValue = getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+                var flowValue = manywho.utils.getValueByPath(flows[flowKey] || {}, path.toLowerCase());
 
                 if (typeof flowValue != 'undefined') {
 
@@ -151,19 +132,19 @@ manywho.settings = (function (manywho, $) {
 
         flow: function(path, flowKey) {
 
-            return getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+            return manywho.utils.getValueByPath(flows[flowKey] || {}, path.toLowerCase());
 
         },
 
         event: function (path) {
 
-            return getValueByPath(events, path.toLowerCase());
+            return manywho.utils.getValueByPath(events, path.toLowerCase());
 
         },
 
         theme: function (path) {
 
-            return getValueByPath(themes, path.toLowerCase());
+            return manywho.utils.getValueByPath(themes, path.toLowerCase());
 
         },
 

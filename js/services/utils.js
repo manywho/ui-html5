@@ -226,6 +226,31 @@ manywho.utils = (function (manywho, $) {
 
             return document.getElementById(flowKey).clientWidth < 768;
 
+        },
+
+        // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
+        getValueByPath: function(obj, path) {
+
+            if (!path || path == '') {
+
+                return obj;
+
+            }
+
+            try {
+
+                for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
+                    obj = obj[path[i]];
+                }
+                return obj;
+
+            }
+            catch (ex) {
+
+                return undefined;
+
+            }
+
         }
 
     }
