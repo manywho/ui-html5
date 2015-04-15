@@ -1,4 +1,4 @@
-manywho.builder = (function (manywho) {
+manywho.layout = (function (manywho) {
 
     var components = {};
 
