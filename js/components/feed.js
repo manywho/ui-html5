@@ -275,7 +275,7 @@ permissions and limitations under the License.
                             React.DOM.div({ className: 'feed-message-attachments' }, 
                                 attachments.map(function(attachment) {
 
-                                    return React.DOM.a({ href: attachment.downloadUrl }, attachment.name);
+                                    return React.DOM.a({ href: attachment.downloadUrl, target: "_blank"  }, attachment.name);
 
                                 })
                             ),

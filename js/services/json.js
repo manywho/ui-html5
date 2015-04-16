@@ -84,7 +84,7 @@ manywho.json = (function (manywho) {
                         'pageComponentInputResponses': pageComponentInputResponses || null
                     },
                     'selectedOutcomeId': null
-                }
+                },
             }
 
         },
