@@ -531,6 +531,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 navigationId,
                 navigationElementId,
+                manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey)
             );
