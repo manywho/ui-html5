@@ -385,7 +385,14 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setLoading('main', null, flowKey);
 
-                if (!manywho.utils.isDrawTool(flowKey)) {
+                if (manywho.utils.isDrawTool(flowKey)) {
+
+                    self.render(flowKey);
+
+                    manywho.component.focusInput(flowKey);
+                    manywho.component.scrollToTop(flowKey);
+
+                } else {
 
                     self.render(parentFlowKey);
 

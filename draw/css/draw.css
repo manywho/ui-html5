@@ -1,3 +1,10 @@
+body #draw-modal .modal {
+  width: 90%;
+  height: 95%;
+  margin: 0 auto;
+  top: 2.5%;
+  left: 0;
+}
 body #flow-title {
   margin-top: 0;
 }

@@ -196,7 +196,7 @@ manywho.ajax = (function (manywho) {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowByName');
+                    beforeSend.call(this, xhr, tenantId, '', 'getFlowByName');
 
                 }
             })
