@@ -1,6 +1,6 @@
 (function (manywho) {
 
-    var canvas = React.createClass({
+    manywho.canvas = React.createClass({
 
         renderCanvasItems: function () {
 
@@ -56,7 +56,5 @@
         }
 
     });
-
-    manywho.layout.registerComponent('canvas', canvas);
 
 })(manywho);

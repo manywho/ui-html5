@@ -1,6 +1,6 @@
 (function (manywho) {
 
-    var draggable = React.createClass({
+    manywho.draggable = React.createClass({
 
         render: function () {
 
@@ -14,7 +14,5 @@
         }
 
     });
-
-    manywho.layout.registerComponent('draggable', draggable);
 
 })(manywho);

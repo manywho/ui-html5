@@ -10,7 +10,7 @@
 
     }
 
-    var builder = React.createClass({
+    manywho.builder = React.createClass({
 
         getInitialState: function () {
 
@@ -452,7 +452,7 @@
                         React.DOM.h5({}, 'Components')
                     ]),
                     React.DOM.div({ id: 'component-buttons' }, [
-                        React.createElement(manywho.layout.getComponentByName('list'), {
+                        React.createElement(manywho.list, {
                             onNewComponentDragStart: this.onNewComponentDragStart,
                             onNewComponentDragEnd: this.onNewComponentDragEnd,
                             onComponentDelete: this.onComponentDelete,
@@ -466,7 +466,7 @@
                     React.DOM.div({ className: 'section-header' }, [
                         React.DOM.h5({}, 'Canvas')
                     ]),
-                    React.createElement(manywho.layout.getComponentByName('canvas'), {
+                    React.createElement(manywho.canvas, {
                         isHovering: this.isHovering,
                         canvasItems: this.state.canvasItems,
                         onComponentDragStart: this.onComponentDragStart,
@@ -489,7 +489,5 @@
         }
 
     });
-
-    manywho.layout.registerComponent('builder', builder);
 
 })(manywho);

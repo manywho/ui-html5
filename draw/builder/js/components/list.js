@@ -1,6 +1,6 @@
 (function (manwyho) {
 
-    var list = React.createClass({
+    manywho.list = React.createClass({
 
         getInitialState: function () {
 
@@ -16,7 +16,7 @@
 
             var items = this.state.items.map(function (item) {
 
-                return React.createElement(manywho.layout.getComponentByName('draggable'), {
+                return React.createElement(manywho.draggable, {
                     item: item,
                     onNewComponentDragStart: self.props.onNewComponentDragStart,
                     onNewComponentDragEnd: self.props.onNewComponentDragEnd
@@ -34,7 +34,5 @@
         }
 
     });
-
-    manywho.layout.registerComponent('list', list);
 
 })(manywho);

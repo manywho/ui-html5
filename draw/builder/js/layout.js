@@ -26,7 +26,7 @@ manywho.layout = (function (manywho) {
 
             var container = document.getElementById('builder');
 
-            React.render(React.createElement(this.getComponentByName('builder')), container);
+            React.render(React.createElement(manywho.builder), container);
 
         }
 
