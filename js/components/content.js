@@ -25,6 +25,8 @@ permissions and limitations under the License.
             tinymce.init({
                 selector: 'textarea#' + this.props.id,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
+                width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
+                height: model.height * 16, // Do the same for the height
                 setup: function (editor) {
 
                     self.editor = editor;
