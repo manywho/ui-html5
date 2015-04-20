@@ -28,7 +28,7 @@ permissions and limitations under the License.
 
             if (isSelected) {
 
-                attributes.selected = 'selected'
+                attributes.selected = 'selected';
 
             }
 
@@ -144,6 +144,10 @@ permissions and limitations under the License.
                 if (selectedOptions && selectedOptions.length == 0) {
 
                     options.unshift(React.DOM.option({ value: '' }));
+
+                } else if (!model.isMultiSelect) {
+
+                    attributes.defaultValue = selectedOptions[0].props.value;
 
                 }
 
