@@ -58,7 +58,8 @@ permissions and limitations under the License.
                 $(datepickerElement).datepicker({
                     format: 'dd/mm/yyyy',
                     autoclose: true
-                });
+                })
+                .on('changeDate', this.handleChange);
 
                 if (state.contentValue.indexOf('01/01/0001') == -1
                     && state.contentValue.indexOf('1/1/0001') == -1
@@ -95,9 +96,17 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+            if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.boolean, true)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
+
+            }
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
+
+                var utcDate = $(this.refs.datepicker.getDOMNode()).datepicker('getUTCDate');
+                var date = new Date(utcDate);
+
+                manywho.state.setComponent(this.props.id, { contentValue: date.toISOString() }, this.props.flowKey, true);
 
             }
             else {
