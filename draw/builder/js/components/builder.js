@@ -148,7 +148,8 @@
             var newState = this.clearSelectedComponents();
 
             var data = {
-                name: event.currentTarget.innerHTML
+                name: event.currentTarget.innerHTML,
+                type: event.currentTarget.innerHTML.toLowerCase()
             };
 
             newState.dragging = true;
@@ -394,7 +395,7 @@
                 if (item.id.toLowerCase() == 'dummy') {
                     item.name = self.state.currentDragItem.name || '';
                     item.text = self.state.currentDragItem.text || '';
-                    item.type = self.state.currentDragItem.name.toLowerCase();
+                    item.type = self.state.currentDragItem.type.toLowerCase() || '';
                     item.active = true;
                     item.id = self.state.currentDragItem.id || self.state.currentDragItem.name.toLowerCase() + self.state.canvasItems.length;
 
@@ -418,21 +419,7 @@
             if (this.state.currentSelectedItem) {
 
                 return React.DOM.div({}, [
-                    React.DOM.div({ className: 'form-group row' }, [
-                        React.DOM.label({}, [
-                            'Name',
-                            React.DOM.span({ className: 'input-required' }, ' *')
-                        ]),
-                        React.DOM.input({ className: 'form-control', defaultValue: this.state.currentSelectedItem.name, ref: "componentName"}, null),
-                        React.DOM.input({ type: 'hidden', ref: 'componentId' }, null)
-                    ]),
-                    React.DOM.div({ className: 'form-group row'}, [
-                        React.DOM.label({}, [
-                            'Content',
-                            React.DOM.span({ className: 'input-required' }, ' *')
-                        ]),
-                        React.DOM.textarea({ className: 'form-control', ref: "componentText", defaultValue: this.state.currentSelectedItem.text })
-                    ]),
+                    React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase())),
                     React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
                 ])
 
