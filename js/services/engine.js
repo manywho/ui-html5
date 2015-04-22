@@ -665,16 +665,21 @@ manywho.engine = (function (manywho) {
             if (manywho.utils.isEqual(manywho.model.getInvokeType(flowKey), 'wait', true) ||
                 manywho.utils.isEqual(manywho.model.getInvokeType(flowKey), 'status', true)) {
 
-                var state = manywho.state.getState(flowKey);
+                var stateId = manywho.utils.extractStateId(flowKey);
                 var self = this;
 
-                manywho.ajax.ping(manywho.utils.extractTenantId(flowKey), state.id, state.token, manywho.state.getAuthenticationToken(flowKey))
+                manywho.ajax.ping(manywho.utils.extractTenantId(flowKey), stateId, state.token, manywho.state.getAuthenticationToken(flowKey))
                     .then(function (response) {
 
                         if (response)
                         {
-
-                            self.join(state.id);
+                            
+                            self.join(manywho.utils.extractTenantId(flowKey),
+                                        manywho.utils.extractFlowId(flowKey),
+                                        manywho.utils.extractFlowVersionId(flowKey),
+                                        manywho.utils.extractElement(flowKey),
+                                        stateId,
+                                        manywho.state.getAuthenticationToken(flowKey));
 
                         }
                         else {
