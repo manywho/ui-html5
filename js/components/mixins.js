@@ -48,7 +48,7 @@ permissions and limitations under the License.
 
             return {
                 isVisible: true,
-                icon: 'toggle-icon glyphicon glyphicon-menu-down'
+                icon: 'toggle-icon glyphicon glyphicon-triangle-bottom'
             };
 
         },
@@ -63,14 +63,14 @@ permissions and limitations under the License.
 
                     this.setState({
                         isVisible: false,
-                        icon: 'toggle-icon glyphicon glyphicon-menu-right'
+                        icon: 'toggle-icon glyphicon glyphicon-triangle-right'
                     });
 
                 } else {
 
                     this.setState({
                         isVisible: true,
-                        icon: 'toggle-icon glyphicon glyphicon-menu-down'
+                        icon: 'toggle-icon glyphicon glyphicon-triangle-bottom'
                     });
 
                 }
