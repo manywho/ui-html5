@@ -85,9 +85,7 @@
                     }
                 };
 
-                var settings = window.devOptions || {};
-
-                var tenantId = queryParameters['tenant-id'] || settings.tenant;
+                var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
 
                     tenantId = window.location.pathname
@@ -102,10 +100,10 @@
 
                 manywho.engine.initialize(
                     tenantId,
-                    queryParameters['flow-id'] || settings.flow,
-                    queryParameters['flow-version-id'] || settings.version,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
                     'main',
-                    queryParameters['join'] || settings.state,
+                    queryParameters['join'],
                     queryParameters['authorization'],
                     queryParameters['initialization'],
                     options
@@ -169,8 +167,6 @@
     <script src="js/components/image.js"></script>
     <!-- endbuild -->
     <script src="https://flow.manywho.com/js/constants"></script>
-
-    <!-- options -->
 
     <!-- build:loader -->
     <script>
