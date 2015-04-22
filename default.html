@@ -56,7 +56,7 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
@@ -165,9 +165,10 @@
     <script src="js/components/debug.js"></script>
     <script src="js/components/image.js"></script>
     <!-- endbuild -->
+    <script src="https://flow.manywho.com/js/constants"></script>
 
     <!-- options -->
-    
+
     <!-- build:loader -->
     <script>
         manywho.initialize();
