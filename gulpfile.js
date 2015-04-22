@@ -65,27 +65,6 @@ gulp.task('bootstrap-templates', function () {
 
 });
 
-gulp.task('options', function () {
-
-    var options = {
-        tenant: argv.tenant,
-        flow: argv.flow,
-        version: argv.version,
-        state: argv.state
-    };
-
-    var scriptTag = '<script>';
-    scriptTag += 'var devOptions = ';
-    scriptTag += JSON.stringify(options);
-    scriptTag += '</script>';
-
-    gulp.src('default.html')
-        .pipe(replace('<!-- options -->', scriptTag))
-        .pipe(rename('default-run.html'))
-        .pipe(gulp.dest('.'));
-
-});
-
 gulp.task('browser-sync', function () {
 
     var files = [
@@ -98,14 +77,14 @@ gulp.task('browser-sync', function () {
     browserSync.init(files, {
         server: {
             baseDir: '.',
-            index: 'default-run.html'
+            index: 'default-local.html'
         },
         ghostMode: false
     });
 
 });
 
-gulp.task('refresh', ['options', 'jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
+gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
 
 // Production Build
 gulp.task('clean-dist', function () {
@@ -260,7 +239,7 @@ gulp.task('invalidate', function (cb) {
 
     var params = {
         DistributionId: process.env.BAMBOO_CDNDISTRIBUTIONID,
-        InvalidationBatch: { 
+        InvalidationBatch: {
             CallerReference: 'deploy-' + Math.random(),
             Paths: {
                 Quantity: 1,
@@ -284,7 +263,7 @@ gulp.task('invalidate', function (cb) {
         }
 
         cb();
-        
+
     });
 
 });

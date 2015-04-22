@@ -14,6 +14,18 @@ manywho.collaboration = (function (manywho) {
     var socket = null;
     var rooms = {};
 
+    function emit(flowKey, kind, data) {
+
+        var stateId = manywho.utils.extractStateId(flowKey);
+
+        if (socket && rooms[stateId].isEnabled) {
+
+            socket.emit(kind, data);
+
+        }
+
+    }
+
     function onDisconnect() {
 
         for (stateId in rooms) {
@@ -27,7 +39,7 @@ manywho.collaboration = (function (manywho) {
     function onJoined(data) {
 
         log.info(data.user + ' has joined ' + data.stateId);
-        
+
         manywho.model.addNotification(rooms[data.stateId].flowKey, {
             message: data.user + ' has joined',
             position: 'right',
@@ -104,12 +116,19 @@ manywho.collaboration = (function (manywho) {
 
     }
 
+    function onSyncFeed(data) {
+
+        log.info('syncing feed in ' + data.stateId);
+        manywho.social.refreshMessages(rooms[data.stateId].flowKey);
+
+    }
+
     return {
 
         initialize: function (enable, flowKey) {
 
             if (!socket && enable) {
-                
+
                 var stateId = manywho.utils.extractStateId(flowKey);
 
                 rooms[stateId] = {
@@ -118,7 +137,7 @@ manywho.collaboration = (function (manywho) {
                 };
 
                 socket = io.connect(manywho.settings.global('collaboration.uri'));
-               
+
                 socket.on('disconnect', onDisconnect);
                 socket.on('joined', onJoined);
                 socket.on('left', onLeft);
@@ -127,6 +146,7 @@ manywho.collaboration = (function (manywho) {
                 socket.on('sync', onSync);
                 socket.on('getValues', onGetValues);
                 socket.on('setValues', onSetValues);
+                socket.on('syncFeed', onSyncFeed);
 
                 window.addEventListener("beforeunload", function (event) {
 
@@ -177,61 +197,37 @@ manywho.collaboration = (function (manywho) {
 
         leave: function(flowKey) {
 
-            var stateId = manywho.utils.extractStateId(flowKey);
-
-            if (socket && rooms[stateId].isEnabled) {
-
-                socket.emit('left', { stateId: stateId, user: user });
-
-            }
+            emit(flowKey, 'left', { stateId: stateId, user: user });
 
         },
 
         push: function (id, values, flowKey) {
 
-            var stateId = manywho.utils.extractStateId(flowKey);
-
-            if (socket && rooms[stateId].isEnabled) {
-
-                socket.emit('change', { id: id, values: values, stateId: stateId });
-
-            }
+            emit(flowKey, 'change', { id: id, values: values, stateId: stateId });
 
         },
 
         sync: function (flowKey) {
 
-            var stateId = manywho.utils.extractStateId(flowKey);
-
-            if (socket && rooms[stateId].isEnabled) {
-
-                socket.emit('sync', { stateId: stateId, owner: socket.id });
-
-            }
+            emit(flowKey, 'sync', { stateId: stateId, owner: socket.id });
 
         },
 
         move: function (flowKey) {
 
-            var stateId = manywho.utils.extractStateId(flowKey);
-
-            if (socket && rooms[stateId].isEnabled) {
-
-                socket.emit('move', { stateId: stateId, owner: socket.id });
-
-            }
+            emit(flowKey, 'move', { stateId: stateId, owner: socket.id });
 
         },
 
         getValues: function (flowKey) {
 
-            var stateId = manywho.utils.extractStateId(flowKey);
+            emit(flowKey, 'getValues', { stateId: stateId, id: socket.id });
 
-            if (socket && rooms[stateId].isEnabled) {
+        },
 
-                socket.emit('getValues', { stateId: stateId, id: socket.id });
+        syncFeed: function(flowKey) {
 
-            }
+            emit(flowKey, 'syncFeed', { stateId: stateId, id: socket.id });
 
         }
 
