@@ -52,7 +52,7 @@ manywho.social = (function (manywho) {
                 });
 
         },
-        
+
         getStream: function(flowKey) {
 
             return streams[flowKey];
@@ -68,7 +68,7 @@ manywho.social = (function (manywho) {
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
             var streamId = streams[flowKey].id;
-            
+
             return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 1, 10, authenticationToken)
                 .then(function (response) {
 
@@ -141,7 +141,7 @@ manywho.social = (function (manywho) {
 
             return manywho.ajax.sendSocialMessage(tenantId, stream.id, stateId, request, authenticationToken)
                 .then(function (response) {
-                    
+
                     if (repliedTo) {
 
                         var repliedToMessage = stream.messages.messages.filter(function (message) {
@@ -160,7 +160,9 @@ manywho.social = (function (manywho) {
                         stream.messages.messages.unshift(response);
 
                     }
-                    
+
+                    manywho.collaboration.syncFeed(flowKey);
+
                     manywho.state.setLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
