@@ -422,7 +422,7 @@ manywho.engine = (function (manywho) {
             }
 
             var storedConfig = localStorage.getItem('oauth-' + stateId)
-            var config = (stateId) ? !manywho.utils.isNullOrWhiteSpace(storedConfig) && JSON.parse(storedConfig) : null;
+            var config = (stateId) ? !manywho.utils.isNullOrWhitespace(storedConfig) && JSON.parse(storedConfig) : null;
             if (!config) {
 
                 config = { tenantId: tenantId, flowId: flowId, flowVersionId: flowVersionId, container: container, authenticationToken: authenticationToken, options: options }
