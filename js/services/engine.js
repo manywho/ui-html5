@@ -158,7 +158,6 @@ manywho.engine = (function (manywho) {
                     flowId: flowId,
                     flowVersionId: flowVersionId,
                     container: container,
-                    authenticationToken: authenticationToken,
                     options: options
                 }));
 
@@ -425,13 +424,13 @@ manywho.engine = (function (manywho) {
             var config = (stateId) ? !manywho.utils.isNullOrWhitespace(storedConfig) && JSON.parse(storedConfig) : null;
             if (!config) {
 
-                config = { tenantId: tenantId, flowId: flowId, flowVersionId: flowVersionId, container: container, authenticationToken: authenticationToken, options: options }
+                config = { tenantId: tenantId, flowId: flowId, flowVersionId: flowVersionId, container: container, options: options }
 
             }
 
             if (stateId && !isInitializing) {
 
-                this.join(config.tenantId, config.flowId, config.flowVersionId, config.container, stateId, config.authenticationToken, config.options);
+                this.join(config.tenantId, config.flowId, config.flowVersionId, config.container, stateId, authenticationToken, config.options);
 
             }
             else {
@@ -440,7 +439,7 @@ manywho.engine = (function (manywho) {
                 {
                     execute: initializeWithAuthorization,
                     context: this,
-                    args: [config.tenantId, config.flowId, config.flowVersionId, config.container, config.options, config.authenticationToken || null],
+                    args: [config.tenantId, config.flowId, config.flowVersionId, config.container, config.options, authenticationToken || null],
                     name: 'initialize',
                     type: 'done'
                 },
@@ -449,7 +448,7 @@ manywho.engine = (function (manywho) {
                 config.flowVersionId,
                 config.container,
                 config.options,
-                config.authenticationToken);
+                authenticationToken);
 
             }
 
@@ -588,7 +587,6 @@ manywho.engine = (function (manywho) {
                 flowId: flowId,
                 flowVersionId: flowVersionId,
                 container: container,
-                authenticationToken: authenticationToken,
                 options: options
             }));
 
