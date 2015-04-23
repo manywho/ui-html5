@@ -1,5 +1,5 @@
-ManyWho HTML5 Players (Pre-Release)
-===================================
+ManyWho HTML5 Players
+=====================
 
 First thing. What's an HTML5 Player?
 

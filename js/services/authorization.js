@@ -14,7 +14,7 @@ manywho.authorization = (function (manywho) {
     return {
 
         setAuthenticationToken: function (callback, flowKey, response) {
-        
+
             var authenticationToken = response.outputs.filter(function (output) {
 
                 return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
@@ -24,26 +24,8 @@ manywho.authorization = (function (manywho) {
                 return output.contentValue;
 
             })[0];
-        
+
             manywho.state.setAuthenticationToken(authenticationToken, flowKey);
-
-        },
-
-        setIsOAuthing: function(stateId, kind) {
-
-            localStorage.setItem(stateId + '_oauth_', JSON.stringify({ stateId: stateId, kind: kind }));
-
-        },
-
-        getIsOAuthing: function(stateId) {
-
-            localStorage.getItem(stateId + '_oauth_');
-
-        },
-
-        clearIsOAuthing: function(stateId) {
-
-            localStorage.removeItem(stateId + '_oauth_');
 
         },
 
@@ -55,14 +37,13 @@ manywho.authorization = (function (manywho) {
 
         },
 
-        invokeAuthorization: function (response, flowKey, kind, doneCallback) {
+        invokeAuthorization: function (response, flowKey, doneCallback) {
 
             // Check to see if the user has successfully authenticated
             if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
                 if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
-                    
-                    this.setIsOAuthing(manywho.utils.extractStateId(flowKey), kind);
+
                     window.location = response.authorizationContext.loginUrl;
                     return;
 
@@ -84,7 +65,7 @@ manywho.authorization = (function (manywho) {
 
                         authenticationFlow.id = data.id.id;
                         authenticationFlow.versionId = data.id.versionId;
-                        
+
                         var inputObject = {
                             loginUrl: response.authorizationContext.loginUrl,
                             ManyWhoTenantId: manywho.utils.extractTenantId(flowKey),
@@ -146,7 +127,7 @@ manywho.authorization = (function (manywho) {
             var state = manywho.state.getState(flowKey);
 
             manywho.callbacks.register(flowKey, doneCallback);
-            
+
             manywho.ajax.sessionAuthentication(manywho.utils.extractTenantId(flowKey), state.id, requestData)
                 .then(function (response) {
 

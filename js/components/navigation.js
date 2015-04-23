@@ -132,7 +132,11 @@ permissions and limitations under the License.
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
-                var classNames = ['navbar navbar-default'];
+                var classNames = [
+                    'navbar navbar-default',
+                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
+                ];
+
                 var inlineStyles = null;
 
                 if (manywho.utils.isEmbedded()) {

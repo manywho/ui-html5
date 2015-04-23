@@ -12,15 +12,12 @@ permissions and limitations under the License.
 .mw-bs {
 
     .debug {
-        margin: 20px;
-    }
-
-    .debug ul {
-        list-style-type: none;
-    }
-
-    .debug-root {
-        padding-left: 0;
+        height: 100%;
+        width: calc(40% - 1em);
+        margin-left: 1em;
+        margin-bottom: 0;
+        float: right;
+        overflow: scroll;
     }
 
     .debug-root-toggle {
@@ -38,12 +35,26 @@ permissions and limitations under the License.
         vertical-align: middle;
     }
 
-    .debug-item-id {
-        margin-left: 0.5em;
+    .debug-values {
+        margin-left: 2em;
     }
 
-    .debug-item-key {
-        font-weight: bold;
+    .debug-value-toggle {
+        padding-top: 12px;
+    }
+
+    .debug-value-breadcrumb {
+        margin-left: 1.5em;
+        margin-bottom: 0.5em;
+    }
+    
+    .main-debug {
+        width: 60%;
+        float: left;
+    }
+
+    .nav-debug {
+        width: 60%;
     }
 
 }
