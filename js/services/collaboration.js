@@ -197,37 +197,37 @@ manywho.collaboration = (function (manywho) {
 
         leave: function(flowKey) {
 
-            emit(flowKey, 'left', { stateId: stateId, user: user });
+            emit(flowKey, 'left', { stateId: manywho.utils.extractStateId(flowKey), user: user });
 
         },
 
         push: function (id, values, flowKey) {
 
-            emit(flowKey, 'change', { id: id, values: values, stateId: stateId });
+            emit(flowKey, 'change', { id: id, values: values, stateId: manywho.utils.extractStateId(flowKey) });
 
         },
 
         sync: function (flowKey) {
 
-            emit(flowKey, 'sync', { stateId: stateId, owner: socket.id });
+            emit(flowKey, 'sync', { stateId: manywho.utils.extractStateId(flowKey), owner: socket.id });
 
         },
 
         move: function (flowKey) {
 
-            emit(flowKey, 'move', { stateId: stateId, owner: socket.id });
+            emit(flowKey, 'move', { stateId: manywho.utils.extractStateId(flowKey), owner: socket.id });
 
         },
 
         getValues: function (flowKey) {
 
-            emit(flowKey, 'getValues', { stateId: stateId, id: socket.id });
+            emit(flowKey, 'getValues', { stateId: manywho.utils.extractStateId(flowKey), id: socket.id });
 
         },
 
         syncFeed: function(flowKey) {
 
-            emit(flowKey, 'syncFeed', { stateId: stateId, id: socket.id });
+            emit(flowKey, 'syncFeed', { stateId: manywho.utils.extractStateId(flowKey), id: socket.id });
 
         }
 
