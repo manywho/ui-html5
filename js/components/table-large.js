@@ -10,7 +10,7 @@ permissions and limitations under the License.
 */
 
 (function (manywho) {
-  
+
     function getPropertyValue(objectData, id, propertyId) {
 
         return objectData.filter(function (item) {
@@ -49,7 +49,17 @@ permissions and limitations under the License.
         });
 
     }
-    
+
+    function isTableEditable(columns) {
+
+        return columns.filter(function(column) {
+
+            return column.isEditable;
+
+        }).length > 0;
+
+    }
+
     var tableLarge = React.createClass({
 
         renderHeaderRow: function(displayColumns) {
@@ -82,7 +92,7 @@ permissions and limitations under the License.
 
             e.preventDefault();
             e.stopPropagation();
-            
+
             if (this.state.currentCellEdit) {
 
                 var id = this.state.currentCellEdit.split('|')[1];
@@ -101,7 +111,7 @@ permissions and limitations under the License.
         },
 
         onCellChanged: function(e) {
-            
+
             this.setState({ currentCellEditValue: e.currentTarget.value })
 
         },
@@ -114,7 +124,7 @@ permissions and limitations under the License.
                 e.stopPropagation();
 
                 if (this.state.currentCellEdit) {
-                    
+
                     var id = this.state.currentCellEdit.split('|')[1];
                     var propertyId = this.state.currentCellEdit.split('|')[0];
 
@@ -142,7 +152,9 @@ permissions and limitations under the License.
                     (selectedRows.indexOf(item.externalId) != -1) ? 'info' : ''
                 ];
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, displayColumns.map(function (column) {
+                var onClick = !isTableEditable(displayColumns) && onRowClicked;
+
+                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, displayColumns.map(function (column) {
 
                     if (column == 'mw-outcomes') {
 
@@ -163,8 +175,8 @@ permissions and limitations under the License.
 
                         if (selectedProperty) {
 
-                            if (this.props.isFiles && 
-                                (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true) 
+                            if (this.props.isFiles &&
+                                (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
                                 || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
 
                                 return React.DOM.td(null, React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info btn-sm' }, 'Download'));
@@ -183,7 +195,7 @@ permissions and limitations under the License.
                                     React.DOM.span(null, selectedProperty.contentValue)
                                 );
 
-                            }                            
+                            }
 
                         }
 
@@ -214,16 +226,16 @@ permissions and limitations under the License.
         render: function () {
 
             log.info('Rendering Table-Large');
-                      
+
             var tableClassNames = [
                 'table table-bordered',
                 (this.props.isSelectionEnabled) ? 'table-hover' : '',
                 (this.props.model.isValid) ? '' : 'table-invalid'
             ].join(' ');
-            
+
             var rows = [this.renderHeaderRow(this.props.displayColumns)];
             rows = rows.concat(this.renderRows(this.props.flowKey, this.props.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
-            
+
             return React.DOM.div({ className: 'table-responsive' },
                 React.DOM.table({ className: tableClassNames },
                     React.DOM.tbody(null, rows)
