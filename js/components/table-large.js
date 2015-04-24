@@ -98,7 +98,14 @@ permissions and limitations under the License.
                 var id = this.state.currentCellEdit.split('|')[1];
                 var propertyId = this.state.currentCellEdit.split('|')[0];
 
-                var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
+                var value = this.state.currentCellEditValue;
+                if (value) {
+
+                    value = value.trim();
+
+                }
+
+                var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
                 manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
 
             }
@@ -128,7 +135,14 @@ permissions and limitations under the License.
                     var id = this.state.currentCellEdit.split('|')[1];
                     var propertyId = this.state.currentCellEdit.split('|')[0];
 
-                    var objectData = setPropertyValue(this.props.objectData, id, propertyId, this.state.currentCellEditValue);
+                    var value = this.state.currentCellEditValue;
+                    if (value) {
+
+                        value = value.trim();
+
+                    }
+
+                    var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
                     manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
 
                     this.setState({
