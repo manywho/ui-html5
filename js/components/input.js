@@ -57,7 +57,8 @@ permissions and limitations under the License.
 
                 $(datepickerElement).datepicker({
                     format: 'dd/mm/yyyy',
-                    autoclose: true
+                    autoclose: true,
+                    enableOnReadonly: false
                 })
                 .on('changeDate', this.handleChange);
 
@@ -114,7 +115,7 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
             }
-            
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -197,13 +198,13 @@ permissions and limitations under the License.
                         React.DOM.input(attributes, null),,
                         React.DOM.span({ className: 'help-block' }, model.message)
                     ]);
-                
-            }                       
+
+            }
 
         }
 
     });
-    
+
     manywho.component.register('input', input, ['checkbox']);
 
 }(manywho));
