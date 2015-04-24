@@ -12,7 +12,7 @@ permissions and limitations under the License.
 (function (manywho) {
 
     var debugViewer = React.createClass({
-        
+
         toggleValue: function(e) {
 
             e.stopPropagation();
@@ -38,7 +38,7 @@ permissions and limitations under the License.
         onBreadcrumbClick: function(e) {
 
             e.preventDefault();
-            
+
             var paths = this.state.paths;
             var valueElementId = e.currentTarget.getAttribute('data-value-id');
             var breadcrumbs = Array.prototype.slice.call(e.currentTarget.parentNode.parentNode.childNodes);
@@ -76,9 +76,9 @@ permissions and limitations under the License.
         },
 
         renderValues: function(title, id, values) {
-            
+
             var isExpanded = this.state.toggle[id] || false;
-            
+
             return React.DOM.div({ className: 'debug-root' }, [
                 React.DOM.div({ className: 'debug-root-toggle', id: id, onClick: this.toggleHeader }, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right') }, null),
@@ -91,7 +91,7 @@ permissions and limitations under the License.
 
                 }, this))
             ]);
-        
+
         },
 
         renderValue: function(path, value) {
@@ -99,7 +99,7 @@ permissions and limitations under the License.
             var isExpanded = this.state.toggle[value.valueElementId] || false;
             var properties = manywho.utils.getValueByPath(value, path);
 
-            path = value.developerName + '.' + path;            
+            path = value.developerName + '.' + path;
 
             return React.DOM.li({ className: 'clearfix' }, [
                 React.DOM.div(null, [
@@ -115,7 +115,7 @@ permissions and limitations under the License.
 
                             return null;
 
-                        }                        
+                        }
 
                     }, this))
                 ]),
@@ -143,10 +143,10 @@ permissions and limitations under the License.
 
         renderLogEntries: function (entries) {
 
-            var isExpanded = this.state['executionlog'];
+            var isExpanded = this.state.toggle['executionlog'];
 
             return React.DOM.div({ className: 'debug-root' }, [
-                React.DOM.div({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggle }, [
+                React.DOM.div({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggleHeader }, [
                     React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right') }, null),
                     React.DOM.h5({ className: 'debug-title' }, 'Execution Log'),
                     React.DOM.span({ className: 'label label-info' }, entries.length)
@@ -156,8 +156,10 @@ permissions and limitations under the License.
                         React.DOM.tr(null, [React.DOM.th(null, 'Timestamp'), React.DOM.th(null, 'Message'), React.DOM.th(null, 'Data')])
                     ].concat(manywho.utils.convertToArray(entries).map(function (entry) {
 
+                        var timeStamp = new Date(entry.timestamp);
+
                         return React.DOM.tr(null, [
-                            React.DOM.td(null, entry.timestamp),
+                            React.DOM.td(null, timeStamp.toLocaleString()),
                             React.DOM.td(null, entry.message),
                             // TODO: display data
                         ]);
@@ -169,18 +171,18 @@ permissions and limitations under the License.
         },
 
         getInitialState: function() {
-            
+
             return {
                 paths: {},
                 toggle: {}
             };
 
         },
-                
+
         render: function () {
-                            
+
             if (manywho.settings.isDebugEnabled(this.props.flowKey)) {
-                
+
                 log.info('Rendering Debug');
 
                 var preCommitStateValues = manywho.model.getPreCommitStateValues(this.props.flowKey) || [];
