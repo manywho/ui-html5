@@ -48,7 +48,7 @@ permissions and limitations under the License.
             }
 
             if (!model.isEditable) {
-                attributes.readOnly = '';
+                attributes.readOnly = 'readonly';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
