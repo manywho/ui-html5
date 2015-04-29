@@ -6,11 +6,11 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'conference-name' }, [
+                    React.DOM.label({ htmlFor: 'content' }, [
                         'Name of Conference',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'conference-name', type: 'text', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'content', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.input({ id: 'deaf', type: 'checkbox' }),
@@ -21,20 +21,20 @@
                     React.DOM.label({ htmlFor: 'mute' }, 'Mute')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'hold-music', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'hold-music' }, 'Hold Music')
+                    React.DOM.input({ id: 'holdMusic', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'holdMusic' }, 'Hold Music')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'share-dtmf', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'share-dtmf' }, 'Share DTMF')
+                    React.DOM.input({ id: 'shareDtmf', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'shareDtmf' }, 'Share DTMF')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'end-on-exit', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'end-on-exit' }, 'End On Exit')
+                    React.DOM.input({ id: 'endOnExit', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'endOnExit' }, 'End On Exit')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'allow-create', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'allow-create' }, 'Allow Create')
+                    React.DOM.input({ id: 'allowCreate', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'allowCreate' }, 'Allow Create')
                 ])
             ]);
 

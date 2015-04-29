@@ -6,22 +6,22 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'finish-key' }, [
+                    React.DOM.label({ htmlFor: 'finishOnKey' }, [
                         'Finish On Key',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'finish-key', type: 'text', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'finishOnKey', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'maximum-length' }, [
+                    React.DOM.label({ htmlFor: 'maxLength' }, [
                         'Maximum Length',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'maximum-length', type: 'number', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'maxLength', type: 'number', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'play-beep', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'play-beep' }, 'Play Beep')
+                    React.DOM.input({ id: 'playBeep', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'playBeep' }, 'Play Beep')
                 ])
             ]);
 

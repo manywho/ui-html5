@@ -6,15 +6,15 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'say' }, [
+                    React.DOM.label({ htmlFor: 'content' }, [
                         'Say',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'say', type: 'text', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'content', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'interrupt-dtmf', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'interrupt-dtmf' }, 'Interrupt on DTMF')
+                    React.DOM.input({ id: 'interruptOnDTMF', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'interruptOnDTMF' }, 'Interrupt on DTMF')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.label({ htmlFor: 'voice' }, [

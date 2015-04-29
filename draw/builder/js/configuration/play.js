@@ -6,11 +6,11 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'media-file' }, [
+                    React.DOM.label({ htmlFor: 'content' }, [
                         'Link to media file',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'media-file', type: 'text', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'content', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.label({ htmlFor: 'loop' }, [
@@ -27,19 +27,19 @@
                     React.DOM.input({ className: 'form-control', id: 'timeout', type: 'number', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'recording-type' }, [
+                    React.DOM.label({ htmlFor: 'recordingType' }, [
                         'Recording Type',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.select({ className: 'form-control', id: 'recording-type', required: 'required', placeholder: 'Please choose an option' }, [
+                    React.DOM.select({ className: 'form-control', id: 'recordingType', required: 'required', placeholder: 'Please choose an option' }, [
                         React.DOM.option({}, 'auto'),
                         React.DOM.option({}, 'voice'),
                         React.DOM.option({}, 'call')
                     ])
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'interrupt-dtmf', type: 'checkbox' }),
-                    React.DOM.label({ htmlFor: 'interrupt-dtmf' }, 'Interrupt on DTMF')
+                    React.DOM.input({ id: 'interruptOnDTMF', type: 'checkbox' }),
+                    React.DOM.label({ htmlFor: 'interruptOnDTMF' }, 'Interrupt on DTMF')
                 ])
             ]);
 

@@ -139,6 +139,9 @@
 
             }
 
+            var metadata = manywho.draw.json.buildPageMetadata(newState);
+            manywho.draw.ajax.savePageMetadata(metadata);
+
             return newState.canvasItems;
 
         },

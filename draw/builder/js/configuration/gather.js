@@ -6,11 +6,18 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'invalid-play' }, [
+                    React.DOM.label({ htmlFor: 'content' }, [
+                        'Media File',
+                        React.DOM.span({ className: 'input-required' }, ' *')
+                    ]),
+                    React.DOM.input({ className: 'form-control', id: 'content', type: 'text', required: 'required' })
+                ]),
+                React.DOM.div({ className: 'form-group row' }, [
+                    React.DOM.label({ htmlFor: 'invalidPlay' }, [
                         'Invalid Play',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'invalid-play', type: 'text', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'invalidPlay', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.label({ htmlFor: 'delimiters' }, [
@@ -27,18 +34,18 @@
                     React.DOM.input({ className: 'form-control', id: 'timeout', type: 'number', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'min-digits' }, [
+                    React.DOM.label({ htmlFor: 'minDigits' }, [
                         'Min Digits',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'min-digits', type: 'number', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'minDigits', type: 'number', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.label({ htmlFor: 'max-digits' }, [
+                    React.DOM.label({ htmlFor: 'maxDigits' }, [
                         'Max Digits',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'max-digits', type: 'number', required: 'required' })
+                    React.DOM.input({ className: 'form-control', id: 'maxDigits', type: 'number', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.label({ htmlFor: 'attempts' }, [
@@ -53,6 +60,13 @@
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
                     React.DOM.input({ className: 'form-control', id: 'regex', type: 'text', required: 'required' })
+                ]),
+                React.DOM.div({ className: 'form-group row' }, [
+                    React.DOM.label({ htmlFor: 'digitTimeout' }, [
+                        'Digit Timeout',
+                        React.DOM.span({ className: 'input-required' }, ' *')
+                    ]),
+                    React.DOM.input({ className: 'form-control', id: 'digitTimeout', type: 'number', required: 'required' })
                 ])
             ]);
 
