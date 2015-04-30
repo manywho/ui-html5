@@ -56,7 +56,7 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function onAuthorizationFailed(response, flowKey, kind, callback) {
+    function onAuthorizationFailed(response, flowKey, callback) {
 
         if (manywho.state.getSessionData(flowKey) != null) {
 
@@ -65,7 +65,7 @@ manywho.engine = (function (manywho) {
         } else {
 
             // Authorization failed, retry
-            manywho.authorization.invokeAuthorization(response, flowKey, kind, callback);
+            manywho.authorization.invokeAuthorization(response, flowKey, callback);
 
         }
 
@@ -410,7 +410,7 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, isInitializing, options) {
+        initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options, isInitializing) {
 
             options = options || {};
             isInitializing = (isInitializing) ? (isInitializing.toLowerCase() === 'true') : false;
