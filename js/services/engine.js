@@ -410,7 +410,7 @@ manywho.engine = (function (manywho) {
 
     return {
 
-        initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, isInitializing, options) {
+        initialize: function(tenantId, flowId, flowVersionId, container, stateId, authenticationToken, options, isInitializing) {
 
             options = options || {};
             isInitializing = (isInitializing) ? (isInitializing.toLowerCase() === 'true') : false;
