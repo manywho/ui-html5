@@ -28,7 +28,7 @@ manywho.draw.ajax = (function () {
                 processData: true,
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'getFlowGraph');
 
                 }
             }).done(function (data) {
@@ -54,7 +54,7 @@ manywho.draw.ajax = (function () {
                 data: JSON.stringify(model),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'updateFlowGraph');
 
                 }
             }).done();
@@ -70,7 +70,7 @@ manywho.draw.ajax = (function () {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'getFlowByName');
 
                 }
             }).done(function(data) {
@@ -90,13 +90,53 @@ manywho.draw.ajax = (function () {
 
                     var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
 
-                    beforeSend.call(this, xhr, null, authenticationToken, 'initialization');
+                    beforeSend.call(this, xhr, null, authenticationToken, 'getTenantData');
 
                 }
             }).done(function(data) {
                 manywho.draw.model.setTenantId(data.id);
                 manywho.draw.model.setTenantName(data.daveloperName);
             });
+
+        },
+
+        getFlowSnapshot: function (flowId, flowVersionId, tenantId, authenticationToken) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/snap/' + flowId + '/' + flowVersionId,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    beforeSend.call(this, xhr, null, authenticationToken, 'getFlowSnapshot');
+
+                }
+            }).done(function(data) {
+
+
+
+            });
+
+        },
+
+        savePageLayout: function (page,  tenantId, authenticationToken) {
+
+            $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(page),
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
+
+                }
+            }).done();
 
         }
     }
