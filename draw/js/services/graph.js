@@ -160,7 +160,8 @@ manywho.graph = (function() {
 
                     return self.addElement(mapElement.id, {
                             name: mapElement.developerName,
-                            summary: mapElement.developerSummary
+                            summary: mapElement.developerSummary,
+                            pageId: mapElement.pageElementId
                         }, mapElement.x, mapElement.y, manywho.utils.isEqual(mapElement.elementType, 'start', true) ? 60 : 120, 60, self.style.getElementStyleByName(mapElement.elementType) ? mapElement.elementType : 'base');
 
                 });
@@ -178,8 +179,6 @@ manywho.graph = (function() {
                     }
 
                 });
-
-                mapElements.push(self.addElement('123', {name: 'This is some test huge text to make sure cells are automatically resized'}, 100, 400, 120, 60, 'base'));
 
             }
             finally

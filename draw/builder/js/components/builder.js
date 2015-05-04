@@ -12,31 +12,33 @@
 
     manywho.builder = React.createClass({
 
-        getInitialState: function () {
+        renderPageLayout: function (data) {
 
-            return {
+            var newState = data.pageComponents.map(function (component) {
+
+                return {
+
+                    name: component.developerName,
+                    attributes: component.attributes,
+                    type: component.componentType,
+                    order: component.order,
+                    id: component.id,
+                    active: false
+
+                }
+
+            });
+
+            this.setState({
                 currentDragItem: null,
                 currentSelectedItem: null,
                 hover: false,
                 dragging: false,
                 enteredDroppable: false,
-                canvasItems: [
-                    {
-                        name: 'Say1',
-                        text: 'This is some text that will be read to the caller',
-                        type: 'Say',
-                        active: false,
-                        id: 'Say0'
-                    },
-                    {
-                        name: 'Say2',
-                        text: 'This is some other text that will be read to the caller',
-                        type: 'Say',
-                        active: false,
-                        id: 'Say1'
-                    }
-                ]
-            }
+                canvasItems: newState
+            });
+
+            this.render();
 
         },
 
@@ -139,7 +141,9 @@
 
             }
 
-            var metadata = manywho.draw.json.buildPageMetadata(newState);
+            var name = document.getElementById('page-name').value;
+
+            var metadata = manywho.draw.json.buildPageMetadata(name, newState);
             manywho.draw.ajax.savePageMetadata(metadata);
 
             return newState.canvasItems;
@@ -272,7 +276,8 @@
                     text: '',
                     type: 'Dummy',
                     active: false,
-                    id: 'Dummy'
+                    id: 'Dummy',
+                    order: index
 
                 });
 
@@ -344,7 +349,8 @@
                         text: '',
                         type: 'Dummy',
                         active: false,
-                        id: 'Dummy'
+                        id: 'Dummy',
+                        order: newState.canvasItems.length
 
                     });
 

@@ -22,8 +22,6 @@ manywho.graph.element = (function() {
         initialize: function () {
 
             this.addDraggableElements('step');
-            this.addDraggableElements('input');
-            this.addDraggableElements('decision');
 
         }
 

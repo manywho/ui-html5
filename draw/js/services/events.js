@@ -81,7 +81,7 @@ manywho.graph.events = (function () {
 
                 if (cell.properties.cell) {
 
-                    alert('Call edit map element flow of name: ' + cell.properties.cell.value.name);
+                    manywho.draw.ajax.getPageLayout(cell.properties.cell.pageId);
 
                 }
 

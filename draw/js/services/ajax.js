@@ -100,7 +100,7 @@ manywho.draw.ajax = (function () {
 
         },
 
-        getFlowSnapshot: function (flowId, flowVersionId, tenantId, authenticationToken) {
+        getFlowSnapshot: function (flowId, flowVersionId, authenticationToken) {
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/snap/' + flowId + '/' + flowVersionId,
@@ -110,6 +110,8 @@ manywho.draw.ajax = (function () {
                 beforeSend: function (xhr) {
 
                     var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
 
                     beforeSend.call(this, xhr, null, authenticationToken, 'getFlowSnapshot');
 
@@ -122,7 +124,31 @@ manywho.draw.ajax = (function () {
 
         },
 
-        savePageLayout: function (page,  tenantId, authenticationToken) {
+        getPageLayout: function (pageId) {
+
+            $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page/' + pageId,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getPageLayout');
+
+                }
+            }).done(function (data) {
+
+                manywho.builder.renderPageLayout();
+
+            });
+
+        },
+
+        savePageLayout: function (page) {
 
             $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page',
@@ -132,6 +158,10 @@ manywho.draw.ajax = (function () {
                 processData: true,
                 data: JSON.stringify(page),
                 beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
 
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
 
