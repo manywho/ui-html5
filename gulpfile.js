@@ -142,7 +142,7 @@ gulp.task('bootstrap-themes-dist', function () {
 
 gulp.task('js-dist', function () {
 
-    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
+    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js', '!js/services/ajaxproxy2.js'])
                 .pipe(order(['services/*.js', 'lib/*.js', 'components/mixins.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
                 .pipe(sourcemaps.init())
