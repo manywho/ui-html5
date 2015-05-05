@@ -66,7 +66,7 @@ manywho.draw = ( function(manywho) {
                     {
                         execute: manywho.draw.ajax.getFlowGraph,
                         type: 'done',
-                        args: [manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main')]
+                        args: []
                     },
                     {
                         execute: manywho.draw.hideModal,

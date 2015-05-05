@@ -154,6 +154,7 @@ manywho.graph = (function() {
             graph.getModel().beginUpdate();
             
             try {
+
                 var mapElements =  model.mapElements.map(function (mapElement) {
 
                     mapElement.elementType = mapElement.elementType.toLowerCase();
@@ -172,7 +173,10 @@ manywho.graph = (function() {
 
                         mapElement.outcomes.forEach(function (outcome) {
 
-                            self.createOutcome(outcome.id, outcome.label, self.getElementById(mapElement.id), self.getElementById(outcome.nextMapElementId), 'outcome');
+                            self.createOutcome(outcome.id, {
+                                name: outcome.developerName,
+                                label: outcome.label
+                            }, self.getElementById(mapElement.id), self.getElementById(outcome.nextMapElementId), 'outcome');
 
                         })
 

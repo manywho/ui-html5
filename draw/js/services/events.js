@@ -135,15 +135,57 @@ manywho.graph.events = (function () {
 
                 if (graph.getSelectionCells().length > 0) {
 
+                    var drawKey = 'draw_draw_draw_main';
+
+                    var flowName;
+
+                    var inputObject = {};
+
                     if (manywho.utils.isEqual(graph.getSelectionCells()[0].style, 'outcome', true)) {
 
-                        alert('Delete outcome: ' + graph.getSelectionCells()[0].value.name);
+                        flowName = 'outcome';
+
+                        inputObject = {
+                            Id: graph.getSelectionCells()[0].source.id,
+                            AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
+                            EditingToken: manywho.draw.model.getEditingToken(),
+                            FlowId: manywho.draw.model.getFlowId(),
+                            OutcomeId: graph.getSelectionCells()[0].id,
+                            Command: "delete"
+                        };
 
                     } else {
 
-                        alert('Delete map element: ' + graph.getSelectionCells()[0].value.name);
+                        flowName = 'input';
+
+                        inputObject = {
+                            Id: graph.getSelectionCells()[0].id,
+                            AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
+                            EditingToken: manywho.draw.model.getEditingToken(),
+                            FlowId: manywho.draw.model.getFlowId(),
+                            ElementType: "input",
+                            X: graph.getSelectionCells()[0].geometry.x,
+                            Y: graph.getSelectionCells()[0].geometry.y,
+                            Command: "delete",
+                            GroupElementId: ""
+
+                        };
 
                     }
+
+                    manywho.engine.initializeSystemFlow(flowName, drawKey, manywho.json.generateFlowInputs(inputObject), [
+                        {
+                            execute: manywho.draw.hideModal,
+                            type: 'done',
+                            args: [drawKey]
+                        },
+                        {
+                            execute: manywho.draw.ajax.getFlowGraph,
+                            type: 'done',
+                            args: []
+                        }
+                    ]);
+
                 }
 
             });

@@ -24,7 +24,7 @@ manywho.draw.model = (function () {
 
         setFlowId: function (flowId) {
 
-            model.id = { id: flowId };
+            model.id = flowId;
 
         },
 
@@ -49,6 +49,18 @@ manywho.draw.model = (function () {
         setTenantName: function (tenantName) {
 
             model.tenantName = tenantName;
+
+        },
+
+        getEditingToken: function () {
+
+            return model.editingToken;
+
+        },
+
+        setEditingToken: function (editingToken) {
+
+            model.editingToken = editingToken;
 
         },
 
