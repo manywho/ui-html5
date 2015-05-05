@@ -267,7 +267,7 @@ manywho.engine = (function (manywho) {
         manywho.state.setLoading('main', { message: 'Joining...' }, flowKey);
         self.render(flowKey);
 
-        manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
+        return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
                 return isAuthorized(response, flowKey);
@@ -594,7 +594,7 @@ manywho.engine = (function (manywho) {
                 options: options
             }));
 
-            joinWithAuthorization.call(this,
+            return joinWithAuthorization.call(this,
                 {
                     execute: joinWithAuthorization,
                     context: this,
