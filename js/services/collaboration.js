@@ -71,9 +71,9 @@ manywho.collaboration = (function (manywho) {
 
     function onChange(data) {
 
-        log.info('change to: ' + data.id + ' in ' + data.stateId);
+        log.info('change to: ' + data.component + ' in ' + data.stateId);
 
-        manywho.state.setComponent(data.id, data.values, rooms[data.stateId].flowKey, false);
+        manywho.state.setComponent(data.component, data.values, rooms[data.stateId].flowKey, false);
         manywho.engine.render(rooms[data.stateId].flowKey);
 
     }
@@ -208,7 +208,7 @@ manywho.collaboration = (function (manywho) {
 
         push: function (id, values, flowKey) {
 
-            emit(flowKey, 'change', { id: id, values: values });
+            emit(flowKey, 'change', { component: id, values: values });
 
         },
 
