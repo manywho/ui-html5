@@ -12,8 +12,9 @@ manywho.graph.element = (function() {
 
             mxUtils.makeDraggable(document.getElementById(name), manywho.graph.getGraphObject().graph, function(graph, event, cell, x, y) {
 
-                alert('Call system flow for type: ' + event.srcElement.id);
-                manywho.graph.addElement(null, name, x-60, y-30, 120, 60, name);
+                manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                manywho.layout.render();
 
             }, dragImage);
 
@@ -21,7 +22,7 @@ manywho.graph.element = (function() {
 
         initialize: function () {
 
-            this.addDraggableElements('step');
+            this.addDraggableElements('input');
 
         }
 

@@ -181,7 +181,13 @@ manywho.draw.ajax = (function () {
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
 
                 }
-            }).done();
+            }).done(function (data) {
+
+                manywho.draw.hideModal('draw_draw_draw_main');
+
+                manywho.draw.ajax.getFlowGraph(null, data);
+
+            });
 
         }
     }

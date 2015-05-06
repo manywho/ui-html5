@@ -1,5 +1,4 @@
 #page-builder {
-  width: 1800px;
   margin: 0 auto;
   font-family: sans-serif;
 }
@@ -9,12 +8,7 @@
 #page-builder h1 {
   text-align: center;
 }
-#page-builder .nav-builder {
-  min-height: 2em;
-  margin: 1em;
-  display: inline-block;
-}
-#page-builder .nav-builder input {
+#page-builder #page-name {
   display: table;
   vertical-align: middle;
 }
@@ -32,19 +26,20 @@
   padding-left: 0;
 }
 #page-builder .component-button {
-  width: 9em;
+  width: 100%;
   margin-top: 1em;
 }
 #page-builder #canvas {
   margin-top: 10px;
   padding-top: 1em;
   border: 1px dashed grey;
-  height: calc(690px);
+  height: 590px;
   overflow-y: scroll;
 }
 #page-builder #configuration {
   border: 1px solid grey;
-  min-height: 700px;
+  height: 600px;
+  overflow-y: scroll;
   padding: 2em;
 }
 #page-builder .active-canvas {
@@ -65,4 +60,7 @@
 }
 #page-builder .orange-background {
   background-color: rgba(255, 189, 48, 0.63);
+}
+#page-builder .manywho-field-label {
+  color: #FFFFFF;
 }

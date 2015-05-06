@@ -85,7 +85,12 @@ manywho.draw = ( function(manywho) {
 
             var modal = document.getElementById(modalKey);
 
-            if (modal) modal.parentNode.removeChild(modal);
+            if (modal) {
+
+                modal.parentNode.classList.add('hidden');
+                modal.parentNode.removeChild(modal);
+
+            }
 
         }
 

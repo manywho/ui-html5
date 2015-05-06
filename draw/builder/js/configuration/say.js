@@ -10,10 +10,10 @@
                         'Say',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.input({ className: 'form-control', id: 'content', type: 'text', required: 'required' })
+                    React.DOM.input({ ref: 'content', className: 'form-control', id: 'content', type: 'text', required: 'required' })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'interruptOnDTMF', type: 'checkbox' }),
+                    React.DOM.input({ ref: 'interruptOnDTMF', id: 'interruptOnDTMF', type: 'checkbox' }),
                     React.DOM.label({ htmlFor: 'interruptOnDTMF' }, 'Interrupt on DTMF')
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
@@ -21,7 +21,7 @@
                         'Voice',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.select({ className: 'form-control', id: 'voice', required: 'required', placeholder: 'Please choose an option' }, [
+                    React.DOM.select({ ref: 'voice', className: 'form-control', id: 'voice', required: 'required', placeholder: 'Please choose an option' }, [
                         React.DOM.option({}, 'woman'),
                         React.DOM.option({}, 'man')
                     ])
@@ -31,7 +31,7 @@
                         'Language',
                         React.DOM.span({ className: 'input-required' }, ' *')
                     ]),
-                    React.DOM.select({ className: 'form-control', id: 'language', required: 'required', placeholder: 'Please choose an option' }, [
+                    React.DOM.select({ ref: 'language', className: 'form-control', id: 'language', required: 'required', placeholder: 'Please choose an option' }, [
                         React.DOM.option({}, 'en'),
                         React.DOM.option({}, 'en-gb'),
                         React.DOM.option({}, 'es'),

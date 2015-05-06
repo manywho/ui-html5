@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/yeti/bootstrap.min.css" id="theme" />
     <link rel="stylesheet" href="css/draw.css" />
+    <link rel="stylesheet" href="builder/css/builder.css" />
 
 
     <link rel="stylesheet" href="../css/lib/bootstrap-chosen.css" />
@@ -72,15 +73,15 @@
         </div>
     </nav>
 
-    <div id="manywho">
-        <div id="draw-tool" class="mw-bs container-fluid">
+    <div id="manywho" class="mw-bs">
+        <div id="draw-tool" class="container-fluid">
             <div class="row-fluid clearfix">
                 <div class="col-md-2">
                     <h1 id="flow-title">Flow Title Here</h1>
                     <p id="flow-description"></p>
                     <div id="graph-outline"></div>
                     <ul id="element-list">
-                        <li><a class="btn btn-default element-button" href="#" id="step">Step</a></li>
+                        <li><a class="btn btn-default element-button" href="#" id="input">Step</a></li>
                     </ul>
                 </div>
                 <div class="col-md-10">
@@ -171,6 +172,21 @@
     <script src="js/services/events.js"></script>
     <script src="js/services/element.js"></script>
     <script src="js/services/ajax.js"></script>
+
+    <script src="builder/js/layout.js"></script>
+    <script src="builder/js/configuration/conference.js"></script>
+    <script src="builder/js/configuration/dial.js"></script>
+    <script src="builder/js/configuration/dtmf.js"></script>
+    <script src="builder/js/configuration/gather.js"></script>
+    <script src="builder/js/configuration/play.js"></script>
+    <script src="builder/js/configuration/record.js"></script>
+    <script src="builder/js/configuration/say.js"></script>
+    <script src="builder/js/configuration/sleep.js"></script>
+
+    <script src="builder/js/components/builder.js"></script>
+    <script src="builder/js/components/canvas.js"></script>
+    <script src="builder/js/components/list.js"></script>
+    <script src="builder/js/components/draggable.js"></script>
 
     <script>
         log.enableAll()

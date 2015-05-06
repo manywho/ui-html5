@@ -29,10 +29,10 @@
                     onDragEnd: self.props.onComponentDragEnd
                 }, [
                     React.DOM.div({  style: dummyStyle, className: 'manywho-page-component-controls'}, [
-                        React.DOM.span({ className: 'text-info manywho-field-label' }, item.name || 'Default Name')
+                        React.DOM.span({ className: 'manywho-field-label' }, item.type.charAt(0).toUpperCase() + item.type.slice(1))
                     ]),
                     React.DOM.div({style: dummyStyle}, [
-                        React.DOM.span({}, item.text || 'Default Text')
+                        React.DOM.span({}, item.name)
                     ])
                 ]);
 

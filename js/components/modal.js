@@ -56,6 +56,13 @@ permissions and limitations under the License.
         render: function () {
 
             log.info("Rendering Modal");
+
+            if (this.props.container) {
+
+                this.props.container.classList.remove('hidden');
+
+            }
+
             return this.renderBackdrop(this.renderModal());
             
         }

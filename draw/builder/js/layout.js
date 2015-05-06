@@ -24,7 +24,9 @@ manywho.layout = (function (manywho) {
 
         render: function () {
 
-            var container = document.getElementById('builder');
+            var container = document.getElementById('draw-modal');
+
+            container.classList.remove('hidden');
 
             React.render(React.createElement(manywho.builder), container);
 
