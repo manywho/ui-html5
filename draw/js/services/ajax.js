@@ -20,7 +20,7 @@ manywho.draw.ajax = (function () {
 
             var flowId;
 
-            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue && manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue.length > 0) {
+            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0 && manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue.length > 0) {
 
                 flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
 
