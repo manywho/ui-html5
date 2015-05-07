@@ -49,6 +49,8 @@ manywho.callbacks = (function (manywho) {
 
                 })
 
+                callbacks[flowKey] = [];
+
             }
 
         }
