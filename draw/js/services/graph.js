@@ -109,6 +109,69 @@ manywho.graph = (function() {
 
         },
 
+        deleteElement: function (cell) {
+
+            var drawKey = 'draw_draw_draw_main';
+
+            var inputObject = {
+                Id: cell.id,
+                AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
+                EditingToken: manywho.draw.model.getEditingToken(),
+                FlowId: manywho.draw.model.getFlowId().id,
+                ElementType: "input",
+                X: cell.geometry.x,
+                Y: cell.geometry.y,
+                Command: "delete",
+                GroupElementId: ""
+
+            };
+
+            manywho.engine.initializeSystemFlow('input', drawKey, manywho.json.generateFlowInputs(inputObject), [
+                {
+                    execute: manywho.draw.hideModal,
+                    type: 'done',
+                    args: [drawKey]
+                },
+                {
+                    execute: manywho.draw.ajax.getFlowGraph,
+                    type: 'done',
+                    args: []
+                }
+            ]);
+
+        },
+
+        createOutcomeFlow: function (source, target) {
+
+            var drawKey = 'draw_draw_draw_main';
+
+            var inputObject = {
+                Id: source,
+                AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
+                EditingToken: manywho.draw.model.getEditingToken(),
+                FlowId: manywho.draw.model.getFlowId().id,
+                NextMapElementId: target,
+                Command: "edit",
+                OutcomeId: '',
+                GroupElementId: ""
+
+            };
+
+            manywho.engine.initializeSystemFlow('outcome', drawKey, manywho.json.generateFlowInputs(inputObject), [
+                {
+                    execute: manywho.draw.hideModal,
+                    type: 'done',
+                    args: [drawKey]
+                },
+                {
+                    execute: manywho.draw.ajax.getFlowGraph,
+                    type: 'done',
+                    args: []
+                }
+            ]);
+
+        },
+
         createOutcome: function (id, value, origin, target, style) {
 
             var outcome;
@@ -127,6 +190,34 @@ manywho.graph = (function() {
             }
 
             return outcome;
+
+        },
+
+        deleteOutcome: function (outcome) {
+
+            var drawKey = 'draw_draw_draw_main';
+
+            var inputObject = {
+                Id: outcome.source.id,
+                AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
+                EditingToken: manywho.draw.model.getEditingToken(),
+                FlowId: manywho.draw.model.getFlowId().id,
+                OutcomeId: outcome.id,
+                Command: "delete"
+            };
+
+            manywho.engine.initializeSystemFlow('outcome', drawKey, manywho.json.generateFlowInputs(inputObject), [
+                {
+                    execute: manywho.draw.hideModal,
+                    type: 'done',
+                    args: [drawKey]
+                },
+                {
+                    execute: manywho.draw.ajax.getFlowGraph,
+                    type: 'done',
+                    args: []
+                }
+            ]);
 
         },
 

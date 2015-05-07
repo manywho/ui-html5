@@ -19,7 +19,7 @@ manywho.json = (function (manywho) {
 
             for (var property in inputsData) {
                 inputs.push({
-                    'contentType': 'Content' + (typeof inputsData[property]).charAt(0).toUpperCase() + (typeof inputsData[property]).substring(1).toLowerCase(),
+                    'contentType': 'Content' + (typeof inputsData[property]).charAt(0).toUpperCase() + (typeof inputsData[property]).substring(1).toLowerCase() || 'ContentString',
                     'contentValue': inputsData[property],
                     'developerName': property,
                     'objectData': objectData || null,

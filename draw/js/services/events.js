@@ -26,8 +26,7 @@ manywho.graph.events = (function () {
         mxEvent.addListener(img, 'click',
             mxUtils.bind(this, function(evt)
             {
-                alert('Call system flow do delete Map Element/Outcome');
-                graph.removeCells([state.cell]);
+                manywho.graph.deleteElement(state.cell);
                 mxEvent.consume(evt);
                 this.destroy();
             })
@@ -81,7 +80,7 @@ manywho.graph.events = (function () {
 
                 if (cell.properties.cell) {
 
-                    manywho.draw.ajax.getPageLayout(cell.properties.cell.pageId);
+                    manywho.draw.ajax.getPageLayout(cell.properties.cell.value.pageId);
 
                 }
 
@@ -117,7 +116,7 @@ manywho.graph.events = (function () {
 
             graph.connectionHandler.addListener(mxEvent.CONNECT, function (sender, event) {
 
-                alert('Call system flow to connect outcome from ' + sender.previous.cell.value + ' to ' + event.properties.target.value.name);
+                manywho.graph.createOutcomeFlow(sender.previous.cell.id, event.properties.target.id);
 
             });
 
@@ -135,56 +134,23 @@ manywho.graph.events = (function () {
 
                 if (graph.getSelectionCells().length > 0) {
 
-                    var drawKey = 'draw_draw_draw_main';
-
-                    var flowName;
-
-                    var inputObject = {};
-
                     if (manywho.utils.isEqual(graph.getSelectionCells()[0].style, 'outcome', true)) {
 
-                        flowName = 'outcome';
-
-                        inputObject = {
-                            Id: graph.getSelectionCells()[0].source.id,
-                            AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
-                            EditingToken: manywho.draw.model.getEditingToken(),
-                            FlowId: manywho.draw.model.getFlowId(),
-                            OutcomeId: graph.getSelectionCells()[0].id,
-                            Command: "delete"
-                        };
+                        manywho.graph.deleteOutcome(graph.getSelectionCells()[0])
 
                     } else {
 
-                        flowName = 'input';
+                        if (graph.getSelectionCells()[0].edges) {
 
-                        inputObject = {
-                            Id: graph.getSelectionCells()[0].id,
-                            AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
-                            EditingToken: manywho.draw.model.getEditingToken(),
-                            FlowId: manywho.draw.model.getFlowId(),
-                            ElementType: "input",
-                            X: graph.getSelectionCells()[0].geometry.x,
-                            Y: graph.getSelectionCells()[0].geometry.y,
-                            Command: "delete",
-                            GroupElementId: ""
+                            alert('You cannot delete a map element attached to an outcome');
 
-                        };
+                        } else {
+
+                            manywho.graph.deleteElement(graph.getSelectionCells()[0]);
+
+                        }
 
                     }
-
-                    manywho.engine.initializeSystemFlow(flowName, drawKey, manywho.json.generateFlowInputs(inputObject), [
-                        {
-                            execute: manywho.draw.hideModal,
-                            type: 'done',
-                            args: [drawKey]
-                        },
-                        {
-                            execute: manywho.draw.ajax.getFlowGraph,
-                            type: 'done',
-                            args: []
-                        }
-                    ]);
 
                 }
 

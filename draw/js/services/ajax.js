@@ -20,17 +20,17 @@ manywho.draw.ajax = (function () {
 
             var flowId;
 
-            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW') && manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0) {
+            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue && manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue.length > 0) {
 
                 flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
 
             } else {
 
-                flowId = manywho.draw.model.getFlowId();
+                flowId = manywho.draw.model.getFlowId().id;
 
             }
 
-            $.ajax({
+            return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/graph/flow/' + flowId,
                 type: 'GET',
                 dataType: 'json',
@@ -48,7 +48,7 @@ manywho.draw.ajax = (function () {
                 document.getElementById('flow-title').innerHTML = data.developerName;
                 document.getElementById('flow-description').innerHTML = data.developerSummary;
                 manywho.draw.model.setModel(data);
-                manywho.draw.model.setFlowId(flowId);
+                manywho.draw.model.setFlowId({ id: flowId});
                 manywho.draw.model.setEditingToken(data.editingToken);
                 manywho.graph.render();
 
@@ -57,8 +57,6 @@ manywho.draw.ajax = (function () {
         },
 
         updateFlowGraph: function (model,  tenantId, authenticationToken) {
-
-            model.id = { id: model.id };
 
             $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/graph/flow',
@@ -115,7 +113,19 @@ manywho.draw.ajax = (function () {
 
         },
 
-        getFlowSnapshot: function (flowId, flowVersionId, authenticationToken) {
+        getFlowSnapshot: function (callback, response) {
+
+            var flowId;
+
+            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW') && manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0) {
+
+                flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
+
+            } else {
+
+                flowId = manywho.draw.model.getFlowId().id;
+
+            }
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/snap/' + flowId + '/' + flowVersionId,
