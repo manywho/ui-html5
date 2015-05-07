@@ -43,13 +43,13 @@ manywho.callbacks = (function (manywho) {
                     return true;
 
                 })
-                .forEach(function (item) {
+                .forEach(function (item, index) {
                     
                     item.execute.apply(item.context, [item].concat(item.args, args));
 
-                })
+                    callbacks[flowKey].splice(index, 1);
 
-                callbacks[flowKey] = [];
+                });
 
             }
 
