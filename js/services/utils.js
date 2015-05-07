@@ -242,7 +242,7 @@ manywho.utils = (function (manywho, $) {
 
             });
 
-        }
+        },
         
         // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
         getValueByPath: function(obj, path) {
