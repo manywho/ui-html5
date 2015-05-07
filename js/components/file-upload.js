@@ -15,7 +15,7 @@ permissions and limitations under the License.
         
         onUpload: function (e) {
 
-            if (!manywho.utils.isNullOrWhitespace(this.state.fileName) && this.props.fileDataRequest) {
+            if (this.state.fileNames.length > 0) {
 
                 this.setState({
                     isUploadDisabled: true,
@@ -24,15 +24,8 @@ permissions and limitations under the License.
                 });
 
                 var self = this;
-
-                var request = new FormData();
-                request.append('FileDataRequest', JSON.stringify(this.props.fileDataRequest));
-                request.append('FileData', this.refs.upload.getDOMNode().files[0]);
-
-                var tenantId = manywho.utils.extractTenantId(this.props.flowKey);
-                var authenticationToken = manywho.state.getAuthenticationToken(this.props.flowKey);
-
-                manywho.ajax.uploadFile(request, tenantId, authenticationToken, function(e) {
+                
+                this.props.upload(Array.prototype.slice.call(this.refs.upload.getDOMNode().files), function (e) {
 
                     if (e.lengthComputable) {
 
@@ -40,27 +33,25 @@ permissions and limitations under the License.
 
                     }
 
-                })
-                    .done(function () {
+                }).done(function (response) {
 
-                        self.setState({
-                            isUploadDisabled: false,
-                            isFileSelected: false,
-                            isProgressVisible: false,
-                            progress: 0,
-                            fileName: null
-                        });
-
-                        self.refs.upload.getDOMNode().value = '';
-                        self.props.fileDataRequest = null;
-
-                        if (self.props.onUploadComplete) {
-
-                            self.props.onUploadComplete();
-
-                        }
-
+                    self.setState({
+                        isUploadDisabled: false,
+                        isFileSelected: false,
+                        isProgressVisible: false,
+                        progress: 0,
+                        fileNames: []
                     });
+
+                    self.refs.upload.getDOMNode().value = '';
+
+                    if (self.props.onUploadComplete) {
+
+                        self.props.onUploadComplete(response);
+
+                    }
+
+                });
 
             }
 
@@ -69,7 +60,7 @@ permissions and limitations under the License.
         onFileSelected: function (e) {
 
             this.setState({
-                fileName: e.currentTarget.files[0].name,
+                fileNames: Array.prototype.slice.call(e.currentTarget.files).map(function(file) { return file.name }), 
                 isFileSelected: true
             });
 
@@ -80,7 +71,8 @@ permissions and limitations under the License.
             return {
                 isUploadDisabled: false,
                 isFileSelected: false,
-                isProgressVisible: false
+                isProgressVisible: false,
+                fileNames: []
             }
 
         },
@@ -93,16 +85,16 @@ permissions and limitations under the License.
 
             return React.DOM.div(null, [
                 React.DOM.div({ className: 'clearfix' }, [
-                    React.DOM.button({ className: 'btn btn-default pull-left', disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, 'Upload'),
+                    React.DOM.button({ className: 'btn btn-default pull-left', disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.caption || 'Upload'),
                     React.DOM.div({ className: 'form-group pull-left file-upload-browse' },
                         React.DOM.div({ className: 'input-group' }, [
                             React.DOM.span({ className: 'input-group-btn' },
                                 React.DOM.span({ className: 'btn btn-primary btn-file', disabled: this.state.isUploadDisabled }, [
                                     'Browse',
-                                    React.DOM.input({ type: 'file', onChange: this.onFileSelected, ref: 'upload' })
+                                    React.DOM.input({ type: 'file', onChange: this.onFileSelected, ref: 'upload', multiple: this.props.multiple })
                                 ])
                             ),
-                            React.DOM.input({ type: 'text', className: 'form-control file-selected', readOnly: 'readonly', value: this.state.fileName })
+                            React.DOM.input({ type: 'text', className: 'form-control file-selected', readOnly: 'readonly', value: this.state.fileNames.join(' ') })
                         ])
                     )
                 ]),

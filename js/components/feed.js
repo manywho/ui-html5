@@ -17,7 +17,7 @@ permissions and limitations under the License.
 
             var self = this;
 
-            this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers)
+            this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
                 .then(function () {
 
                     self.setState({
@@ -25,7 +25,8 @@ permissions and limitations under the License.
                         mentionedUsers: {},
                         users: [],
                         selectedUser: null,
-                        selectedIndex: 0
+                        selectedIndex: 0,
+                        attachments: []
                     });
 
                 });
@@ -72,7 +73,19 @@ permissions and limitations under the License.
                 }                
                 else {
 
-                    this.props.send(this.state.text, this.props.messageId);
+                    this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
+                        .then(function () {
+
+                            self.setState({
+                                text: '',
+                                mentionedUsers: {},
+                                users: [],
+                                selectedUser: null,
+                                selectedIndex: 0,
+                                attachments: []
+                            });
+
+                        });
 
                 }
 
@@ -90,6 +103,29 @@ permissions and limitations under the License.
                 this.setState({ selectedUser: Math.min(this.state.selectedIndex++, this.state.users.length) });
 
             }
+
+        },
+
+        uploadFile: function(fileData, progress) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            var request = new FormData();
+            fileData.forEach(function (file) {
+
+                request.append('FileData', file);
+
+            });
+            
+            return manywho.social.attachFiles(this.props.flowKey, request, progress);
+
+        },
+
+        onUploadComplete: function(response) {
+
+            this.setState({
+                attachments: response.files
+            });
 
         },
 
@@ -136,7 +172,8 @@ permissions and limitations under the License.
                 mentionedUsers: {},
                 users: [],
                 selectedUser: null,
-                selectedIndex: 0
+                selectedIndex: 0,
+                attachments: []
             }
 
         },
@@ -159,12 +196,29 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: 'input-group feed-post' }, [
-                React.DOM.div({ className: 'input-group-btn feed-post-button' },
-                    React.DOM.button({ className: 'btn btn-primary', onClick: this.onClick }, this.props.caption)
-                ),
-                React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
-                (this.state.mentionIsVisible) ? mention : null
+            var fileUpload = null;
+            if (this.props.isAttachmentsEnabled) {
+
+                fileUpload = React.DOM.div({ className: 'feed-attachments' }, [
+                    React.DOM.ul({ className: 'list-unstyled list-inline' }, this.state.attachments.map(function (attachment) {
+
+                        return React.DOM.li({ className: 'feed-attachment' }, [
+                            React.DOM.span(null, attachment.name)                           
+                        ]);
+
+                    })),
+                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, onUploadComplete: this.onUploadComplete, upload: this.uploadFile, caption: 'Attach' }) 
+                ]);                
+
+            }
+
+            return React.DOM.div({ className: 'feed-post clearfix' }, [
+                React.DOM.button({ className: 'btn btn-primary pull-left', onClick: this.onClick }, this.props.caption),                
+                React.DOM.div({ className: 'feed-post-right' }, [
+                    React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
+                    (this.state.mentionIsVisible) ? mention : null,
+                    fileUpload
+                ])
             ]);
 
         }
@@ -191,19 +245,20 @@ permissions and limitations under the License.
 
         },
 
-        onSendMessage: function(message, messageId, mentionedUsers) {
+        onSendMessage: function(message, messageId, mentionedUsers, attachments) {
 
-            return manywho.social.sendMessage(this.props.flowKey, message, messageId, mentionedUsers);
+            return manywho.social.sendMessage(this.props.flowKey, message, messageId, mentionedUsers, attachments);
 
         },
         
-        renderThread: function(messages, isCommentingEnabled) {
+        renderThread: function(messages, isCommentingEnabled, isAttachmentsEnabled) {
 
             if (messages) {
 
                 return React.DOM.ul({ className: 'media-list' }, messages.map(function (message) {
 
                     var createdDate = new Date(message.createdDate);
+                    var attachments = message.attachments || [];
 
                     return React.DOM.li({ className: 'media' }, [
                         React.DOM.div({ className: 'media-left' },
@@ -217,8 +272,15 @@ permissions and limitations under the License.
                                 React.DOM.span({ className: 'feed-created-date' }, createdDate.toLocaleString()),
                             ]),
                             React.DOM.div({ className: 'feed-message-text', dangerouslySetInnerHTML: { __html: message.text } }, null),
-                            this.renderThread(message.comments, false),
-                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Comment', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage }, null)
+                            React.DOM.div({ className: 'feed-message-attachments' }, 
+                                attachments.map(function(attachment) {
+
+                                    return React.DOM.a({ href: attachment.downloadUrl, target: "_blank"  }, attachment.name);
+
+                                })
+                            ),
+                            this.renderThread(message.comments, false, false),
+                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Comment', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage, isAttachmentsEnabled: isAttachmentsEnabled }, null)
                         ])
                     ]);
 
@@ -278,7 +340,7 @@ permissions and limitations under the License.
                     ]),
                     React.DOM.div({ className: 'panel-body' }, [
                         this.renderFollowers(stream.followers),
-                        React.createElement(feedInput, { caption: 'Post', flowKey: this.props.flowKey, send: this.onSendMessage }, null),
+                        React.createElement(feedInput, { caption: 'Post', flowKey: this.props.flowKey, send: this.onSendMessage, isAttachmentsEnabled: true }, null),
                         this.renderThread(streamMessages.messages, true)
                     ]),
                     React.DOM.div({ className: 'panel-heading clearfix ' + (!isFooterVisible) ? 'hidden' : '' },

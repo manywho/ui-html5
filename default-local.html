@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>ManyWho</title>
 </head>
-<body>    
+<body>
     <div id="manywho">
         <div id="loader" style="width: 100%; height: 100%; background: black; opacity: 0.3;">
             <div style="position: absolute; width: 100%; top: 50%; left: 0; margin-top: -4em; text-align: center; color: white;">
@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-   
+
     <!-- build:bootstrap -->
     <link rel="stylesheet" href="css/mw-bootstrap.css" />
     <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
@@ -56,7 +56,7 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
@@ -85,9 +85,7 @@
                     }
                 };
 
-                var settings = window.devOptions || {};
-
-                var tenantId = queryParameters['tenant-id'] || settings.tenant;
+                var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
 
                     tenantId = window.location.pathname
@@ -102,12 +100,13 @@
 
                 manywho.engine.initialize(
                     tenantId,
-                    queryParameters['flow-id'] || settings.flow,
-                    queryParameters['flow-version-id'] || settings.version,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
                     'main',
-                    queryParameters['join'] || settings.state,
+                    queryParameters['join'],
                     queryParameters['authorization'],
-                    options
+                    options,
+                    queryParameters['initialization']
                 );
 
             }
@@ -165,10 +164,10 @@
     <script src="js/components/debug.js"></script>
     <script src="js/components/status.js"></script>
     <script src="js/components/voting.js"></script>
+    <script src="js/components/image.js"></script>
     <!-- endbuild -->
+    <script src="https://flow.manywho.com/js/constants"></script>
 
-    <!-- options -->
-    
     <!-- build:loader -->
     <script>
         manywho.initialize();

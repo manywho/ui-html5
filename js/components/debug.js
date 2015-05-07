@@ -12,96 +12,154 @@ permissions and limitations under the License.
 (function (manywho) {
 
     var debugViewer = React.createClass({
-        
-        toggle: function(e) {
+
+        toggleValue: function(e) {
 
             e.stopPropagation();
 
-            var toggled = {};
-            toggled[e.currentTarget.id] = !this.state[e.currentTarget.id];
+            var toggle = this.state.toggle;
+            var valueElementId = e.currentTarget.getAttribute('data-value-id');
 
-            this.setState(toggled);
+            toggle[valueElementId] = !toggle[valueElementId];
+
+            this.setState({ toggle: toggle });
 
         },
 
-        renderObject: function(obj, id) {
+        toggleHeader: function(e) {
 
-            if (obj) {
+            var toggle = this.state.toggle;
+            toggle[e.currentTarget.id] = !toggle[e.currentTarget.id];
 
-                return Object.keys(obj).map(function (key) {
+            this.setState({ toggle: toggle });
 
-                    if (typeof obj[key] === 'object' && obj[key]) {
+        },
 
-                        var isVisible = this.state[id + key];
+        onBreadcrumbClick: function(e) {
 
-                        return React.DOM.li({ id: id + key, onClick: this.toggle }, [
-                            React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
-                            React.DOM.span({ className: 'debug-item-key debug-item-id' }, key + ': '),
-                            React.DOM.ul({ className: ((isVisible) ? null : 'hidden') }, this.renderObject(obj[key], id + key))
-                        ]);
+            e.preventDefault();
 
-                    }
-                    else {
+            var paths = this.state.paths;
+            var valueElementId = e.currentTarget.getAttribute('data-value-id');
+            var breadcrumbs = Array.prototype.slice.call(e.currentTarget.parentNode.parentNode.childNodes);
+            var index = breadcrumbs.indexOf(e.currentTarget.parentNode);
 
-                        return React.DOM.li(null, [
-                            React.DOM.span({ className: 'debug-item-key' }, key + ': '),
-                            React.DOM.span(null, obj[key] || 'null')
-                        ]);
+            if (index != -1) {
 
-                    }
+                if (index == 0) {
 
-                }, this);
+                    paths[valueElementId] = '';
+
+                }
+                else {
+
+                    paths[valueElementId] = paths[valueElementId].split('.').slice(0, index).join('.');
+
+                }
 
             }
 
+            this.setState({ paths: paths });
+
         },
 
-        renderStateValues: function(title, id, values) {
+        onValueViewClick: function(e) {
 
-            var children = values.map(function (value) {
+            var paths = this.state.paths;
+            var valueElementId = e.currentTarget.getAttribute('data-value-id');
+            var pathPart = e.currentTarget.getAttribute('data-path-part');
 
-                var isVisible = this.state[value.valueElementId];
+            paths[valueElementId] = ((paths[valueElementId] || '') + '.' + pathPart).replace(/^\./gi, '');
 
-                return React.DOM.li({ id: value.valueElementId, onClick: this.toggle}, [
-                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
-                    React.DOM.span({ className: 'debug-item-id' }, value.developerName),
-                    React.DOM.ul({ className: ((isVisible) ? null : 'hidden') }, this.renderObject(value, value.valueElementId))
-                ]);
+            this.setState({ paths: paths });
 
-            }, this);
+        },
 
-            var isVisible = this.state[id];
+        renderValues: function(title, id, values) {
 
-            return React.DOM.ul({ className: 'debug-root' }, [
-                React.DOM.li({ className: 'debug-root-toggle', id: id, onClick: this.toggle }, [
-                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
+            var isExpanded = this.state.toggle[id] || false;
+
+            return React.DOM.div({ className: 'debug-root' }, [
+                React.DOM.div({ className: 'debug-root-toggle', id: id, onClick: this.toggleHeader }, [
+                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right') }, null),
                     React.DOM.h5({ className: 'debug-title' }, title),
                     React.DOM.span({ className: 'label label-info' }, values.length)
                 ]),
-                React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
-                    React.DOM.ul(null, children)
-                )
+                React.DOM.ul({ className: 'list-unstyled debug-values ' + ((isExpanded) ? '' : 'hidden') }, values.map(function (value) {
+
+                    return this.renderValue(this.state.paths[value.valueElementId] || '', value);
+
+                }, this))
             ]);
-        
+
         },
 
-        renderLogEntries: function(entries) {
+        renderValue: function(path, value) {
 
-            var isVisible = this.state['executionlog'];
+            var isExpanded = this.state.toggle[value.valueElementId] || false;
+            var properties = manywho.utils.getValueByPath(value, path);
 
-            return React.DOM.ul({ className: 'debug-root' }, [
-                React.DOM.li({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggle }, [
-                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isVisible) ? 'bottom' : 'right') }, null),
+            path = value.developerName + '.' + path;
+
+            return React.DOM.li({ className: 'clearfix' }, [
+                React.DOM.div(null, [
+                    React.DOM.span({ className: 'glyphicon pull-left debug-value-toggle glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right'), 'data-value-id': value.valueElementId, onClick: this.toggleValue }, null),
+                    React.DOM.ol({ className: 'breadcrumb debug-value-breadcrumb', 'data-value-id': value.valueElementId, onClick: this.toggleValue }, path.split('.').map(function (part) {
+
+                        if (!manywho.utils.isNullOrWhitespace(part)) {
+
+                            return React.DOM.li(null, React.DOM.a({ href: '#', onClick: this.onBreadcrumbClick, 'data-value-id': value.valueElementId }, part));
+
+                        }
+                        else {
+
+                            return null;
+
+                        }
+
+                    }, this))
+                ]),
+                React.DOM.table({ className: 'table table-striped debug-value-table ' + ((isExpanded) ? '' : 'hidden') },
+                    React.DOM.tbody(null, Object.keys(properties).map(function (propertyName) {
+
+                        var propertyValue = properties[propertyName];
+
+                        if (typeof propertyValue === 'object' && propertyValue) {
+
+                            propertyValue = React.DOM.button({ className: 'btn btn-primary btn-sm', 'data-value-id': value.valueElementId, 'data-path-part': propertyName, onClick: this.onValueViewClick }, 'View')
+
+                        }
+
+                        return React.DOM.tr(null, [
+                            React.DOM.td(null, propertyName),
+                            React.DOM.td(null, propertyValue || 'null')
+                        ]);
+
+                    }, this))
+                )
+            ]);
+
+        },
+
+        renderLogEntries: function (entries) {
+
+            var isExpanded = this.state.toggle['executionlog'];
+
+            return React.DOM.div({ className: 'debug-root' }, [
+                React.DOM.div({ className: 'debug-root-toggle', id: 'executionlog', onClick: this.toggleHeader }, [
+                    React.DOM.span({ className: 'glyphicon glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right') }, null),
                     React.DOM.h5({ className: 'debug-title' }, 'Execution Log'),
                     React.DOM.span({ className: 'label label-info' }, entries.length)
                 ]),
-                React.DOM.li({ className: ((isVisible) ? null : 'hidden') },
-                    React.DOM.table({ className: 'table' }, [
+                React.DOM.div({ className: ((isExpanded) ? null : 'hidden') },
+                    React.DOM.table({ className: 'table table-striped' }, [
                         React.DOM.tr(null, [React.DOM.th(null, 'Timestamp'), React.DOM.th(null, 'Message'), React.DOM.th(null, 'Data')])
-                    ].concat(entries.map(function(entry) {
+                    ].concat(manywho.utils.convertToArray(entries).map(function (entry) {
+
+                        var timeStamp = new Date(entry.timestamp);
 
                         return React.DOM.tr(null, [
-                            React.DOM.td(null, entry.timestamp),
+                            React.DOM.td(null, timeStamp.toLocaleString()),
                             React.DOM.td(null, entry.message),
                             // TODO: display data
                         ]);
@@ -113,15 +171,18 @@ permissions and limitations under the License.
         },
 
         getInitialState: function() {
-            
-            return {};
+
+            return {
+                paths: {},
+                toggle: {}
+            };
 
         },
-                
+
         render: function () {
-                            
+
             if (manywho.settings.isDebugEnabled(this.props.flowKey)) {
-                
+
                 log.info('Rendering Debug');
 
                 var preCommitStateValues = manywho.model.getPreCommitStateValues(this.props.flowKey) || [];
@@ -129,8 +190,8 @@ permissions and limitations under the License.
                 var executionLog = manywho.model.getExecutionLog(this.props.flowKey) || {};
 
                 var children = [
-                    this.renderStateValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, this.toggleR),
-                    this.renderStateValues('State Values', 'statevalues', stateValues),
+                    this.renderValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, this.toggleR),
+                    this.renderValues('State Values', 'statevalues', stateValues),
                     this.renderLogEntries(executionLog.entries || [])
                 ];
 

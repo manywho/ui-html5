@@ -1,15 +1,62 @@
 /*!
-Copyright 2015 ManyWho, Inc.
-Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
-file except in compliance with the License.
-You may obtain a copy of the License at: http://manywho.com/sharedsource
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-*/
+ Copyright 2015 ManyWho, Inc.
+ Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+ file except in compliance with the License.
+ You may obtain a copy of the License at: http://manywho.com/sharedsource
+ Unless required by applicable law or agreed to in writing, software distributed under
+ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the specific language governing
+ permissions and limitations under the License.
+ */
 
 manywho.ajax = (function (manywho) {
+
+    var deferredCounter = 0;
+    var deferredCache = [];
+
+    // This method creates an unresolved deferred object that can be returned to the calling method. It's then up to the native
+    // code to resolve the deferred object which will trigger the chain of execution.
+    //
+    function getDeferred(methodName, engineRequest) {
+        var deferred = new jQuery.Deferred();
+
+        $('body').append('calling method: ' + methodName + '</br>');
+
+        // Adapt the engine request to add the method name
+        engineRequest.methodName = methodName;
+
+        $('body').append('posting message to native engine.</br>');
+
+        // Make the call to the engine, which will return immediately because it's async
+        window.webkit.messageHandlers.manywho.postMessage(engineRequest);
+
+        $('body').append('adding to cache.</br>');
+
+        // Add this deferred object to the cache so the callback can resolve it
+        deferredCache[deferredCounter++] = deferred;
+
+        $('body').append('returning.</br>');
+
+        return deferred;
+    }
+
+    // This method is called by the native engine once the install execution has completed. The role of this is to get the unresolved
+    // deferred object and resolve it with the response information from the engine.
+    //
+    function resolveDeferred(counter, engineResponse) {
+
+        $('body').append('resolving deferred</br>');
+
+        // Get the deferred object out of the cache
+        var deferred = deferredCache[counter];
+
+        $('body').append('resolving with deferred</br>');
+
+        // Resolve the deferred which should notify the engine that the async task has been completed
+        deferred.resolveWith(this, [engineResponse]);
+
+        $('body').append('done</br>');
+    }
 
     function onError(xhr, status, error) {
 
@@ -45,7 +92,7 @@ manywho.ajax = (function (manywho) {
         if (page > 0) {
             request.listFilter.offset = (page - 1) * request.listFilter.limit;
         }
-        
+
         return $.ajax({
             url: manywho.settings.global('platform.uri') + url,
             type: 'POST',
@@ -59,9 +106,9 @@ manywho.ajax = (function (manywho) {
 
             }
         })
-        .done(manywho.settings.event(eventPrefix + '.done'))
-        .fail(onError)
-        .fail(manywho.settings.event(eventPrefix + '.fail'));
+            .done(manywho.settings.event(eventPrefix + '.done'))
+            .fail(onError)
+            .fail(manywho.settings.event(eventPrefix + '.fail'));
 
     }
 
@@ -90,12 +137,12 @@ manywho.ajax = (function (manywho) {
                 beforeSend: function (xhr) {
 
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'login');
-                    
+
                 }
             })
-            .done(manywho.settings.event('login.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('login.fail'));
+                .done(manywho.settings.event('login.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('login.fail'));
 
         },
 
@@ -103,22 +150,10 @@ manywho.ajax = (function (manywho) {
 
             log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
-            return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/run/1',
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify(engineInitializationRequest),
-                beforeSend: function (xhr) {
-
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'initialization');
-
-                }
-            })
-            .done(manywho.settings.event('initialization.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('initialization.fail'));
+            return getDeferred('initialize', engineInitializationRequest)
+                .done(manywho.settings.event('initialization.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('initialization.fail'));
 
         },
 
@@ -137,12 +172,12 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('join.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('join.fail'));
+                .done(manywho.settings.event('join.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('join.fail'));
 
         },
-        
+
         invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
             log.info('Invoking State: ' + engineInvokeRequest.stateId);
@@ -160,14 +195,14 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('invoke.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('invoke.fail'));
+                .done(manywho.settings.event('invoke.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('invoke.fail'));
 
         },
 
         getNavigation: function (stateId, stateToken, navigationElementId, tenantId, authenticationToken) {
-            
+
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/navigation/' + stateId,
                 type: 'POST',
@@ -181,9 +216,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('navigation.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('navigation.fail'));
+                .done(manywho.settings.event('navigation.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('navigation.fail'));
 
         },
 
@@ -196,7 +231,7 @@ manywho.ajax = (function (manywho) {
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, '', 'getFlowByName');
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowByName');
 
                 }
             })
@@ -205,11 +240,11 @@ manywho.ajax = (function (manywho) {
                 .fail(manywho.settings.event('getFlowByName.fail'));
 
         },
-        
+
         dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             log.info('Dispatching object data request');
-            
+
             return dispatchDataRequest('/api/service/1/data', 'objectData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
         },
@@ -248,11 +283,11 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            
+
             return deferred.promise()
-                    .done(manywho.settings.event('fileData.done'))
-                    .fail(onError)
-                    .fail(manywho.settings.event('fileData.fail'));
+                .done(manywho.settings.event('fileData.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('fileData.fail'));
 
         },
 
@@ -284,9 +319,9 @@ manywho.ajax = (function (manywho) {
             })
 
             return deferred.promise()
-                    .done(manywho.settings.event('fileData.done'))
-                    .fail(onError)
-                    .fail(manywho.settings.event('fileData.fail'));
+                .done(manywho.settings.event('fileData.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('fileData.fail'));
 
         },
 
@@ -308,9 +343,9 @@ manywho.ajax = (function (manywho) {
                 }
 
             })
-            .done(manywho.settings.event('sessionAuthentication.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('sessionAuthentication.fail'));
+                .done(manywho.settings.event('sessionAuthentication.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('sessionAuthentication.fail'));
         },
 
         ping: function (tenantId, stateId, stateToken, authenticationToken) {
@@ -326,7 +361,7 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .fail(onError);
+                .fail(onError);
 
         },
 
@@ -343,9 +378,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('log.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('log.fail'));
+                .done(manywho.settings.event('log.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('log.fail'));
 
         },
 
@@ -364,9 +399,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -385,9 +420,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -406,9 +441,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -431,9 +466,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -455,9 +490,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -479,9 +514,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         }
 

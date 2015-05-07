@@ -84,12 +84,13 @@ permissions and limitations under the License.
             var classNames = [
                 'main',
                 (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
-                (isFullWidth) ? 'container-fluid full-width' : 'container'
-            ].join(' ');
-            
-            return React.DOM.div({ className: 'full-height', ref: 'container' }, [
+                (isFullWidth) ? 'container-fluid full-width' : 'container',
+                (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : ''
+            ];
+                        
+            return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
-                        React.DOM.div({ className: classNames, onKeyUp: this.onEnter, ref: 'main' }, [
+                        React.DOM.div({ className: classNames.join(' '), onKeyUp: this.onEnter, ref: 'main' }, [
                             componentElements,
                             outcomeElements,
                             React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),

@@ -35,7 +35,8 @@ permissions and limitations under the License.
                 maxLength: model.maxSize,
                 onChange: this.handleChange,
                 cols: model.width,
-                rows: model.height
+                rows: model.height,
+                className: 'form-control'
             };
 
             if (!model.isEnabled) {
@@ -47,7 +48,7 @@ permissions and limitations under the License.
             }
 
             if (!model.isEditable) {
-                attributes.readOnly = '';
+                attributes.readOnly = 'readonly';
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {

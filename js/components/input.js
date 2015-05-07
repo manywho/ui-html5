@@ -33,6 +33,18 @@ permissions and limitations under the License.
 
     var input = React.createClass({
 
+        componentDidUpdate: function() {
+
+            if (this.refs.datepicker) {
+
+                var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+                var date = new Date(state.contentValue);
+                $(this.refs.datepicker.getDOMNode()).datepicker('update', date);
+
+            }
+
+        },
+
         componentDidMount: function () {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -45,24 +57,26 @@ permissions and limitations under the License.
 
                 $(datepickerElement).datepicker({
                     format: 'dd/mm/yyyy',
-                    autoclose: true
-                });
+                    autoclose: true,
+                    enableOnReadonly: false
+                })
+                .on('changeDate', this.handleChange);
 
-                if (!manywho.utils.isEqual(state.contentValue, '1/1/0001 12:00:00 am', true)) {
+                if (state.contentValue.indexOf('01/01/0001') == -1
+                    && state.contentValue.indexOf('1/1/0001') == -1
+                    && state.contentValue.indexOf('0001-01-01') == -1) {
 
                     stateDate = new Date(state.contentValue.toLowerCase());
-                    datepickerElement.value = stateDate.toLocaleDateString();
-                    $(datepickerElement).datepicker('update', stateDate);
 
                 } else {
 
                     stateDate = new Date();
-                    datepickerElement.value = stateDate.toLocaleDateString();
-                    var stateValue = { contentValue: stateDate.toLocaleDateString() };
-
-                    manywho.state.setComponent(this.props.id, stateValue, this.props.flowKey, true);
 
                 }
+
+                datepickerElement.value = stateDate.toISOString();
+                $(datepickerElement).datepicker('update', stateDate);
+                manywho.state.setComponent(this.props.id, { contentValue: stateDate.toISOString() }, this.props.flowKey, true);
 
             }
 
@@ -83,9 +97,17 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+            if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.boolean, true)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
+
+            }
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
+
+                var utcDate = $(this.refs.datepicker.getDOMNode()).datepicker('getUTCDate');
+                var date = new Date(utcDate);
+
+                manywho.state.setComponent(this.props.id, { contentValue: date.toISOString() }, this.props.flowKey, true);
 
             }
             else {
@@ -93,7 +115,7 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
             }
-            
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -176,13 +198,13 @@ permissions and limitations under the License.
                         React.DOM.input(attributes, null),
                         React.DOM.span({ className: 'help-block' }, model.message)
                     ]);
-                
-            }                       
+
+            }
 
         }
 
     });
-    
+
     manywho.component.register('input', input, ['checkbox']);
 
 }(manywho));

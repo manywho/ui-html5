@@ -90,14 +90,14 @@ permissions and limitations under the License.
 
             var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
             
-            if (isFixed && !manywho.utils.isSmallScreen(this.props.flowKey)) {
+            if (isFixed && manywho.utils.isEmbedded()) {
 
                 this.setState({ pageYOffset: window.pageYOffset });
 
             }
 
         },
-
+        
         getInitialState: function() {
             
             return {
@@ -132,19 +132,34 @@ permissions and limitations under the License.
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
-                var classNames = ['navbar navbar-default'];
+                var classNames = [
+                    'navbar navbar-default',
+                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
+                ];
 
-                var translateY = 'translateY(' + this.state.pageYOffset + 'px)';
-                var inlineStyles = { 
-                    WebkitTransform: translateY,
-                    OTransform: translateY,
-                    Transform: translateY
-                };
+                var inlineStyles = null;
 
-                if (!manywho.utils.isEmbedded() && manywho.utils.isSmallScreen(this.props.flowKey)) {
+                if (manywho.utils.isEmbedded()) {
 
-                    classNames.push('nav-fixed');
-                    inlineStyles = null;
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
+
+                        var translateY = 'translateY(' + this.state.pageYOffset + 'px)';
+                        inlineStyles = {
+                            WebkitTransform: translateY,
+                            OTransform: translateY,
+                            Transform: translateY
+                        };
+
+                    }
+
+                }
+                else {
+
+                    if (manywho.settings.global('navigation.isFixed', this.props.flowKey, true)) {
+
+                        classNames.push('navbar-fixed-top');
+
+                    }
 
                 }
 

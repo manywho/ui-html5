@@ -70,7 +70,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateNavigateRequest: function (stateData, navigationId, navigationElementId, annotations, location) {
+        generateNavigateRequest: function (stateData, navigationId, navigationElementId, pageComponentInputResponses, annotations, location) {
 
             return {
                 'stateId': stateData.id,
@@ -82,9 +82,11 @@ manywho.json = (function (manywho) {
                 'annotations': annotations || null,
                 'geoLocation': location || null,
                 'mapElementInvokeRequest': {
-                    'pageRequest': null,
+                    'pageRequest': {
+                        'pageComponentInputResponses': pageComponentInputResponses || null
+                    },
                     'selectedOutcomeId': null
-                }
+                },
             }
 
         },

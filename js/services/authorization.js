@@ -43,7 +43,7 @@ manywho.authorization = (function (manywho) {
             if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
                 if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
-                    
+
                     window.location = response.authorizationContext.loginUrl;
                     return;
 
@@ -58,12 +58,14 @@ manywho.authorization = (function (manywho) {
                     versionId: null
                 };
 
+                var self = this;
+
                 manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
                     .then(function (data) {
 
                         authenticationFlow.id = data.id.id;
                         authenticationFlow.versionId = data.id.versionId;
-                        
+
                         var inputObject = {
                             loginUrl: response.authorizationContext.loginUrl,
                             ManyWhoTenantId: manywho.utils.extractTenantId(flowKey),
@@ -85,7 +87,7 @@ manywho.authorization = (function (manywho) {
 
                         // When the authentication flow is "DONE" call setAuthenticationToken
                         manywho.callbacks.register(authenticationFlow.key, {
-                            execute: manywho.authorization.setAuthenticationToken,
+                            execute: self.setAuthenticationToken,
                             type: 'done',
                             args: [flowKey]
                         });
@@ -123,6 +125,7 @@ manywho.authorization = (function (manywho) {
 
             var requestData = manywho.json.generateSessionRequest(manywho.state.getSessionData(flowKey).id, manywho.state.getSessionData(flowKey).url, loginUrl);
             var state = manywho.state.getState(flowKey);
+
             manywho.callbacks.register(flowKey, doneCallback);
 
             manywho.ajax.sessionAuthentication(manywho.utils.extractTenantId(flowKey), state.id, requestData)

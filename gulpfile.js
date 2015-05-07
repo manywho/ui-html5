@@ -65,27 +65,6 @@ gulp.task('bootstrap-templates', function () {
 
 });
 
-gulp.task('options', function () {
-
-    var options = {
-        tenant: argv.tenant,
-        flow: argv.flow,
-        version: argv.version,
-        state: argv.state
-    };
-
-    var scriptTag = '<script>';
-    scriptTag += 'var devOptions = ';
-    scriptTag += JSON.stringify(options);
-    scriptTag += '</script>';
-
-    gulp.src('default.html')
-        .pipe(replace('<!-- options -->', scriptTag))
-        .pipe(rename('default-run.html'))
-        .pipe(gulp.dest('.'));
-
-});
-
 gulp.task('browser-sync', function () {
 
     var files = [
@@ -98,14 +77,14 @@ gulp.task('browser-sync', function () {
     browserSync.init(files, {
         server: {
             baseDir: '.',
-            index: 'default-run.html'
+            index: 'default-local.html'
         },
         ghostMode: false
     });
 
 });
 
-gulp.task('refresh', ['options', 'jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
+gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
 
 // Production Build
 gulp.task('clean-dist', function () {
@@ -163,8 +142,8 @@ gulp.task('bootstrap-themes-dist', function () {
 
 gulp.task('js-dist', function () {
 
-    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js'])
-                .pipe(order(['services/*.js', 'lib/*.js', 'components/*.js']))
+    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js', '!js/services/ajaxproxy2.js'])
+                .pipe(order(['services/*.js', 'lib/*.js', 'components/mixins.js', 'components/*.js']))
                 .pipe(concat('compiled.js'))
                 .pipe(sourcemaps.init())
                 .pipe(uglify().on('error', gutil.log))
@@ -192,6 +171,13 @@ gulp.task('js-loader-dist', function () {
 gulp.task('html-dist', function () {
 
     return gulp.src('default.html')
+        .pipe(gulp.dest('./dist/'));
+
+});
+
+gulp.task('html-replace', function () {
+
+    gulp.src('dist/default.html')
                 .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
                 .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
                 .pipe(htmlreplace({
@@ -201,7 +187,6 @@ gulp.task('html-dist', function () {
                     bootstrap: '',
                     loader: process.env.BAMBOO_CDNURL + '/js/loader.min.js'
                 }))
-                .pipe(rename('default.html'))
                 .pipe(gulp.dest('./dist/'));
 });
 
@@ -237,6 +222,10 @@ gulp.task('deploy-cdn', function () {
     var publisher = awspublish.create(distribution);
     var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
 
+    if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
+        headers = null;
+    }
+
     return gulp.src(['dist/**/*.*', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
@@ -250,7 +239,7 @@ gulp.task('invalidate', function (cb) {
 
     var params = {
         DistributionId: process.env.BAMBOO_CDNDISTRIBUTIONID,
-        InvalidationBatch: { 
+        InvalidationBatch: {
             CallerReference: 'deploy-' + Math.random(),
             Paths: {
                 Quantity: 1,
@@ -274,7 +263,7 @@ gulp.task('invalidate', function (cb) {
         }
 
         cb();
-        
+
     });
 
 });
