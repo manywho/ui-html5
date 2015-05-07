@@ -1,6 +1,7 @@
 manywho.draw.model = (function () {
 
     var model = {};
+    var temporaryMapElement = {};
 
     return {
 
@@ -13,6 +14,19 @@ manywho.draw.model = (function () {
         setModel: function (metadata) {
 
             model = metadata;
+
+        },
+
+        getMapElementCoordinates: function () {
+
+            return temporaryMapElement;
+
+        },
+
+        setMapElementCoordinates: function (x, y) {
+
+            temporaryMapElement.x = x;
+            temporaryMapElement.y = y;
 
         },
 

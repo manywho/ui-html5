@@ -6,6 +6,13 @@
 
             return React.DOM.div({}, [
                 React.DOM.div({ className: 'form-group row' }, [
+                    React.DOM.label({ htmlFor: 'name' }, [
+                        'Component Name',
+                        React.DOM.span({ className: 'input-required' }, ' *')
+                    ]),
+                    React.DOM.input({ ref: 'name', className: 'form-control', id: 'name', type: 'text', required: 'required' })
+                ]),
+                React.DOM.div({ className: 'form-group row' }, [
                     React.DOM.label({ htmlFor: 'content' }, [
                         'Number',
                         React.DOM.span({ className: 'input-required' }, ' *')

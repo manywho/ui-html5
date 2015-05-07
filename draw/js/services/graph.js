@@ -126,7 +126,7 @@ manywho.graph = (function() {
 
             };
 
-            manywho.engine.initializeSystemFlow('input', drawKey, manywho.json.generateFlowInputs(inputObject), [
+            manywho.engine.initializeSystemFlow(cell.type, drawKey, manywho.json.generateFlowInputs(inputObject), [
                 {
                     execute: manywho.draw.hideModal,
                     type: 'done',

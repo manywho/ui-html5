@@ -78,7 +78,7 @@ manywho.graph.events = (function () {
 
             graph.addListener(mxEvent.DOUBLE_CLICK, function (event, cell) {
 
-                if (cell.properties.cell) {
+                if (cell.properties.cell && cell.properties.cell.type.toLowerCase() == 'input') {
 
                     manywho.draw.ajax.getPageLayout(cell.properties.cell.value.pageId);
 

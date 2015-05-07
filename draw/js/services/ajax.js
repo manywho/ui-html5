@@ -20,7 +20,7 @@ manywho.draw.ajax = (function () {
 
             var flowId;
 
-            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0 && manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue.length > 0) {
+            if (response && manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0 && manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue.length > 0) {
 
                 flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
 
@@ -56,9 +56,9 @@ manywho.draw.ajax = (function () {
 
         },
 
-        updateFlowGraph: function (model,  tenantId, authenticationToken) {
+        updateFlowGraph: function (model) {
 
-            $.ajax({
+            return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/graph/flow',
                 type: 'POST',
                 dataType: 'json',
@@ -67,10 +67,41 @@ manywho.draw.ajax = (function () {
                 data: JSON.stringify(model),
                 beforeSend: function (xhr) {
 
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
                     beforeSend.call(this, xhr, null, authenticationToken, 'updateFlowGraph');
 
                 }
-            }).done();
+            }).done(function (data) {
+
+                manywho.draw.model.setModel(data);
+                manywho.graph.render();
+
+            });
+
+        },
+
+        createMapElement: function (mapElement, flowId, editingToken) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/' + flowId + '/' + editingToken + '/element/map',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(mapElement),
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    beforeSend.call(this, xhr, null, authenticationToken, 'updateFlowGraph');
+
+                }
+            }).done(function (data) {
+
+                manywho.draw.ajax.getFlowGraph(null, null);
+
+            });
 
         },
 
@@ -151,7 +182,7 @@ manywho.draw.ajax = (function () {
 
         getPageLayout: function (pageId) {
 
-            $.ajax({
+            return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page/' + pageId,
                 type: 'GET',
                 dataType: 'json',
@@ -175,7 +206,7 @@ manywho.draw.ajax = (function () {
 
         savePageLayout: function (page) {
 
-            $.ajax({
+            return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page',
                 type: 'POST',
                 dataType: 'json',
@@ -193,9 +224,6 @@ manywho.draw.ajax = (function () {
                 }
             }).done(function (data) {
 
-                manywho.draw.hideModal('draw_draw_draw_main');
-
-                manywho.draw.ajax.getFlowGraph(null, data);
 
             });
 

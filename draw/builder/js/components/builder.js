@@ -26,6 +26,10 @@
 
                 item.content = attributes[attribute].getDOMNode().value;
 
+            } else if (attribute == 'name') {
+
+                item.name = attributes[attribute].getDOMNode().value;
+
             } else if (attributes[attribute].getDOMNode().checked) {
 
                 item.attributes[attribute] = attributes[attribute].getDOMNode().checked;
@@ -46,7 +50,13 @@
 
         if (item.content) {
 
-            refs['content'].getDOMNode().value = item.content
+            refs['content'].getDOMNode().value = item.content;
+
+        }
+
+        if (item.name) {
+
+            refs['name'].getDOMNode().value = item.name;
 
         }
 
@@ -524,7 +534,33 @@
 
             var metadata = manywho.draw.json.buildPageMetadata(document.getElementById('page-name').value, this.state.canvasItems);
 
-            manywho.draw.ajax.savePageLayout(metadata);
+            manywho.draw.ajax.savePageLayout(metadata).then(function (data) {
+
+                var model = manywho.draw.model.getModel();
+
+                var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
+
+                var mapElement = {
+
+                    "developerName": data.developerName,
+                    "developerSummary": "",
+                    "elementType": "input",
+                    "groupElementId": null,
+                    "id": null,
+                    "outcomes": null,
+                    "pageElementId": data.id,
+                    "x": mapElementCoords.x,
+                    "y": mapElementCoords.y
+
+                };
+
+                manywho.draw.model.setMapElementCoordinates(0, 0);
+
+                manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+
+                manywho.draw.hideModal(null, 'draw_draw_draw_main');
+
+            });
 
         },
 
