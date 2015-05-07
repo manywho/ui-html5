@@ -78,9 +78,38 @@ manywho.graph.events = (function () {
 
             graph.addListener(mxEvent.DOUBLE_CLICK, function (event, cell) {
 
-                if (cell.properties.cell && cell.properties.cell.type.toLowerCase() == 'input') {
+                if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'input') {
 
-                    manywho.draw.ajax.getPageLayout(cell.properties.cell.value.pageId);
+                    alert('cant edit page layouts yet sorry');
+                    //manywho.draw.ajax.getPageLayout(cell.properties.cell.value.pageId);
+
+                } else {
+
+                    var inputObject = {
+                        Id: event.selectionModel.cells[0].id,
+                        AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
+                        EditingToken: manywho.draw.model.getEditingToken(),
+                        FlowId: manywho.draw.model.getFlowId().id,
+                        ElementType: event.selectionModel.cells[0].style.toLowerCase(),
+                        X: event.selectionModel.cells[0].geometry.x,
+                        Y: event.selectionModel.cells[0].geometry.y,
+                        Command: "edit",
+                        GroupElementId: ""
+
+                    };
+
+                    manywho.engine.initializeSystemFlow(event.selectionModel.cells[0].style.toLowerCase(), 'draw_draw_draw_main', manywho.json.generateFlowInputs(inputObject), [
+                        {
+                            execute: manywho.draw.hideModal,
+                            type: 'done',
+                            args: ['draw_draw_draw_main']
+                        },
+                        {
+                            execute: manywho.draw.ajax.getFlowGraph,
+                            type: 'done',
+                            args: []
+                        }
+                    ]);
 
                 }
 
