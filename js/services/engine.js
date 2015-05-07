@@ -412,11 +412,12 @@ manywho.engine = (function (manywho) {
                     manywho.component.focusInput(parentFlowKey);
                     manywho.component.scrollToTop(parentFlowKey);
 
+                }
+
                 if (moveResponse) {
 
                     manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
                     moveResponse = null;
-}
                 }
 
             })
