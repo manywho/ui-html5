@@ -4,6 +4,7 @@
 
         hideModal: function (event) {
 
+            manywho.draw.model.setLuaCode('');
             manywho.draw.hideModal(null, 'draw_draw_draw_main');
 
         },
