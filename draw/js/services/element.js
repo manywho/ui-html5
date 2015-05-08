@@ -57,7 +57,6 @@ manywho.graph.element = (function() {
         initialize: function () {
 
             this.addDraggableElements('input');
-            this.addDraggableElements('decision');
 
         }
 
