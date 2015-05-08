@@ -267,7 +267,7 @@ manywho.draw.ajax = (function () {
         convertLua: function (metadata) {
 
             return $.ajax({
-                url: 'http://cf2716b5.ngrok.io/api/corvisa/1/convert',
+                url: 'http://3c5ce02.ngrok.com/api/corvisa/1/convert',
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -276,8 +276,6 @@ manywho.draw.ajax = (function () {
                 beforeSend: function (xhr) {
 
                     beforeSend.call(this, xhr, null, null, 'convertLua');
-
-                    xhr.setRequestHeader("Access-Control-Allow-Origin", "http://cf2716b5.ngrok.io");
 
                 }
             });
