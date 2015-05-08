@@ -2,6 +2,7 @@ manywho.draw.model = (function () {
 
     var model = {};
     var temporaryMapElement = {};
+    var luaCode = '';
 
     return {
 
@@ -75,6 +76,18 @@ manywho.draw.model = (function () {
         setEditingToken: function (editingToken) {
 
             model.editingToken = editingToken;
+
+        },
+
+        getLuaCode: function () {
+
+            return luaCode;
+
+        },
+
+        setLuaCode: function (code) {
+
+            luaCode = code.luaCode;
 
         },
 

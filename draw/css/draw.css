@@ -12,6 +12,11 @@ body #draw-modal .modal {
   top: 2.5%;
   left: 0;
 }
+body #draw-modal .lua-placeholder {
+  width: 90%;
+  min-height: 300px;
+  margin: 0 auto;
+}
 body #flow-title {
   margin-top: 0;
 }

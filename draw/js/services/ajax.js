@@ -144,19 +144,31 @@ manywho.draw.ajax = (function () {
 
         },
 
-        getFlowSnapshot: function (callback, response) {
+        getFlowVersion: function () {
 
-            var flowId;
+            var flowId = manywho.draw.model.getFlowId().id;
 
-            if (manywho.utils.extractOutputValue(response.outputs, 'FLOW') && manywho.utils.extractOutputValue(response.outputs, 'FLOW').length > 0) {
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/snap/' + flowId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
 
-                flowId = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0].objectData[0].properties[4].contentValue;
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
 
-            } else {
+                    var tenantId = manywho.draw.model.getTenantId();
 
-                flowId = manywho.draw.model.getFlowId().id;
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowSnapshot');
 
-            }
+                }
+            });
+
+        },
+
+        getFlowSnapshot: function (flowVersionId) {
+
+            var flowId = manywho.draw.model.getFlowId().id;
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/snap/' + flowId + '/' + flowVersionId,
@@ -169,7 +181,7 @@ manywho.draw.ajax = (function () {
 
                     var tenantId = manywho.draw.model.getTenantId();
 
-                    beforeSend.call(this, xhr, null, authenticationToken, 'getFlowSnapshot');
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowSnapshot');
 
                 }
             }).done(function(data) {
@@ -206,6 +218,8 @@ manywho.draw.ajax = (function () {
 
         savePageLayout: function (page) {
 
+            var flowId = manywho.draw.model.getFlowId().id;
+
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/draw/1/element/page',
                 type: 'POST',
@@ -224,7 +238,48 @@ manywho.draw.ajax = (function () {
                 }
             }).done(function (data) {
 
+                manywho.draw.ajax.addPageToFlow(flowId, data.id);
 
+            });
+
+        },
+
+        addPageToFlow: function (flowId, pageId) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/flow/' + flowId + '/page/' + pageId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
+
+                }
+            });
+
+        },
+
+        convertLua: function (metadata) {
+
+            return $.ajax({
+                url: 'http://cf2716b5.ngrok.io/api/corvisa/1/convert',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(metadata),
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, null, null, 'convertLua');
+
+                    xhr.setRequestHeader("Access-Control-Allow-Origin", "http://cf2716b5.ngrok.io");
+
+                }
             });
 
         }

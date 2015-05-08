@@ -8,6 +8,8 @@ manywho.draw = ( function(manywho) {
 
             this.registerNavClickEvent('flow');
 
+            this.registerRunClickEvent();
+
             var drawKey = 'draw_draw_draw_main';
 
             var inputObject = {
@@ -76,6 +78,43 @@ manywho.draw = ( function(manywho) {
 
 
             });
+
+        },
+
+        registerRunClickEvent: function () {
+
+            var generate = document.getElementById('generate');
+
+            generate.addEventListener('click', function(event) {
+
+                manywho.draw.ajax.getFlowVersion().then(function(data) {
+
+                    manywho.draw.ajax.getFlowSnapshot(data.id.versionId).then(function (metadata) {
+
+                        manywho.draw.ajax.convertLua(metadata).then(function (code) {
+
+                            manywho.draw.model.setLuaCode(code);
+
+                            manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                            manywho.draw.renderLuaCode();
+
+                        })
+
+                    });
+
+                });
+
+            });
+        },
+
+        renderLuaCode: function () {
+
+            var container = document.getElementById('draw-modal');
+
+            container.classList.remove('hidden');
+
+            React.render(React.createElement(manywho.lua), container);
 
         },
 
