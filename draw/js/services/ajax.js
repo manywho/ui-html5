@@ -208,10 +208,6 @@ manywho.draw.ajax = (function () {
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'getPageLayout');
 
                 }
-            }).done(function (data) {
-
-                manywho.builder.renderPageLayout();
-
             });
 
         },
@@ -238,7 +234,11 @@ manywho.draw.ajax = (function () {
                 }
             }).done(function (data) {
 
-                manywho.draw.ajax.addPageToFlow(flowId, data.id);
+                if(page.id == null) {
+
+                    manywho.draw.ajax.addPageToFlow(flowId, data.id);
+
+                }
 
             });
 

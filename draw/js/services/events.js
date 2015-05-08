@@ -80,8 +80,13 @@ manywho.graph.events = (function () {
 
                 if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'input') {
 
-                    alert('cant edit page layouts yet sorry');
-                    //manywho.draw.ajax.getPageLayout(cell.properties.cell.value.pageId);
+                    manywho.draw.ajax.getPageLayout(event.selectionModel.cells[0].value.pageId).then(function (response) {
+
+                        manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                        manywho.layout.renderExistingLayout(response, event.selectionModel.cells[0]);
+
+                    });
 
                 } else {
 

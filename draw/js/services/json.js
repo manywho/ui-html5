@@ -39,7 +39,7 @@ manywho.draw.json = (function () {
 
         },
 
-        buildPageMetadata: function (name, components) {
+        buildPageMetadata: function (name, components, pageId) {
 
             return {
                 "label": name,
@@ -59,7 +59,7 @@ manywho.draw.json = (function () {
                 "attributes": null,
                 "tags": null,
                 "updateByName": false,
-                "id": null,
+                "id": pageId || null,
                 "elementType": "PAGE_LAYOUT",
                 "developerName": name,
                 "developerSummary": ""

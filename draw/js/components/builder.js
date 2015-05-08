@@ -86,7 +86,9 @@
                 hover: false,
                 dragging: false,
                 enteredDroppable: false,
-                canvasItems: []
+                pageName: this.props.pageName || '',
+                element: this.props.cell || {},
+                canvasItems: this.props.data || []
             }
 
         },
@@ -94,47 +96,6 @@
         componentDidUpdate: function () {
 
             if (this.refs.configuration && this.state.currentSelectedItem) populateComponentAttributes(this.refs.configuration.refs, this.state.currentSelectedItem);
-
-        },
-
-        renderPageLayout: function (data) {
-
-            var newState = data.pageComponents.map(function (component) {
-
-                return {
-
-                    name: component.developerName,
-                    attributes: component.attributes,
-                    content: component.content,
-                    type: component.componentType,
-                    order: component.order,
-                    id: component.id,
-                    active: false
-
-                }
-
-            });
-
-            newState.sort(function (component1, component2) {
-
-                if (component1.order < component2.order) {
-                    return -1;
-                } else if (component1.order > component2.order) {
-                    return 1;
-                }
-
-                return 0;
-
-            });
-
-            this.setState({
-                currentDragItem: null,
-                currentSelectedItem: null,
-                hover: false,
-                dragging: false,
-                enteredDroppable: false,
-                canvasItems: newState
-            });
 
         },
 
@@ -151,6 +112,14 @@
                 self.setState(newState);
 
             });
+
+        },
+
+        changePageName: function (event) {
+
+            var newPageName = event.target.value;
+
+            this.setState({ pageName: newPageName });
 
         },
 
@@ -532,31 +501,47 @@
 
         onPageSave: function (event) {
 
-            var metadata = manywho.draw.json.buildPageMetadata(document.getElementById('page-name').value, this.state.canvasItems);
+            var self = this, pageId = null;
+
+            if (this.state.element && this.state.element.value) {
+
+                pageId = this.state.element.value.pageId;
+
+            }
+
+            var metadata = manywho.draw.json.buildPageMetadata(document.getElementById('page-name').value, this.state.canvasItems, pageId);
 
             manywho.draw.ajax.savePageLayout(metadata).then(function (data) {
 
-                var model = manywho.draw.model.getModel();
+                if (self.state.element && self.state.element.id) {
 
-                var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
+                    manywho.draw.ajax.getFlowGraph(null, null);
 
-                var mapElement = {
+                } else {
 
-                    "developerName": data.developerName,
-                    "developerSummary": "",
-                    "elementType": "input",
-                    "groupElementId": null,
-                    "id": null,
-                    "outcomes": null,
-                    "pageElementId": data.id,
-                    "x": mapElementCoords.x,
-                    "y": mapElementCoords.y
+                    var model = manywho.draw.model.getModel();
 
-                };
+                    var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
 
-                manywho.draw.model.setMapElementCoordinates(0, 0);
+                    var mapElement = {
 
-                manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+                        "developerName": document.getElementById('page-name').value,
+                        "developerSummary": "",
+                        "elementType": "input",
+                        "groupElementId": null,
+                        "id": null,
+                        "outcomes": null,
+                        "pageElementId": data.id,
+                        "x": mapElementCoords.x,
+                        "y": mapElementCoords.y
+
+                    };
+
+                    manywho.draw.model.setMapElementCoordinates(0, 0);
+
+                    manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+
+                }
 
                 manywho.draw.hideModal(null, 'draw_draw_draw_main');
 
@@ -597,7 +582,7 @@
                             React.DOM.div({ className: 'modal-header' }, [
                                 React.DOM.div({ className: 'form-group' }, [
                                     React.DOM.label({ htmlFor: 'page-name' }, 'Page Name'),
-                                    React.DOM.input({ type: 'text', id: 'page-name', className: 'input-large form-control', placeholder: 'Enter page name here' })
+                                    React.DOM.input({ type: 'text', id: 'page-name', className: 'input-large form-control', placeholder: 'Enter page name here', value: this.state.pageName, onChange: this.changePageName })
                                 ])
                             ]),
                             React.DOM.div({ className: 'modal-body' }, [

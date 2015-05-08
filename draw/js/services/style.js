@@ -23,7 +23,7 @@ manywho.graph.style = (function() {
             baseStyle[mxConstants.STYLE_FILLCOLOR] = '#888888';
             baseStyle[mxConstants.STYLE_STROKECOLOR] = '#999999';
             baseStyle[mxConstants.STYLE_SPACING_LEFT] = 20;
-            baseStyle[mxConstants.STYLE_SPACING_RIGHT] = 20;
+            baseStyle[mxConstants.STYLE_SPACING_RIGHT] = 10;
 
             styles['base'] = baseStyle;
 
