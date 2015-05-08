@@ -62,9 +62,9 @@
 
         for (var attribute in item.attributes) {
 
-            if (typeof item.attributes[attribute] == 'boolean') {
+            if (item.attributes[attribute] == 'True' || item.attributes[attribute] == 'False') {
 
-                refs[attribute].getDOMNode().checked = item.attributes[attribute];
+                refs[attribute].getDOMNode().checked = (item.attributes[attribute] == 'True');
 
             } else {
 

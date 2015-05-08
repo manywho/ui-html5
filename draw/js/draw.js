@@ -10,6 +10,8 @@ manywho.draw = ( function(manywho) {
 
             this.registerRunClickEvent();
 
+            this.registerSaveClickEvent();
+
             var drawKey = 'draw_draw_draw_main';
 
             var inputObject = {
@@ -106,6 +108,25 @@ manywho.draw = ( function(manywho) {
                 });
 
             });
+        },
+
+        registerSaveClickEvent: function () {
+
+            var save = document.getElementById('save-flow');
+
+            save.addEventListener('click', function (event) {
+
+                var flowId = manywho.draw.model.getFlowId();
+
+                if (flowId && flowId.id && flowId.id.length > 0) {
+
+                    manywho.draw.model.setFlowId(null);
+                    document.getElementById('draw-tool').classList.add('hidden');
+
+                }
+
+            })
+
         },
 
         renderLuaCode: function () {

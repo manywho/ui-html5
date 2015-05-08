@@ -26,9 +26,23 @@ manywho.graph.events = (function () {
         mxEvent.addListener(img, 'click',
             mxUtils.bind(this, function(evt)
             {
-                manywho.graph.deleteElement(state.cell);
-                mxEvent.consume(evt);
-                this.destroy();
+
+                if (state.cell.style.toLowerCase() != 'start') {
+
+                    if (state.cell.edges) {
+
+                        alert('You cannot delete a map element attached to an outcome');
+
+                    } else {
+
+                        manywho.graph.deleteElement(state.cell);
+                        mxEvent.consume(evt);
+                        this.destroy();
+
+                    }
+
+                }
+
             })
         );
 

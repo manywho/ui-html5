@@ -50,6 +50,7 @@ manywho.draw.ajax = (function () {
                 manywho.draw.model.setModel(data);
                 manywho.draw.model.setFlowId({ id: flowId});
                 manywho.draw.model.setEditingToken(data.editingToken);
+                document.getElementById('draw-tool').classList.remove('hidden');
                 manywho.graph.render();
 
             });
