@@ -12,6 +12,10 @@ body #draw-modal .modal {
   top: 2.5%;
   left: 0;
 }
+body #draw-modal .modal-dialog {
+  width: auto !important;
+  overflow-y: auto !important;
+}
 body #draw-modal .lua-placeholder {
   display: block;
   width: 90%;

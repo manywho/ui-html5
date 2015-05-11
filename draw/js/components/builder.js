@@ -624,8 +624,8 @@
             return React.DOM.div({ className: 'modal-container', id: 'build_build_build_modal'}, [
                 React.DOM.div({ className: 'modal-backdrop in full-height' }, null),
                 React.DOM.div({ className: 'modal show' }, [
-                    React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
-                        React.DOM.div({ className: 'modal-content full-screen' }, [
+                    React.DOM.div({ className: 'modal-dialog', onKeyUp: this.onEnter }, [
+                        React.DOM.div({ className: 'modal-content' }, [
                             React.DOM.div({ className: 'modal-header' }, [
                                 React.DOM.div({ className: 'form-group' }, [
                                     React.DOM.label({ htmlFor: 'page-name' }, [
