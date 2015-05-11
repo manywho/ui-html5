@@ -7,7 +7,7 @@ manywho.graph = (function() {
 
         var options = {};
 
-        graph.maximumContainerSize = new mxRectangle(0, 0, document.getElementById('graph').clientWidth, document.getElementById('graph').clientWidth);
+        graph.maximumContainerSize = new mxRectangle(0, 0, document.getElementById('graph').clientWidth, document.getElementById('graph').clientHeight);
         graph.minimumContainerSize = new mxRectangle(0, 0, document.getElementById('graph').clientWidth, document.getElementById('graph').clientHeight);
 
         graph.setCellsResizable(true);
@@ -76,6 +76,8 @@ manywho.graph = (function() {
             editor.setGraphContainer(container);
 
             var outln = new mxOutline(graph, outline);
+
+            document.getElementById('draw-tool').classList.add('hidden');
 
         },
 

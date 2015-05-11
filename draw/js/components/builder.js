@@ -76,6 +76,32 @@
 
     }
 
+    function validateConfiguration(components) {
+
+        var validation = [];
+
+        for (var component in components) {
+
+            var element = components[component].getDOMNode();
+
+            if (element.required && (element.value == null || element.value.length == 0)) {
+
+                element.parentNode.classList.add('has-error');
+
+            } else {
+
+                element.parentNode.classList.remove('has-error');
+
+            }
+
+            validation.push(!(element.required && (element.value == null || element.value.length == 0)));
+
+        }
+
+        return validation.indexOf(false) == -1;
+
+    }
+
     manywho.builder = React.createClass({
 
         getInitialState: function () {
@@ -185,27 +211,33 @@
 
         onSave: function (event) {
 
-            var self = this;
+            if (validateConfiguration(this.refs.configuration.refs)) {
 
-            var newState = {};
+                var self = this;
 
-            newState.canvasItems = self.state.canvasItems.map(function (item) {
+                var newState = {};
 
-                if (self.state.currentSelectedItem.id == item.id) {
+                newState.canvasItems = self.state.canvasItems.map(function (item) {
 
-                    return generateComponentAttributes(self.refs.configuration.refs, item);
+                    if (self.state.currentSelectedItem.id == item.id) {
 
-                }
+                        return generateComponentAttributes(self.refs.configuration.refs, item);
 
-                return item;
+                    }
 
-            });
+                    return item;
 
-            this.setState(newState);
+                });
 
-            var name = document.getElementById('page-name').value;
+                this.setState(newState);
 
-            return newState.canvasItems;
+                var name = document.getElementById('page-name').value;
+
+                return newState.canvasItems;
+
+            }
+
+            return false;
 
         },
 
@@ -501,51 +533,63 @@
 
         onPageSave: function (event) {
 
-            var self = this, pageId = null;
+            var self = this, pageId = null, pageName = document.getElementById('page-name');
 
-            if (this.state.element && this.state.element.value) {
+            if (pageName.value != null && pageName.value.length > 0) {
 
-                pageId = this.state.element.value.pageId;
+                pageName.parentNode.classList.remove('has-error');
 
-            }
+                if (this.state.element && this.state.element.value) {
 
-            var metadata = manywho.draw.json.buildPageMetadata(document.getElementById('page-name').value, this.state.canvasItems, pageId);
-
-            manywho.draw.ajax.savePageLayout(metadata).then(function (data) {
-
-                if (self.state.element && self.state.element.id) {
-
-                    manywho.draw.ajax.getFlowGraph(null, null);
-
-                } else {
-
-                    var model = manywho.draw.model.getModel();
-
-                    var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
-
-                    var mapElement = {
-
-                        "developerName": document.getElementById('page-name').value,
-                        "developerSummary": "",
-                        "elementType": "input",
-                        "groupElementId": null,
-                        "id": null,
-                        "outcomes": null,
-                        "pageElementId": data.id,
-                        "x": mapElementCoords.x,
-                        "y": mapElementCoords.y
-
-                    };
-
-                    manywho.draw.model.setMapElementCoordinates(0, 0);
-
-                    manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+                    pageId = this.state.element.value.pageId;
 
                 }
 
-                manywho.draw.hideModal(null, 'draw_draw_draw_main');
+                var metadata = manywho.draw.json.buildPageMetadata(pageName.value, this.state.canvasItems, pageId);
 
-            });
+                manywho.draw.ajax.savePageLayout(metadata).then(function (data) {
+
+                    if (self.state.element && self.state.element.id) {
+
+                        manywho.draw.ajax.getFlowGraph(null, null);
+
+                    } else {
+
+                        var model = manywho.draw.model.getModel();
+
+                        var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
+
+                        var mapElement = {
+
+                            "developerName": document.getElementById('page-name').value,
+                            "developerSummary": "",
+                            "elementType": "input",
+                            "groupElementId": null,
+                            "id": null,
+                            "outcomes": null,
+                            "pageElementId": data.id,
+                            "x": mapElementCoords.x,
+                            "y": mapElementCoords.y
+
+                        };
+
+                        manywho.draw.model.setMapElementCoordinates(0, 0);
+
+                        manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+
+                    }
+
+                    manywho.draw.hideModal(null, 'draw_draw_draw_main');
+
+                });
+
+            } else {
+
+                pageName.parentNode.classList.add('has-error');
+
+                return false;
+
+            }
 
         },
 
@@ -560,8 +604,11 @@
             if (this.state.currentSelectedItem) {
 
                 return React.DOM.div({}, [
-                    React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration' }),
-                    React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
+                    React.DOM.form({}, [
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration' }),
+                        React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
+                    ])
+
                 ])
 
             }
@@ -581,7 +628,10 @@
                         React.DOM.div({ className: 'modal-content full-screen' }, [
                             React.DOM.div({ className: 'modal-header' }, [
                                 React.DOM.div({ className: 'form-group' }, [
-                                    React.DOM.label({ htmlFor: 'page-name' }, 'Page Name'),
+                                    React.DOM.label({ htmlFor: 'page-name' }, [
+                                        'Page Name',
+                                        React.DOM.span({ className: 'input-required' }, ' *')
+                                    ]),
                                     React.DOM.input({ type: 'text', id: 'page-name', className: 'input-large form-control', placeholder: 'Enter page name here', value: this.state.pageName, onChange: this.changePageName })
                                 ])
                             ]),
