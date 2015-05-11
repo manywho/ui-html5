@@ -2,6 +2,7 @@ manywho.graph = (function() {
 
     var editor = new mxEditor();
     var graph = editor.graph;
+    var rubberband = new mxRubberband(graph);
 
     function setDefaultGraphSettings() {
 
