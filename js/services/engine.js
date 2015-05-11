@@ -669,6 +669,12 @@ manywho.engine = (function (manywho) {
 
         },
 
+        toggleDebug: function(flowKey) {
+
+            manywho.settings.isDebugEnabled(flowKey, !manywho.settings.isDebugEnabled(flowKey));
+            this.render(flowKey);
+
+        },
 
         parseResponse: function(response, responseParser, flowKey) {
 

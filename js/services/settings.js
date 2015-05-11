@@ -63,7 +63,7 @@ manywho.settings = (function (manywho, $) {
         social: {},
         ping: {}
     };
-    
+
     function toLowerCaseKeys(obj) {
 
         for (var prop in obj) {
@@ -123,7 +123,7 @@ manywho.settings = (function (manywho, $) {
                     return defaultValue;
 
                 }
-                
+
             }
 
             return globalValue;
@@ -148,9 +148,27 @@ manywho.settings = (function (manywho, $) {
 
         },
 
-        isDebugEnabled: function (flowKey) {
+        isDebugEnabled: function (flowKey, value) {
 
-            return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true);
+            if (typeof value == 'undefined') {
+
+                return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true);
+
+            }
+            else {
+
+                if (value) {
+
+                    flows[flowKey].mode = 'Debug';
+
+                }
+                else {
+
+                    flows[flowKey].mode = '';
+
+                }
+
+            }
 
         }
 
