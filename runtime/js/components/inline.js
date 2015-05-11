@@ -31,4 +31,10 @@ permissions and limitations under the License.
 
     manywho.component.register("inline_flow", inline);
 
+    manywho.styling.registerContainer("inline_flow", function (item, container) {
+
+        return ['pull-left'];
+
+    });
+
 }(manywho));

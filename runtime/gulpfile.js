@@ -7,11 +7,9 @@ var gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     concat = require('gulp-concat'),
     minifyCSS = require('gulp-minify-css'),
+    del = require('del'),
     revall = require('gulp-rev-all'),
-    clean = require('gulp-clean'),
     uglify = require('gulp-uglify'),
-    htmlreplace = require('gulp-html-replace'),
-    glob = require('glob'),
     runSequence = require('run-sequence'),
     order = require("gulp-order"),
     awspublish = require('gulp-awspublish'),
@@ -77,7 +75,7 @@ gulp.task('browser-sync', function () {
     browserSync.init(files, {
         server: {
             baseDir: '.',
-            index: 'default-local.html'
+            index: 'debug.html'
         },
         ghostMode: false
     });
@@ -87,10 +85,9 @@ gulp.task('browser-sync', function () {
 gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
 
 // Production Build
-gulp.task('clean-dist', function () {
+gulp.task('clean-dist', function (cb) {
 
-    return gulp.src('dist', { read: false })
-                .pipe(clean({ force: true }));
+    del(['dist'], cb);
 
 });
 
@@ -171,23 +168,10 @@ gulp.task('js-loader-dist', function () {
 gulp.task('html-dist', function () {
 
     return gulp.src('default.html')
-        .pipe(gulp.dest('./dist/'));
+            .pipe(replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
+            .pipe(replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
+            .pipe(gulp.dest('./dist/'));
 
-});
-
-gulp.task('html-replace', function () {
-
-    gulp.src('dist/default.html')
-                .pipe(replace('cdnUrl: \'\'', 'cdnUrl: \'' + process.env.BAMBOO_CDNURL + '\''))
-                .pipe(replace('js/vendor/', process.env.BAMBOO_CDNURL + '/js/vendor/'))
-                .pipe(htmlreplace({
-                    css: '',
-                    js: '',
-                    log: '',
-                    bootstrap: '',
-                    loader: process.env.BAMBOO_CDNURL + '/js/loader.min.js'
-                }))
-                .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('rev-dist', function () {
@@ -268,7 +252,7 @@ gulp.task('invalidate', function (cb) {
 
 });
 
-gulp.task('deploy-players', function () {
+gulp.task('deploy-player', function () {
 
     var distribution = {
         key: process.env.BAMBOO_AWSKEY,
@@ -285,13 +269,5 @@ gulp.task('deploy-players', function () {
                 .pipe(rename(tenantId + '.' + argv.player))
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
-
-});
-
-gulp.task('deploy', function () {
-
-    runSequence('deploy-cdn',
-                'deploy-players',
-                'invalidate');
 
 });

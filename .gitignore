@@ -1,10 +1,13 @@
 .idea
 /extensions
 
-# Dependency directory
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
-node_modules
+runtime/node_modules
+runtime/css/*.css
+runtime/css/themes/mw-*.css
+runtime/dist
+runtime/.awspublish-manywho-cdn-react
 
+<<<<<<< HEAD
 /css/*.css
 /css/themes/mw-*.css
 /dist
@@ -16,3 +19,6 @@ flow-run.html
 
 # draw stuff
 /draw/mxgraph
+=======
+.c9/
+>>>>>>> feature/deploy
