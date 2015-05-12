@@ -102,6 +102,33 @@ manywho.graph.events = (function () {
 
                     });
 
+                } else if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'outcome') {
+
+                    var inputObject = {
+
+                        Id: event.selectionModel.cells[0].source.id,
+                        AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
+                        EditingToken: manywho.draw.model.getEditingToken(),
+                        FlowId: manywho.draw.model.getFlowId().id,
+                        OutcomeId: event.selectionModel.cells[0].id,
+                        Command: "edit",
+                        GroupElementId: ""
+
+                    };
+
+                    manywho.engine.initializeSystemFlow(event.selectionModel.cells[0].style.toLowerCase(), 'draw_draw_draw_main', manywho.json.generateFlowInputs(inputObject), [
+                        {
+                            execute: manywho.draw.hideModal,
+                            type: 'done',
+                            args: ['draw_draw_draw_main']
+                        },
+                        {
+                            execute: manywho.draw.ajax.getFlowGraph,
+                            type: 'done',
+                            args: []
+                        }
+                    ]);
+
                 } else {
 
                     var inputObject = {

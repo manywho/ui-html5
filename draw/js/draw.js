@@ -95,11 +95,21 @@ manywho.draw = ( function(manywho) {
 
                         manywho.draw.ajax.convertLua(metadata).then(function (code) {
 
-                            manywho.draw.model.setLuaCode(code);
+                            if (code.errors) {
 
-                            manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+                                alert(code.errors);
 
-                            manywho.draw.renderLuaCode();
+                            }
+
+                            if (code.luaCode) {
+
+                                manywho.draw.model.setLuaCode(code);
+
+                                manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                                manywho.draw.renderLuaCode();
+
+                            }
 
                         })
 
