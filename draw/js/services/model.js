@@ -8,13 +8,13 @@ manywho.draw.model = (function () {
 
         getModel: function () {
 
-            return model;
+            return model.metadata;
 
         },
 
         setModel: function (metadata) {
 
-            model = metadata;
+            model.metadata = metadata;
 
         },
 
@@ -111,7 +111,7 @@ manywho.draw.model = (function () {
             var graph = manywho.graph.getGraphObject().graph;
             var cells = graph.getChildVertices(graph.getDefaultParent());
 
-            model.mapElements = model.mapElements.map(function (element) {
+            model.metadata.mapElements = model.metadata.mapElements.map(function (element) {
 
                 return self.updateCell(element, cells.filter(function (cell) {
 
@@ -121,7 +121,9 @@ manywho.draw.model = (function () {
 
             });
 
-            manywho.draw.ajax.updateFlowGraph(model, manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main'));
+            model.metadata.id = { id: manywho.draw.model.getFlowId() };
+
+            manywho.draw.ajax.updateFlowGraph(model.metadata, manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken('draw_draw_draw_main'));
 
         }
 

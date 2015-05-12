@@ -8,16 +8,23 @@ body {
     height: 100%;
 
     .modal {
+      position: absolute;
       width: 90%;
-      height: 95%;
+      height: 98%;
       margin: 0 auto;
-      top: 2.5%;
+      top: 1%;
       left: 0;
+      overflow: auto;
     }
 
     .modal-dialog {
       width: auto !important;
-      overflow-y: auto !important;
+      height: auto !important;
+
+      .modal-body {
+        overflow-y: auto !important;
+
+      }
     }
 
     .lua-placeholder {

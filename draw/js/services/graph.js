@@ -120,7 +120,7 @@ manywho.graph = (function() {
                 Id: cell.id,
                 AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
                 EditingToken: manywho.draw.model.getEditingToken(),
-                FlowId: manywho.draw.model.getFlowId().id,
+                FlowId: manywho.draw.model.getFlowId(),
                 ElementType: "input",
                 X: cell.geometry.x,
                 Y: cell.geometry.y,
@@ -152,7 +152,7 @@ manywho.graph = (function() {
                 Id: source,
                 AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
                 EditingToken: manywho.draw.model.getEditingToken(),
-                FlowId: manywho.draw.model.getFlowId().id,
+                FlowId: manywho.draw.model.getFlowId(),
                 NextMapElementId: target,
                 Command: "edit",
                 OutcomeId: '',
@@ -204,7 +204,7 @@ manywho.graph = (function() {
                 Id: outcome.source.id,
                 AuthenticationToken: manywho.state.getAuthenticationToken(drawKey),
                 EditingToken: manywho.draw.model.getEditingToken(),
-                FlowId: manywho.draw.model.getFlowId().id,
+                FlowId: manywho.draw.model.getFlowId(),
                 OutcomeId: outcome.id,
                 Command: "delete"
             };

@@ -16,7 +16,7 @@ manywho.draw = ( function(manywho) {
 
             var inputObject = {
                 LoginUrl: 'https://flow.manywho.com/plugins/manywho/api/draw/1/authentication',
-                Username: 'joao.moreira@joaomoreira.manywho.com',
+                Username: '',
                 DirectoryName: 'ManyWho Platform'
             };
 
@@ -128,7 +128,7 @@ manywho.draw = ( function(manywho) {
 
                 var flowId = manywho.draw.model.getFlowId();
 
-                if (flowId && flowId.id && flowId.id.length > 0) {
+                if (flowId && flowId.length > 0) {
 
                     manywho.draw.model.setFlowId(null);
                     document.getElementById('draw-tool').classList.add('hidden');

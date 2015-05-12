@@ -575,7 +575,7 @@
 
                         manywho.draw.model.setMapElementCoordinates(0, 0);
 
-                        manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId().id, model.editingToken);
+                        manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId(), model.editingToken);
 
                     }
 

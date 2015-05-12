@@ -109,7 +109,7 @@ manywho.graph.events = (function () {
                         Id: event.selectionModel.cells[0].source.id,
                         AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
                         EditingToken: manywho.draw.model.getEditingToken(),
-                        FlowId: manywho.draw.model.getFlowId().id,
+                        FlowId: manywho.draw.model.getFlowId(),
                         OutcomeId: event.selectionModel.cells[0].id,
                         Command: "edit",
                         GroupElementId: ""
@@ -135,7 +135,7 @@ manywho.graph.events = (function () {
                         Id: event.selectionModel.cells[0].id,
                         AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
                         EditingToken: manywho.draw.model.getEditingToken(),
-                        FlowId: manywho.draw.model.getFlowId().id,
+                        FlowId: manywho.draw.model.getFlowId(),
                         ElementType: event.selectionModel.cells[0].style.toLowerCase(),
                         X: event.selectionModel.cells[0].geometry.x,
                         Y: event.selectionModel.cells[0].geometry.y,

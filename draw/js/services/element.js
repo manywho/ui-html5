@@ -26,7 +26,7 @@ manywho.graph.element = (function() {
                         Id: '',
                         AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
                         EditingToken: manywho.draw.model.getEditingToken(),
-                        FlowId: manywho.draw.model.getFlowId().id,
+                        FlowId: manywho.draw.model.getFlowId(),
                         ElementType: event.srcElement.id,
                         X: x,
                         Y: y,
