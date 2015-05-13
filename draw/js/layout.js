@@ -34,7 +34,8 @@ manywho.layout = (function (manywho) {
                     type: component.componentType,
                     order: component.order,
                     id: component.id,
-                    active: false
+                    active: false,
+                    saved: true
 
                 }
 

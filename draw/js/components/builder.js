@@ -221,6 +221,8 @@
 
                     if (self.state.currentSelectedItem.id == item.id) {
 
+                        item.saved = true;
+
                         return generateComponentAttributes(self.refs.configuration.refs, item);
 
                     }
@@ -305,6 +307,7 @@
                     item.text = '';
                     item.type = 'Dummy';
                     item.active = false;
+                    item.saved = false;
                     item.id = null;
 
                 }
@@ -332,6 +335,7 @@
                         item.text = self.state.currentDragItem.attributes || {};
                         item.type = self.state.currentDragItem.type.toLowerCase() || '';
                         item.active = true;
+                        item.saved = self.state.currentDragItem.saved || false;
                         item.id = self.state.currentDragItem.id;
                         item.order = self.state.currentDragItem.order;
                         item.attributes = self.state.currentDragItem.attributes;
@@ -373,6 +377,7 @@
                     text: '',
                     type: 'Dummy',
                     active: false,
+                    saved: false,
                     id: null,
                     order: index
 
@@ -384,9 +389,21 @@
 
         },
 
-        onComponentLeave: function (event) {
+        onClickComponentDelete: function (event) {
 
+            event.stopPropagation();
 
+            var newState = {};
+
+            newState.canvasItems = this.state.canvasItems.filter(function (item) {
+
+                return item.id.toLowerCase() != event.target.parentNode.parentNode.id && item.id.toLowerCase() != 'dummy';
+
+            });
+
+            newState.currentSelectedItem = null;
+
+            this.setState(newState);
 
         },
 
@@ -446,6 +463,7 @@
                         text: '',
                         type: 'Dummy',
                         active: false,
+                        saved: false,
                         id: null,
                         order: newState.canvasItems.length
 
@@ -478,6 +496,7 @@
                     text: '',
                     type: 'Dummy',
                     active: false,
+                    saved: false,
                     id: null,
                     order: newState.canvasItems.length
 
@@ -505,6 +524,7 @@
                     item.name = self.state.currentDragItem.name || '';
                     item.type = self.state.currentDragItem.type.toLowerCase() || '';
                     item.active = true;
+                    item.saved = self.state.currentDragItem.saved || false;
                     item.id = self.state.currentDragItem.id;
                     item.attributes = self.state.currentDragItem.attributes;
                     item.order = getChildIndex(event.target.parentNode, event.target);
@@ -599,13 +619,33 @@
 
         },
 
+        setUnsaved: function (event) {
+
+            var newState = this.state;
+
+            newState.canvasItems = this.state.canvasItems.map(function (item) {
+
+                if (item.id == newState.currentSelectedItem.id) {
+
+                    item.saved = false;
+
+                }
+
+                return item;
+
+            });
+
+            this.setState(newState);
+
+        },
+
         renderConfiguration: function () {
 
             if (this.state.currentSelectedItem) {
 
                 return React.DOM.div({}, [
                     React.DOM.form({}, [
-                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration' }),
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved }),
                         React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
                     ])
 
@@ -664,10 +704,10 @@
                                                 onComponentDragEnd: this.onComponentDragEnd,
                                                 onComponentClick: this.onComponentClick,
                                                 onComponentOver: this.onComponentOver,
-                                                onComponentLeave: this.onComponentLeave,
                                                 onDrop: this.onDrop,
                                                 onDroppableEnter: this.onDroppableEnter,
-                                                onDroppableLeave: this.onDroppableLeave
+                                                onDroppableLeave: this.onDroppableLeave,
+                                                onClickComponentDelete: this.onClickComponentDelete
                                             })
                                         ]),React.DOM.div({ className: 'col-md-3' }, [
                                             React.DOM.div({ className: 'section-header' }, [
