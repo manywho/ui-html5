@@ -10,7 +10,7 @@ permissions and limitations under the License.
 */
 
 manywho.utils = (function (manywho, $) {
-  
+
     return {
 
         getNumber: function(number) {
@@ -34,8 +34,17 @@ manywho.utils = (function (manywho, $) {
         replaceBrowserUrl: function(response) {
 
             // Check to make sure the browser supports the switch of the url
-            if (history && history.replaceState) {
-                history.replaceState(response.stateToken, "Title", response.joinFlowUri);
+            if (history && history.replaceState && !manywho.utils.isEmbedded()) {
+
+                try
+                {
+                    history.replaceState(response.stateToken, "Title", response.joinFlowUri);
+                }
+                catch (ex)
+                {
+                    log.error(ex);
+                }
+
             }
 
         },
@@ -93,7 +102,7 @@ manywho.utils = (function (manywho, $) {
             return false;
 
         },
-      
+
         convertToArray: function(obj) {
 
             var items = null;
@@ -212,7 +221,7 @@ manywho.utils = (function (manywho, $) {
 
                 element.parentNode.removeChild(element);
 
-            }            
+            }
 
         },
 
@@ -256,6 +265,3 @@ manywho.utils = (function (manywho, $) {
     }
 
 })(manywho, jQuery);
-
-
-

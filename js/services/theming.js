@@ -13,28 +13,32 @@ manywho.theming = (function (manywho, $) {
 
     var themes = ['cerulean', 'cosmo', 'cyborg', 'darkly', 'flatly', 'journal', 'lumen', 'paper', 'readable', 'sandstone', 'simplex', 'slate', 'spacelab', 'superhero', 'united', 'yeti'];
 
+    function loadTheme(url) {
+
+        var link = document.getElementById('theme');
+        var img = document.createElement('img');
+
+        link.setAttribute('href', url);
+
+        img.onerror = function () {
+
+            log.info('Finished loading theme: ' + url);
+
+        }
+        img.src = url;
+
+    }
+
     return {
-        
+
         apply: function (name) {
 
             if (themes != null && name && themes.indexOf(name) != -1) {
-                     
+
                 log.info("Switching theme to: " + name);
-                // Show loading indicator here
 
                 var url = manywho.cdnUrl + manywho.settings.theme('url') + '/mw-' + name + '.css';
-                var link = document.getElementById('theme');
-                var img = document.createElement('img');
-
-                link.setAttribute('href', url);
-
-                img.onerror = function () {
-
-                    log.info('Finished loading theme: ' + name);
-                    // Hide loading indicator here
-
-                }
-                img.src = url;
+                loadTheme(url);
 
             }
             else {
@@ -43,6 +47,13 @@ manywho.theming = (function (manywho, $) {
 
             }
             
+        },
+
+        custom: function(url) {
+
+            log.info('Switching to custom theme: ' + url);
+            loadTheme(url);
+
         }
 
     }

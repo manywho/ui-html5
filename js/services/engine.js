@@ -513,7 +513,10 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 'SYNC',
                 null,
+                null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
+                null,
+                null,
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey),
                 manywho.settings.flow('mode', flowKey)
@@ -666,6 +669,12 @@ manywho.engine = (function (manywho) {
 
         },
 
+        toggleDebug: function(flowKey) {
+
+            manywho.settings.isDebugEnabled(flowKey, !manywho.settings.isDebugEnabled(flowKey));
+            this.render(flowKey);
+
+        },
 
         parseResponse: function(response, responseParser, flowKey) {
 
