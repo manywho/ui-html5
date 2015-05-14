@@ -328,7 +328,7 @@ manywho.graph.events = (function () {
 
         changeTheme: function (select) {
 
-            var themeUrl = 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/' + select.value + '/bootstrap.min.css';
+            var themeUrl = manywho.cdnUrl + '/draw/css/themes/' + select.value + '.min.css';
             document.getElementById('theme').href = themeUrl;
 
         },
