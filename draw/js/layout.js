@@ -4,6 +4,8 @@ manywho.layout = (function (manywho) {
 
     return {
 
+        mixins: {},
+
         initialize: function () {
 
             this.render();
@@ -25,6 +27,16 @@ manywho.layout = (function (manywho) {
         renderExistingLayout: function (response, cell) {
 
             var data = response.pageComponents.map(function (component) {
+
+                for (var attribute in component.attributes) {
+
+                    if (component.attributes[attribute] == 'False' || component.attributes[attribute] == 'True') {
+
+                        component.attributes[attribute] = (component.attributes[attribute] == 'True');
+
+                    }
+
+                }
 
                 return {
 
