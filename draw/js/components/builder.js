@@ -16,92 +16,6 @@
 
     }
 
-    function generateComponentAttributes(attributes, item) {
-
-        item.attributes = {};
-
-        for (var attribute in attributes) {
-
-            if (attribute == 'content') {
-
-                item.content = attributes[attribute].getDOMNode().value;
-
-            } else if (attribute == 'name') {
-
-                item.name = attributes[attribute].getDOMNode().value;
-
-            } else if (attributes[attribute].getDOMNode().checked) {
-
-                item.attributes[attribute] = attributes[attribute].getDOMNode().checked;
-
-            } else {
-
-                item.attributes[attribute] = attributes[attribute].getDOMNode().value;
-
-            }
-
-        }
-
-        return item;
-
-    }
-
-    function populateComponentAttributes(refs, item) {
-
-        if (item.content) {
-
-            refs['content'].getDOMNode().value = item.content;
-
-        }
-
-        if (item.name) {
-
-            refs['name'].getDOMNode().value = item.name;
-
-        }
-
-        for (var attribute in item.attributes) {
-
-            if (item.attributes[attribute] == 'True' || item.attributes[attribute] == 'False') {
-
-                refs[attribute].getDOMNode().checked = (item.attributes[attribute] == 'True');
-
-            } else {
-
-                refs[attribute].getDOMNode().value = item.attributes[attribute];
-
-            }
-
-        }
-
-    }
-
-    function validateConfiguration(components) {
-
-        var validation = [];
-
-        for (var component in components) {
-
-            var element = components[component].getDOMNode();
-
-            if (element.required && (element.value == null || element.value.length == 0)) {
-
-                element.parentNode.classList.add('has-error');
-
-            } else {
-
-                element.parentNode.classList.remove('has-error');
-
-            }
-
-            validation.push(!(element.required && (element.value == null || element.value.length == 0)));
-
-        }
-
-        return validation.indexOf(false) == -1;
-
-    }
-
     manywho.builder = React.createClass({
 
         getInitialState: function () {
@@ -121,7 +35,7 @@
 
         componentDidUpdate: function () {
 
-            if (this.refs.configuration && this.state.currentSelectedItem) populateComponentAttributes(this.refs.configuration.refs, this.state.currentSelectedItem);
+
 
         },
 
@@ -211,35 +125,29 @@
 
         onSave: function (event) {
 
-            if (validateConfiguration(this.refs.configuration.refs)) {
+            var self = this;
 
-                var self = this;
+            var newState = {};
 
-                var newState = {};
+            newState.canvasItems = self.state.canvasItems.map(function (item) {
 
-                newState.canvasItems = self.state.canvasItems.map(function (item) {
+                if (self.state.currentSelectedItem.id == item.id) {
 
-                    if (self.state.currentSelectedItem.id == item.id) {
+                    item = self.refs.configuration.props.item;
 
-                        item.saved = true;
+                    item.saved = true;
 
-                        return generateComponentAttributes(self.refs.configuration.refs, item);
+                }
 
-                    }
+                return item;
 
-                    return item;
+            });
 
-                });
+            this.setState(newState);
 
-                this.setState(newState);
+            var name = document.getElementById('page-name').value;
 
-                var name = document.getElementById('page-name').value;
-
-                return newState.canvasItems;
-
-            }
-
-            return false;
+            return newState.canvasItems;
 
         },
 
@@ -250,7 +158,8 @@
             var data = {
                 name: event.currentTarget.innerHTML,
                 type: event.currentTarget.innerHTML.toLowerCase(),
-                id: 'new' + newIndex
+                id: 'new' + newIndex,
+                attributes: {}
             };
 
             newIndex++;
@@ -645,8 +554,7 @@
 
                 return React.DOM.div({}, [
                     React.DOM.form({}, [
-                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved }),
-                        React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, item: this.state.currentSelectedItem })
                     ])
 
                 ])
