@@ -272,7 +272,7 @@ manywho.draw.ajax = (function () {
         convertLua: function (metadata) {
 
             return $.ajax({
-                url: 'http://manywho-corvisa-ivr-converter.elasticbeanstalk.com/api/corvisa/1/convert',
+                url: 'http://9376ac76.ngrok.io/api/corvisa/1/convert',
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',

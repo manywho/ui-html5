@@ -133,8 +133,6 @@
 
                 if (self.state.currentSelectedItem.id == item.id) {
 
-                    item = self.refs.configuration.props.item;
-
                     item.saved = true;
 
                 }
@@ -528,7 +526,7 @@
 
         },
 
-        setUnsaved: function (event) {
+        setUnsaved: function () {
 
             var newState = this.state;
 
@@ -554,7 +552,7 @@
 
                 return React.DOM.div({}, [
                     React.DOM.form({}, [
-                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, item: this.state.currentSelectedItem })
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, setUnsaved: this.setUnsaved, item: this.state.currentSelectedItem })
                     ])
 
                 ])

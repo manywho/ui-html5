@@ -33,19 +33,30 @@
 
             var validation = [];
 
-            if (item.content) {
+            var contentElement = document.getElementById('content');
+            var nameElement = document.getElementById('name');
 
-                var contentElement = document.getElementById('content');
+            if (item.content == null || item.content.length == 0) {
 
-                validation.push(validateComponent(contentElement, item, 'content'));
+                contentElement.parentNode.classList.add('has-error');
+
+                validation.push(false);
+
+            } else {
+
+                contentElement.parentNode.classList.remove('has-error');
 
             }
 
-            if (item.name) {
+            if (item.name == null || item.name.length == 0) {
 
-                var nameElement = document.getElementById('name');
+                nameElement.parentNode.classList.add('has-error');
 
-                validation.push(validateComponent(nameElement, item, 'name'));
+                validation.push(false);
+
+            } else {
+
+                nameElement.parentNode.classList.remove('has-error');
 
             }
 
@@ -99,7 +110,7 @@
 
             }
 
-            this.props.item.saved = false;
+            this.props.setUnsaved();
 
         }
 
