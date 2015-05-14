@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <title>Draw</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/yeti/bootstrap.min.css" id="theme" />
+    <link rel="stylesheet" href="css/vendor/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/themes/yeti.min.css" id="theme" />
     <link rel="stylesheet" href="css/draw.css" />
     <link rel="stylesheet" href="css/builder.css" />
-
 
     <link rel="stylesheet" href="../runtime/css/lib/bootstrap-chosen.css" />
     <link rel="stylesheet" href="../runtime/css/lib/datepicker.css" />
@@ -28,7 +27,6 @@
     <link rel="stylesheet" href="../runtime/css/feed.css" />
     <link rel="stylesheet" href="../runtime/css/files.css" />
     <link rel="stylesheet" href="../runtime/css/debug.css" />
-
 </head>
 <body class="clearfix">
 
@@ -36,14 +34,13 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">
-                    <img alt="ManyWho Flow Designer" src="https://cdn.manywho.com/images/designer-logo.png" class="logo" />
+                    <img alt="ManyWho Flow Designer" src="img/designer-logo.png" class="logo" />
                 </a>
             </div>
 
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li><a id="flow" href="#">Flows</a></li>
-
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -94,7 +91,6 @@
     </div>
 
     <script>
-
         var manywho = {
             cdnUrl: '',
             initialize: function () {
@@ -147,26 +143,26 @@
 
                 }
 
-
                 manywho.draw.initialize()
 
             }
         };
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.min.js"></script>
-    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+    <script src="../runtime/js/vendor/jquery.min.js"></script>
+    <script src="../runtime/js/vendor/chosen.jquery.min.js"></script>
+    <script src="../runtime/js/vendor/socket.io-1.3.2.js"></script>
 
     <script>
-
         mxBasePath = 'mxgraph/src';
-
     </script>
+
     <script src="mxgraph/src/js/mxClient.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/loglevel/1.2.0/loglevel.min.js"></script>
+
+    <script src="../runtime/js/vendor/bootstrap.min.js"></script>
+    <script src="../runtime/js/vendor/react.min.js"></script>
+    <script src="../runtime/js/vendor/loglevel.min.js"></script>
+
     <script src="js/draw.js"></script>
     <script src="js/services/graph.js"></script>
     <script src="js/services/model.js"></script>
