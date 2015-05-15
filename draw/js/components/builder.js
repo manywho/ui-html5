@@ -111,7 +111,7 @@
 
                     item.active = true;
 
-                    newState.currentSelectedItem = item;
+                    newState.currentSelectedItem = $.extend(true, {}, item);
 
                 }
 
@@ -132,6 +132,8 @@
             newState.canvasItems = self.state.canvasItems.map(function (item) {
 
                 if (self.state.currentSelectedItem.id == item.id) {
+
+                    item = $.extend(true, {}, self.state.currentSelectedItem);
 
                     item.saved = true;
 
@@ -248,7 +250,7 @@
                         item.attributes = self.state.currentDragItem.attributes;
                         item.content = self.state.currentDragItem.content || '';
 
-                        newState.currentSelectedItem = item;
+                        newState.currentSelectedItem = $.extend(true, {}, item);
                     }
 
                     return item;
@@ -437,7 +439,7 @@
                     item.order = getChildIndex(event.target.parentNode, event.target);
                     item.content = self.state.currentDragItem.content || '';
 
-                    newState.currentSelectedItem = item;
+                    newState.currentSelectedItem = $.extend(true, {}, item);
                 }
 
                 if (index > currentIndex) {
@@ -552,7 +554,7 @@
 
                 return React.DOM.div({}, [
                     React.DOM.form({}, [
-                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, setUnsaved: this.setUnsaved, item: this.state.currentSelectedItem })
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, item: this.state.currentSelectedItem })
                     ])
 
                 ])
