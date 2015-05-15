@@ -92,6 +92,8 @@ manywho.graph.events = (function () {
 
             graph.addListener(mxEvent.DOUBLE_CLICK, function (event, cell) {
 
+                var inputObject = {};
+
                 if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'input') {
 
                     manywho.draw.ajax.getPageLayout(event.selectionModel.cells[0].value.pageId).then(function (response) {
@@ -104,7 +106,7 @@ manywho.graph.events = (function () {
 
                 } else if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'outcome') {
 
-                    var inputObject = {
+                    inputObject = {
 
                         Id: event.selectionModel.cells[0].source.id,
                         AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
@@ -129,9 +131,9 @@ manywho.graph.events = (function () {
                         }
                     ]);
 
-                } else {
+                } else if (event.selectionModel.cells[0]) {
 
-                    var inputObject = {
+                    inputObject = {
                         Id: event.selectionModel.cells[0].id,
                         AuthenticationToken: manywho.state.getAuthenticationToken('draw_draw_draw_main'),
                         EditingToken: manywho.draw.model.getEditingToken(),
