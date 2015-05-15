@@ -99,8 +99,8 @@ gulp.task('html-dist', function () {
 gulp.task('rev-dist', function () {
 
     var revAll = new RevAll({
-        dontGlobal: ['/css/themes/.*css', '/css/vendor/*.css', '/css/fonts/.*', '/css/.*png'],
-        dontRenameFile: ['draw.html'],
+        dontGlobal: ['css/themes/.*css', 'css/fonts/.*', 'css/.*png'],
+        dontRenameFile: ['draw.html', 'css/vendor/bootstrap.min.css'],
         transformPath: function (rev, source, path) {
 
             // For compiled.js and compiled.css prefix manually with the cdn path
