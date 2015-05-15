@@ -1,24 +1,15 @@
 .idea
 /extensions
 
-runtime/node_modules
-runtime/css/*.css
-runtime/css/themes/mw-*.css
-runtime/dist
-runtime/.awspublish-manywho-cdn-react
+/runtime/node_modules
+/runtime/css/*.css
+/runtime/css/themes/mw-*.css
+/runtime/dist
 
-<<<<<<< HEAD
-/css/*.css
-/css/themes/mw-*.css
-/dist
-flow-run.html
+/draw/node_modules
+/draw/mxgraph
+/draw/dist
+
 .awspublish-manywho-cdn-react
 
 .c9/
-
-
-# draw stuff
-/draw/mxgraph
-=======
-.c9/
->>>>>>> feature/deploy
