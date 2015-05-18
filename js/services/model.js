@@ -133,7 +133,7 @@ permissions and limitations under the License.
         return navigationItems;
 
     }
-    
+
     manywho.model = {
 
         parseEngineResponse: function (engineInvokeResponse, flowKey) {
@@ -170,6 +170,8 @@ permissions and limitations under the License.
                     var decodeTextArea = document.createElement('textarea');
 
                     engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+
+                        item.attributes = item.attributes || {};
 
                         flowModel[flowKey].components[item.id] = item;
 
@@ -249,7 +251,7 @@ permissions and limitations under the License.
         },
 
         parseEngineSyncResponse: function(response, flowKey) {
-            
+
             if (response.mapElementInvokeResponses) {
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
@@ -407,7 +409,7 @@ permissions and limitations under the License.
             }
 
         },
-                
+
         getDefaultNavigationId: function(flowKey) {
 
             if (flowModel[flowKey].navigation) {
@@ -441,7 +443,7 @@ permissions and limitations under the License.
             }
 
         },
-        
+
         getInvokeType: function(flowKey) {
 
             return flowModel[flowKey].invokeType;
@@ -453,14 +455,14 @@ permissions and limitations under the License.
             return flowModel[flowKey].waitMessage;
 
         },
-        
+
         setComponentInputResponseRequest: function (componentId, contentValue, objectData) {
 
             this.componentInputResponseRequests[componentId].contentValue = contentValue;
             this.componentInputResponseRequests[componentId].objectData = objectData;
 
         },
-        
+
         setModal: function(flowKey, modalKey) {
 
             flowModel[flowKey].modal = modalKey;

@@ -39,7 +39,7 @@ permissions and limitations under the License.
 
                 var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
                 var date = new Date(state.contentValue);
-                $(this.refs.datepicker.getDOMNode()).datepicker('update', date);
+                $(this.refs.datepicker.getDOMNode()).data('DateTimePicker').date(date);
 
             }
 
@@ -55,12 +55,11 @@ permissions and limitations under the License.
                 var stateDate;
                 var datepickerElement = this.refs.datepicker.getDOMNode();
 
-                $(datepickerElement).datepicker({
-                    format: 'dd/mm/yyyy',
-                    autoclose: true,
-                    enableOnReadonly: false
+                $(datepickerElement).datetimepicker({
+                    locale: model.attributes.dateTimeLocale || 'en-us',
+                    format: model.attributes.dateTimeFormat || 'MM/DD/YYYY'
                 })
-                .on('changeDate', this.handleChange);
+                .on('dp.change', this.handleChange);
 
                 if (state.contentValue.indexOf('01/01/0001') == -1
                     && state.contentValue.indexOf('1/1/0001') == -1
@@ -75,7 +74,7 @@ permissions and limitations under the License.
                 }
 
                 datepickerElement.value = stateDate.toISOString();
-                $(datepickerElement).datepicker('update', stateDate);
+                $(datepickerElement).data("DateTimePicker").date(stateDate);
                 manywho.state.setComponent(this.props.id, { contentValue: stateDate.toISOString() }, this.props.flowKey, true);
 
             }
@@ -86,7 +85,7 @@ permissions and limitations under the License.
 
             if (this.refs.datepicker) {
 
-                $(this.refs.datepicker.getDOMNode()).datepicker('destroy');
+                $(this.refs.datepicker.getDOMNode()).data('DateTimePicker').destroy();
 
             }
 
@@ -104,10 +103,8 @@ permissions and limitations under the License.
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
-                var utcDate = $(this.refs.datepicker.getDOMNode()).datepicker('getUTCDate');
-                var date = new Date(utcDate);
-
-                manywho.state.setComponent(this.props.id, { contentValue: date.toISOString() }, this.props.flowKey, true);
+                var utcDate = $(this.refs.datepicker.getDOMNode()).data("DateTimePicker").date().toDate();
+                manywho.state.setComponent(this.props.id, { contentValue: utcDate.toISOString() }, this.props.flowKey, true);
 
             }
             else {
@@ -156,7 +153,8 @@ permissions and limitations under the License.
 
             var containerClassNames = [
                 (model.isVisible) ? '' : 'hidden',
-                (isValid) ? '' : 'has-error'
+                (isValid) ? '' : 'has-error',
+                (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
