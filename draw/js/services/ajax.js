@@ -189,10 +189,6 @@ manywho.draw.ajax = (function () {
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'getFlowSnapshot');
 
                 }
-            }).done(function(data) {
-
-
-
             });
 
         },
@@ -237,22 +233,79 @@ manywho.draw.ajax = (function () {
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
 
                 }
-            }).done(function (data) {
-
-                if(page.id == null) {
-
-                    manywho.draw.ajax.addPageToFlow(flowId, data.id);
-
-                }
-
             });
 
         },
 
-        addPageToFlow: function (flowId, pageId) {
+        getValueById: function (id) {
 
             return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/flow/' + flowId + '/page/' + pageId,
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/value/' + id,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getValue');
+
+                }
+            });
+
+        },
+
+
+        getValues: function () {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/value/',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'getValue');
+
+                }
+            });
+
+        },
+
+        saveValue: function (value) {
+
+            var flowId = manywho.draw.model.getFlowId();
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/value',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(value),
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    var tenantId = manywho.draw.model.getTenantId();
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'saveValue');
+
+                }
+            });
+
+        },
+
+        addElementToFlow: function (flowId, pageId, type) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/flow/' + flowId + '/' + type + '/' + pageId,
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -262,7 +315,7 @@ manywho.draw.ajax = (function () {
 
                     var tenantId = manywho.draw.model.getTenantId();
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'savePageLayout');
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'addElementToFlow');
 
                 }
             });

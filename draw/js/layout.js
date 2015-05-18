@@ -73,6 +73,29 @@ manywho.layout = (function (manywho) {
 
         },
 
+        renderDecisionLayout: function (response) {
+
+            var container = document.getElementById('draw-modal');
+
+            container.classList.remove('hidden');
+
+            var values = response.map(function (value) {
+
+                if (value.developerName.charAt(0) != '$') {
+
+                    return {
+                        label: value.developerName,
+                        value: value.id
+                    }
+
+                }
+
+            });
+
+            React.render(React.createElement(manywho.decision, { values: values }), container);
+
+        },
+
         render: function () {
 
             var container = document.getElementById('draw-modal');

@@ -46,9 +46,14 @@ permissions and limitations under the License.
 
         renderBackdrop: function(modal) {
 
+            var drawKey = manywho.model.getParentForModal(this.props.flowKey);
+
+            var loading = manywho.state.getLoading('modal', drawKey);
+
             return React.DOM.div({ className: 'modal-container', id: this.props.flowKey}, [
                 React.DOM.div({ className: 'modal-backdrop in full-height' }, null),
-                modal
+                modal,
+                React.createElement(manywho.component.getByName('wait'), loading, null)
             ]);
 
         },

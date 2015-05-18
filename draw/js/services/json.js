@@ -65,6 +65,25 @@ manywho.draw.json = (function () {
                 "developerSummary": ""
             }
 
+        },
+
+        buildValueMetadata: function (name, type, typeElementId, defaultContent, defaultObjectData) {
+
+            return {
+                "isFixed": true,
+                "access": "PRIVATE",
+                "contentType": "Content" + type.charAt(0).toUpperCase() + type.slice(1),
+                "defaultContentValue": defaultContent || null,
+                "defaultObjectData": defaultObjectData || null,
+                "initializationOperations": null,
+                "typeElementId": typeElementId || null,
+                "updateByName": false,
+                "id": null,
+                "elementType": "VARIABLE",
+                "developerName": name,
+                "developerSummary": null
+            }
+
         }
 
     }

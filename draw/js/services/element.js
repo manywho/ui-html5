@@ -20,6 +20,18 @@ manywho.graph.element = (function() {
 
                     manywho.layout.render();
 
+                } else if (event.srcElement.id.toLowerCase() == 'decision') {
+
+                    manywho.draw.ajax.getValues().then(function (response) {
+
+                        manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                        manywho.draw.model.setMapElementCoordinates(x, y);
+
+                        manywho.layout.renderDecisionLayout(response);
+
+                    });
+
                 } else {
 
                     var inputObject = {
@@ -57,6 +69,7 @@ manywho.graph.element = (function() {
         initialize: function () {
 
             this.addDraggableElements('input');
+            //this.addDraggableElements('decision');
 
         }
 

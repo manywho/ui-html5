@@ -2,6 +2,8 @@
 
     var dtmf = React.createClass({
 
+        mixins: [manywho.layout.mixins.component],
+
         render: function () {
 
             return React.DOM.div({}, [
@@ -26,7 +28,7 @@
                     ]),
                     React.DOM.input({ className: 'form-control', id: 'toneDuration', type: 'number', required: 'required', defaultValue: this.props.item.attributes.toneDuration, onChange: this.onChange })
                 ]),
-                React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.props.onSave }, 'Save')
+                React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')
             ]);
 
         }

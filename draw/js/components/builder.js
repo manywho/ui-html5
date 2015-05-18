@@ -462,7 +462,7 @@
 
         onPageSave: function (event) {
 
-            var self = this, pageId = null, pageName = document.getElementById('page-name');
+            var pageId = null, pageName = document.getElementById('page-name'), pageNameText = pageName.value;
 
             if (pageName.value != null && pageName.value.length > 0) {
 
@@ -474,37 +474,61 @@
 
                 }
 
+                this.state.canvasItems.forEach(function (item) {
+
+                    if (item.type.toLowerCase() == 'dtmf' && pageId == null) {
+
+                        var value = manywho.draw.json.buildValueMetadata(item.name, 'number');
+
+                        manywho.draw.ajax.saveValue(value).then(function (response) {
+
+                            if(value.id == null) {
+
+                                manywho.draw.ajax.addElementToFlow(flowId, data.id, 'value');
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
                 var metadata = manywho.draw.json.buildPageMetadata(pageName.value, this.state.canvasItems, pageId);
 
                 manywho.draw.ajax.savePageLayout(metadata).then(function (data) {
 
-                    if (self.state.element && self.state.element.id) {
+                    if(metadata.id == null) {
 
-                        manywho.draw.ajax.getFlowGraph(null, null);
+                        manywho.draw.ajax.addElementToFlow(manywho.draw.model.getFlowId(), data.id, 'page').then(function (response) {
+
+                            var model = manywho.draw.model.getModel();
+
+                            var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
+
+                            var mapElement = {
+
+                                "developerName": pageNameText,
+                                "developerSummary": "",
+                                "elementType": "input",
+                                "groupElementId": null,
+                                "id": null,
+                                "outcomes": null,
+                                "pageElementId": data.id,
+                                "x": mapElementCoords.x,
+                                "y": mapElementCoords.y
+
+                            };
+
+                            manywho.draw.model.setMapElementCoordinates(0, 0);
+
+                            manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId(), model.editingToken);
+
+                        });
 
                     } else {
 
-                        var model = manywho.draw.model.getModel();
-
-                        var mapElementCoords = manywho.draw.model.getMapElementCoordinates();
-
-                        var mapElement = {
-
-                            "developerName": document.getElementById('page-name').value,
-                            "developerSummary": "",
-                            "elementType": "input",
-                            "groupElementId": null,
-                            "id": null,
-                            "outcomes": null,
-                            "pageElementId": data.id,
-                            "x": mapElementCoords.x,
-                            "y": mapElementCoords.y
-
-                        };
-
-                        manywho.draw.model.setMapElementCoordinates(0, 0);
-
-                        manywho.draw.ajax.createMapElement(mapElement, manywho.draw.model.getFlowId(), model.editingToken);
+                        manywho.draw.ajax.getFlowGraph(null, null)
 
                     }
 
@@ -554,7 +578,7 @@
 
                 return React.DOM.div({}, [
                     React.DOM.form({}, [
-                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, onSave: this.onSave, item: this.state.currentSelectedItem })
+                        React.createElement(manywho.layout.getComponentByName(this.state.currentSelectedItem.type.toLowerCase()), { ref: 'configuration', setUnsaved: this.setUnsaved, saveCallback: this.onSave, item: this.state.currentSelectedItem })
                     ])
 
                 ])

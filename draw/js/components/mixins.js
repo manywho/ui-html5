@@ -80,13 +80,11 @@
 
             if (this.validate(this.props.item)) {
 
-                this.props.onSave(event);
+                this.props.saveCallback.apply(event);
 
                 return true;
 
             }
-
-            return false;
 
         },
 

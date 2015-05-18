@@ -104,6 +104,16 @@ manywho.graph.events = (function () {
 
                     });
 
+                } else if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'decision') {
+
+                    manywho.draw.ajax.getValues().then(function (response) {
+
+                        manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                        manywho.layout.renderDecisionLayout(response);
+
+                    });
+
                 } else if (event.selectionModel.cells[0] && event.selectionModel.cells[0].style.toLowerCase() == 'outcome') {
 
                     inputObject = {
