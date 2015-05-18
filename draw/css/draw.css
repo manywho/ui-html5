@@ -100,9 +100,6 @@ body .mw-bs ul.scroll-menu {
   -o-box-shadow: none;
   box-shadow: none;
 }
-body .mw-bs .tab-content {
-  overflow: hidden !important;
-}
 body .mw-bs .input-append {
   margin-bottom: 0px !important;
 }
