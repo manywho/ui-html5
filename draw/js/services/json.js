@@ -67,7 +67,7 @@ manywho.draw.json = (function () {
 
         },
 
-        buildValueMetadata: function (name, type, typeElementId, defaultContent, defaultObjectData) {
+        buildValueMetadata: function (name, type, defaultContent, defaultObjectData, typeElementId) {
 
             return {
                 "isFixed": true,
@@ -83,6 +83,78 @@ manywho.draw.json = (function () {
                 "developerName": name,
                 "developerSummary": null
             }
+
+        },
+
+        buildDecisionMetadata: function (name, x, y, outcomes, id) {
+
+            return {
+
+                "developerName": name,
+                "developerSummary": "",
+                "elementType": "decision",
+                "groupElementId": null,
+                "id": id || null,
+                "outcomes": outcomes || null,
+                "pageElementId": null,
+                "x": x,
+                "y": y
+
+            };
+
+        },
+
+        buildDecisionOutcomes: function (item, newValue, outcome1, outcome2) {
+
+            return [
+                {
+                    "id": outcome1 || null,
+                    "developerName": "decide",
+                    "developerSummary": null,
+                    "label": "decide",
+                    "nextMapElementId": item.mapElement1,
+                    "pageActionType": null,
+                    "isBulkAction": false,
+                    "pageActionBindingType": "SAVE",
+                    "pageObjectBindingId": null,
+                    "order": 0,
+                    "comparison": {
+                        "comparisonType": "AND",
+                        "rules": [
+                            {
+                                "leftValueElementToReferenceId": {
+                                    "id": item.gather,
+                                    "typeElementPropertyId": null,
+                                    "command": null
+                                },
+                                "criteriaType": item.comparison,
+                                "rightValueElementToReferenceId": {
+                                    "id": newValue,
+                                    "typeElementPropertyId": null,
+                                    "command": null
+                                }
+                            }
+                        ],
+                        "comparisons": null,
+                        "order": 0
+                    },
+                    "flowOut": null
+                },
+                {
+                    "id": outcome2 || null,
+                    "developerName": "decide",
+                    "developerSummary": null,
+                    "label": "decide",
+                    "nextMapElementId": item.mapElement2,
+                    "pageActionType": null,
+                    "isBulkAction": false,
+                    "pageActionBindingType": "SAVE",
+                    "pageObjectBindingId": null,
+                    "order": 1,
+                    "comparison": null,
+                    "flowOut": null
+                }
+            ];
 
         }
 

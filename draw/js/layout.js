@@ -73,26 +73,57 @@ manywho.layout = (function (manywho) {
 
         },
 
-        renderDecisionLayout: function (response) {
+        renderDecisionLayout: function (response, mapElement) {
+
+            var item = {};
 
             var container = document.getElementById('draw-modal');
 
             container.classList.remove('hidden');
 
-            var values = response.map(function (value) {
+            if (mapElement) {
 
-                if (value.developerName.charAt(0) != '$') {
+                item = {
 
-                    return {
-                        label: value.developerName,
-                        value: value.id
+                    gather: response.filter(function (value) {
+
+                        return value.id == mapElement.outcomes[0].comparison.rules[0].leftValueElementToReferenceId.id;
+
+                    })[0].id,
+                    value: response.filter(function (value) {
+
+                        return value.id == mapElement.outcomes[0].comparison.rules[0].rightValueElementToReferenceId.id;
+
+                     })[0].defaultContentValue,
+                    name: mapElement.developerName,
+                    comparison: mapElement.outcomes[0].comparison.rules[0].criteriaType,
+                    mapElement1: mapElement.outcomes[0].nextMapElementId,
+                    outcome1: mapElement.outcomes[0].id,
+                    mapElement2: mapElement.outcomes[1].nextMapElementId,
+                    outcome2: mapElement.outcomes[1].id,
+                    id: mapElement.id,
+                    elementCoordinates: {
+                        x: mapElement.x,
+                        y: mapElement.y
                     }
+                };
 
+            }
+
+            var values = response.filter(function (value) {
+
+                return value.developerName.charAt(0) != '$';
+
+            }).map(function (value) {
+
+                return {
+                    label: value.developerName,
+                    value: value.id
                 }
 
             });
 
-            React.render(React.createElement(manywho.decision, { values: values }), container);
+            React.render(React.createElement(manywho.decision, { values: values, item: item }), container);
 
         },
 

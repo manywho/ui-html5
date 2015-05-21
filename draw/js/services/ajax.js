@@ -86,6 +86,24 @@ manywho.draw.ajax = (function () {
 
         },
 
+        getMapElement: function (mapElementId, flowId, editingToken) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/flow/' + flowId + '/' + editingToken + '/element/map/' + mapElementId,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    var authenticationToken = manywho.state.getAuthenticationToken('draw_draw_draw_main');
+
+                    beforeSend.call(this, xhr, null, authenticationToken, 'getMapElement');
+
+                }
+            });
+
+        },
+
         createMapElement: function (mapElement, flowId, editingToken) {
 
             return $.ajax({
@@ -302,10 +320,10 @@ manywho.draw.ajax = (function () {
 
         },
 
-        addElementToFlow: function (flowId, pageId, type) {
+        addElementToFlow: function (flowId, elementId, type) {
 
             return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/flow/' + flowId + '/' + type + '/' + pageId,
+                url: manywho.settings.global('platform.uri') + '/api/draw/1/element/flow/' + flowId + '/' + type + '/' + elementId,
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',

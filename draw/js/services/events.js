@@ -108,9 +108,13 @@ manywho.graph.events = (function () {
 
                     manywho.draw.ajax.getValues().then(function (response) {
 
-                        manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+                        manywho.draw.ajax.getMapElement(event.selectionModel.cells[0].id, manywho.draw.model.getFlowId(), manywho.draw.model.getEditingToken()).then(function (data) {
 
-                        manywho.layout.renderDecisionLayout(response);
+                            manywho.model.setModal('draw_draw_draw_main', 'build_build_build_modal');
+
+                            manywho.layout.renderDecisionLayout(response, data);
+
+                        });
 
                     });
 
@@ -223,11 +227,19 @@ manywho.graph.events = (function () {
 
                     if (manywho.utils.isEqual(graph.getSelectionCells()[0].style, 'outcome', true)) {
 
-                        manywho.graph.deleteOutcome(graph.getSelectionCells()[0])
+                        if (graph.getSelectionCells()[0].source.style.toLowerCase() == 'decision') {
+
+                            alert('Please delete the Decision element instead of just deleting the connector');
+
+                        } else {
+
+                            manywho.graph.deleteOutcome(graph.getSelectionCells()[0])
+
+                        }
 
                     } else {
 
-                        if (graph.getSelectionCells()[0].edges) {
+                        if (graph.getSelectionCells()[0].edges && graph.getSelectionCells()[0].style != 'decision') {
 
                             alert('You cannot delete a map element attached to an outcome');
 

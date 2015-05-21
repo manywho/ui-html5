@@ -462,7 +462,7 @@
 
         onPageSave: function (event) {
 
-            var pageId = null, pageName = document.getElementById('page-name'), pageNameText = pageName.value;
+            var self = this, pageId = null, pageName = document.getElementById('page-name'), pageNameText = pageName.value;
 
             if (pageName.value != null && pageName.value.length > 0) {
 
@@ -473,26 +473,6 @@
                     pageId = this.state.element.value.pageId;
 
                 }
-
-                this.state.canvasItems.forEach(function (item) {
-
-                    if (item.type.toLowerCase() == 'dtmf' && pageId == null) {
-
-                        var value = manywho.draw.json.buildValueMetadata(item.name, 'number');
-
-                        manywho.draw.ajax.saveValue(value).then(function (response) {
-
-                            if(value.id == null) {
-
-                                manywho.draw.ajax.addElementToFlow(flowId, data.id, 'value');
-
-                            }
-
-                        });
-
-                    }
-
-                });
 
                 var metadata = manywho.draw.json.buildPageMetadata(pageName.value, this.state.canvasItems, pageId);
 
@@ -531,6 +511,26 @@
                         manywho.draw.ajax.getFlowGraph(null, null)
 
                     }
+
+                    self.state.canvasItems.forEach(function (item) {
+
+                        if (item.type.toLowerCase() == 'gather' && pageId == null) {
+
+                            var value = manywho.draw.json.buildValueMetadata(item.name, 'number');
+
+                            manywho.draw.ajax.saveValue(value).then(function (response) {
+
+                                if(value.id == null) {
+
+                                    manywho.draw.ajax.addElementToFlow(manywho.draw.model.getFlowId(), response.id, 'value');
+
+                                }
+
+                            });
+
+                        }
+
+                    });
 
                     manywho.draw.hideModal(null, 'draw_draw_draw_main');
 
