@@ -29,7 +29,7 @@
                     React.DOM.input({ className: 'form-control', id: 'maxLength', type: 'number', required: 'required', defaultValue: this.props.item.attributes.maxLength, onChange: this.onChange })
                 ]),
                 React.DOM.div({ className: 'form-group row' }, [
-                    React.DOM.input({ id: 'playBeep', type: 'checkbox', defaultChecked: this.props.attributes.playBeep, onChange: this.onChange }),
+                    React.DOM.input({ id: 'playBeep', type: 'checkbox', defaultChecked: this.props.item.attributes.playBeep, onChange: this.onChange }),
                     React.DOM.label({ htmlFor: 'playBeep' }, 'Play Beep')
                 ]),
                 React.DOM.button({ className: 'outcome btn btn-primary', onClick: this.onSave }, 'Save')

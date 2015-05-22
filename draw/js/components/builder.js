@@ -70,6 +70,7 @@
                 canvasItems: this.state.canvasItems.map(function (item) {
 
                     item.active = false;
+                    item.saved = true;
                     return item;
 
                 }),

@@ -1,3 +1,7 @@
+body .logo {
+  width: 150px;
+  height: 20px;
+}
 body #draw-modal {
   position: fixed;
   top: 0;

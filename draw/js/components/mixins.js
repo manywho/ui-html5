@@ -36,27 +36,35 @@
             var contentElement = document.getElementById('content');
             var nameElement = document.getElementById('name');
 
-            if (item.content == null || item.content.length == 0) {
+            if (contentElement != null) {
 
-                contentElement.parentNode.classList.add('has-error');
+                if (item.content == null || item.content == '') {
 
-                validation.push(false);
+                    contentElement.parentNode.classList.add('has-error');
 
-            } else {
+                    validation.push(false);
 
-                contentElement.parentNode.classList.remove('has-error');
+                } else {
+
+                    contentElement.parentNode.classList.remove('has-error');
+
+                }
 
             }
 
-            if (item.name == null || item.name.length == 0) {
+            if (nameElement != null) {
 
-                nameElement.parentNode.classList.add('has-error');
+                if (item.name == null || item.name.length == 0) {
 
-                validation.push(false);
+                    nameElement.parentNode.classList.add('has-error');
 
-            } else {
+                    validation.push(false);
 
-                nameElement.parentNode.classList.remove('has-error');
+                } else {
+
+                    nameElement.parentNode.classList.remove('has-error');
+
+                }
 
             }
 

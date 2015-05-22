@@ -72,7 +72,7 @@
 
         saveDecision: function (event) {
 
-            var self = this, mapElementCoords;
+            var self = this;
 
             var newValue = manywho.draw.json.buildValueMetadata(this.props.item.name, 'number', this.props.item.value);
 
@@ -82,9 +82,9 @@
 
                     var model = manywho.draw.model.getModel();
 
-                    mapElementCoords = self.props.item.elementCoordinates;
+                    var mapElementCoords;
 
-                    if (mapElementCoords.x == null || mapElementCoords.y == null) {
+                    if (!self.props.item.elementCoordinates) {
 
                         mapElementCoords = manywho.draw.model.getMapElementCoordinates();
 

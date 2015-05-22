@@ -49,6 +49,7 @@
   width: 95%;
   margin: 0 auto;
   margin-bottom: 5px;
+  border: 0.2em solid transparent;
 }
 #page-builder .highlight-saved {
   border: 0.2em solid #00dba3;
