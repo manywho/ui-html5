@@ -2,6 +2,12 @@
 
     manywho.lua = React.createClass({
 
+        componentDidMount: function () {
+
+            hljs.highlightBlock(this.refs.lua.getDOMNode());
+
+        },
+
         hideModal: function (event) {
 
             manywho.draw.model.setLuaCode('');
@@ -23,7 +29,9 @@
                                 React.DOM.span({}, 'Please copy the generated lua code')
                             ]),
                             React.DOM.div({ className: 'modal-body' }, [
-                                React.DOM.textarea({ className: 'lua-placeholder' }, luaCode)
+                                React.DOM.pre({ ref: 'lua' }, [
+                                    React.DOM.code({ className: 'lua-placeholder lua hljs' }, luaCode)
+                                ])
                             ]),
                             React.DOM.div({ className: 'modal-footer' }, [
                                 React.DOM.button({ className: 'btn btn-default', onClick: this.hideModal }, 'Close')
