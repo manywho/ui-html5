@@ -65,12 +65,21 @@
 
         clearSelectedComponents: function () {
 
+            var self = this;
+
             return {
 
                 canvasItems: this.state.canvasItems.map(function (item) {
 
                     item.active = false;
-                    item.saved = true;
+
+                    if (self.state.currentSelectedItem){
+
+                        item.saved = self.state.currentSelectedItem.saved;
+
+                    } else {
+                        item.saved = true;
+                    }
                     return item;
 
                 }),
