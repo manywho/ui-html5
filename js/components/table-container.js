@@ -154,7 +154,7 @@ permissions and limitations under the License.
             }
             else {
                 
-                log.error('ObjectDataRequest and FileDateRequest are null for table: ' model.developerName + '. A request object is required to search');
+                log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
 
             }
 
