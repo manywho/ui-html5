@@ -145,7 +145,18 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+            var request = model.objectDataRequest || model.fileDataRequest;
+
+            if (request) {
+
+                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+
+            }
+            else {
+                
+                log.error('ObjectDataRequest and FileDateRequest are null for table: ' model.developerName + '. A request object is required to search');
+
+            }
 
         },
 
