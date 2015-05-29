@@ -220,7 +220,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
 
                 manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
-                manywho.collaboration.join('user', flowKey);
+                manywho.collaboration.join('Another user', flowKey);
 
                 manywho.state.setLocation(flowKey);
 
@@ -285,7 +285,7 @@ manywho.engine = (function (manywho) {
                 if (!manywho.collaboration.isInitialized(flowKey)) {
 
                     manywho.collaboration.initialize(manywho.settings.flow('collaboration.isEnabled', flowKey), flowKey);
-                    manywho.collaboration.join('user', flowKey);
+                    manywho.collaboration.join('Another user', flowKey);
 
                 }
 
