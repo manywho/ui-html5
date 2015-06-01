@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>ManyWho</title>
+</head>
+<body>
+    <div id="manywho">
+        <div id="loader" style="width: 100%; height: 100%; background: black; opacity: 0.3;">
+            <div style="position: absolute; width: 100%; top: 50%; left: 0; margin-top: -4em; text-align: center; color: white;">
+                <p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2em">Initializing ManyWho</p>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="css/mw-bootstrap.css" />
+    <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
+
+    <link rel="stylesheet" href="css/lib/bootstrap-chosen.css" />
+    <link rel="stylesheet" href="css/lib/bootstrap-datetimepicker.css" />
+    <link rel="stylesheet" href="css/wait.css" />
+    <link rel="stylesheet" href="css/containers.css" />
+    <link rel="stylesheet" href="css/select.css" />
+    <link rel="stylesheet" href="css/textarea.css" />
+    <link rel="stylesheet" href="css/table.css" />
+    <link rel="stylesheet" href="css/input.css" />
+    <link rel="stylesheet" href="css/outcome.css" />
+    <link rel="stylesheet" href="css/loading.css" />
+    <link rel="stylesheet" href="css/modal.css" />
+    <link rel="stylesheet" href="css/group.css" />
+    <link rel="stylesheet" href="css/pagination.css" />
+    <link rel="stylesheet" href="css/notifications.css" />
+    <link rel="stylesheet" href="css/navigation.css" />
+    <link rel="stylesheet" href="css/feed.css" />
+    <link rel="stylesheet" href="css/files.css" />
+    <link rel="stylesheet" href="css/debug.css" />
+
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <script src="js/vendor/react.min.js"></script>
+    <script src="js/vendor/socket.io-1.3.2.js"></script>
+    <script src="js/vendor/chosen.jquery.min.js"></script>
+    <script src="js/vendor/loglevel.min.js"></script>
+    <script src="js/vendor/moment-with-locales.min.js"></script>
+
+    <script>
+        log.enableAll();
+
+        var manywho = {
+            cdnUrl: '',
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    platform: {
+                        uri: 'https://flow.manywho.com'
+                    }
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    trackLocation: false,
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    autoFocusInput: true,
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true
+                    }
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+
+                                    return path && path.length > 0;
+
+                                })[0];
+
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="js/lib/react-chosen.js"></script>
+    <script src="js/lib/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/lib/jquery.plugins.js"></script>
+
+    <script src="js/services/ajax.js"></script>
+    <script src="js/services/model.js"></script>
+    <script src="js/services/component.js"></script>
+    <script src="js/services/styling.js"></script>
+    <script src="js/services/collaboration.js"></script>
+    <script src="js/services/state.js"></script>
+    <script src="js/services/engine.js"></script>
+    <script src="js/services/theming.js"></script>
+    <script src="js/services/settings.js"></script>
+    <script src="js/services/json.js"></script>
+    <script src="js/services/utils.js"></script>
+    <script src="js/services/authorization.js"></script>
+    <script src="js/services/callbacks.js"></script>
+    <script src="js/services/social.js"></script>
+
+    <script src="js/components/mixins.js"></script>
+    <script src="js/components/main.js"></script>
+    <script src="js/components/navigation.js"></script>
+    <script src="js/components/group.js"></script>
+    <script src="js/components/inline.js"></script>
+    <script src="js/components/vertical.js"></script>
+    <script src="js/components/horizontal.js"></script>
+    <script src="js/components/presentation.js"></script>
+    <script src="js/components/input.js"></script>
+    <script src="js/components/textarea.js"></script>
+    <script src="js/components/content.js"></script>
+    <script src="js/components/outcome.js"></script>
+    <script src="js/components/select.js"></script>
+    <script src="js/components/table-container.js"></script>
+    <script src="js/components/table-large.js"></script>
+    <script src="js/components/table-small.js"></script>
+    <script src="js/components/feed.js"></script>
+    <script src="js/components/pagination.js"></script>
+    <script src="js/components/wait.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/notifications.js"></script>
+    <script src="js/components/file-upload.js"></script>
+    <script src="js/components/debug.js"></script>
+    <script src="js/components/status.js"></script>
+    <script src="js/components/voting.js"></script>
+    <script src="js/components/image.js"></script>
+
+    <script src="https://flow.manywho.com/js/constants"></script>
+
+    <script>
+        manywho.initialize();
+    </script>
+</body>
+</html>
