@@ -82,7 +82,7 @@ manywho.component = (function (manywho) {
             }
 
         },
-        
+
         getByName: function (name) {
 
             if (aliases[name.toLowerCase()]) {
@@ -105,7 +105,7 @@ manywho.component = (function (manywho) {
                 })
                 .map(function (item) {
 
-                    var component = this.get(item);                
+                    var component = this.get(item);
                     return React.createElement(component, { id: item.id, parentId: id, flowKey: flowKey, key: item.id });
 
                 }, this);
@@ -134,7 +134,12 @@ manywho.component = (function (manywho) {
             if (model.hasEvents) {
 
                 // Re-sync with the server here so that any events attached to the component are processed
-                manywho.engine.sync(flowKey);
+                manywho.engine.sync(flowKey).then(function() {
+                
+                    manywho.engine.render(flowKey);
+
+                });
+
                 manywho.collaboration.sync(flowKey);
 
             }

@@ -10,13 +10,14 @@ permissions and limitations under the License.
 */
 
 (function (manywho, window, $) {
-    
-    function appendScript(url) {
 
-        var compiledScript = document.createElement("script");
-        compiledScript.type = "text/javascript";
-        compiledScript.src = url;
-        document.head.appendChild(compiledScript);
+    function appendScript(url, onLoad) {
+
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.onload = onLoad;
+        script.src = url;
+        document.head.appendChild(script);
 
     }
 
@@ -29,53 +30,76 @@ permissions and limitations under the License.
         document.head.appendChild(compiledStyles);
 
     }
-    
+
     manywho.loader = {
 
-        initialize: function() {
-            
-            $.getJSON(manywho.cdnUrl + '/hashes.json', function (data) {
-                
+        initialize: function(callback, cdnUrl, customResources) {
+
+            $.getJSON(cdnUrl + '/hashes.json', function (data) {
+
+                var scripts = [];
+
                 for (hash in data) {
 
                     if (data[hash].match('\.css$')) {
 
-                        appendStylesheet(manywho.cdnUrl + data[hash]);
+                        appendStylesheet(cdnUrl + data[hash]);
 
                     }
                     else if (data[hash].match('\.js$')) {
 
-                        appendScript(manywho.cdnUrl + data[hash]);
+                        scripts.push(cdnUrl + data[hash]);
 
                     }
 
                 }
 
                 // Load the default paper theme manually
-                appendStylesheet(manywho.cdnUrl + '/css/themes/mw-paper.css', 'theme');
+                appendStylesheet(cdnUrl + '/css/themes/mw-paper.css', 'theme');
 
-                var timer = setInterval(function () {
+                if (customResources)
+                {
 
-                    if (manywho.utils && window.log && window.React && $.fn.chosen && window.io && $.fn.modal) {
+                    customResources.forEach(function(url) {
 
-                        clearInterval(timer);
-                        manywho.initialize();
-                        
-                    }
+                        if (url.match('\.css$')) {
 
-                }, 10);
-                
+                            appendStylesheet(url);
+
+                        }
+                        else if (url.match('\.js$')) {
+
+                            scripts.push(url);
+
+                        }
+
+                    });
+
+                }
+
+                var loadedScriptCount = 0;
+
+                scripts.forEach(function(url, index, scripts) {
+
+                    appendScript(url, function() {
+
+                        loadedScriptCount++;
+                        if (loadedScriptCount == scripts.length) {
+
+                            callback();
+
+                        }
+
+                    });
+
+                });
+
             });
 
         }
-        
+
     }
 
-    manywho.loader.initialize();
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.customResources);
 
 }(manywho, window, jQuery));
-
-
-
-
-

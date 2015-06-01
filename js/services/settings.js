@@ -152,7 +152,7 @@ manywho.settings = (function (manywho, $) {
 
             if (typeof value == 'undefined') {
 
-                return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true);
+                return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true) || manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug_StepThrough', true);
 
             }
             else {
