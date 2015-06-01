@@ -38,6 +38,7 @@ permissions and limitations under the License.
         onBreadcrumbClick: function(e) {
 
             e.preventDefault();
+            e.stopPropagation();
 
             var paths = this.state.paths;
             var valueElementId = e.currentTarget.getAttribute('data-value-id');

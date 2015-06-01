@@ -29,7 +29,7 @@ permissions and limitations under the License.
     var tableSmall = React.createClass({
 
         onOutcomeClick: function(e, outcome) {
-            
+
             var objectDataId = e.target.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
 
@@ -75,54 +75,58 @@ permissions and limitations under the License.
                 }
 
                 return React.DOM.a(attributes, [
-                    React.DOM.table({ className: 'table table-small-item' }, displayColumns.map(function (column) {
+                    React.DOM.table({ className: 'table table-small-item' },
+                        React.DOM.tbody(null,
+                             displayColumns.map(function (column) {
 
-                        if (column == 'mw-outcomes') {
-                            
-                            if (outcomes.length > 1 || isOutcomeDestructive) {
+                                if (column == 'mw-outcomes') {
 
-                                return React.DOM.tr(null, [
-                                    React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
-                                    React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
+                                    if (outcomes.length > 1 || isOutcomeDestructive) {
 
-                                        return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
+                                        return React.DOM.tr(null, [
+                                            React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
+                                            React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
 
-                                    }))
-                                ]);
+                                                return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
 
-                            }
+                                            }))
+                                        ]);
 
-                        }
-                        else {
+                                    }
 
-                            var selectedProperty = item.properties.filter(function (property) {
+                                }
+                                else {
 
-                                return property.typeElementPropertyId == column.typeElementPropertyId
+                                    var selectedProperty = item.properties.filter(function (property) {
 
-                            })[0];
+                                        return property.typeElementPropertyId == column.typeElementPropertyId
 
-                            if (selectedProperty) {
+                                    })[0];
 
-                                var element = React.DOM.span(null, selectedProperty.contentValue);
+                                    if (selectedProperty) {
 
-                                if (this.props.isFiles &&
-                                    (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
-                                    || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+                                        var element = React.DOM.span(null, selectedProperty.contentValue);
 
-                                    element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info' }, 'Download');
+                                        if (this.props.isFiles &&
+                                            (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
+                                            || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+
+                                            element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info' }, 'Download');
+
+                                        }
+
+                                        return React.DOM.tr(null, [
+                                            React.DOM.th({ className: 'table-small-column table-small-label' }, column.label),
+                                            React.DOM.td({ className: 'table-small-column' }, element)
+                                        ]);
+
+                                    }
 
                                 }
 
-                                return React.DOM.tr(null, [
-                                    React.DOM.th({ className: 'table-small-column table-small-label' }, column.label),
-                                    React.DOM.td({ className: 'table-small-column' }, element)
-                                ]);
-
-                            }
-
-                        }
-
-                    }, this)),
+                            }, this)
+                        )
+                    ),
                     React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null)
                 ]);
 
@@ -133,7 +137,7 @@ permissions and limitations under the License.
         render: function () {
 
             log.info('Rendering Table-Small');
-            
+
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
             return React.DOM.div({ className: 'list-group' }, items);
 

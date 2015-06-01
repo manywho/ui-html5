@@ -187,7 +187,7 @@ permissions and limitations under the License.
 
                 }
 
-                return React.DOM.div({ className: 'form-group' + containerClassNames },
+                return React.DOM.div({ className: 'form-group ' + containerClassNames },
                     [
                         React.DOM.label({ htmlFor: this.props.id }, [
                             model.label,

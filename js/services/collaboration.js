@@ -102,7 +102,7 @@ manywho.collaboration = (function (manywho) {
     function onSync(data) {
 
         log.info('syncing ' + data.stateId);
-        manywho.engine.sync(rooms[data.stateId]);
+        manywho.engine.sync(rooms[data.stateId].flowKey);
 
     }
 
