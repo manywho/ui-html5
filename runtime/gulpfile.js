@@ -165,6 +165,13 @@ gulp.task('js-loader-dist', function () {
 
 });
 
+gulp.task('html-dist', function () {
+
+    return gulp.src('default.html')
+            .pipe(gulp.dest('./dist/'));
+
+});
+
 gulp.task('rev-dist', function () {
 
     return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js'])
@@ -178,6 +185,7 @@ gulp.task('dist', function () {
 
     runSequence('clean-dist',
                 ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist', 'js-vendor-dist'],
+                'html-dist',
                 'rev-dist');
 
 });
