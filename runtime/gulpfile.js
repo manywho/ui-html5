@@ -165,15 +165,6 @@ gulp.task('js-loader-dist', function () {
 
 });
 
-gulp.task('html-dist', function () {
-
-    return gulp.src('default.html')
-            .pipe(replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
-            .pipe(replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
-            .pipe(gulp.dest('./dist/'));
-
-});
-
 gulp.task('rev-dist', function () {
 
     return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js'])
@@ -187,7 +178,6 @@ gulp.task('dist', function () {
 
     runSequence('clean-dist',
                 ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'chosen-dist', 'js-vendor-dist'],
-                'html-dist',
                 'rev-dist');
 
 });
@@ -266,6 +256,8 @@ gulp.task('deploy-player', function () {
     var headers = {};
 
     return gulp.src(['dist/default.html'])
+                .pipe(replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
+                .pipe(replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
                 .pipe(rename(tenantId + '.' + argv.player))
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
