@@ -156,42 +156,50 @@ permissions and limitations under the License.
 
                     flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                    var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-                    flattenedContainers.forEach(function (item) {
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
 
-                        flowModel[flowKey].containers[item.id] = item;
+                        var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+                        flattenedContainers.forEach(function (item) {
 
-                        if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                            flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                            flowModel[flowKey].containers[item.id] = item;
 
-                        }
+                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                                flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
 
-                    }, this);
+                            }
+
+                        }, this);
+
+                    }
 
                     var decodeTextArea = document.createElement('textarea');
 
-                    engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
 
-                        item.attributes = item.attributes || {};
+                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                        flowModel[flowKey].components[item.id] = item;
+                            item.attributes = item.attributes || {};
 
-                        if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+                            flowModel[flowKey].components[item.id] = item;
 
-                            flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+                            if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
 
-                        }
+                                flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
 
-                        flowModel[flowKey].containers[item.pageContainerId].childCount++;
+                            }
 
-                        if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                            flowModel[flowKey].containers[item.pageContainerId].childCount++;
 
-                            flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                            flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
+                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
 
-                        }
+                                flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                                flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
 
-                    }, this);
+                            }
+
+                        }, this);
+
+                    }
 
                 }
 
