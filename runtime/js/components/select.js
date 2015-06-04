@@ -21,18 +21,7 @@ permissions and limitations under the License.
 
             }, this)[0];
 
-            var isSelected = item.isSelected
-                || (this.state && this.state.objectData && this.state.objectData.length > 0 && manywho.utils.isEqual(this.state.objectData[0].externalId, item.externalId, true));
-
-            var attributes = { value: item.externalId };
-
-            if (isSelected) {
-
-                attributes.selected = 'selected';
-
-            }
-
-            return React.DOM.option(attributes, label.contentValue);
+            return React.DOM.option({ value: item.externalId }, label.contentValue);
 
         }
 
@@ -40,22 +29,23 @@ permissions and limitations under the License.
 
     }
 
-    function getSelectedOptions (options) {
+    function isSelectedObjectData(objectData) {
 
-        return options.filter(function (value) {
+        if (this && this.objectData && this.objectData.length > 0) {
 
-            if (value.props) {
+            if (this.objectData.filter(function(item) {
 
-                return manywho.utils.isEqual(value.props.selected, "selected", true);
+                return manywho.utils.isEqual(objectData.externalId, item.externalId)
+
+            }).length > 0) {
+
+                return true;
 
             }
-            else {
 
-                return value.selected;
+        }
 
-            }           
-
-        });
+        return objectData.isSelected;
 
     }
 
@@ -73,7 +63,11 @@ permissions and limitations under the License.
             });
 
             var selectedObjectData = null;
-            var selectedOptions = getSelectedOptions(Array.prototype.slice.call(e.currentTarget.options));
+            var selectedOptions = Array.prototype.slice.call(e.currentTarget.options).filter(function(option) {
+
+                return option.selected;
+
+            });
 
             if (selectedOptions && selectedOptions.length > 0) {
 
@@ -83,7 +77,7 @@ permissions and limitations under the License.
 
                         return manywho.utils.isEqual(item.externalId, option.value, true);
 
-                    }).length > 0);                    
+                    }).length > 0);
 
                 })
                 .map(function (item) {
@@ -129,25 +123,26 @@ permissions and limitations under the License.
             }
 
             if (model.isMultiSelect) {
-                attributes.multiple = 'multiple';
+                attributes.multiple = true;
             }
 
-            attributes.placeholder = model.hintValue || 'Please select an option';
+            attributes['data-placeholder'] = model.hintValue || 'Please select an option';
+            attributes.defaultValue = '';
 
             if (objectData) {
 
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
-                attributes.children = options;
 
-                var selectedOptions = getSelectedOptions(options);
+                var selectedItems = objectData.filter(isSelectedObjectData, state)
+                                                .map(function(objectData) {
 
-                if (selectedOptions && selectedOptions.length == 0) {
+                                                    return objectData.externalId;
 
-                    options.unshift(React.DOM.option({ value: '' }));
+                                                });
 
-                } else if (!model.isMultiSelect) {
+                if (selectedItems.length > 0) {
 
-                    attributes.defaultValue = selectedOptions[0].props.value;
+                    attributes.defaultValue = (model.isMultiSelect) ? selectedItems : selectedItems[0];
 
                 }
 
@@ -180,7 +175,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.div({ className: 'input-wrapper' }, [
-                    React.createElement(Chosen, attributes),
+                    React.createElement(Chosen, attributes, options),
                     React.DOM.span({ className: iconClassNames }, null)
                 ]),
                 React.DOM.span({ className: 'help-block' }, message)
