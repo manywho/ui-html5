@@ -161,6 +161,10 @@ manywho.engine = (function (manywho) {
 
                 flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
 
+                options.callbacks.forEach(function (callback) {
+                    manywho.callbacks.register(flowKey, callback);
+                });
+
                 if (manywho.utils.isEqual(container, 'modal', true)) {
 
                     var mainKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, 'main');
@@ -690,6 +694,10 @@ manywho.engine = (function (manywho) {
                 manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
 
             }
+
+            options.callbacks.forEach(function (callback) {
+                manywho.callbacks.register(flowKey, callback);
+            });
 
             manywho.model.initializeModel(flowKey);
             manywho.settings.initializeFlow(options, flowKey);
