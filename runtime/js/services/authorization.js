@@ -49,7 +49,7 @@ manywho.authorization = (function (manywho) {
 
                 }
 
-                manywho.state.setLoading('main', { message: 'Executing...' }, flowKey);
+                manywho.state.setLoading('main', { message: manywho.settings.global('localization.executing') }, flowKey);
                 manywho.engine.render(flowKey);
 
                 var authenticationFlow = {

@@ -17,7 +17,7 @@ manywho.social = (function (manywho) {
 
         initialize: function(flowKey, streamId) {
 
-            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
@@ -61,7 +61,7 @@ manywho.social = (function (manywho) {
 
         refreshMessages: function(flowKey) {
 
-            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
@@ -83,7 +83,7 @@ manywho.social = (function (manywho) {
 
         getMessages: function(flowKey) {
 
-            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
@@ -136,7 +136,7 @@ manywho.social = (function (manywho) {
 
             });
 
-            manywho.state.setLoading('feed', { message: 'Sending' }, flowKey);
+            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.sending') }, flowKey);
             manywho.engine.render(flowKey);
 
             return manywho.ajax.sendSocialMessage(tenantId, stream.id, stateId, request, authenticationToken)
@@ -177,7 +177,7 @@ manywho.social = (function (manywho) {
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
             var stream = streams[flowKey];
 
-            manywho.state.setLoading('feed', { message: 'Loading' }, flowKey);
+            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             return manywho.ajax.follow(tenantId, stream.id, stateId, !stream.me.isFollower, authenticationToken)

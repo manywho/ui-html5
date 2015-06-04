@@ -12,6 +12,14 @@ permissions and limitations under the License.
 manywho.settings = (function (manywho, $) {
 
     var globals = {
+        localization: {
+            initializing: 'Initializing',
+            executing: 'Executing',
+            loading: 'Loading',
+            navigating: 'Navigating',
+            joining: 'Joining',
+            sending: 'Sending'
+        },
         paging: {
             table: 10,
             select: 250
