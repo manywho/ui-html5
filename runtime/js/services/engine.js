@@ -161,6 +161,14 @@ manywho.engine = (function (manywho) {
 
                 flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
 
+                if (options.callbacks != null && options.callbacks.length > 0) {
+
+                    options.callbacks.forEach(function (callback) {
+                        manywho.callbacks.register(flowKey, callback);
+                    });
+
+                }
+
                 if (manywho.utils.isEqual(container, 'modal', true)) {
 
                     var mainKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, 'main');
@@ -688,6 +696,14 @@ manywho.engine = (function (manywho) {
             if (options && options.authentication != null && options.authentication.sessionId != null) {
 
                 manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
+
+            }
+
+            if (options.callbacks != null && options.callbacks.length > 0) {
+
+                options.callbacks.forEach(function (callback) {
+                    manywho.callbacks.register(flowKey, callback);
+                });
 
             }
 
