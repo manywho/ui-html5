@@ -161,9 +161,13 @@ manywho.engine = (function (manywho) {
 
                 flowKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, container);
 
-                options.callbacks.forEach(function (callback) {
-                    manywho.callbacks.register(flowKey, callback);
-                });
+                if (options.callbacks != null && options.callbacks.length > 0) {
+
+                    options.callbacks.forEach(function (callback) {
+                        manywho.callbacks.register(flowKey, callback);
+                    });
+
+                }
 
                 if (manywho.utils.isEqual(container, 'modal', true)) {
 
@@ -695,9 +699,13 @@ manywho.engine = (function (manywho) {
 
             }
 
-            options.callbacks.forEach(function (callback) {
-                manywho.callbacks.register(flowKey, callback);
-            });
+            if (options.callbacks != null && options.callbacks.length > 0) {
+
+                options.callbacks.forEach(function (callback) {
+                    manywho.callbacks.register(flowKey, callback);
+                });
+
+            }
 
             manywho.model.initializeModel(flowKey);
             manywho.settings.initializeFlow(options, flowKey);
