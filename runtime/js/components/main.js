@@ -60,8 +60,8 @@ permissions and limitations under the License.
         },
 
         render: function () {
-            
-            log.info("Rendering Main");
+
+            manywhoLogging.info("Rendering Main");
             
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);

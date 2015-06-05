@@ -58,7 +58,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            log.info("Rendering Notification");
+            manywhoLogging.info("Rendering Notification");
 
             var classNames = [
                 'alert notification',

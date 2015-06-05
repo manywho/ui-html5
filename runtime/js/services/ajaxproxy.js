@@ -15,7 +15,7 @@ manywho.ajax = (function (manywho) {
 
     function onError(xhr, status, error) {
 
-        log.error(error);
+        manywhoLogging.error(error);
 
     }
 
@@ -51,7 +51,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Logging into Flow State: \n    Id: ' + stateId);
+                manywhoLogging.info('Logging into Flow State: \n    Id: ' + stateId);
 
                 var authenticationCredentials = {
                     username: null,
@@ -79,7 +79,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
+                manywhoLogging.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
                 var deferred= new jQuery.Deferred();
 
@@ -97,7 +97,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Joining State: ' + stateId);
+                manywhoLogging.info('Joining State: ' + stateId);
 
                 var joinRequest = {};
                 joinRequest.stateId = stateId;
@@ -235,7 +235,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Authenticating using session ID');
+                manywhoLogging.info('Authenticating using session ID');
 
                 var deferred = new jQuery.Deferred();
 
@@ -267,7 +267,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Pinging for changes');
+                manywhoLogging.info('Pinging for changes');
 
                 alert('ping');
 
@@ -292,7 +292,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                log.info('Getting Execution Log');
+                manywhoLogging.info('Getting Execution Log');
 
                 alert('getExecutionLog');
 

@@ -239,7 +239,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            log.info('Rendering Table-Large');
+            manywhoLogging.info('Rendering Table-Large');
 
             var tableClassNames = [
                 'table table-bordered',

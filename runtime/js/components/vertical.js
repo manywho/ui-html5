@@ -16,8 +16,8 @@ permissions and limitations under the License.
         mixins: [manywho.component.mixins.collapse],
 
         render: function () {
-            
-            log.info('Rendering Vertical: ' + this.props.id);
+
+            manywhoLogging.info('Rendering Vertical: ' + this.props.id);
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey).join(' ');

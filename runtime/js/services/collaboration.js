@@ -43,7 +43,7 @@ manywho.collaboration = (function (manywho) {
 
     function onJoined(data) {
 
-        log.info(data.user + ' has joined ' + data.stateId);
+        manywhoLogging.info(data.user + ' has joined ' + data.stateId);
 
         manywho.model.addNotification(rooms[data.stateId].flowKey, {
             message: data.user + ' has joined',
@@ -57,7 +57,7 @@ manywho.collaboration = (function (manywho) {
 
     function onLeft(data) {
 
-        log.info(data.user + ' has left ' + data.flowKey);
+        manywhoLogging.info(data.user + ' has left ' + data.flowKey);
 
         manywho.model.addNotification(rooms[data.stateId].flowKey, {
             message: data.user + ' has left',
@@ -71,7 +71,7 @@ manywho.collaboration = (function (manywho) {
 
     function onChange(data) {
 
-        log.info('change to: ' + data.component + ' in ' + data.stateId);
+        manywhoLogging.info('change to: ' + data.component + ' in ' + data.stateId);
 
         manywho.state.setComponent(data.component, data.values, rooms[data.stateId].flowKey, false);
         manywho.engine.render(rooms[data.stateId].flowKey);
@@ -80,7 +80,7 @@ manywho.collaboration = (function (manywho) {
 
     function onMove(data) {
 
-        log.info('re-joining ' + data.stateId);
+        manywhoLogging.info('re-joining ' + data.stateId);
 
         var flowKey = rooms[data.stateId].flowKey;
 
@@ -101,21 +101,21 @@ manywho.collaboration = (function (manywho) {
 
     function onSync(data) {
 
-        log.info('syncing ' + data.stateId);
+        manywhoLogging.info('syncing ' + data.stateId);
         manywho.engine.sync(rooms[data.stateId].flowKey);
 
     }
 
     function onGetValues(data) {
 
-        log.info('get values from: ' + data.owner + ' in ' + data.stateId);
+        manywhoLogging.info('get values from: ' + data.owner + ' in ' + data.stateId);
         socket.emit('setValues', { stateId: data.stateId, id: data.id, components: manywho.state.getComponents(rooms[data.stateId].flowKey) });
 
     }
 
     function onSetValues(data) {
 
-        log.info('setting values in ' + data.stateId);
+        manywhoLogging.info('setting values in ' + data.stateId);
         manywho.state.setComponents(data.components, rooms[data.stateId].flowKey);
         manywho.engine.render(rooms[data.stateId].flowKey);
 
@@ -123,7 +123,7 @@ manywho.collaboration = (function (manywho) {
 
     function onSyncFeed(data) {
 
-        log.info('syncing feed in ' + data.stateId);
+        manywhoLogging.info('syncing feed in ' + data.stateId);
         manywho.social.refreshMessages(rooms[data.stateId].flowKey);
 
     }

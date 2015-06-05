@@ -15,7 +15,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            log.info('Rendering Inline: ' + this.props.id);
+            manywhoLogging.info('Rendering Inline: ' + this.props.id);
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');

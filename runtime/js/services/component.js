@@ -76,7 +76,7 @@ manywho.component = (function (manywho) {
             }
             else {
 
-                log.error('Component of type: ' + componentType + ' could not be found');
+                manywhoLogging.error('Component of type: ' + componentType + ' could not be found');
                 throw 'Component of type: ' + componentType + ' could not be found';
 
             }
@@ -195,7 +195,7 @@ manywho.component = (function (manywho) {
 
             if (!displayColumns || displayColumns.length == 0) {
 
-                log.error('No display columns found');
+                manywhoLogging.error('No display columns found');
 
             }
 
