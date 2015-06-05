@@ -401,7 +401,7 @@ permissions and limitations under the License.
             }, null);
 
             return React.DOM.div({ className: classNames }, [
-                (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.h3({ className: 'container-label' }, model.label),
+                (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     (model.fileDataRequest) ? fileUpload : null,    
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
