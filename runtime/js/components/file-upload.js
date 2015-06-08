@@ -79,7 +79,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering File Upload' + this.props.id);
+            manywho.log.info('Rendering File Upload' + this.props.id);
 
             var progress = (this.state.progress || 0) + '%';
 

@@ -32,7 +32,7 @@ permissions and limitations under the License.
 
             if (isVisible) {
 
-                manywhoLogging.info('Rendering Wait');
+                manywho.log.info('Rendering Wait');
 
             }
             

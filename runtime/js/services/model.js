@@ -55,7 +55,7 @@ permissions and limitations under the License.
 
     function updateData(collection, item, key) {
 
-        manywhoLogging.info("Updating item: " + item.id);
+        manywho.log.info("Updating item: " + item.id);
 
         var data = manywho.utils.get(collection, item.id, key);
 
@@ -227,17 +227,17 @@ permissions and limitations under the License.
 
                     flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
                         manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
-                        .map(function (item) {
+                            .map(function (item) {
 
-                            return {
-                                message: item,
-                                position: 'center',
-                                type: 'danger',
-                                timeout: '0',
-                                dismissible: true
-                            }
+                                return {
+                                    message: item,
+                                    position: 'center',
+                                    type: 'danger',
+                                    timeout: '0',
+                                    dismissible: true
+                                }
 
-                        })
+                            })
                     );
 
                     if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
@@ -615,7 +615,7 @@ permissions and limitations under the License.
 
         },
 
-        deleteFlowModel(flowKey) {
+        deleteFlowModel: function(flowKey) {
 
             flowModel[flowKey] = null;
             delete flowModel[flowKey];

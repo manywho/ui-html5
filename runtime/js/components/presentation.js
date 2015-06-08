@@ -15,7 +15,7 @@ permissions and limitations under the License.
 
         replaceContent: function() {
 
-            manywhoLogging.info('Rendering Presentation: ' + this.props.id);
+            manywho.log.info('Rendering Presentation: ' + this.props.id);
 
             var html = manywho.model.getComponent(this.props.id, this.props.flowKey).content
                 .replace(/&quot;/g, '\"')

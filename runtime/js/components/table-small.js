@@ -136,7 +136,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Table-Small');
+            manywho.log.info('Rendering Table-Small');
 
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
             return React.DOM.div({ className: 'list-group' }, items);

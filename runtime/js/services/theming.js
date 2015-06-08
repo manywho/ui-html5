@@ -22,7 +22,7 @@ manywho.theming = (function (manywho, $) {
 
         img.onerror = function () {
 
-            manywhoLogging.info('Finished loading theme: ' + url);
+            manywho.log.info('Finished loading theme: ' + url);
 
         };
         img.src = url;
@@ -35,7 +35,7 @@ manywho.theming = (function (manywho, $) {
 
             if (themes != null && name && themes.indexOf(name) != -1) {
 
-                manywhoLogging.info("Switching theme to: " + name);
+                manywho.log.info("Switching theme to: " + name);
 
                 var url = manywho.cdnUrl + manywho.settings.theme('url') + '/mw-' + name + '.css';
                 loadTheme(url);
@@ -43,7 +43,7 @@ manywho.theming = (function (manywho, $) {
             }
             else {
 
-                manywhoLogging.error(name + ' theme cannot be found');
+                manywho.log.error(name + ' theme cannot be found');
 
             }
             
@@ -51,7 +51,7 @@ manywho.theming = (function (manywho, $) {
 
         custom: function(url) {
 
-            manywhoLogging.info('Switching to custom theme: ' + url);
+            manywho.log.info('Switching to custom theme: ' + url);
             loadTheme(url);
 
         }

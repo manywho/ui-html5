@@ -15,7 +15,7 @@ manywho.ajax = (function (manywho) {
 
     function onError(xhr, status, error) {
 
-        manywhoLogging.error(error);
+        manywho.log.error(error);
 
     }
 
@@ -51,7 +51,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Logging into Flow State: \n    Id: ' + stateId);
+                manywho.log.info('Logging into Flow State: \n    Id: ' + stateId);
 
                 var authenticationCredentials = {
                     username: null,
@@ -79,7 +79,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
+                manywho.log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
                 var deferred= new jQuery.Deferred();
 
@@ -97,7 +97,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Joining State: ' + stateId);
+                manywho.log.info('Joining State: ' + stateId);
 
                 var joinRequest = {};
                 joinRequest.stateId = stateId;
@@ -235,7 +235,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Authenticating using session ID');
+                manywho.log.info('Authenticating using session ID');
 
                 var deferred = new jQuery.Deferred();
 
@@ -267,7 +267,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Pinging for changes');
+                manywho.log.info('Pinging for changes');
 
                 alert('ping');
 
@@ -292,7 +292,7 @@ manywho.ajax = (function (manywho) {
 
             try {
 
-                manywhoLogging.info('Getting Execution Log');
+                manywho.log.info('Getting Execution Log');
 
                 alert('getExecutionLog');
 

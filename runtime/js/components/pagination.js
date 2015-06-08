@@ -15,7 +15,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info("Rendering Pagination");
+            manywho.log.info("Rendering Pagination");
             
             var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev };
             if (this.props.pageIndex <= 1) {

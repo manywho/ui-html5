@@ -19,7 +19,7 @@ permissions and limitations under the License.
             
             if (isVisible) {
 
-                manywhoLogging.info('Rendering Voting');
+                manywho.log.info('Rendering Voting');
 
                 return React.DOM.div({ className: 'voting' },
                     React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),

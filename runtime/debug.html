@@ -44,12 +44,8 @@
     <script src="js/vendor/chosen.jquery.min.js"></script>
     <script src="js/vendor/moment-with-locales.min.js"></script>
     <script src="js/vendor/loglevel.min.js"></script>
-    <script>
-        var manywhoLogging = log.noConflict();
-    </script>
 
     <script>
-        manywhoLogging.enableAll();
 
         var manywho = {
             cdnUrl: '',
@@ -101,6 +97,8 @@
 
                 }
 
+                manywho.log.enableAll();
+
                 manywho.engine.initialize(
                     tenantId,
                     queryParameters['flow-id'],
@@ -134,6 +132,7 @@
     <script src="js/services/authorization.js"></script>
     <script src="js/services/callbacks.js"></script>
     <script src="js/services/social.js"></script>
+    <script src="js/services/log.js"></script>
 
     <script src="js/components/mixins.js"></script>
     <script src="js/components/main.js"></script>

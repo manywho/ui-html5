@@ -447,7 +447,7 @@ manywho.engine = (function (manywho) {
 
             if (!tenantId && (!stateId || (!flowId && !flowVersionId))) {
 
-                manywhoLogging.error('tenantId & stateId, or tenatntId & flowId & flowVersionId must be specified');
+                manywho.log.error('tenantId & stateId, or tenatntId & flowId & flowVersionId must be specified');
                 return;
 
             }

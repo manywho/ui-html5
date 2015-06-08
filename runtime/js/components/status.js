@@ -22,7 +22,7 @@ permissions and limitations under the License.
 
             if (isVisible) {
 
-                manywhoLogging.info('Rendering Status');
+                manywho.log.info('Rendering Status');
 
                 return React.DOM.div({ className: 'status' },
                     React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),

@@ -60,7 +60,7 @@ manywho.ajax = (function (manywho) {
 
     function onError(xhr, status, error) {
 
-        manywhoLogging.error(error);
+        manywho.log.error(error);
 
     }
 
@@ -116,7 +116,7 @@ manywho.ajax = (function (manywho) {
 
         login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId, authenticationToken) {
 
-            manywhoLogging.info('Logging into Flow State: \n    Id: ' + stateId);
+            manywho.log.info('Logging into Flow State: \n    Id: ' + stateId);
 
             var authenticationCredentials = {
                 username: null,
@@ -148,7 +148,7 @@ manywho.ajax = (function (manywho) {
 
         initialize: function (engineInitializationRequest, tenantId, authenticationToken) {
 
-            manywhoLogging.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
+            manywho.log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);
 
             return getDeferred('initialize', engineInitializationRequest)
                 .done(manywho.settings.event('initialization.done'))
@@ -159,7 +159,7 @@ manywho.ajax = (function (manywho) {
 
         join: function(stateId, tenantId, authenticationToken) {
 
-            manywhoLogging.info('Joining State: ' + stateId);
+            manywho.log.info('Joining State: ' + stateId);
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/state/' + stateId,
@@ -180,7 +180,7 @@ manywho.ajax = (function (manywho) {
 
         invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
-            manywhoLogging.info('Invoking State: ' + engineInvokeRequest.stateId);
+            manywho.log.info('Invoking State: ' + engineInvokeRequest.stateId);
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/state/' + engineInvokeRequest.stateId,
@@ -243,7 +243,7 @@ manywho.ajax = (function (manywho) {
 
         dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
-            manywhoLogging.info('Dispatching object data request');
+            manywho.log.info('Dispatching object data request');
 
             return dispatchDataRequest('/api/service/1/data', 'objectData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
@@ -251,7 +251,7 @@ manywho.ajax = (function (manywho) {
 
         dispatchFileDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
-            manywhoLogging.info('Dispatching object data request');
+            manywho.log.info('Dispatching object data request');
 
             return dispatchDataRequest('/api/service/1/file', 'fileData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
@@ -327,7 +327,7 @@ manywho.ajax = (function (manywho) {
 
         sessionAuthentication: function (tenantId, stateId, requestData, authenticationToken) {
 
-            manywhoLogging.info('Authenticating using session ID');
+            manywho.log.info('Authenticating using session ID');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/authentication/' + stateId,
@@ -350,7 +350,7 @@ manywho.ajax = (function (manywho) {
 
         ping: function (tenantId, stateId, stateToken, authenticationToken) {
 
-            manywhoLogging.info('Pinging for changes');
+            manywho.log.info('Pinging for changes');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/state/' + stateId + '/ping/' + stateToken,
@@ -367,7 +367,7 @@ manywho.ajax = (function (manywho) {
 
         getExecutionLog: function (tenantId, flowId, stateId, authenticationToken) {
 
-            manywhoLogging.info('Getting Execution Log');
+            manywho.log.info('Getting Execution Log');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/log/' + flowId + '/' + stateId,
@@ -386,7 +386,7 @@ manywho.ajax = (function (manywho) {
 
         getSocialMe: function (tenantId, streamId, stateId, authenticationToken) {
 
-            manywhoLogging.info('Getting Social User, Me');
+            manywho.log.info('Getting Social User, Me');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/user/me',
@@ -407,7 +407,7 @@ manywho.ajax = (function (manywho) {
 
         getSocialFollowers: function (tenantId, streamId, stateId, authenticationToken) {
 
-            manywhoLogging.info('Getting Social Followers');
+            manywho.log.info('Getting Social Followers');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/follower',
@@ -428,7 +428,7 @@ manywho.ajax = (function (manywho) {
 
         getSocialMessages: function (tenantId, streamId, stateId, page, pageSize, authenticationToken) {
 
-            manywhoLogging.info('Getting Social Messages');
+            manywho.log.info('Getting Social Messages');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '?page=' + page + '&pageSize=' + pageSize,
@@ -449,7 +449,7 @@ manywho.ajax = (function (manywho) {
 
         sendSocialMessage: function (tenantId, streamId, stateId, requestData, authenticationToken) {
 
-            manywhoLogging.info('Sending Social Message');
+            manywho.log.info('Sending Social Message');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/message',
@@ -474,7 +474,7 @@ manywho.ajax = (function (manywho) {
 
         follow: function (tenantId, streamId, stateId, isFollowing, authenticationToken) {
 
-            manywhoLogging.info('Following Social Message');
+            manywho.log.info('Following Social Message');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '?follow=' + isFollowing.toString(),
@@ -498,7 +498,7 @@ manywho.ajax = (function (manywho) {
 
         getSocialUsers: function (tenantId, streamId, stateId, name, authenticationToken) {
 
-            manywhoLogging.info('Following Social Message');
+            manywho.log.info('Following Social Message');
 
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/social/1/stream/' + streamId + '/user?name=' + name,

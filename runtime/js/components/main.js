@@ -61,7 +61,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info("Rendering Main");
+            manywho.log.info("Rendering Main");
             
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);

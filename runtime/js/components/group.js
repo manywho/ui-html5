@@ -15,7 +15,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Group: ' + this.props.id);
+            manywho.log.info('Rendering Group: ' + this.props.id);
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
