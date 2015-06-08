@@ -118,6 +118,18 @@ permissions and limitations under the License.
 
         },
 
+        componentDidUpdate: function () {
+
+            var navigationElement = this.refs.navigationBar.getDOMNode();
+
+            if (navigationElement.clientHeight > 100 && navigationElement.className.indexOf('navbar-double-height') == -1) {
+
+                navigationElement.classList.add('navbar-double-height')
+
+            }
+
+        },
+
         render: function () {
 
             var navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
@@ -163,7 +175,7 @@ permissions and limitations under the License.
 
                 }
 
-                return React.DOM.nav({ className: classNames.join(' '), style: inlineStyles },
+                return React.DOM.nav({ className: classNames.join(' '), style: inlineStyles, ref: 'navigationBar' },
                             React.DOM.div({ className: (isFullWidth) ? '' : 'container' }, [
                                 getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id },
