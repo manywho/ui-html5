@@ -757,10 +757,10 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, {});
-
             manywho.model.deleteFlowModel(flowKey);
             manywho.utils.removeFlowFromDOM(flowKey);
+
+            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, {});
 
         },
 
