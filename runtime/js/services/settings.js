@@ -18,7 +18,8 @@ manywho.settings = (function (manywho, $) {
             loading: 'Loading',
             navigating: 'Navigating',
             joining: 'Joining',
-            sending: 'Sending'
+            sending: 'Sending',
+            returnToParent: 'Return To Parent'
         },
         paging: {
             table: 10,
@@ -62,6 +63,7 @@ manywho.settings = (function (manywho, $) {
         sync: {},
         navigation: {},
         join: {},
+        flowOut: {},
         login: {},
         log: {},
         objectData: {},

@@ -294,6 +294,7 @@ manywho.engine = (function (manywho) {
                 isAuthenticated = true;
                 localStorage.removeItem('oauth-' + response.stateId);
 
+                manywho.model.initializeModel(flowKey);
                 self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
 
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
@@ -355,7 +356,7 @@ manywho.engine = (function (manywho) {
         var parentFlowKey = manywho.model.getParentForModal(flowKey) || flowKey;
         var moveResponse = null;
 
-        manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
+        return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
                 return isAuthorized(response, flowKey);
@@ -610,7 +611,7 @@ manywho.engine = (function (manywho) {
                 manywho.settings.flow('mode', flowKey)
             );
 
-            moveWithAuthorization.call(this,
+            return moveWithAuthorization.call(this,
                 {
                     execute: moveWithAuthorization,
                     context: this,
@@ -620,6 +621,22 @@ manywho.engine = (function (manywho) {
                 },
                 invokeRequest,
                 flowKey);
+
+        },
+
+        flowOut: function(outcome, flowKey) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+            return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
+                    .then(function(response) {
+
+                        manywho.model.deleteFlowModel(flowKey);
+                        manywho.utils.removeFlowFromDOM(flowKey);
+                        manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, {});
+
+                    });
 
         },
 
@@ -732,6 +749,18 @@ manywho.engine = (function (manywho) {
                     type: 'done'
                 },
                 flowKey);
+
+        },
+
+        returnToParent: function(flowKey, parentStateId) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+            manywho.model.deleteFlowModel(flowKey);
+            manywho.utils.removeFlowFromDOM(flowKey);
+
+            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, {});
 
         },
 
@@ -858,14 +887,6 @@ manywho.engine = (function (manywho) {
         render: function (flowKey) {
 
             var container = document.getElementById(flowKey);
-
-            /*if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
-
-                flowKey = manywho.model.getParentForModal(flowKey);
-
-            }
-
-            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey}), container);*/
 
             if (manywho.utils.isDrawTool(flowKey)) {
 

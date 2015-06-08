@@ -45,7 +45,7 @@ manywho.ajax = (function (manywho) {
         if (page > 0) {
             request.listFilter.offset = (page - 1) * request.listFilter.limit;
         }
-        
+
         return $.ajax({
             url: manywho.settings.global('platform.uri') + url,
             type: 'POST',
@@ -90,7 +90,7 @@ manywho.ajax = (function (manywho) {
                 beforeSend: function (xhr) {
 
                     beforeSend.call(this, xhr, tenantId, authenticationToken, 'login');
-                    
+
                 }
             })
             .done(manywho.settings.event('login.done'))
@@ -122,6 +122,25 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        flowOut: function(stateId, tenantId, selectedOutcomeId, authenticationToken) {
+
+            return $.ajax({
+                url: manywho.settings.global('platform.uri') + '/api/run/1/state/out/' + stateId + '/' + selectedOutcomeId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'flowOut');
+
+                }
+            })
+            .done(manywho.settings.event('flowOut.done'))
+            .fail(onError)
+            .fail(manywho.settings.event('flowOut.fail'));
+
+        },
+
         join: function(stateId, tenantId, authenticationToken) {
 
             manywhoLogging.info('Joining State: ' + stateId);
@@ -142,7 +161,7 @@ manywho.ajax = (function (manywho) {
             .fail(manywho.settings.event('join.fail'));
 
         },
-        
+
         invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
             manywhoLogging.info('Invoking State: ' + engineInvokeRequest.stateId);
@@ -167,7 +186,7 @@ manywho.ajax = (function (manywho) {
         },
 
         getNavigation: function (stateId, stateToken, navigationElementId, tenantId, authenticationToken) {
-            
+
             return $.ajax({
                 url: manywho.settings.global('platform.uri') + '/api/run/1/navigation/' + stateId,
                 type: 'POST',
@@ -205,11 +224,11 @@ manywho.ajax = (function (manywho) {
                 .fail(manywho.settings.event('getFlowByName.fail'));
 
         },
-        
+
         dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             manywhoLogging.info('Dispatching object data request');
-            
+
             return dispatchDataRequest('/api/service/1/data', 'objectData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
         },
@@ -248,7 +267,7 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            
+
             return deferred.promise()
                     .done(manywho.settings.event('fileData.done'))
                     .fail(onError)
