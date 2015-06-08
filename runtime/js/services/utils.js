@@ -278,8 +278,8 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        removeFlowFromDOM(flowKey) {
-            
+        removeFlowFromDOM: function(flowKey) {
+
             var rootElement = document.getElementById('manywho');
 
             for (var i = 0, len = rootElement.children.length; i < len; i++) {

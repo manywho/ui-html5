@@ -615,7 +615,7 @@ permissions and limitations under the License.
 
         },
 
-        deleteFlowModel(flowKey) {
+        deleteFlowModel: function(flowKey) {
 
             flowModel[flowKey] = null;
             delete flowModel[flowKey];
