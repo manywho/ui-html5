@@ -136,7 +136,7 @@ permissions and limitations under the License.
                   
             if (navigation) {
 
-                log.info("Rendering Navigation");
+                manywhoLogging.info("Rendering Navigation");
 
                 var navElements = getNavElements(navigation.items, this.handleClick);
 

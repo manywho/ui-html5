@@ -55,7 +55,7 @@ permissions and limitations under the License.
 
     function updateData(collection, item, key) {
 
-        log.info("Updating item: " + item.id);
+        manywhoLogging.info("Updating item: " + item.id);
 
         var data = manywho.utils.get(collection, item.id, key);
 
