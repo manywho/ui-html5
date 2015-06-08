@@ -120,11 +120,15 @@ permissions and limitations under the License.
 
         componentDidUpdate: function () {
 
-            var navigationElement = this.refs.navigationBar.getDOMNode();
+            if (this.refs.navigationBar) {
 
-            if (navigationElement.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
+                var navigationElement = this.refs.navigationBar.getDOMNode();
 
-                navigationElement.classList.add('navbar-double-height')
+                if (navigationElement.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
+
+                    navigationElement.classList.add('navbar-double-height')
+
+                }
 
             }
 
