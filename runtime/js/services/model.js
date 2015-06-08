@@ -145,129 +145,135 @@ permissions and limitations under the License.
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
-            flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
+            flowModel[flowKey].parentStateId = '';
 
-            if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
+            if (engineInvokeResponse) {
 
-                flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
-                flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
-                flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
+                flowModel[flowKey] = engineInvokeResponse.parentStateId;
 
-                if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
+                if (engineInvokeResponse.mapElementInvokeResponses) {
 
-                    flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
+                    flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
+                    flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+                    flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
-                        var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-                        flattenedContainers.forEach(function (item) {
+                        flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                            flowModel[flowKey].containers[item.id] = item;
+                        if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
 
-                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                                flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+                            var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+                            flattenedContainers.forEach(function (item) {
 
-                            }
+                                flowModel[flowKey].containers[item.id] = item;
+
+                                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                                    flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
+
+                                }
+
+                            }, this);
+
+                        }
+
+                        var decodeTextArea = document.createElement('textarea');
+
+                        if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
+
+                            engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+
+                                item.attributes = item.attributes || {};
+
+                                flowModel[flowKey].components[item.id] = item;
+
+                                if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+
+                                    flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+
+                                }
+
+                                flowModel[flowKey].containers[item.pageContainerId].childCount++;
+
+                                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+
+                                    flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                                    flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
+
+                                }
+
+                            }, this);
+
+                        }
+
+                    }
+
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
+
+                        engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+
+                            flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
 
                         }, this);
 
                     }
 
-                    var decodeTextArea = document.createElement('textarea');
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
+                        var notificationKey = flowKey;
+                        if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
 
-                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
+                            notificationKey = this.getParentForModal(flowKey);
 
-                            item.attributes = item.attributes || {};
+                        }
 
-                            flowModel[flowKey].components[item.id] = item;
+                        flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
 
-                            if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+                        flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
+                            manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
+                                .map(function (item) {
 
-                                flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+                                    return {
+                                        message: item,
+                                        position: 'center',
+                                        type: 'danger',
+                                        timeout: '0',
+                                        dismissible: true
+                                    }
 
-                            }
+                                })
+                        );
 
-                            flowModel[flowKey].containers[item.pageContainerId].childCount++;
+                        if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
-                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
+                            var parentFlowKey = manywho.model.getParentForModal(flowKey);
+                            manywho.state.setLoading('main', null, parentFlowKey);
 
-                                flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                                flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
+                        } else {
 
-                            }
+                            manywho.state.setLoading('main', null, flowKey);
 
-                        }, this);
-
-                    }
-
-                }
-
-                if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
-
-                    engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
-
-                        flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
-
-                    }, this);
-
-                }
-
-                if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
-
-                    var notificationKey = flowKey;
-                    if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
-
-                        notificationKey = this.getParentForModal(flowKey);
+                        }
 
                     }
 
-                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
+                    if (engineInvokeResponse.parentStateId) {
 
-                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
-                        manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
-                        .map(function (item) {
-
-                            return {
-                                message: item,
-                                position: 'center',
-                                type: 'danger',
-                                timeout: '0',
-                                dismissible: true
-                            }
-
-                        })
-                    );
-
-                    if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
-
-                        var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                        manywho.state.setLoading('main', null, parentFlowKey);
-
-                    } else {
-
-                        manywho.state.setLoading('main', null, flowKey);
+                        var navigationComponents = manywho.settings.global("navigation.components", flowKey, []);
+                        navigationComponents.push(React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: engineInvokeResponse.parentStateId }));
 
                     }
 
-                }
+                    flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+                    flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
 
-                if (engineInvokeResponse.parentStateId) {
+                    switch (engineInvokeResponse.invokeType.toLowerCase())
+                    {
+                        case "wait":
+                            manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
+                            break;
+                    }
 
-                    var navigationComponents = manywho.settings.global("navigation.components", flowKey, []);
-                    navigationComponents.push(React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: engineInvokeResponse.parentStateId }));
-
-                }
-
-                flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
-                flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
-
-                switch (engineInvokeResponse.invokeType.toLowerCase())
-                {
-                    case "wait":
-                        manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
-                        break;
                 }
 
             }
