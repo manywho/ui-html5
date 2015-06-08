@@ -122,7 +122,7 @@ permissions and limitations under the License.
 
             var navigationElement = this.refs.navigationBar.getDOMNode();
 
-            if (navigationElement.clientHeight > 100 && navigationElement.className.indexOf('navbar-double-height') == -1) {
+            if (navigationElement.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
 
                 navigationElement.classList.add('navbar-double-height')
 
