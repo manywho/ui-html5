@@ -316,7 +316,7 @@ permissions and limitations under the License.
 
             if (stream && stream.me) {
 
-                manywhoLogging.info('Rendering Feed');
+                manywho.log.info('Rendering Feed');
 
                 var streamMessages = stream.messages || {};
                 var loading = manywho.state.getLoading('feed', this.props.flowKey);

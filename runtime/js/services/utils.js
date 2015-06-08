@@ -42,7 +42,7 @@ manywho.utils = (function (manywho, $) {
                 }
                 catch (ex)
                 {
-                    manywhoLogging.error(ex);
+                    manywho.log.error(ex);
                 }
 
             }

@@ -140,7 +140,7 @@ permissions and limitations under the License.
                   
             if (navigation) {
 
-                manywhoLogging.info("Rendering Navigation");
+                manywho.log.info("Rendering Navigation");
 
                 var navElements = getNavElements(navigation.items, this.handleClick);
 

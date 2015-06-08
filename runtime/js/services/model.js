@@ -55,7 +55,7 @@ permissions and limitations under the License.
 
     function updateData(collection, item, key) {
 
-        manywhoLogging.info("Updating item: " + item.id);
+        manywho.log.info("Updating item: " + item.id);
 
         var data = manywho.utils.get(collection, item.id, key);
 
@@ -145,135 +145,129 @@ permissions and limitations under the License.
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
-            flowModel[flowKey].parentStateId = '';
+            flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
 
-            if (engineInvokeResponse) {
+            if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
-                flowModel[flowKey] = engineInvokeResponse.parentStateId;
+                flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
+                flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+                flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
 
-                if (engineInvokeResponse.mapElementInvokeResponses) {
+                if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
-                    flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
-                    flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
-                    flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
+                    flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
 
-                        flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
+                        var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
+                        flattenedContainers.forEach(function (item) {
 
-                        if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
+                            flowModel[flowKey].containers[item.id] = item;
 
-                            var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-                            flattenedContainers.forEach(function (item) {
+                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
+                                flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
 
-                                flowModel[flowKey].containers[item.id] = item;
-
-                                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                                    flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
-
-                                }
-
-                            }, this);
-
-                        }
-
-                        var decodeTextArea = document.createElement('textarea');
-
-                        if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
-
-                            engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
-
-                                item.attributes = item.attributes || {};
-
-                                flowModel[flowKey].components[item.id] = item;
-
-                                if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
-
-                                    flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
-
-                                }
-
-                                flowModel[flowKey].containers[item.pageContainerId].childCount++;
-
-                                if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-
-                                    flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                                    flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
-
-                                }
-
-                            }, this);
-
-                        }
-
-                    }
-
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
-
-                        engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
-
-                            flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
+                            }
 
                         }, this);
 
                     }
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
+                    var decodeTextArea = document.createElement('textarea');
 
-                        var notificationKey = flowKey;
-                        if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
 
-                            notificationKey = this.getParentForModal(flowKey);
+                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
 
-                        }
+                            item.attributes = item.attributes || {};
 
-                        flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
+                            flowModel[flowKey].components[item.id] = item;
 
-                        flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
-                            manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
-                                .map(function (item) {
+                            if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
 
-                                    return {
-                                        message: item,
-                                        position: 'center',
-                                        type: 'danger',
-                                        timeout: '0',
-                                        dismissible: true
-                                    }
+                                flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
 
-                                })
-                        );
+                            }
 
-                        if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+                            flowModel[flowKey].containers[item.pageContainerId].childCount++;
 
-                            var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                            manywho.state.setLoading('main', null, parentFlowKey);
+                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
 
-                        } else {
+                                flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
+                                flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
 
-                            manywho.state.setLoading('main', null, flowKey);
+                            }
 
-                        }
+                        }, this);
 
                     }
 
-                    if (engineInvokeResponse.parentStateId) {
+                }
 
-                        var navigationComponents = manywho.settings.global("navigation.components", flowKey, []);
-                        navigationComponents.push(React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: engineInvokeResponse.parentStateId }));
+                if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
+
+                    engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
+
+                        flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
+
+                    }, this);
+
+                }
+
+                if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
+
+                    var notificationKey = flowKey;
+                    if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
+
+                        notificationKey = this.getParentForModal(flowKey);
 
                     }
 
-                    flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
-                    flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
+                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
 
-                    switch (engineInvokeResponse.invokeType.toLowerCase())
-                    {
-                        case "wait":
-                            manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
-                            break;
+                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
+                        manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
+                            .map(function (item) {
+
+                                return {
+                                    message: item,
+                                    position: 'center',
+                                    type: 'danger',
+                                    timeout: '0',
+                                    dismissible: true
+                                }
+
+                            })
+                    );
+
+                    if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+
+                        var parentFlowKey = manywho.model.getParentForModal(flowKey);
+                        manywho.state.setLoading('main', null, parentFlowKey);
+
+                    } else {
+
+                        manywho.state.setLoading('main', null, flowKey);
+
                     }
 
+                }
+
+                if (engineInvokeResponse.parentStateId) {
+
+                    var navigationComponents = manywho.settings.global("navigation.components", flowKey, []);
+                    navigationComponents.push(React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: engineInvokeResponse.parentStateId }));
+
+                }
+
+                flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+                flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
+
+                switch (engineInvokeResponse.invokeType.toLowerCase())
+                {
+                    case "wait":
+                        manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
+                        break;
                 }
 
             }

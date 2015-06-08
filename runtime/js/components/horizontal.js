@@ -17,7 +17,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Horizontal: ' + this.props.id);
+            manywho.log.info('Rendering Horizontal: ' + this.props.id);
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey).join(' ');

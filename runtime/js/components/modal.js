@@ -60,7 +60,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info("Rendering Modal");
+            manywho.log.info("Rendering Modal");
 
             if (this.props.container) {
 

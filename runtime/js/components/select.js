@@ -96,7 +96,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Select: ' + this.props.id);
+            manywho.log.info('Rendering Select: ' + this.props.id);
 
             var options = [];
             var isValid = true;

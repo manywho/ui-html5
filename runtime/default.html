@@ -22,9 +22,6 @@
     <script src="{{cdnurl}}/js/vendor/chosen.jquery.min.js"></script>
     <script src="{{cdnurl}}/js/vendor/moment-with-locales.min.js"></script>
     <script src="{{cdnurl}}/js/vendor/loglevel.min.js"></script>
-    <script>
-        var manywhoLogging = log.noConflict();
-    </script>
 
     <script>
         var manywho = {
@@ -74,6 +71,8 @@
                                 })[0];
 
                 }
+
+                manywho.log.enableAll();
 
                 manywho.engine.initialize(
                     tenantId,

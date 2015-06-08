@@ -74,7 +74,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Outcome: ' + this.props.id);
+            manywho.log.info('Rendering Outcome: ' + this.props.id);
 
             var model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
 

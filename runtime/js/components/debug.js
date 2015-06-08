@@ -184,7 +184,7 @@ permissions and limitations under the License.
 
             if (manywho.settings.isDebugEnabled(this.props.flowKey)) {
 
-                manywhoLogging.info('Rendering Debug');
+                manywho.log.info('Rendering Debug');
 
                 var preCommitStateValues = manywho.model.getPreCommitStateValues(this.props.flowKey) || [];
                 var stateValues = manywho.model.getStateValues(this.props.flowKey) || [];

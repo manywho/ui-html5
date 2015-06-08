@@ -119,7 +119,7 @@ permissions and limitations under the License.
 
         render: function () {
 
-            manywhoLogging.info('Rendering Input: ' + this.props.id);
+            manywho.log.info('Rendering Input: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);

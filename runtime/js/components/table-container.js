@@ -154,7 +154,7 @@ permissions and limitations under the License.
             }
             else {
 
-                manywhoLogging.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
+                manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
 
             }
 
@@ -291,7 +291,7 @@ permissions and limitations under the License.
         
         render: function () {
 
-            manywhoLogging.info('Rendering Table: ' + this.props.id);
+            manywho.log.info('Rendering Table: ' + this.props.id);
 
             var isValid = true;
 
