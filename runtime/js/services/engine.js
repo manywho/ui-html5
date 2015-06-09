@@ -651,6 +651,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 'SYNC',
                 null,
+                null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 null,
                 manywho.settings.flow('annotations', flowKey),
