@@ -237,7 +237,7 @@ gulp.task('deploy-short-cache', function () {
                     if (path.basename == "loader.min") {
                         path.dirname = "js"
                     }
-                }));
+                }))
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers, { simulate: true }))
                 .pipe(awspublish.reporter())
