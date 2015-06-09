@@ -239,7 +239,7 @@ gulp.task('deploy-short-cache', function () {
                     }
                 }))
                 .pipe(awspublish.gzip())
-                .pipe(publisher.publish(headers, { simulate: true }))
+                .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
 
 });
