@@ -717,7 +717,7 @@ manywho.engine = (function (manywho) {
 
             }
 
-            if (options.callbacks != null && options.callbacks.length > 0) {
+            if (options && options.callbacks != null && options.callbacks.length > 0) {
 
                 options.callbacks.forEach(function (callback) {
                     manywho.callbacks.register(flowKey, callback);
