@@ -132,6 +132,7 @@ permissions and limitations under the License.
             if (objectData) {
 
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
+                options.unshift(React.DOM.option({ value: '' }, null));
 
                 var selectedItems = objectData.filter(isSelectedObjectData, state)
                                                 .map(function(objectData) {
