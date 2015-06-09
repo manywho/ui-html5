@@ -233,8 +233,13 @@ gulp.task('deploy-short-cache', function () {
     }
 
     return gulp.src(['dist/hashes.json', 'dist/js/loader.min.js'])
+                .pipe(rename(function(path) {
+                    if (path.basename == "loader.min") {
+                        path.dirname = "js"
+                    }
+                }));
                 .pipe(awspublish.gzip())
-                .pipe(publisher.publish(headers))
+                .pipe(publisher.publish(headers, { simulate: true }))
                 .pipe(awspublish.reporter())
 
 });
@@ -248,7 +253,7 @@ gulp.task('invalidate', function (cb) {
         InvalidationBatch: {
             CallerReference: 'deploy-' + Math.random(),
             Paths: {
-                Quantity: 1,
+                Quantity: 2,
                 Items: ['/hashes.json', '/js/loader.min.js']
             }
         }
