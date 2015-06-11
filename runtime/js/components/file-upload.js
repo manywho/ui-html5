@@ -16,7 +16,10 @@ permissions and limitations under the License.
         getDefaultProps: function() {
 
             return {
-                caption: 'Upload',
+                uploadCaption: 'Upload',
+                browseCaption: 'Browse',
+                smallInputs: false,
+                isUploadVisible: true,
                 uploadComplete: null,
                 upload: function(flowKey, formData, onProgress) {
 
@@ -30,7 +33,7 @@ permissions and limitations under the License.
 
         },
 
-        onUpload: function (e) {
+        onUpload: function () {
 
             if (this.state.fileNames.length > 0) {
 
@@ -57,7 +60,7 @@ permissions and limitations under the License.
 
                 }
 
-                this.props.upload(this.props.flowKey, formData, function(e) {
+                return this.props.upload(this.props.flowKey, formData, function(e) {
 
                     if (e.lengthComputable) {
 
@@ -128,20 +131,41 @@ permissions and limitations under the License.
 
             var progress = (this.state.progress || 0) + '%';
 
+            var uploadClasses = ['btn', 'btn-default', 'pull-left', 'btn-file-upload'];
+            var browseClasses = ['btn', 'btn-primary', 'btn-file'];
+            var inputClasses = ['form-control', 'filenames'];
+
+            if (this.props.smallInputs) {
+
+                uploadClasses.push('btn-sm');
+                browseClasses.push('btn-sm');
+                inputClasses.push('input-sm');
+
+            }
+
+            if (!this.props.isUploadVisible) {
+
+                uploadClasses.push('hidden');
+
+            }
+
+            if (this.state.fileNames.length == 0) {
+
+                inputClasses.push('hidden');
+
+            }
+
             return React.DOM.div(null, [
                 React.DOM.div({ className: 'clearfix' }, [
-                    React.DOM.button({ className: 'btn btn-default pull-left', disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.caption || 'Upload'),
-                    React.DOM.div({ className: 'form-group pull-left file-upload-browse has-error' },
-                        React.DOM.div({ className: 'input-group' }, [
-                            React.DOM.span({ className: 'input-group-btn' },
-                                React.DOM.span({ className: 'btn btn-primary btn-file', disabled: this.state.isUploadDisabled }, [
-                                    'Browse',
-                                    React.DOM.input({ type: 'file', onChange: this.onFileSelected, ref: 'upload', multiple: this.props.multiple })
-                                ])
-                            ),
-                            React.DOM.input({ type: 'text', className: 'form-control file-selected', readOnly: 'readonly', value: this.state.fileNames.join(' ') })
-                        ]),
-                        React.DOM.span({ className: 'help-block' }, this.state.error)
+                    React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption),
+                    React.DOM.div({ className: "input-group" },
+                        React.DOM.span({ className: "input-group-btn" },
+                            React.DOM.span({ className: browseClasses.join(' ')  },[
+                                this.props.browseCaption,
+                                React.DOM.input({ type: "file", multiple: true, onChange: this.onFileSelected, ref: 'upload' })
+                            ])
+                        ),
+                        React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })
                     )
                 ]),
                 React.DOM.div({ className: 'progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },

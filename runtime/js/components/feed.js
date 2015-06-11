@@ -13,12 +13,29 @@ permissions and limitations under the License.
 
     var feedInput = React.createClass({
 
-        onClick: function(e) {
+        send: function() {
 
+            var deferred = null;
             var self = this;
 
-            this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
-                .then(function () {
+            if (this.refs.files.state.fileNames.length > 0) {
+
+                deferred = this.refs.files.onUpload()
+
+            }
+            else {
+
+                deferred = jQuery.Deferred();
+                deferred.resolve();
+
+            }
+
+            deferred.done(function(response) {
+
+                    return self.props.send(self.state.text, self.props.messageId, self.state.mentionedUsers, response && response.files);
+
+                })
+                .then(function() {
 
                     self.setState({
                         text: '',
@@ -73,19 +90,7 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
-                        .then(function () {
-
-                            self.setState({
-                                text: '',
-                                mentionedUsers: {},
-                                users: [],
-                                selectedUser: null,
-                                selectedIndex: 0,
-                                attachments: []
-                            });
-
-                        });
+                    this.send();
 
                 }
 
@@ -103,14 +108,6 @@ permissions and limitations under the License.
                 this.setState({ selectedUser: Math.min(this.state.selectedIndex++, this.state.users.length) });
 
             }
-
-        },
-
-        onUploadComplete: function(response) {
-
-            this.setState({
-                attachments: response.files
-            });
 
         },
 
@@ -184,26 +181,16 @@ permissions and limitations under the License.
             var fileUpload = null;
             if (this.props.isAttachmentsEnabled) {
 
-                fileUpload = React.DOM.div({ className: 'feed-attachments' }, [
-                    React.DOM.ul({ className: 'list-unstyled list-inline' }, this.state.attachments.map(function (attachment) {
-
-                        return React.DOM.li({ className: 'feed-attachment' }, [
-                            React.DOM.span(null, attachment.name)
-                        ]);
-
-                    })),
-                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, uploadComplete: this.onUploadComplete, upload: manywho.social.attachFiles, caption: 'Attach' })
-                ]);
+                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, upload: manywho.social.attachFiles, smallInputs: true, isUploadVisible: false, browseCaption: 'Attach Files', ref: 'files' });
 
             }
 
-            return React.DOM.div({ className: 'feed-post clearfix' }, [
-                React.DOM.button({ className: 'btn btn-primary pull-left', onClick: this.onClick }, this.props.caption),
-                React.DOM.div({ className: 'feed-post-right' }, [
-                    React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
-                    (this.state.mentionIsVisible) ? mention : null,
+            return React.DOM.div({ className: 'row feed-post' }, [
+                React.DOM.div({ className: 'col-xs-11' }, [
+                    React.DOM.textarea({ className: 'form-control feed-message-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
                     fileUpload
-                ])
+                ]),
+                React.DOM.div({ className: 'col-xs-1' }, React.DOM.button({ className: 'btn btn-sm btn-primary', onClick: this.send }, this.props.caption))
             ]);
 
         }
@@ -265,7 +252,7 @@ permissions and limitations under the License.
                                 })
                             ),
                             this.renderThread(message.comments, false, false),
-                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Comment', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage, isAttachmentsEnabled: isAttachmentsEnabled }, null)
+                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Reply', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage, isAttachmentsEnabled: isAttachmentsEnabled }, null)
                         ])
                     ]);
 
