@@ -14,7 +14,7 @@ All that basically says is that if you want to use this code, make sure you use 
 ##Development Setup
 1. Install [nodejs](http://nodejs.org/)
 2. Install gulp cli `npm install gulp -g`
-3. cd into the HTML5 Players folder and `npm install`
+3. cd into the runtime folder and run `npm install`
 
 If you are running on Windows you will also need to install the following (to build socket.io):
 
@@ -26,16 +26,10 @@ Then run `npm install --msvs_version=2012`
 
 You can start the dev "server" by running `gulp refresh`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc).
 
-'gulp refresh' takes several arguments to make working against a specific flow & state easier. Specifying a flow & state will also mean that when gulp refreshes
-the page on a script change that you end up back where you were.
-
-e.g. `gulp refresh --tenant=<tenant id> --flow=<flow id> --version=<flow version id> --state=<state id>`
+You can then view the flow by opening http://localhost:3000?tenant-id=<tenant-id>&flow-id=<flow-id>&flow-version-id=<flow-version-id> to initialize a flow or
+http://localhost:3000?tenant-id=<tenant-id>&join=<state-id> to join an already running flow
 
 If you don't have a state id you can get it entering `manywho.state.getState().id` in the browser console once the flow is running.
 
-You can then view the flow by opening http://localhost:3000/
-
-You can start the socket.io server (for realtime collaboration) by running `node server`. This will marshall state values between connected clients that have joined the same state.
-
 ##Docs
-Some more information about the HTML5 player can be found here: https://developers.manywho.com/display/MA/Players
+Some more information about the HTML5 player can be found here: https://developers.manywho.com/display/MA/HTML5
