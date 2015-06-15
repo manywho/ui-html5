@@ -35,12 +35,12 @@ permissions and limitations under the License.
 
         onMentionClick: function(e) {
 
-            this.setState({ 
+            this.setState({
                 selectedUser: e.currentTarget.id
             });
 
             this.insertMention();
-            
+
         },
 
         insertMention: function() {
@@ -53,7 +53,7 @@ permissions and limitations under the License.
 
             var selectedUser = this.state.users[this.state.selectedIndex];
             state.mentionedUsers[selectedUser.id] = selectedUser;
-            
+
             this.setState(state);
 
         },
@@ -70,7 +70,7 @@ permissions and limitations under the License.
 
                     this.insertMention();
 
-                }                
+                }
                 else {
 
                     this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
@@ -106,21 +106,6 @@ permissions and limitations under the License.
 
         },
 
-        uploadFile: function(fileData, progress) {
-
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
-            var request = new FormData();
-            fileData.forEach(function (file) {
-
-                request.append('FileData', file);
-
-            });
-            
-            return manywho.social.attachFiles(this.props.flowKey, request, progress);
-
-        },
-
         onUploadComplete: function(response) {
 
             this.setState({
@@ -137,7 +122,7 @@ permissions and limitations under the License.
 
                 var matches = e.currentTarget.value.trim().match(/@[A-Za-z]{2,}$/, 'ig');
                 if (matches && matches.length > 0) {
-                    
+
                     var mention = matches[0].substring(1);
                     var self = this;
 
@@ -161,7 +146,7 @@ permissions and limitations under the License.
                 }
 
             }
-            
+
         },
 
         getInitialState: function() {
@@ -203,17 +188,17 @@ permissions and limitations under the License.
                     React.DOM.ul({ className: 'list-unstyled list-inline' }, this.state.attachments.map(function (attachment) {
 
                         return React.DOM.li({ className: 'feed-attachment' }, [
-                            React.DOM.span(null, attachment.name)                           
+                            React.DOM.span(null, attachment.name)
                         ]);
 
                     })),
-                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, onUploadComplete: this.onUploadComplete, upload: this.uploadFile, caption: 'Attach' }) 
-                ]);                
+                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, uploadComplete: this.onUploadComplete, upload: manywho.social.attachFiles, caption: 'Attach' })
+                ]);
 
             }
 
             return React.DOM.div({ className: 'feed-post clearfix' }, [
-                React.DOM.button({ className: 'btn btn-primary pull-left', onClick: this.onClick }, this.props.caption),                
+                React.DOM.button({ className: 'btn btn-primary pull-left', onClick: this.onClick }, this.props.caption),
                 React.DOM.div({ className: 'feed-post-right' }, [
                     React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
                     (this.state.mentionIsVisible) ? mention : null,
@@ -250,7 +235,7 @@ permissions and limitations under the License.
             return manywho.social.sendMessage(this.props.flowKey, message, messageId, mentionedUsers, attachments);
 
         },
-        
+
         renderThread: function(messages, isCommentingEnabled, isAttachmentsEnabled) {
 
             if (messages) {
@@ -272,7 +257,7 @@ permissions and limitations under the License.
                                 React.DOM.span({ className: 'feed-created-date' }, createdDate.toLocaleString()),
                             ]),
                             React.DOM.div({ className: 'feed-message-text', dangerouslySetInnerHTML: { __html: message.text } }, null),
-                            React.DOM.div({ className: 'feed-message-attachments' }, 
+                            React.DOM.div({ className: 'feed-message-attachments' },
                                 attachments.map(function(attachment) {
 
                                     return React.DOM.a({ href: attachment.downloadUrl, target: "_blank"  }, attachment.name);
@@ -295,7 +280,7 @@ permissions and limitations under the License.
         renderFollowers: function(followers) {
 
             if (followers) {
-                
+
                 var followerElements = followers.map(function (follower) {
 
                     return React.DOM.img({ className: 'feed-follower', src: follower.avatarUrl, title: follower.fullName, width: '32', height: '32' });
@@ -309,7 +294,7 @@ permissions and limitations under the License.
             return null;
 
         },
-                
+
         render: function () {
 
             var stream = manywho.social.getStream(this.props.flowKey);
@@ -320,10 +305,10 @@ permissions and limitations under the License.
 
                 var streamMessages = stream.messages || {};
                 var loading = manywho.state.getLoading('feed', this.props.flowKey);
-                
+
                 var followCaption = (stream.me.isFollower) ? 'Un-Follow' : 'Follow';
                 var isFooterVisible = streamMessages.nextPage && streamMessages.nextPage > 1;
-                
+
                 return React.DOM.div({ className: 'panel panel-default feed', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'panel-heading clearfix' }, [
                         React.DOM.h3({ className: 'panel-title pull-left' }, 'Feed'),
@@ -336,7 +321,7 @@ permissions and limitations under the License.
                                 React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null),
                                 ' Refresh'
                             ])
-                        ])                        
+                        ])
                     ]),
                     React.DOM.div({ className: 'panel-body' }, [
                         this.renderFollowers(stream.followers),
@@ -348,9 +333,9 @@ permissions and limitations under the License.
                     ),
                     React.createElement(manywho.component.getByName('wait'), loading, null)
                 ]);
-                
+
             }
-            
+
             return null;
 
         }
@@ -360,4 +345,3 @@ permissions and limitations under the License.
     manywho.component.register("feed", feed);
 
 }(manywho));
-
