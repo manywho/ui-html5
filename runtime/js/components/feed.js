@@ -32,48 +32,17 @@ permissions and limitations under the License.
 
             deferred.done(function(response) {
 
-                    return self.props.send(self.state.text, self.props.messageId, self.state.mentionedUsers, response && response.files);
+                return self.props.send(self.refs.textarea.getDOMNode().value, self.props.messageId, self.state.mentionedUsers, response && response.files);
 
-                })
-                .then(function() {
+            })
+            .then(function() {
 
-                    self.setState({
-                        text: '',
-                        mentionedUsers: {},
-                        users: [],
-                        selectedUser: null,
-                        selectedIndex: 0,
-                        attachments: []
-                    });
+                self.refs.textarea.getDOMNode().value = '';
 
-                });
-
-        },
-
-        onMentionClick: function(e) {
-
-            this.setState({
-                selectedUser: e.currentTarget.id
             });
 
-            this.insertMention();
-
         },
 
-        insertMention: function() {
-
-            var state = {
-                text: this.state.text.trim().replace(/@[A-Za-z]{2,}$/, '@[' + this.state.users[this.state.selectedIndex].fullName + ']'),
-                mentionIsVisible: false,
-                mentionedUsers: this.state.mentionedUsers
-            }
-
-            var selectedUser = this.state.users[this.state.selectedIndex];
-            state.mentionedUsers[selectedUser.id] = selectedUser;
-
-            this.setState(state);
-
-        },
 
         onKeyPress: function(e) {
 
@@ -82,101 +51,52 @@ permissions and limitations under the License.
             if (e.charCode == 13 && !e.shiftKey) {
 
                 e.preventDefault();
-
-                if (this.state.mentionIsVisible) {
-
-                    this.insertMention();
-
-                }
-                else {
-
-                    this.send();
-
-                }
+                this.send();
 
             }
 
-            if (e.charCode == 38 && this.state.mentionIsVisible) {
-
-                e.preventDefault();
-                this.setState({ selectedUser: Math.max(this.state.selectedIndex--, 0) });
-
-            }
-            else if (e.charCode == 40 && this.state.mentionIsVisible) {
-
-                e.preventDefault();
-                this.setState({ selectedUser: Math.min(this.state.selectedIndex++, this.state.users.length) });
-
-            }
-
-        },
-
-        onChange: function(e) {
-
-            this.setState({ text: e.currentTarget.value});
-
-            if (!manywho.utils.isNullOrWhitespace(e.currentTarget.value)) {
-
-                var matches = e.currentTarget.value.trim().match(/@[A-Za-z]{2,}$/, 'ig');
-                if (matches && matches.length > 0) {
-
-                    var mention = matches[0].substring(1);
-                    var self = this;
-
-                    manywho.social.getUsers(this.props.flowKey, mention)
-                        .then(function (response) {
-
-                            self.setState({
-                                users: response,
-                                selectedUser: null,
-                                selectedIndex: 0,
-                                mentionIsVisible: true
-                            });
-
-                        });
-
-                }
-                else {
-
-                    this.setState({ mentionIsVisible: false });
-
-                }
-
-            }
 
         },
 
         getInitialState: function() {
 
             return {
-                text: '',
-                mentionisVisible: false,
-                mentionedUsers: {},
-                users: [],
-                selectedUser: null,
-                selectedIndex: 0,
-                attachments: []
+                mentionedUsers: {}
             }
 
         },
 
+        componentDidMount: function() {
+
+            var self = this;
+
+            $(this.refs.textarea.getDOMNode()).textcomplete([{
+                match: /@([A-Za-z]{2,})$/,
+                index: 1,
+                search: function (term, callback) {
+
+                    manywho.social.getUsers(self.props.flowKey, term)
+                        .done(function(response) { callback(response); })
+                        .fail(function(response) { callback([]); });
+
+                },
+                template: function(value) {
+
+                    return '<img src="' + value.avatarUrl + '"></img> ' + value.fullName;
+
+                },
+                replace: function (value) {
+
+                    self.state.mentionedUsers[value.id] = value;
+                    return '@[' + value.fullName + '] ';
+
+                }
+            }],
+            { appendTo: $('.mw-bs') } );
+
+        },
+
         render: function () {
-
-            var mention = null;
-
-            if (this.state.users) {
-
-                mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.users.map(function (user, index) {
-
-                    return React.DOM.li({
-                        className: 'list-group-item ' + ((index == this.state.selectedIndex) ? 'active' : null),
-                        id: index,
-                        onClick: this.onMentionClick
-                    }, user.fullName);
-
-                }, this));
-
-            }
 
             var fileUpload = null;
             if (this.props.isAttachmentsEnabled) {
@@ -187,7 +107,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: 'row feed-post' }, [
                 React.DOM.div({ className: 'col-xs-11' }, [
-                    React.DOM.textarea({ className: 'form-control feed-message-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
+                    React.DOM.textarea({ className: 'form-control feed-message-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, defaultValue: '', ref: 'textarea' }, null),
                     fileUpload
                 ]),
                 React.DOM.div({ className: 'col-xs-1' }, React.DOM.button({ className: 'btn btn-sm btn-primary', onClick: this.send }, this.props.caption))
@@ -274,7 +194,12 @@ permissions and limitations under the License.
 
                 });
 
-                return React.DOM.div({ className: 'feed-followers' }, [ React.DOM.h4(null, 'Followers') ].concat(followerElements));
+                return React.DOM.div({ className: 'row' },
+                    React.DOM.ul({ className: 'list-inline' }, [
+                        React.DOM.span(null, React.DOM.strong(null, 'Followers: '))
+                    ].concat(followerElements)
+                    )
+                );
 
             }
 
