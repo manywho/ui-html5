@@ -1,0 +1,35 @@
+.mw-bs .dropdown-menu {
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.mw-bs .dropdown-menu li {
+    border-top: 1px solid #ddd;
+    padding: 2px 5px;
+}
+
+.mw-bs .dropdown-menu li:first-child {
+    border-top: none;
+}
+
+.mw-bs .textcomplete-item a {
+    padding: 4px 8px !important;
+}
+
+.mw-bs .textcomplete-item img {
+    width: 20px;
+    height: 20px;
+    margin-top: -4px;
+}
+
+/* SHOULD not modify */
+
+.mw-bs .dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mw-bs .dropdown-menu a:hover {
+    cursor: pointer;
+}

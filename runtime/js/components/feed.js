@@ -13,50 +13,36 @@ permissions and limitations under the License.
 
     var feedInput = React.createClass({
 
-        onClick: function(e) {
+        send: function() {
 
+            var deferred = null;
             var self = this;
 
-            this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
-                .then(function () {
+            if (this.refs.files && this.refs.files.state.fileNames.length > 0) {
 
-                    self.setState({
-                        text: '',
-                        mentionedUsers: {},
-                        users: [],
-                        selectedUser: null,
-                        selectedIndex: 0,
-                        attachments: []
-                    });
+                deferred = this.refs.files.onUpload()
 
-                });
+            }
+            else {
 
-        },
+                deferred = jQuery.Deferred();
+                deferred.resolve();
 
-        onMentionClick: function(e) {
-
-            this.setState({ 
-                selectedUser: e.currentTarget.id
-            });
-
-            this.insertMention();
-            
-        },
-
-        insertMention: function() {
-
-            var state = {
-                text: this.state.text.trim().replace(/@[A-Za-z]{2,}$/, '@[' + this.state.users[this.state.selectedIndex].fullName + ']'),
-                mentionIsVisible: false,
-                mentionedUsers: this.state.mentionedUsers
             }
 
-            var selectedUser = this.state.users[this.state.selectedIndex];
-            state.mentionedUsers[selectedUser.id] = selectedUser;
-            
-            this.setState(state);
+            deferred.done(function(response) {
+
+                return self.props.send(self.refs.textarea.getDOMNode().value, self.props.messageId, self.state.mentionedUsers, response && response.files);
+
+            })
+            .then(function() {
+
+                self.refs.textarea.getDOMNode().value = '';
+
+            });
 
         },
+
 
         onKeyPress: function(e) {
 
@@ -65,160 +51,66 @@ permissions and limitations under the License.
             if (e.charCode == 13 && !e.shiftKey) {
 
                 e.preventDefault();
-
-                if (this.state.mentionIsVisible) {
-
-                    this.insertMention();
-
-                }                
-                else {
-
-                    this.props.send(this.state.text, this.props.messageId, this.state.mentionedUsers, this.state.attachments)
-                        .then(function () {
-
-                            self.setState({
-                                text: '',
-                                mentionedUsers: {},
-                                users: [],
-                                selectedUser: null,
-                                selectedIndex: 0,
-                                attachments: []
-                            });
-
-                        });
-
-                }
+                this.send();
 
             }
 
-            if (e.charCode == 38 && this.state.mentionIsVisible) {
 
-                e.preventDefault();
-                this.setState({ selectedUser: Math.max(this.state.selectedIndex--, 0) });
-
-            }
-            else if (e.charCode == 40 && this.state.mentionIsVisible) {
-
-                e.preventDefault();
-                this.setState({ selectedUser: Math.min(this.state.selectedIndex++, this.state.users.length) });
-
-            }
-
-        },
-
-        uploadFile: function(fileData, progress) {
-
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
-            var request = new FormData();
-            fileData.forEach(function (file) {
-
-                request.append('FileData', file);
-
-            });
-            
-            return manywho.social.attachFiles(this.props.flowKey, request, progress);
-
-        },
-
-        onUploadComplete: function(response) {
-
-            this.setState({
-                attachments: response.files
-            });
-
-        },
-
-        onChange: function(e) {
-
-            this.setState({ text: e.currentTarget.value});
-
-            if (!manywho.utils.isNullOrWhitespace(e.currentTarget.value)) {
-
-                var matches = e.currentTarget.value.trim().match(/@[A-Za-z]{2,}$/, 'ig');
-                if (matches && matches.length > 0) {
-                    
-                    var mention = matches[0].substring(1);
-                    var self = this;
-
-                    manywho.social.getUsers(this.props.flowKey, mention)
-                        .then(function (response) {
-
-                            self.setState({
-                                users: response,
-                                selectedUser: null,
-                                selectedIndex: 0,
-                                mentionIsVisible: true
-                            });
-
-                        });
-
-                }
-                else {
-
-                    this.setState({ mentionIsVisible: false });
-
-                }
-
-            }
-            
         },
 
         getInitialState: function() {
 
             return {
-                text: '',
-                mentionisVisible: false,
-                mentionedUsers: {},
-                users: [],
-                selectedUser: null,
-                selectedIndex: 0,
-                attachments: []
+                mentionedUsers: {}
             }
+
+        },
+
+        componentDidMount: function() {
+
+            var self = this;
+
+            $(this.refs.textarea.getDOMNode()).textcomplete([{
+                match: /@([A-Za-z]{2,})$/,
+                index: 1,
+                search: function (term, callback) {
+
+                    manywho.social.getUsers(self.props.flowKey, term)
+                        .done(function(response) { callback(response); })
+                        .fail(function(response) { callback([]); });
+
+                },
+                template: function(value) {
+
+                    return '<img src="' + value.avatarUrl + '"></img> ' + value.fullName;
+
+                },
+                replace: function (value) {
+
+                    self.state.mentionedUsers[value.id] = value;
+                    return '@[' + value.fullName + '] ';
+
+                }
+            }],
+            { appendTo: $('.mw-bs') } );
 
         },
 
         render: function () {
 
-            var mention = null;
-
-            if (this.state.users) {
-
-                mention = React.DOM.ul({ className: 'list-group mentions' }, this.state.users.map(function (user, index) {
-
-                    return React.DOM.li({
-                        className: 'list-group-item ' + ((index == this.state.selectedIndex) ? 'active' : null),
-                        id: index,
-                        onClick: this.onMentionClick
-                    }, user.fullName);
-
-                }, this));
-
-            }
-
             var fileUpload = null;
             if (this.props.isAttachmentsEnabled) {
 
-                fileUpload = React.DOM.div({ className: 'feed-attachments' }, [
-                    React.DOM.ul({ className: 'list-unstyled list-inline' }, this.state.attachments.map(function (attachment) {
-
-                        return React.DOM.li({ className: 'feed-attachment' }, [
-                            React.DOM.span(null, attachment.name)                           
-                        ]);
-
-                    })),
-                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, onUploadComplete: this.onUploadComplete, upload: this.uploadFile, caption: 'Attach' }) 
-                ]);                
+                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, multiple: true, upload: manywho.social.attachFiles, smallInputs: true, isUploadVisible: false, browseCaption: 'Attach Files', ref: 'files' });
 
             }
 
-            return React.DOM.div({ className: 'feed-post clearfix' }, [
-                React.DOM.button({ className: 'btn btn-primary pull-left', onClick: this.onClick }, this.props.caption),                
-                React.DOM.div({ className: 'feed-post-right' }, [
-                    React.DOM.textarea({ className: 'form-control feed-post-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, value: this.state.text }, null),
-                    (this.state.mentionIsVisible) ? mention : null,
+            return React.DOM.div({ className: 'row feed-post' }, [
+                React.DOM.div({ className: 'col-xs-11' }, [
+                    React.DOM.textarea({ className: 'form-control feed-message-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, defaultValue: '', ref: 'textarea' }, null),
                     fileUpload
-                ])
+                ]),
+                React.DOM.div({ className: 'col-xs-1' }, React.DOM.button({ className: 'btn btn-sm btn-primary', onClick: this.send }, this.props.caption))
             ]);
 
         }
@@ -250,7 +142,7 @@ permissions and limitations under the License.
             return manywho.social.sendMessage(this.props.flowKey, message, messageId, mentionedUsers, attachments);
 
         },
-        
+
         renderThread: function(messages, isCommentingEnabled, isAttachmentsEnabled) {
 
             if (messages) {
@@ -272,7 +164,7 @@ permissions and limitations under the License.
                                 React.DOM.span({ className: 'feed-created-date' }, createdDate.toLocaleString()),
                             ]),
                             React.DOM.div({ className: 'feed-message-text', dangerouslySetInnerHTML: { __html: message.text } }, null),
-                            React.DOM.div({ className: 'feed-message-attachments' }, 
+                            React.DOM.div({ className: 'feed-message-attachments' },
                                 attachments.map(function(attachment) {
 
                                     return React.DOM.a({ href: attachment.downloadUrl, target: "_blank"  }, attachment.name);
@@ -280,7 +172,7 @@ permissions and limitations under the License.
                                 })
                             ),
                             this.renderThread(message.comments, false, false),
-                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Comment', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage, isAttachmentsEnabled: isAttachmentsEnabled }, null)
+                            isCommentingEnabled && React.createElement(feedInput, { caption: 'Reply', flowKey: this.props.flowKey, messageId: message.id, send: this.onSendMessage, isAttachmentsEnabled: isAttachmentsEnabled }, null)
                         ])
                     ]);
 
@@ -295,21 +187,26 @@ permissions and limitations under the License.
         renderFollowers: function(followers) {
 
             if (followers) {
-                
+
                 var followerElements = followers.map(function (follower) {
 
                     return React.DOM.img({ className: 'feed-follower', src: follower.avatarUrl, title: follower.fullName, width: '32', height: '32' });
 
                 });
 
-                return React.DOM.div({ className: 'feed-followers' }, [ React.DOM.h4(null, 'Followers') ].concat(followerElements));
+                return React.DOM.div({ className: 'row' },
+                    React.DOM.ul({ className: 'list-inline' }, [
+                        React.DOM.span(null, React.DOM.strong(null, 'Followers: '))
+                    ].concat(followerElements)
+                    )
+                );
 
             }
 
             return null;
 
         },
-                
+
         render: function () {
 
             var stream = manywho.social.getStream(this.props.flowKey);
@@ -320,10 +217,10 @@ permissions and limitations under the License.
 
                 var streamMessages = stream.messages || {};
                 var loading = manywho.state.getLoading('feed', this.props.flowKey);
-                
+
                 var followCaption = (stream.me.isFollower) ? 'Un-Follow' : 'Follow';
                 var isFooterVisible = streamMessages.nextPage && streamMessages.nextPage > 1;
-                
+
                 return React.DOM.div({ className: 'panel panel-default feed', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'panel-heading clearfix' }, [
                         React.DOM.h3({ className: 'panel-title pull-left' }, 'Feed'),
@@ -336,7 +233,7 @@ permissions and limitations under the License.
                                 React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null),
                                 ' Refresh'
                             ])
-                        ])                        
+                        ])
                     ]),
                     React.DOM.div({ className: 'panel-body' }, [
                         this.renderFollowers(stream.followers),
@@ -348,9 +245,9 @@ permissions and limitations under the License.
                     ),
                     React.createElement(manywho.component.getByName('wait'), loading, null)
                 ]);
-                
+
             }
-            
+
             return null;
 
         }
@@ -360,4 +257,3 @@ permissions and limitations under the License.
     manywho.component.register("feed", feed);
 
 }(manywho));
-

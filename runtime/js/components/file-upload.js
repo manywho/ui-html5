@@ -12,20 +12,55 @@ permissions and limitations under the License.
 (function (manywho) {
 
     var fileUpload = React.createClass({
-        
-        onUpload: function (e) {
+
+        getDefaultProps: function() {
+
+            return {
+                uploadCaption: 'Upload',
+                browseCaption: 'Browse',
+                smallInputs: false,
+                isUploadVisible: true,
+                uploadComplete: null,
+                upload: function(flowKey, formData, onProgress) {
+
+                    var tenantId = manywho.utils.extractTenantId(flowKey);
+                    var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+                    return manywho.ajax.uploadFile(formData, tenantId, authenticationToken, onProgress);
+
+                }
+            }
+
+        },
+
+        onUpload: function () {
 
             if (this.state.fileNames.length > 0) {
 
                 this.setState({
                     isUploadDisabled: true,
                     isProgressVisible: true,
-                    progress: 0
+                    progress: 0,
+                    error: null,
                 });
 
                 var self = this;
-                
-                this.props.upload(Array.prototype.slice.call(this.refs.upload.getDOMNode().files), function (e) {
+
+                var formData = new FormData();
+                Array.prototype.slice.call(this.refs.upload.getDOMNode().files).forEach(function (file) {
+
+                    formData.append('FileData', file);
+
+                });
+
+                var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+                if (model && model.fileDataRequest) {
+
+                    formData.append('FileDataRequest', model.fileDataRequest);
+
+                }
+
+                return this.props.upload(this.props.flowKey, formData, function(e) {
 
                     if (e.lengthComputable) {
 
@@ -33,23 +68,35 @@ permissions and limitations under the License.
 
                     }
 
-                }).done(function (response) {
+                })
+                .done(function (response) {
 
                     self.setState({
                         isUploadDisabled: false,
                         isFileSelected: false,
                         isProgressVisible: false,
                         progress: 0,
-                        fileNames: []
+                        fileNames: [],
+                        error: null
                     });
 
                     self.refs.upload.getDOMNode().value = '';
 
-                    if (self.props.onUploadComplete) {
+                    if (self.props.uploadComplete) {
 
-                        self.props.onUploadComplete(response);
+                        self.props.uploadComplete(response);
 
                     }
+
+                })
+                .fail(function (response) {
+
+                    self.setState({
+                        isUploadDisabled: false,
+                        isProgressVisible: false,
+                        progress: 0,
+                        error: response.statusText
+                    });
 
                 });
 
@@ -60,7 +107,7 @@ permissions and limitations under the License.
         onFileSelected: function (e) {
 
             this.setState({
-                fileNames: Array.prototype.slice.call(e.currentTarget.files).map(function(file) { return file.name }), 
+                fileNames: Array.prototype.slice.call(e.currentTarget.files).map(function(file) { return file.name }),
                 isFileSelected: true
             });
 
@@ -72,30 +119,62 @@ permissions and limitations under the License.
                 isUploadDisabled: false,
                 isFileSelected: false,
                 isProgressVisible: false,
-                fileNames: []
+                fileNames: [],
+                error: null
             }
 
         },
 
         render: function () {
 
-            manywho.log.info('Rendering File Upload' + this.props.id);
+            manywho.log.info('Rendering File Upload ' + this.props.id);
+
+            var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             var progress = (this.state.progress || 0) + '%';
+            var isMultiple = this.props.multiple;
+
+            if (model) {
+
+                isMultiple = model.multiple;
+
+            }
+
+            var uploadClasses = ['btn', 'btn-default', 'pull-left', 'btn-file-upload'];
+            var browseClasses = ['btn', 'btn-primary', 'btn-file'];
+            var inputClasses = ['form-control', 'filenames'];
+
+            if (this.props.smallInputs) {
+
+                uploadClasses.push('btn-sm');
+                browseClasses.push('btn-sm');
+                inputClasses.push('input-sm');
+
+            }
+
+            if (!this.props.isUploadVisible) {
+
+                uploadClasses.push('hidden');
+
+            }
+
+            if (this.state.fileNames.length == 0) {
+
+                inputClasses.push('hidden');
+
+            }
 
             return React.DOM.div(null, [
                 React.DOM.div({ className: 'clearfix' }, [
-                    React.DOM.button({ className: 'btn btn-default pull-left', disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.caption || 'Upload'),
-                    React.DOM.div({ className: 'form-group pull-left file-upload-browse' },
-                        React.DOM.div({ className: 'input-group' }, [
-                            React.DOM.span({ className: 'input-group-btn' },
-                                React.DOM.span({ className: 'btn btn-primary btn-file', disabled: this.state.isUploadDisabled }, [
-                                    'Browse',
-                                    React.DOM.input({ type: 'file', onChange: this.onFileSelected, ref: 'upload', multiple: this.props.multiple })
-                                ])
-                            ),
-                            React.DOM.input({ type: 'text', className: 'form-control file-selected', readOnly: 'readonly', value: this.state.fileNames.join(' ') })
-                        ])
+                    React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption),
+                    React.DOM.div({ className: "input-group" },
+                        React.DOM.span({ className: "input-group-btn" },
+                            React.DOM.span({ className: browseClasses.join(' ')  },[
+                                this.props.browseCaption,
+                                React.DOM.input({ type: "file", multiple: isMultiple, onChange: this.onFileSelected, ref: 'upload' })
+                            ])
+                        ),
+                        React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })
                     )
                 ]),
                 React.DOM.div({ className: 'progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
@@ -107,6 +186,6 @@ permissions and limitations under the License.
 
     });
 
-    manywho.component.register("file-upload", fileUpload);
+    manywho.component.register("file-upload", fileUpload, ['file_upload']);
 
 }(manywho));
