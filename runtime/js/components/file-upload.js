@@ -129,7 +129,16 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering File Upload ' + this.props.id);
 
+            var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+
             var progress = (this.state.progress || 0) + '%';
+            var isMultiple = this.props.multiple;
+
+            if (model) {
+
+                isMultiple = model.multiple;
+
+            }
 
             var uploadClasses = ['btn', 'btn-default', 'pull-left', 'btn-file-upload'];
             var browseClasses = ['btn', 'btn-primary', 'btn-file'];
@@ -162,7 +171,7 @@ permissions and limitations under the License.
                         React.DOM.span({ className: "input-group-btn" },
                             React.DOM.span({ className: browseClasses.join(' ')  },[
                                 this.props.browseCaption,
-                                React.DOM.input({ type: "file", multiple: true, onChange: this.onFileSelected, ref: 'upload' })
+                                React.DOM.input({ type: "file", multiple: isMultiple, onChange: this.onFileSelected, ref: 'upload' })
                             ])
                         ),
                         React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })

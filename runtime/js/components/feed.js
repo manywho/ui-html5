@@ -18,7 +18,7 @@ permissions and limitations under the License.
             var deferred = null;
             var self = this;
 
-            if (this.refs.files.state.fileNames.length > 0) {
+            if (this.refs.files && this.refs.files.state.fileNames.length > 0) {
 
                 deferred = this.refs.files.onUpload()
 
@@ -101,7 +101,7 @@ permissions and limitations under the License.
             var fileUpload = null;
             if (this.props.isAttachmentsEnabled) {
 
-                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, upload: manywho.social.attachFiles, smallInputs: true, isUploadVisible: false, browseCaption: 'Attach Files', ref: 'files' });
+                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, multiple: false, upload: manywho.social.attachFiles, smallInputs: true, isUploadVisible: false, browseCaption: 'Attach Files', ref: 'files' });
 
             }
 
