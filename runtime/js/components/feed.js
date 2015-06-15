@@ -32,19 +32,14 @@ permissions and limitations under the License.
 
             deferred.done(function(response) {
 
-                    var mentionedUsers = [];
-                    for (var key in self.state.mentionedUsers) {
-                        mentionedUsers.push(self.state.mentionedUsers[key]);
-                    }
+                return self.props.send(self.refs.textarea.getDOMNode().value, self.props.messageId, self.state.mentionedUsers, response && response.files);
 
-                    return self.props.send(self.refs.textarea.getDOMNode().value, self.props.messageId, mentionedUsers, response && response.files);
+            })
+            .then(function() {
 
-                })
-                .then(function() {
+                self.refs.textarea.getDOMNode().value = '';
 
-                    self.refs.textarea.getDOMNode().value = '';
-
-                });
+            });
 
         },
 
@@ -92,7 +87,7 @@ permissions and limitations under the License.
                 },
                 replace: function (value) {
 
-                    self.state.mentionedUsers[value.fullName] = value.id;
+                    self.state.mentionedUsers[value.id] = value;
                     return '@[' + value.fullName + '] ';
 
                 }
@@ -199,7 +194,12 @@ permissions and limitations under the License.
 
                 });
 
-                return React.DOM.div({ className: 'feed-followers' }, [ React.DOM.h4(null, 'Followers') ].concat(followerElements));
+                return React.DOM.div({ className: 'row' },
+                    React.DOM.ul({ className: 'list-inline' }, [
+                        React.DOM.span(null, React.DOM.strong(null, 'Followers: '))
+                    ].concat(followerElements)
+                    )
+                );
 
             }
 
