@@ -41,7 +41,7 @@ permissions and limitations under the License.
                     isUploadDisabled: true,
                     isProgressVisible: true,
                     progress: 0,
-                    error: null,
+                    error: null
                 });
 
                 var self = this;
@@ -53,10 +53,10 @@ permissions and limitations under the License.
 
                 });
 
-                var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+                var model = !manywho.utils.isNullOrWhitespace(this.props.id) ? manywho.model.getComponent(this.props.id, this.props.flowKey) : false;
                 if (model && model.fileDataRequest) {
 
-                    formData.append('FileDataRequest', model.fileDataRequest);
+                    formData.append('FileDataRequest', JSON.stringify(model.fileDataRequest));
 
                 }
 
