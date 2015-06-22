@@ -107,6 +107,22 @@ manywho.engine = (function (manywho) {
 
     }
 
+    function notifyError(flowKey, response) {
+
+        if (response) {
+
+            manywho.model.addNotification(flowKey, {
+                message: response.responseText,
+                position: 'center',
+                type: 'danger',
+                timeout: '0',
+                dismissible: true
+            });
+
+        }
+
+    }
+
     function onInitializeFailed(response) {
 
         var container = document.getElementById('manywho');
@@ -262,6 +278,10 @@ manywho.engine = (function (manywho) {
 
                 return $.whenAll(deferreds);
 
+            }, function(response) {
+
+                notifyError(flowKey, response);
+
             })
             .always(function () {
 
@@ -360,6 +380,10 @@ manywho.engine = (function (manywho) {
             .then(function (response) {
 
                 return isAuthorized(response, flowKey);
+
+            }, function(response) {
+
+                notifyError(flowKey, response);
 
             })
             .then(function (response) {
