@@ -75,7 +75,7 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    return React.DOM.th({ id: column.typeElementPropertyId, onClick: self.props.onHeaderClick }, column.label);
+                    return React.DOM.th({ id: column.developerName, onClick: self.props.onHeaderClick }, column.label);
 
                 }
 
