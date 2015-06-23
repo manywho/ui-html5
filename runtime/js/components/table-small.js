@@ -58,7 +58,7 @@ permissions and limitations under the License.
                     className: 'list-group-item clearfix',
                     href: '#',
                     'data-item': item.externalId
-                }
+                };
 
                 var isOutcomeDestructive = outcomes.filter(function (outcome) {
 

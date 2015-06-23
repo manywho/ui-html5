@@ -64,6 +64,8 @@ permissions and limitations under the License.
 
         renderHeaderRow: function(displayColumns) {
 
+            var self = this;
+
             return React.DOM.tr(null, displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
@@ -73,7 +75,7 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    return React.DOM.th(null, column.label);
+                    return React.DOM.th({ id: column.typeElementPropertyId, onClick: self.props.onHeaderClick }, column.label);
 
                 }
 

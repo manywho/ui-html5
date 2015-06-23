@@ -119,6 +119,8 @@ permissions and limitations under the License.
     
     var table = React.createClass({
 
+
+
         outcomes: null,
 
         mixins: [manywho.component.mixins.collapse],
@@ -187,6 +189,31 @@ permissions and limitations under the License.
 
             this.setState({ selectedRows: selectedRows });
             manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
+
+        },
+
+        onHeaderClick: function (e) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
+            var request = model.objectDataRequest || model.fileDataRequest;
+
+            if (request) {
+
+                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, e.currentTarget.id, this.state.sortByOrder, state.page);
+
+                this.setState({
+                    sortByOrder: this.state.sortByOrder == 'ASC' && this.state.lastSortedBy == e.currentTarget.id ? 'DESC' : 'ASC',
+                    lastSortedBy: e.currentTarget.id
+                })
+
+            }
+            else {
+
+                manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
+
+            }
 
         },
 
@@ -272,7 +299,8 @@ permissions and limitations under the License.
 
             return {
                 selectedRows: [],
-                windowWidth: window.innerWidth
+                windowWidth: window.innerWidth,
+                sortByOrder: 'DESC'
             }
 
         },
@@ -388,6 +416,7 @@ permissions and limitations under the License.
                     onRowClicked: this.onRowClicked,
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
+                    onHeaderClick: this.onHeaderClick,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true)
                 });
 
