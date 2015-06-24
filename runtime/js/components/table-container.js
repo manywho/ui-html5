@@ -119,8 +119,6 @@ permissions and limitations under the License.
     
     var table = React.createClass({
 
-
-
         outcomes: null,
 
         mixins: [manywho.component.mixins.collapse],
@@ -201,10 +199,22 @@ permissions and limitations under the License.
 
             if (request) {
 
-                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, e.currentTarget.id, this.state.sortByOrder, state.page);
+                var sortByOrder;
+
+                if (!manywho.utils.isEqual(this.state.lastSortedBy, e.currentTarget.id, true)) {
+
+                    sortByOrder = 'ASC';
+
+                } else {
+
+                    sortByOrder = manywho.utils.isEqual(this.state.sortByOrder, 'ASC', true) ? 'DESC' : 'ASC';
+
+                }
+
+                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, e.currentTarget.id, sortByOrder, state.page);
 
                 this.setState({
-                    sortByOrder: this.state.sortByOrder == 'ASC' && this.state.lastSortedBy == e.currentTarget.id ? 'DESC' : 'ASC',
+                    sortByOrder: sortByOrder,
                     lastSortedBy: e.currentTarget.id
                 })
 
@@ -300,7 +310,8 @@ permissions and limitations under the License.
             return {
                 selectedRows: [],
                 windowWidth: window.innerWidth,
-                sortByOrder: 'DESC'
+                sortByOrder: 'ASC',
+                lastOrderBy: ''
             }
 
         },
@@ -417,6 +428,8 @@ permissions and limitations under the License.
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
                     onHeaderClick: this.onHeaderClick,
+                    lastSortedBy: this.state.lastSortedBy,
+                    sortByOrder: this.state.sortByOrder,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true)
                 });
 
