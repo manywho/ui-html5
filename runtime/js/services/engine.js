@@ -196,12 +196,6 @@ manywho.engine = (function (manywho) {
 
                 streamId = response.currentStreamId;
 
-                if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
-
-                    navigationId = response.navigationElementReferences[0].id;
-
-                }
-
                 callback.args[6] = flowKey;
 
                 manywho.model.initializeModel(flowKey);
@@ -212,6 +206,12 @@ manywho.engine = (function (manywho) {
                 if (options.authentication != null && options.authentication.sessionid != null) {
 
                     manywho.state.setSessionData(options.authentication.sessionid, options.authentication.sessionurl, flowKey);
+
+                }
+
+                if (!manywho.utils.isNullOrWhitespace(options['navigationelementid'])) {
+
+                    manywho.model.setSelectedNavigation(options['navigationelementid'], flowKey);
 
                 }
 
@@ -258,7 +258,9 @@ manywho.engine = (function (manywho) {
 
                 var deferreds = [];
 
-                if (navigationId) {
+                var navigationId = manywho.model.getSelectedNavigation(flowKey);
+
+                if (!manywho.utils.isNullOrWhitespace(navigationId)) {
 
                     deferreds.push(loadNavigation(flowKey, response.stateToken, navigationId));
 
@@ -412,10 +414,15 @@ manywho.engine = (function (manywho) {
             })
             .then(function (response) {
 
-                var deferreds = [];
+                var selectedNavigationId = manywho.model.getSelectedNavigation(flowKey);
 
-                deferreds.push(loadNavigation(flowKey, moveResponse.stateToken, manywho.model.getDefaultNavigationId(flowKey)));
+                if (!manywho.utils.isNullOrWhitespace(selectedNavigationId)) {
 
+                    var deferreds = [];
+
+                    deferreds.push(loadNavigation(flowKey, moveResponse.stateToken, selectedNavigationId));
+
+                }
                 if (manywho.settings.isDebugEnabled(flowKey)) {
 
                     deferreds.push(loadExecutionLog(flowKey, authenticationToken));

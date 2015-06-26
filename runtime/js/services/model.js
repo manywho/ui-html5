@@ -426,6 +426,18 @@ permissions and limitations under the License.
 
         },
 
+        getSelectedNavigation: function (flowKey) {
+
+            return flowModel[flowKey].selectedNavigation;
+
+        },
+
+        setSelectedNavigation: function (navigationId, flowKey) {
+
+            flowModel[flowKey].selectedNavigation = navigationId;
+
+        },
+
         getNavigation: function (navigationId, flowKey) {
 
             if (navigationId) {
