@@ -105,12 +105,12 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: 'row feed-post' }, [
-                React.DOM.div({ className: 'col-xs-11' }, [
+            return React.DOM.div({ className: 'feed-post clearfix' }, [
+                React.DOM.div({ className: 'feed-post-text' }, [
                     React.DOM.textarea({ className: 'form-control feed-message-text', rows: '2', onKeyPress: this.onKeyPress, onChange: this.onChange, defaultValue: '', ref: 'textarea' }, null),
                     fileUpload
                 ]),
-                React.DOM.div({ className: 'col-xs-1' }, React.DOM.button({ className: 'btn btn-sm btn-primary', onClick: this.send }, this.props.caption))
+                React.DOM.button({ className: 'btn btn-sm btn-primary feed-post-send', onClick: this.send }, this.props.caption)
             ]);
 
         }

@@ -419,6 +419,8 @@ permissions and limitations under the License.
 
         addNotification: function(flowKey, notification) {
 
+            flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
+
             flowModel[flowKey].notifications.push(notification);
             manywho.engine.render(flowKey);
 
