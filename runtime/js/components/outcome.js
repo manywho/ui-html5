@@ -48,6 +48,9 @@ permissions and limitations under the License.
 
         onClick: function(e) {
 
+            e.preventDefault();
+            e.stopPropagation();
+
             var model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
             var self = this;
 
