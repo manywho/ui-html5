@@ -28,9 +28,22 @@ permissions and limitations under the License.
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage',
+
                 setup: function (editor) {
 
                     self.editor = editor;
+
+                    editor.addButton('mwimage', {
+                        title: 'Images',
+                        image: 'img/example.gif',
+                        onclick: function () {
+
+                            self.renderFileDialog();
+
+                        }
+
+                    });
 
                     editor.on('init', function () {
 
@@ -148,6 +161,12 @@ permissions and limitations under the License.
                 }
 
             }
+
+        },
+
+        renderFileDialog: function () {
+
+
 
         },
 
