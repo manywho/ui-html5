@@ -177,7 +177,7 @@ permissions and limitations under the License.
                         React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })
                     )
                 ]),
-                React.DOM.div({ className: 'progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
+                React.DOM.div({ className: 'progress files-progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
                     React.DOM.div({ className: 'progress-bar', style: { width: progress } })
                 )
             ]);
