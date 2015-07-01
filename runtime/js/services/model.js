@@ -294,7 +294,7 @@ permissions and limitations under the License.
 
         },
 
-        parseNavigationResponse: function (id, response, flowKey) {
+        parseNavigationResponse: function (id, response, flowKey, currentMapElementId) {
 
             flowModel[flowKey].navigation = {};
 
@@ -306,6 +306,29 @@ permissions and limitations under the License.
             };
 
             flowModel[flowKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+
+            var selectedItem = null;
+            for (itemId in flowModel[flowKey].navigation[id].items) {
+
+                if (flowModel[flowKey].navigation[id].items[itemId].isCurrent) {
+                    selected = flowModel[flowKey].navigation[id].items[itemId];
+                    break;
+                }
+
+            }
+
+            if (selectedItem == null && currentMapElementId) {
+
+                for (itemId in flowModel[flowKey].navigation[id].items) {
+
+                    if (manywho.utils.isEqual(flowModel[flowKey].navigation[id].items[itemId].locationMapElementId, currentMapElementId)) {
+                        flowModel[flowKey].navigation[id].items[itemId].isCurrent = true;
+                        break;
+                    }
+
+                }
+
+            }
 
         },
 
