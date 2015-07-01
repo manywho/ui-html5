@@ -116,7 +116,7 @@ permissions and limitations under the License.
         return null;
 
     }
-    
+
     var table = React.createClass({
 
         outcomes: null,
@@ -202,7 +202,7 @@ permissions and limitations under the License.
 
         handleResize: function() {
 
-            if ((this.state.windowWidth <= 768 && window.innerWidth > 768) 
+            if ((this.state.windowWidth <= 768 && window.innerWidth > 768)
                 || (this.state.windowWidth > 768 && window.innerWidth <= 768)) {
 
                 this.setState({ windowWidth: window.innerWidth });
@@ -214,7 +214,7 @@ permissions and limitations under the License.
         onNext: function() {
 
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-                        
+
             if (!state.page) {
 
                 state.page = 1;
@@ -239,27 +239,19 @@ permissions and limitations under the License.
 
         },
 
-        uploadFile: function(fileData, progress) {
+        uploadFile: function(flowKey, formData, progress) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
-            var request = new FormData();
-            request.append('FileDataRequest', JSON.stringify(model.fileDataRequest));
-            
-            fileData.forEach(function (file) {
-
-                request.append('FileData', file);
-
-            });
+            formData.append('FileDataRequest', JSON.stringify(model.fileDataRequest));
 
             var tenantId = manywho.utils.extractTenantId(this.props.flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(this.props.flowKey);
 
-            return manywho.ajax.uploadFile(request, tenantId, authenticationToken, progress);                    
+            return manywho.ajax.uploadFile(formData, tenantId, authenticationToken, progress);
 
         },
 
-        onUploadComplete: function() {
+        uploadComplete: function() {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
@@ -288,7 +280,7 @@ permissions and limitations under the License.
             window.removeEventListener('resize', this.handleResize);
 
         },
-        
+
         render: function () {
 
             manywho.log.info('Rendering Table: ' + this.props.id);
@@ -332,7 +324,7 @@ permissions and limitations under the License.
 
             }
 
-            var displayColumns = getDisplayColumns(model.columns, this.outcomes);            
+            var displayColumns = getDisplayColumns(model.columns, this.outcomes);
             var isWaitVisible = loading && !loading.error;
             var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
@@ -361,16 +353,16 @@ permissions and limitations under the License.
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
             if (loading && loading.error) {
-                                
+
                 content = React.DOM.div({ className: 'table-error' }, [
                     React.DOM.p({ className: 'lead' }, loading.error),
                     React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry')
-                ]);                
+                ]);
 
             }
             else if (displayColumns.length == 0) {
 
-                content = React.DOM.div({ className: 'table-error' }, 
+                content = React.DOM.div({ className: 'table-error' },
                     React.DOM.p({ className: 'lead' }, 'No display columns have been defined for this table')
                 );
 
@@ -392,18 +384,18 @@ permissions and limitations under the License.
                 });
 
             }
-                       
+
             var fileUpload = React.createElement(manywho.component.getByName('file-upload'), {
                 flowKey: this.props.flowKey,
                 fileDataRequest: model.fileDataRequest,
-                onUploadComplete: this.onUploadComplete,
+                uploadComplete: this.uploadComplete,
                 upload: this.uploadFile
             }, null);
 
             return React.DOM.div({ className: classNames }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
-                    (model.fileDataRequest) ? fileUpload : null,    
+                    (model.fileDataRequest) ? fileUpload : null,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
