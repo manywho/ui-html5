@@ -69,7 +69,7 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function loadNavigation(flowKey, stateToken, navigationId) {
+    function loadNavigation(flowKey, stateToken, navigationId, currentMapElementId) {
 
         if (navigationId) {
 
@@ -78,7 +78,7 @@ manywho.engine = (function (manywho) {
 
                         if (navigation) {
 
-                            manywho.model.parseNavigationResponse(navigationId, navigation, flowKey);
+                            manywho.model.parseNavigationResponse(navigationId, navigation, flowKey, currentMapElementId);
 
                         }
 
@@ -262,7 +262,7 @@ manywho.engine = (function (manywho) {
 
                 if (!manywho.utils.isNullOrWhitespace(navigationId)) {
 
-                    deferreds.push(loadNavigation(flowKey, response.stateToken, navigationId));
+                    deferreds.push(loadNavigation(flowKey, response.stateToken, navigationId, response.currentMapElementId));
 
                 }
 
@@ -334,7 +334,7 @@ manywho.engine = (function (manywho) {
 
                 if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
 
-                    deferreds.push(loadNavigation(flowKey, response.stateToken, response.navigationElementReferences[0].id));
+                    deferreds.push(loadNavigation(flowKey, response.stateToken, response.navigationElementReferences[0].id, response.currentMapElementId));
 
                 }
 
