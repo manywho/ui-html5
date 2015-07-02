@@ -190,6 +190,43 @@ permissions and limitations under the License.
 
         },
 
+        onHeaderClick: function (e) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
+            var request = model.objectDataRequest || model.fileDataRequest;
+
+            if (request) {
+
+                var sortByOrder;
+
+                if (!manywho.utils.isEqual(this.state.lastSortedBy, e.currentTarget.id, true)) {
+
+                    sortByOrder = 'ASC';
+
+                } else {
+
+                    sortByOrder = manywho.utils.isEqual(this.state.sortByOrder, 'ASC', true) ? 'DESC' : 'ASC';
+
+                }
+
+                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, e.currentTarget.id, sortByOrder, state.page);
+
+                this.setState({
+                    sortByOrder: sortByOrder,
+                    lastSortedBy: e.currentTarget.id
+                })
+
+            }
+            else {
+
+                manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
+
+            }
+
+        },
+
         onOutcome: function (objectDataId, outcomeId) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -264,7 +301,9 @@ permissions and limitations under the License.
 
             return {
                 selectedRows: [],
-                windowWidth: window.innerWidth
+                windowWidth: window.innerWidth,
+                sortByOrder: 'ASC',
+                lastOrderBy: ''
             }
 
         },
@@ -380,6 +419,9 @@ permissions and limitations under the License.
                     onRowClicked: this.onRowClicked,
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
+                    onHeaderClick: this.onHeaderClick,
+                    lastSortedBy: this.state.lastSortedBy,
+                    sortByOrder: this.state.sortByOrder,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true)
                 });
 

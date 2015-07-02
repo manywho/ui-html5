@@ -64,6 +64,8 @@ permissions and limitations under the License.
 
         renderHeaderRow: function(displayColumns) {
 
+            var self = this;
+
             return React.DOM.tr(null, displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
@@ -73,7 +75,26 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    return React.DOM.th(null, column.label);
+                    var headerAttributes = { id: column.developerName };
+
+                    if (self.props.onHeaderClick) {
+
+                        headerAttributes['onClick'] = self.props.onHeaderClick;
+
+                    }
+
+                    var headerChildren = [ column.label ];
+
+                    if (!manywho.utils.isNullOrWhitespace(self.props.lastSortedBy) && self.props.lastSortedBy == column.developerName) {
+
+                        var iconClasses = 'table-header-icon glyphicon ';
+                        iconClasses += self.props.sortByOrder == 'ASC' ? 'glyphicon-menu-down' : 'glyphicon-menu-up';
+
+                        headerChildren.push(React.DOM.span({ className: iconClasses }))
+
+                    }
+
+                    return React.DOM.th(headerAttributes, headerChildren);
 
                 }
 
