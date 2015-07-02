@@ -165,6 +165,10 @@ permissions and limitations under the License.
                     attributes.checked = 'checked';
                 }
 
+                if (!model.isEditable) {
+                    attributes.disabled = 'disabled';
+                }
+
                 return React.DOM.div({ className: containerClassNames},
                     [
                         React.DOM.div({ className: 'checkbox ' },
