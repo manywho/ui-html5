@@ -352,10 +352,12 @@ permissions and limitations under the License.
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
-            if (loading && loading.error) {
+            if ((loading && loading.error) || !manywho.utils.isNullOrWhitespace(model.validationMessage)) {
+
+                var errorMessage = loading.error || model.validationMessage;
 
                 content = React.DOM.div({ className: 'table-error' }, [
-                    React.DOM.p({ className: 'lead' }, loading.error),
+                    React.DOM.p({ className: 'lead' }, errorMessage),
                     React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry')
                 ]);
 
