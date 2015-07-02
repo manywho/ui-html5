@@ -54,9 +54,17 @@ permissions and limitations under the License.
 
             return objectData.map(function (item) {
 
+                var classNames = ['list-group-item', 'clearfix'];
+                if (this.props.selectedRows.indexOf(item.externalId) != -1) {
+
+                    classNames.push('active');
+
+                }
+
                 var attributes = {
-                    className: 'list-group-item clearfix',
+                    className: classNames.join(' '),
                     href: '#',
+                    id: item.externalId,
                     'data-item': item.externalId
                 }
 
@@ -67,10 +75,19 @@ permissions and limitations under the License.
 
                 }).length > 0;
 
+                var chevron = null;
+
                 if (outcomes.length == 1 && !isOutcomeDestructive) {
 
                     attributes['data-outcome'] = outcomes[0].id;
                     attributes.onClick = this.onItemClick;
+                    chevron = React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null);
+
+                }
+
+                if (outcomes.length != 1) {
+
+                    attributes.onClick = this.props.onRowClicked;
 
                 }
 
@@ -127,7 +144,7 @@ permissions and limitations under the License.
                             }, this)
                         )
                     ),
-                    React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null)
+                    chevron
                 ]);
 
             }, this);
