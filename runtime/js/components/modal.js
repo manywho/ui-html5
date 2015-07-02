@@ -12,7 +12,7 @@ permissions and limitations under the License.
 (function (manywho) {
 
     var modal = React.createClass({
-               
+
         mixins: [manywho.component.mixins.enterKeyHandler],
 
         componentDidMount: function () {
@@ -27,8 +27,8 @@ permissions and limitations under the License.
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
 
             return React.DOM.div({ className: 'modal show' }, [
-                React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
-                    React.DOM.div({ className: 'modal-content full-screen' }, [
+                React.DOM.div({ className: 'modal-dialog', onKeyUp: this.onEnter }, [
+                    React.DOM.div({ className: 'modal-content' }, [
                         React.DOM.div({ className: 'modal-header' }, [
                             React.DOM.h4({ className: 'modal-title' }, manywho.model.getLabel(this.props.flowKey))
                         ]),
@@ -69,7 +69,7 @@ permissions and limitations under the License.
             }
 
             return this.renderBackdrop(this.renderModal());
-            
+
         }
 
     });
