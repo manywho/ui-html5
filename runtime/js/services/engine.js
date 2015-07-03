@@ -416,9 +416,9 @@ manywho.engine = (function (manywho) {
 
                 var selectedNavigationId = manywho.model.getSelectedNavigation(flowKey);
 
-                if (!manywho.utils.isNullOrWhitespace(selectedNavigationId)) {
+                var deferreds = [];
 
-                    var deferreds = [];
+                if (!manywho.utils.isNullOrWhitespace(selectedNavigationId)) {
 
                     deferreds.push(loadNavigation(flowKey, moveResponse.stateToken, selectedNavigationId));
 
