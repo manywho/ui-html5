@@ -26,7 +26,7 @@ permissions and limitations under the License.
     var wait = React.createClass({
 
         render: function () {
-            
+
             var isVisible = arePropsSpecified(this.props);
             var message = isVisible && this.props.message;
 
@@ -35,19 +35,17 @@ permissions and limitations under the License.
                 manywho.log.info('Rendering Wait');
 
             }
-            
+
             var classNames = [
-                'wait',
+                'wait-container',
                 (isVisible) ? '' : 'hidden'
             ].join(' ');
 
-            return React.DOM.div({ className: classNames },
-                React.DOM.div({ className: 'wait-overlay' }),
-                React.DOM.div({ className: 'wait-message-container' }, [
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),
-                    React.DOM.p({ className: 'lead' }, message)
-                ])
-            );
+            return React.DOM.div({ className: classNames}, [
+                React.DOM.div({ className: 'wait-spinner' }, null),
+                React.DOM.span({ className: 'wait-message' }, message)
+            ]);
+
 
         }
 
