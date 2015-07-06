@@ -13,10 +13,10 @@ manywho.settings = (function (manywho, $) {
 
     var globals = {
         localization: {
-            initializing: 'Initializing',
+            initializing: '',
             executing: '',
-            loading: 'Loading',
-            navigating: 'Navigating',
+            loading: '',
+            navigating: '',
             joining: 'Joining',
             sending: 'Sending',
             returnToParent: 'Return To Parent'

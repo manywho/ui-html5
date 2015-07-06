@@ -287,7 +287,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                manywho.state.setLoading('main', null, flowKey);
+                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
@@ -434,7 +434,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                manywho.state.setLoading('main', null, flowKey);
+                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
 
                 if (manywho.utils.isDrawTool(flowKey)) {
 
@@ -614,20 +614,8 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            if(manywho.utils.isModal(flowKey) && !manywho.utils.isDrawTool(flowKey)) {
-
-                var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                if(parentFlowKey) {
-                    manywho.state.setLoading('main', { message: manywho.settings.global('localization.executing') }, parentFlowKey);
-                    this.render(parentFlowKey);
-                }
-
-            } else {
-
-                manywho.state.setLoading('main', { message: manywho.settings.global('localization.executing') }, flowKey);
-                this.render(flowKey);
-
-            }
+            manywho.state.setLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);
+            this.render(flowKey);
 
             var invokeRequest = manywho.json.generateInvokeRequest(
                 manywho.state.getState(flowKey),
@@ -924,9 +912,10 @@ manywho.engine = (function (manywho) {
 
                 container = document.getElementById('draw-modal');
 
-            } else if(manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
+            } else if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
                 flowKey = manywho.model.getParentForModal(flowKey);
+                container = document.getElementById(flowKey);
 
             }
 
