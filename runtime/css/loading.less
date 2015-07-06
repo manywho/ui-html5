@@ -9,92 +9,103 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
-@-webkit-keyframes spin {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
-}
-
-@-moz-keyframes spin {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
-}
-
-@-o-keyframes spin {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
-}
-
-@keyframes spin {
-  from { transform: scale( 1 ) rotate( 0deg );   }
-  to   { transform: scale( 1 ) rotate( 360deg ); }
-}
-
 .mw-bs {
 
-  .spin {
-    -webkit-animation: spin 1s infinite linear;
-    animation: spin 1s infinite linear;
-  }
+    .initialize-error {
+        position: absolute;
+        margin-left: 5%;
+        width: 90%;
+        z-index: 1;
+    }
 
-}
+    .wait-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
 
-.loader {
-  -webkit-pointer-events: none;
-  pointer-events: none;
+    .wait-message {
+        position: relative;
+        text-align: center;
+        margin-top: 1em;
+        display: block;
+        top: 40%;
+        font-size: 2em;
+    }
 
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
+    /* outer */
+    .wait-spinner {
+        display: block;
+        position: relative;
+        left: 50%;
+        top: 40%;
+        width: 150px;
+        height: 150px;
+        margin: -75px 0 0 -75px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #268AAF;
+        -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+        animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+    }
 
-  z-index: 2000;
-  position: fixed;
-  height: 90px;
-  width: 90px;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
+    /* middle */
+    .wait-spinner:before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #31B2E2;
+        -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+          animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+    }
 
-.loader .loader-icon {
-  position: fixed;
-  z-index: 2000;
-  display: block;
-  position: absolute;
-  left: -30px;
-  top: -30px;
-  height: 90px;
-  width: 90px;
-  display: block;
-  border-width: 30px;
-  border-style: double;
-  border-color: #29d transparent transparent;
-  border-radius: 50%;
+    /* inner */
+    .wait-spinner:after {
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #154E62;
+        -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+          animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+    }
 
-  -webkit-animation: spin 1s linear infinite;
-  -moz-animation: spin 1s linear infinite;
-  -o-animation: spin 1s linear infinite;
-  animation: spin 1s linear infinite;
-}
+    @-webkit-keyframes spin {
+        0%   {
+            -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+            -ms-transform: rotate(0deg);  /* IE 9 */
+            transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+        }
+        100% {
+            -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+            -ms-transform: rotate(360deg);  /* IE 9 */
+            transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+        }
+    }
+    @keyframes spin {
+        0%   {
+            -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+            -ms-transform: rotate(0deg);  /* IE 9 */
+            transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+        }
+        100% {
+            -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+            -ms-transform: rotate(360deg);  /* IE 9 */
+            transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+        }
+    }
 
-.loader .loader-icon:before {
-  content: ' ';
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  height: 50px;
-  width: 50px;
-  display: block;
-  border-width: 10px;
-  border-style: solid;
-  border-color: #29d transparent transparent;
-  border-radius: 50%;
-}
-
-.initialize-error {
-    position: absolute;
-    margin-left: 5%;
-    width: 90%;
-    z-index: 1;
 }

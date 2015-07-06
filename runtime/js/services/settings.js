@@ -14,7 +14,7 @@ manywho.settings = (function (manywho, $) {
     var globals = {
         localization: {
             initializing: 'Initializing',
-            executing: 'Executing',
+            executing: '',
             loading: 'Loading',
             navigating: 'Navigating',
             joining: 'Joining',
