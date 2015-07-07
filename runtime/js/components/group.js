@@ -39,29 +39,22 @@ permissions and limitations under the License.
 
     var group = React.createClass({
 
+        componentDidMount: function() {
+
+            $(this.refs.group.getDOMNode().children[0].querySelector('a')).tab('show');
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Group: ' + this.props.id);
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
-            var activeTab = null;
-
-            if (this.refs.tabs != null) {
-
-                activeTab = this.refs.tabs.getDOMNode().querySelector('li.active');
-             
-            }
 
             var childElements = children.map(function(child) {
 
                 var classNames = [];
-
-                if (child.order == 0 && (activeTab == null || manywho.utils.isEqual(activeTab.id, child.id))) {
-
-                    classNames.push('active');
-
-                }
 
                 if (childContainsInvalidItems(child, this.props.flowKey)) {
 
@@ -69,14 +62,14 @@ permissions and limitations under the License.
 
                 }
 
-                return React.createElement('li', { className: classNames.join(' '), id: child.id },
+                return React.createElement('li', { className: classNames.join(' ') },
                             React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label' }, child.label)
                         );
 
             }, this);
 
-            return React.DOM.div({ className: classes }, [
-                React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, childElements),
+            return React.DOM.div({ className: classes, ref: 'group' }, [
+                React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
                 React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
 
@@ -88,13 +81,7 @@ permissions and limitations under the License.
 
     manywho.styling.registerContainer("group", function (item, container) {
 
-        var classes = ['tab-pane'];
-
-        if (item.order == 0) {
-            classes.push('active');
-        }
-
-        return classes;
+        return ['tab-pane'];
 
     });
 
