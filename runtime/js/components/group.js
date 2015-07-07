@@ -45,10 +45,23 @@ permissions and limitations under the License.
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
+            var activeTab = null;
+
+            if (this.refs.tabs != null) {
+
+                activeTab = this.refs.tabs.getDOMNode().querySelector('li.active');
+             
+            }
 
             var childElements = children.map(function(child) {
 
-                var classNames = [(child.order == 0) ? 'active' : ''];
+                var classNames = [];
+
+                if (child.order == 0 && (activeTab == null || manywho.utils.isEqual(activeTab.id, child.id))) {
+
+                    classNames.push('active');
+
+                }
 
                 if (childContainsInvalidItems(child, this.props.flowKey)) {
 
@@ -56,14 +69,14 @@ permissions and limitations under the License.
 
                 }
 
-                return React.createElement('li', { className: classNames.join(' ') },
+                return React.createElement('li', { className: classNames.join(' '), id: child.id },
                             React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label' }, child.label)
                         );
 
             }, this);
 
             return React.DOM.div({ className: classes }, [
-                React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
+                React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, childElements),
                 React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
 
