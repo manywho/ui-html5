@@ -23,7 +23,7 @@ permissions and limitations under the License.
             var items = manywho.model.getChildren(child.id, flowKey)
             for (var i = 0; i < items.length; i++) {
 
-                if (childContainsInvalidItems(items[i])) {
+                if (childContainsInvalidItems(items[i], flowKey)) {
 
                     return true;
 
@@ -32,6 +32,8 @@ permissions and limitations under the License.
             }
 
         }
+
+        return false;
 
     }
 
@@ -46,7 +48,7 @@ permissions and limitations under the License.
 
             var childElements = children.map(function(child) {
 
-                var classNames = [(child.order == 0) ? 'active' : null];
+                var classNames = [(child.order == 0) ? 'active' : ''];
 
                 if (childContainsInvalidItems(child, this.props.flowKey)) {
 
