@@ -25,6 +25,15 @@ permissions and limitations under the License.
 
     var wait = React.createClass({
 
+        componentDidUpdate: function() {
+
+            var element = this.refs.wait.getDOMNode();
+            if (element.clientHeight > window.innerHeight) {
+                element.children[0].style.top = 'calc(40% + ' + window.scrollY + ')';
+            }
+
+        },
+
         render: function () {
 
             var isVisible = arePropsSpecified(this.props);
@@ -41,7 +50,7 @@ permissions and limitations under the License.
                 (isVisible) ? '' : 'hidden'
             ].join(' ');
 
-            return React.DOM.div({ className: classNames}, [
+            return React.DOM.div({ className: classNames, ref: 'wait' }, [
                 React.DOM.div({ className: 'wait-spinner' }, null),
                 React.DOM.span({ className: 'wait-message' }, message)
             ]);
