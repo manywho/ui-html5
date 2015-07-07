@@ -27,34 +27,50 @@ permissions and limitations under the License.
 
         componentDidUpdate: function() {
 
-            var element = this.refs.wait.getDOMNode();
-            if (element.clientHeight > window.innerHeight) {
-                element.children[0].style.top = 'calc(40% + ' + window.scrollY + ')';
+            if (this.refs.wait) {
+
+                var element = this.refs.wait.getDOMNode();
+                if (element.clientHeight > window.innerHeight) {
+
+                    element.children[0].style.top = 'calc(40% + ' + window.scrollY + ')';
+
+                }
+
+            }
+
+        },
+
+        getDefaultProps: function() {
+
+            return {
+                isVisible: false,
+                isSmall: false,
+                message: null
             }
 
         },
 
         render: function () {
 
-            var isVisible = arePropsSpecified(this.props);
-            var message = isVisible && this.props.message;
-
-            if (isVisible) {
+            if (this.props.isVisible) {
 
                 manywho.log.info('Rendering Wait');
 
+                var spinnerClassNames = ['wait-spinner'];
+                if (this.props.isSmall) {
+
+                    spinnerClassNames.push('wait-spinner-small');
+
+                }
+
+                return React.DOM.div({ className:'wait-container', ref: 'wait' }, [
+                    React.DOM.div({ className: spinnerClassNames.join(' ') }, null),
+                    React.DOM.span({ className: 'wait-message' }, this.props.message)
+                ]);
+
             }
 
-            var classNames = [
-                'wait-container',
-                (isVisible) ? '' : 'hidden'
-            ].join(' ');
-
-            return React.DOM.div({ className: classNames, ref: 'wait' }, [
-                React.DOM.div({ className: 'wait-spinner' }, null),
-                React.DOM.span({ className: 'wait-message' }, message)
-            ]);
-
+            return null;
 
         }
 

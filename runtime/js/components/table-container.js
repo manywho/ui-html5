@@ -443,7 +443,7 @@ permissions and limitations under the License.
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
-                    React.createElement(manywho.component.getByName('wait'), isWaitVisible && loading, null)
+                    React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible && loading, isSmall: true }, null)
                 ])
             ]);
 
