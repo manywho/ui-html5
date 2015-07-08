@@ -65,7 +65,7 @@ manywho.json = (function (manywho) {
                 },
                 'mode': mode || '',
                 'selectedMapElementId': selectedMapElementId || null,
-                'navigationElementId': navigationElementId || '',
+                'navigationElementId': navigationElementId || null,
                 'selectedNavigationElementId': selectedNavigationElementId || null
             }
         },

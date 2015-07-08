@@ -216,7 +216,7 @@ permissions and limitations under the License.
                 manywho.log.info('Rendering Feed');
 
                 var streamMessages = stream.messages || {};
-                var loading = manywho.state.getLoading('feed', this.props.flowKey);
+                var state = manywho.state.getComponent('feed', this.props.flowKey) || {};
 
                 var followCaption = (stream.me.isFollower) ? 'Un-Follow' : 'Follow';
                 var isFooterVisible = streamMessages.nextPage && streamMessages.nextPage > 1;
@@ -243,7 +243,10 @@ permissions and limitations under the License.
                     React.DOM.div({ className: 'panel-heading clearfix ' + (!isFooterVisible) ? 'hidden' : '' },
                         React.DOM.button({ className: 'btn btn-default pull-right', onClick: this.onGetNextPage }, 'More')
                     ),
-                    React.createElement(manywho.component.getByName('wait'), { isVisible: loading != null, message: loading && loading.message }, null)
+                    React.createElement(manywho.component.getByName('wait'), {
+                        isVisible: state.loading != null,
+                        message: state.loading && state.loading.message },
+                    null)
                 ]);
 
             }

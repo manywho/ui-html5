@@ -17,7 +17,7 @@ manywho.social = (function (manywho) {
 
         initialize: function(flowKey, streamId) {
 
-            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
@@ -46,7 +46,7 @@ manywho.social = (function (manywho) {
 
                     streams[flowKey].messages = response;
 
-                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
                 });
@@ -61,7 +61,7 @@ manywho.social = (function (manywho) {
 
         refreshMessages: function(flowKey) {
 
-            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
@@ -74,7 +74,7 @@ manywho.social = (function (manywho) {
 
                     streams[flowKey].messages = response;
 
-                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
                 });
@@ -83,7 +83,7 @@ manywho.social = (function (manywho) {
 
         getMessages: function(flowKey) {
 
-            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
@@ -97,7 +97,7 @@ manywho.social = (function (manywho) {
                     streams[flowKey].messages.messages = streams[flowKey].messages.messages.concat(response.messages);
                     streams[flowKey].messages.nextPage = response.nextPage;
 
-                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
                 });
@@ -136,7 +136,7 @@ manywho.social = (function (manywho) {
 
             });
 
-            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.sending') }, flowKey);
+            manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.sending') }, flowKey);
             manywho.engine.render(flowKey);
 
             return manywho.ajax.sendSocialMessage(tenantId, stream.id, stateId, request, authenticationToken)
@@ -163,7 +163,7 @@ manywho.social = (function (manywho) {
 
                     manywho.collaboration.syncFeed(flowKey);
 
-                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
                 });
@@ -177,7 +177,7 @@ manywho.social = (function (manywho) {
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
             var stream = streams[flowKey];
 
-            manywho.state.setLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             return manywho.ajax.follow(tenantId, stream.id, stateId, !stream.me.isFollower, authenticationToken)
@@ -192,7 +192,7 @@ manywho.social = (function (manywho) {
 
                     streams[flowKey].followers = response;
 
-                    manywho.state.setLoading('feed', null, flowKey);
+                    manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
 
                 });

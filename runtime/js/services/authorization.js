@@ -49,7 +49,7 @@ manywho.authorization = (function (manywho) {
 
                 }
 
-                manywho.state.setLoading('main', { message: manywho.settings.global('localization.executing') }, flowKey);
+                manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.executing') }, flowKey);
                 manywho.engine.render(flowKey);
 
                 var authenticationFlow = {
@@ -111,7 +111,7 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function () {
 
-                        manywho.state.setLoading('main', null, flowKey);
+                        manywho.state.setComponentLoading('main', null, flowKey);
                         manywho.model.setModal(flowKey, authenticationFlow.key);
                         manywho.engine.render(flowKey);
 
