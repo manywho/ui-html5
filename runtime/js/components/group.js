@@ -23,7 +23,7 @@ permissions and limitations under the License.
             var items = manywho.model.getChildren(child.id, flowKey)
             for (var i = 0; i < items.length; i++) {
 
-                if (childContainsInvalidItems(items[i])) {
+                if (childContainsInvalidItems(items[i], flowKey)) {
 
                     return true;
 
@@ -33,9 +33,17 @@ permissions and limitations under the License.
 
         }
 
+        return false;
+
     }
 
     var group = React.createClass({
+
+        componentDidMount: function() {
+
+            $(this.refs.group.getDOMNode().children[0].querySelector('a')).tab('show');
+
+        },
 
         render: function () {
 
@@ -46,7 +54,7 @@ permissions and limitations under the License.
 
             var childElements = children.map(function(child) {
 
-                var classNames = [(child.order == 0) ? 'active' : null];
+                var classNames = [];
 
                 if (childContainsInvalidItems(child, this.props.flowKey)) {
 
@@ -60,7 +68,7 @@ permissions and limitations under the License.
 
             }, this);
 
-            return React.DOM.div({ className: classes }, [
+            return React.DOM.div({ className: classes, ref: 'group' }, [
                 React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
                 React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
@@ -73,13 +81,7 @@ permissions and limitations under the License.
 
     manywho.styling.registerContainer("group", function (item, container) {
 
-        var classes = ['tab-pane'];
-
-        if (item.order == 0) {
-            classes.push('active');
-        }
-
-        return classes;
+        return ['tab-pane'];
 
     });
 

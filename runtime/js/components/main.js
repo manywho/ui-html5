@@ -12,7 +12,7 @@ permissions and limitations under the License.
 (function (manywho) {
 
     var main = React.createClass({
-         
+
         mixins: [manywho.component.mixins.enterKeyHandler],
 
         componentDidMount: function() {
@@ -34,7 +34,7 @@ permissions and limitations under the License.
         },
 
         componentDidUpdate: function() {
-            
+
             if (!manywho.utils.isEmbedded()) {
 
                 var main = this.refs.main.getDOMNode();
@@ -62,11 +62,11 @@ permissions and limitations under the License.
         render: function () {
 
             manywho.log.info("Rendering Main");
-            
+
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var loading = manywho.state.getLoading('main', this.props.flowKey);
-            
+
             var modalKey = manywho.model.getModal(this.props.flowKey);
             var modal = null;
 
@@ -87,7 +87,7 @@ permissions and limitations under the License.
                 (isFullWidth) ? 'container-fluid full-width' : 'container',
                 (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : ''
             ];
-                        
+
             return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
                         React.DOM.div({ className: classNames.join(' '), onKeyUp: this.onEnter, ref: 'main' }, [
@@ -102,7 +102,7 @@ permissions and limitations under the License.
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
-                        React.createElement(manywho.component.getByName('wait'), loading, null)
+                        React.createElement(manywho.component.getByName('wait'), { isVisible: loading != null, message: loading && loading.message }, null)
                     ]);
 
         }
@@ -111,5 +111,5 @@ permissions and limitations under the License.
 
     manywho.component.register("main", main);
 
-    
+
 }(manywho));
