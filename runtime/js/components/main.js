@@ -83,7 +83,6 @@ permissions and limitations under the License.
 
             var classNames = [
                 'main',
-                (componentElements.length + outcomeElements.length == 0) ? 'main-empty' : '',
                 (isFullWidth) ? 'container-fluid full-width' : 'container',
                 (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : ''
             ];
