@@ -38,8 +38,8 @@ manywho.ajax = (function (manywho) {
         request.listFilter.search = search || null;
 
         if (orderBy) {
-            request.listFilter.orderBy = orderBy;
-            request.listFilter.orderByDirection = orderByDirection;
+            request.listFilter.orderByPropertyDeveloperName = orderBy;
+            request.listFilter.orderByDirectionType = orderByDirection;
         }
 
         if (page > 0) {

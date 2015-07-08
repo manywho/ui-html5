@@ -124,8 +124,9 @@ permissions and limitations under the License.
             if (this.refs.navigationBar) {
 
                 var navigationElement = this.refs.navigationBar.getDOMNode();
+                var header = navigationElement.querySelector('.navbar-header');
 
-                if (navigationElement.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
+                if (header.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
 
                     navigationElement.classList.add('navbar-double-height')
 

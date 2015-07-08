@@ -66,7 +66,7 @@ permissions and limitations under the License.
                     href: '#',
                     id: item.externalId,
                     'data-item': item.externalId
-                }
+                };
 
                 var isOutcomeDestructive = outcomes.filter(function (outcome) {
 

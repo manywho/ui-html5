@@ -10,14 +10,14 @@ permissions and limitations under the License.
 */
 
 (function (manywho) {
-    
+
     var status = React.createClass({
 
         render: function () {
 
             var isVisible = manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'wait', true)
                             || manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'status', true);
-            
+
             var message = manywho.model.getWaitMessage(this.props.flowKey);
 
             if (isVisible) {
@@ -25,7 +25,7 @@ permissions and limitations under the License.
                 manywho.log.info('Rendering Status');
 
                 return React.DOM.div({ className: 'status' },
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh staus-icon spin', 'aria-hidden': 'true' }),
                     React.DOM.p({ className: 'lead' }, message)
                 );
 
@@ -35,7 +35,7 @@ permissions and limitations under the License.
                 return null;
 
             }
-            
+
         }
 
     });

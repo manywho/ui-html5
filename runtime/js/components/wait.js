@@ -25,29 +25,52 @@ permissions and limitations under the License.
 
     var wait = React.createClass({
 
-        render: function () {
-            
-            var isVisible = arePropsSpecified(this.props);
-            var message = isVisible && this.props.message;
+        componentDidUpdate: function() {
 
-            if (isVisible) {
+            if (this.refs.wait) {
+
+                var element = this.refs.wait.getDOMNode();
+                if (element.clientHeight > window.innerHeight) {
+
+                    element.children[0].style.top = 'calc(40% + ' + window.scrollY + ')';
+
+                }
+
+            }
+
+        },
+
+        getDefaultProps: function() {
+
+            return {
+                isVisible: false,
+                isSmall: false,
+                message: null
+            }
+
+        },
+
+        render: function () {
+
+            if (this.props.isVisible) {
 
                 manywho.log.info('Rendering Wait');
 
-            }
-            
-            var classNames = [
-                'wait',
-                (isVisible) ? '' : 'hidden'
-            ].join(' ');
+                var spinnerClassNames = ['wait-spinner'];
+                if (this.props.isSmall) {
 
-            return React.DOM.div({ className: classNames },
-                React.DOM.div({ className: 'wait-overlay' }),
-                React.DOM.div({ className: 'wait-message-container' }, [
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh wait-icon spin', 'aria-hidden': 'true' }),
-                    React.DOM.p({ className: 'lead' }, message)
-                ])
-            );
+                    spinnerClassNames.push('wait-spinner-small');
+
+                }
+
+                return React.DOM.div({ className:'wait-container', ref: 'wait' }, [
+                    React.DOM.div({ className: spinnerClassNames.join(' ') }, null),
+                    React.DOM.span({ className: 'wait-message' }, this.props.message)
+                ]);
+
+            }
+
+            return null;
 
         }
 
