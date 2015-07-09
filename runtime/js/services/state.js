@@ -232,6 +232,8 @@ manywho.state = (function (manywho) {
 
             }
 
+            components[flowKey][componentId].error.id = componentId;
+
         }
 
     }

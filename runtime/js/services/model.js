@@ -146,6 +146,7 @@ permissions and limitations under the License.
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
             flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
+            flowModel[flowKey].rootFaults = [];
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
@@ -216,6 +217,8 @@ permissions and limitations under the License.
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
+                    flowModel[flowKey].rootFaults = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults;
+
                     var parentFlowKey = flowKey;
                     if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
@@ -228,14 +231,18 @@ permissions and limitations under the License.
                     for (faultName in engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
                         var fault = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults[faultName];
-                        if (fault !== null && typeof fault === 'object') {
 
-                            fault = fault.message;
+                        if (fault !== null && typeof fault === 'string') {
+
+                            var message = fault;
+                            fault = { message: message };
 
                         }
 
+                        fault.name = faultName;
+
                         flowModel[parentFlowKey].notifications.push({
-                            message: fault,
+                            message: fault.message,
                             position: 'center',
                             type: 'danger',
                             timeout: '0',
@@ -651,6 +658,12 @@ permissions and limitations under the License.
 
             flowModel[flowKey] = null;
             delete flowModel[flowKey];
+
+        },
+
+        getRootFaults: function(flowKey) {
+
+            return flowModel[flowKey].rootFaults || [];
 
         }
 
