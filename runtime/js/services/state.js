@@ -17,6 +17,7 @@ manywho.state = (function (manywho) {
     var authenticationToken = {};
     var sessionId = {};
     var location = {};
+    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
     function assignGeoLocation(position) {
 
@@ -44,7 +45,7 @@ manywho.state = (function (manywho) {
     }
 
     return {
-        
+
         refreshComponents: function(models, flowKey) {
 
             components[flowKey] = {};
@@ -70,7 +71,7 @@ manywho.state = (function (manywho) {
                 }
 
             }
-            
+
         },
 
         getLocation: function (flowKey) {
@@ -143,11 +144,15 @@ manywho.state = (function (manywho) {
 
                 for (id in components[flowKey]) {
 
-                    pageComponentInputResponseRequests.push({
-                        pageComponentId: id,
-                        contentValue: components[flowKey][id].contentValue,
-                        objectData: components[flowKey][id].objectData
-                    });
+                    if (guidRegex.test(id)) {
+
+                        pageComponentInputResponseRequests.push({
+                            pageComponentId: id,
+                            contentValue: components[flowKey][id].contentValue,
+                            objectData: components[flowKey][id].objectData
+                        });
+
+                    }
 
                 }
 
@@ -156,7 +161,7 @@ manywho.state = (function (manywho) {
             return pageComponentInputResponseRequests;
 
         },
-        
+
         setState: function(id, token, mapElementId, flowKey) {
 
             state[flowKey] = {
@@ -200,22 +205,37 @@ manywho.state = (function (manywho) {
 
         },
 
-        getLoading: function (componentId, flowKey) {
+        setComponentLoading: function (componentId, data, flowKey) {
 
-            if (!loading[flowKey]) loading[flowKey] = {};
+            components[flowKey] = components[flowKey] || {};
+            components[flowKey][componentId] = components[flowKey][componentId] || {};
 
-            return loading[flowKey][componentId];
+            components[flowKey][componentId].loading = data;
 
         },
 
-        setLoading: function (componentId, data, flowKey) {
+        setComponentError: function(componentId, error, flowKey) {
 
-            if (!loading[flowKey]) loading[flowKey] = {};
+            components[flowKey] = components[flowKey] || {};
+            components[flowKey][componentId] = components[flowKey][componentId] || {};
 
-            loading[flowKey][componentId] = data;
+            if (error !== null && typeof error === 'object') {
+
+                components[flowKey][componentId].error = error;
+
+            }
+            else {
+
+                components[flowKey][componentId].error = {
+                    message: error
+                }
+
+            }
+
+            components[flowKey][componentId].error.id = componentId;
 
         }
-        
+
     }
 
 })(manywho);

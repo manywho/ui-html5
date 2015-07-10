@@ -65,7 +65,7 @@ permissions and limitations under the License.
 
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
-            var loading = manywho.state.getLoading('main', this.props.flowKey);
+            var state = manywho.state.getComponent('main', this.props.flowKey) || {};
 
             var modalKey = manywho.model.getModal(this.props.flowKey);
             var modal = null;
@@ -102,7 +102,7 @@ permissions and limitations under the License.
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
-                        React.createElement(manywho.component.getByName('wait'), { isVisible: loading != null, message: loading && loading.message }, null)
+                        React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)
                     ]);
 
         }

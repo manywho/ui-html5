@@ -76,7 +76,7 @@ permissions and limitations under the License.
 
         },
 
-        renderValues: function(title, id, values) {
+        renderValues: function(title, id, values, name, idName) {
 
             var isExpanded = this.state.toggle[id] || false;
 
@@ -88,28 +88,28 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.ul({ className: 'list-unstyled debug-values ' + ((isExpanded) ? '' : 'hidden') }, values.map(function (value) {
 
-                    return this.renderValue(this.state.paths[value.valueElementId] || '', value);
+                    return this.renderValue(this.state.paths[value[idName]] || '', value, name, idName);
 
                 }, this))
             ]);
 
         },
 
-        renderValue: function(path, value) {
+        renderValue: function(path, value, name, idName) {
 
-            var isExpanded = this.state.toggle[value.valueElementId] || false;
+            var isExpanded = this.state.toggle[value[idName]] || false;
             var properties = manywho.utils.getValueByPath(value, path);
 
-            path = value.developerName + '.' + path;
+            path = value[name] + '.' + path;
 
             return React.DOM.li({ className: 'clearfix' }, [
                 React.DOM.div(null, [
-                    React.DOM.span({ className: 'glyphicon pull-left debug-value-toggle glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right'), 'data-value-id': value.valueElementId, onClick: this.toggleValue }, null),
-                    React.DOM.ol({ className: 'breadcrumb debug-value-breadcrumb', 'data-value-id': value.valueElementId, onClick: this.toggleValue }, path.split('.').map(function (part) {
+                    React.DOM.span({ className: 'glyphicon pull-left debug-value-toggle glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right'), 'data-value-id': value[idName], onClick: this.toggleValue }, null),
+                    React.DOM.ol({ className: 'breadcrumb debug-value-breadcrumb', 'data-value-id': value[idName], onClick: this.toggleValue }, path.split('.').map(function (part) {
 
                         if (!manywho.utils.isNullOrWhitespace(part)) {
 
-                            return React.DOM.li(null, React.DOM.a({ href: '#', onClick: this.onBreadcrumbClick, 'data-value-id': value.valueElementId }, part));
+                            return React.DOM.li(null, React.DOM.a({ href: '#', onClick: this.onBreadcrumbClick, 'data-value-id': value[idName] }, part));
 
                         }
                         else {
@@ -127,7 +127,7 @@ permissions and limitations under the License.
 
                         if (typeof propertyValue === 'object' && propertyValue) {
 
-                            propertyValue = React.DOM.button({ className: 'btn btn-primary btn-sm', 'data-value-id': value.valueElementId, 'data-path-part': propertyName, onClick: this.onValueViewClick }, 'View')
+                            propertyValue = React.DOM.button({ className: 'btn btn-primary btn-sm', 'data-value-id': value[idName], 'data-path-part': propertyName, onClick: this.onValueViewClick }, 'View')
 
                         }
 
@@ -186,13 +186,27 @@ permissions and limitations under the License.
 
                 manywho.log.info('Rendering Debug');
 
+                var rootFaults = manywho.model.getRootFaults(this.props.flowKey) || [];
                 var preCommitStateValues = manywho.model.getPreCommitStateValues(this.props.flowKey) || [];
                 var stateValues = manywho.model.getStateValues(this.props.flowKey) || [];
                 var executionLog = manywho.model.getExecutionLog(this.props.flowKey) || {};
 
+                var componentErrors = [];
+                for (var id in manywho.state.getComponents(flowKey)) {
+
+                    if (manywho.state.getComponents(flowKey)[id].error) {
+
+                        componentErrors.push(manywho.state.getComponents(flowKey)[id].error);
+
+                    }
+
+                }
+
                 var children = [
-                    this.renderValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, this.toggleR),
-                    this.renderValues('State Values', 'statevalues', stateValues),
+                    this.renderValues('Root Faults', 'rootfaults', rootFaults, 'name', 'name'),
+                    this.renderValues('Component Errors', 'componenterrors', componentErrors, 'id', 'id'),
+                    this.renderValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, 'developerName', 'valueElementId'),
+                    this.renderValues('State Values', 'statevalues', stateValues, 'developerName', 'valueElementId'),
                     this.renderLogEntries(executionLog.entries || [])
                 ];
 

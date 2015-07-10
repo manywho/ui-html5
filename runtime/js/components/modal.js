@@ -26,7 +26,7 @@ permissions and limitations under the License.
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var drawKey = manywho.model.getParentForModal(this.props.flowKey);
-            var loading = manywho.state.getLoading('modal', this.props.flowKey);
+            var state = manywho.state.getComponent('modal', this.props.flowKey) || {};
 
             return React.DOM.div({ className: 'modal show' }, [
                 React.DOM.div({ className: 'modal-dialog', onKeyUp: this.onEnter }, [
@@ -40,7 +40,7 @@ permissions and limitations under the License.
                         React.DOM.div({ className: 'modal-footer' }, [
                             manywho.component.getOutcomes(outcomes, this.props.flowKey)
                         ]),
-                        React.createElement(manywho.component.getByName('wait'), { isVisible: loading != null, message: loading && loading.message }, null)
+                        React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)
                     ])
                 ])
             ]);

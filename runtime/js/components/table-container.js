@@ -328,13 +328,8 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-            var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
             this.outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
-
-            if (loading && loading.message) {
-                var message = loading.message;
-            }
 
             var objectData = model.objectData;
 
@@ -364,36 +359,17 @@ permissions and limitations under the License.
             }
 
             var displayColumns = getDisplayColumns(model.columns, this.outcomes);
-            var isWaitVisible = loading && !loading.error;
             var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
             var hasMoreResults = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
-
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
-
-                isValid = false;
-
-            }
-
-            var classNames = [
-                'table-container',
-                'clear-fix',
-                (isSmall) ? 'table-container-small': '',
-                (model.isVisible) ? '' : 'hidden',
-                (isValid) ? '' : 'has-error'
-            ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey))
-            .join(' ');
-
             var content = null;
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
-
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
-            if ((loading && loading.error) || !manywho.utils.isNullOrWhitespace(model.validationMessage)) {
+            if (state.error || !manywho.utils.isNullOrWhitespace(model.validationMessage)) {
 
-                var errorMessage = loading.error || model.validationMessage;
+                var errorMessage = model.validationMessage || state.error.message;
 
                 content = React.DOM.div({ className: 'table-error' }, [
                     React.DOM.p({ className: 'lead' }, errorMessage),
@@ -429,21 +405,39 @@ permissions and limitations under the License.
 
             }
 
-            var fileUpload = React.createElement(manywho.component.getByName('file-upload'), {
-                flowKey: this.props.flowKey,
-                fileDataRequest: model.fileDataRequest,
-                uploadComplete: this.uploadComplete,
-                upload: this.uploadFile
-            }, null);
+            var fileUpload = null;
+            if (model.fileDataRequest) {
 
-            return React.DOM.div({ className: classNames }, [
+                fileUpload = React.createElement(manywho.component.getByName('file-upload'), {
+                    flowKey: this.props.flowKey,
+                    fileDataRequest: model.fileDataRequest,
+                    uploadComplete: this.uploadComplete,
+                    upload: this.uploadFile
+                }, null);
+
+            }
+
+            var classNames = ['table-container', 'clear-fix'];
+
+            if (typeof model.isValid !== 'undefined' && model.isValid == false)
+                classNames.push('has-error');
+
+            if (isSmall)
+                classNames.push('table-container-small');
+
+            if (!model.isVisible)
+                classNames.push('hidden');
+
+            classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));
+
+            return React.DOM.div({ className: classNames.join(' ') }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
-                    (model.fileDataRequest) ? fileUpload : null,
+                    fileUpload,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
-                    React.createElement(manywho.component.getByName('wait'), { isVisible: isWaitVisible && loading, isSmall: true }, null)
+                    React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
                 ])
             ]);
 
