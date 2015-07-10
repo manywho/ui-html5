@@ -88,7 +88,7 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.ul({ className: 'list-unstyled debug-values ' + ((isExpanded) ? '' : 'hidden') }, values.map(function (value) {
 
-                    return this.renderValue(this.state.paths[value[idName]] || '', value, idName);
+                    return this.renderValue(this.state.paths[value[idName]] || '', value, name, idName);
 
                 }, this))
             ]);
@@ -203,8 +203,8 @@ permissions and limitations under the License.
                 }
 
                 var children = [
-                    this.renderValues('Root Faults', 'rootfaults', rootFaults, 'name', 'valueElementId'),
-                    this.renderValues('Component Errors', 'componenterrors', componentErrors, 'id', 'valueElementId'),
+                    this.renderValues('Root Faults', 'rootfaults', rootFaults, 'name', 'name'),
+                    this.renderValues('Component Errors', 'componenterrors', componentErrors, 'id', 'id'),
                     this.renderValues('Pre-Commit State Values', 'precommitstatevalues', preCommitStateValues, 'developerName', 'valueElementId'),
                     this.renderValues('State Values', 'statevalues', stateValues, 'developerName', 'valueElementId'),
                     this.renderLogEntries(executionLog.entries || [])
