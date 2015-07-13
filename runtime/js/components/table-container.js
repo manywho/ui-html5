@@ -195,7 +195,7 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            var request = model.objectDataRequest || model.fileDataRequest;
+            var request = model.objectDataRequest;
 
             if (request) {
 
@@ -221,7 +221,7 @@ permissions and limitations under the License.
             }
             else {
 
-                manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
+                manywho.log.error('ObjectDataRequest is null for table: ' + model.developerName + '. A request object is required to search');
 
             }
 
