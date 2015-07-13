@@ -299,7 +299,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function() {
 
-                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);
 
              });
@@ -482,7 +482,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function() {
 
-                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(parentFlowKey);
 
             })
