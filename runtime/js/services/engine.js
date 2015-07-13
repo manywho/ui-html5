@@ -293,11 +293,16 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
-            });
+            })
+            .always(function() {
+
+                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                self.render(flowKey);
+
+             });
 
     }
 
@@ -367,13 +372,25 @@ manywho.engine = (function (manywho) {
 
                 if (isAuthenticated) {
 
-                    manywho.state.setComponentLoading('main', null, flowKey);
                     self.render(flowKey);
                     return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
                 }
 
+            })
+            .always(function () {
+
+                if (isAuthenticated) {
+
+                    manywho.state.setComponentLoading('main', null, flowKey);
+                    self.render(flowKey);
+
+                }
+
             });
+
+
+
 
     }
 
@@ -440,8 +457,6 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
-
                 if (manywho.utils.isDrawTool(flowKey)) {
 
                     self.render(flowKey);
@@ -465,11 +480,17 @@ manywho.engine = (function (manywho) {
                 }
 
             })
+            .always(function() {
+
+                manywho.state.setLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                self.render(parentFlowKey);
+
+            })
             .always(function () {
 
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
-            })
+            });
 
     }
 
