@@ -292,6 +292,7 @@ manywho.engine = (function (manywho) {
 
             })
             .always(function () {
+
                 self.render(flowKey);
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
@@ -301,7 +302,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);
 
-            });
+             });
 
     }
 
@@ -377,16 +378,19 @@ manywho.engine = (function (manywho) {
                 }
 
             })
-            .always(function() {
+            .always(function () {
 
                 if (isAuthenticated) {
 
-                    manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                    manywho.state.setComponentLoading('main', null, flowKey);
                     self.render(flowKey);
 
                 }
 
             });
+
+
+
 
     }
 
@@ -486,7 +490,7 @@ manywho.engine = (function (manywho) {
 
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
-            })
+            });
 
     }
 

@@ -243,10 +243,7 @@ permissions and limitations under the License.
                     React.DOM.div({ className: 'panel-heading clearfix ' + (!isFooterVisible) ? 'hidden' : '' },
                         React.DOM.button({ className: 'btn btn-default pull-right', onClick: this.onGetNextPage }, 'More')
                     ),
-                    React.createElement(manywho.component.getByName('wait'), {
-                        isVisible: state.loading != null,
-                        message: state.loading && state.loading.message },
-                    null)
+                    React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading != null, message: state.loading && state.loading.message, isSmall: true }, null)
                 ]);
 
             }
