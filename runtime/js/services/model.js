@@ -146,6 +146,7 @@ permissions and limitations under the License.
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
             flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
+            flowModel[flowKey].rootFaults = [];
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
@@ -216,40 +217,41 @@ permissions and limitations under the License.
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
-                    var notificationKey = flowKey;
-                    if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
+                    flowModel[flowKey].rootFaults = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults;
 
-                        notificationKey = this.getParentForModal(flowKey);
-
-                    }
-
-                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications || [];
-
-                    flowModel[notificationKey].notifications = flowModel[notificationKey].notifications.concat(
-                        manywho.utils.convertToArray(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults)
-                            .map(function (item) {
-
-                                return {
-                                    message: item,
-                                    position: 'center',
-                                    type: 'danger',
-                                    timeout: '0',
-                                    dismissible: true
-                                }
-
-                            })
-                    );
-
+                    var parentFlowKey = flowKey;
                     if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
 
-                        var parentFlowKey = manywho.model.getParentForModal(flowKey);
-                        manywho.state.setLoading('main', null, parentFlowKey);
-
-                    } else {
-
-                        manywho.state.setLoading('main', null, flowKey);
+                        parentFlowKey = this.getParentForModal(flowKey);
 
                     }
+
+                    flowModel[parentFlowKey].notifications = flowModel[parentFlowKey].notifications || [];
+
+                    for (faultName in engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
+
+                        var fault = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults[faultName];
+
+                        if (fault !== null && typeof fault === 'string') {
+
+                            var message = fault;
+                            fault = { message: message };
+
+                        }
+
+                        fault.name = faultName;
+
+                        flowModel[parentFlowKey].notifications.push({
+                            message: fault.message,
+                            position: 'center',
+                            type: 'danger',
+                            timeout: '0',
+                            dismissible: true
+                        });
+
+                    }
+
+                    manywho.state.setComponentLoading(manywho.utils.extractElement(parentFlowKey), null, flowKey);
 
                 }
 
@@ -266,7 +268,7 @@ permissions and limitations under the License.
                 switch (engineInvokeResponse.invokeType.toLowerCase())
                 {
                     case "wait":
-                        manywho.state.setLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
+                        manywho.state.setComponentLoading('main', { message: engineInvokeResponse.waitMessage }, flowKey);
                         break;
                 }
 
@@ -656,6 +658,12 @@ permissions and limitations under the License.
 
             flowModel[flowKey] = null;
             delete flowModel[flowKey];
+
+        },
+
+        getRootFaults: function(flowKey) {
+
+            return flowModel[flowKey].rootFaults || [];
 
         }
 

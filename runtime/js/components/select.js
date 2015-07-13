@@ -99,11 +99,9 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Select: ' + this.props.id);
 
             var options = [];
-            var isValid = true;
-
+            
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-            var loading = manywho.state.getLoading(this.props.id, this.props.flowKey);
 
             var objectData = model.objectData;
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
@@ -149,37 +147,41 @@ permissions and limitations under the License.
 
             }
 
-            if ((typeof model.isValid !== 'undefined' && model.isValid == false)
-                || (loading && loading.error)) {
+            var containerClassNames = ['form-group'];
 
-                isValid = false;
+            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || (state.error)) {
+
+                containerClassNames.push('has-error');
 
             }
 
-            var message = model.message || (loading && loading.error);
+            if (!model.isVisible) {
 
-            var containerClassNames = [
-                (model.isVisible) ? '' : 'hidden',
-                (isValid) ? '' : 'has-error'
-            ]
-            .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
-            .join(' ');
+                containerClassNames.push('hidden');
 
-            var iconClassNames = [
-                'glyphicon glyphicon-refresh select-loading-icon spin',
-                (loading && !loading.error) ? '' : 'hidden'
-            ].join(' ');
+            }
 
-            return React.DOM.div({ className: 'form-group ' + containerClassNames }, [
+            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
+
+            var iconClassNames = ['glyphicon', 'glyphicon-refresh', 'select-loading-icon spin'];
+
+            if (!state.loading || state.error) {
+
+                iconClassNames.push('hidden');
+
+            }
+
+            return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.div({ className: 'input-wrapper' }, [
                     React.createElement(Chosen, attributes, options),
-                    React.DOM.span({ className: iconClassNames }, null)
+                    React.DOM.span({ className: iconClassNames.join(' ') }, null)
                 ]),
-                React.DOM.span({ className: 'help-block' }, message)
+                React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
+                React.DOM.span({ className: 'help-block' }, model.helpInfo)
             ]);
 
         }

@@ -18,15 +18,15 @@ permissions and limitations under the License.
             var isVisible = manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'wait', true)
                             || manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'status', true);
 
-            var message = manywho.model.getWaitMessage(this.props.flowKey);
-
             if (isVisible) {
 
                 manywho.log.info('Rendering Status');
 
+                var message = manywho.model.getWaitMessage(this.props.flowKey);
+
                 return React.DOM.div({ className: 'status' },
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh staus-icon spin', 'aria-hidden': 'true' }),
-                    React.DOM.p({ className: 'lead' }, message)
+                    React.DOM.div({ className: 'wait-spinner' }, null),
+                    React.DOM.p({ className: 'lead status-message' }, message)
                 );
 
             }
