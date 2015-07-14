@@ -230,13 +230,13 @@ permissions and limitations under the License.
 
                     for (faultName in engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
-                        var fault = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults[faultName];
+                        var fault = null;
 
-                        if (fault !== null && typeof fault === 'string') {
-
-                            var message = fault;
-                            fault = { message: message };
-
+                        try {
+                            fault = JSON.parse(engineInvokeResponse.mapElementInvokeResponses[0].rootFaults[faultName]);
+                        }
+                        catch (ex) {
+                            fault = { message: engineInvokeResponse.mapElementInvokeResponses[0].rootFaults[faultName] };
                         }
 
                         fault.name = faultName;
