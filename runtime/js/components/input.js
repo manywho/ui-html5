@@ -31,6 +31,21 @@ permissions and limitations under the License.
 
     }
 
+    function isEmptyDate(date) {
+
+        if (date == null
+            || date.indexOf('01/01/0001') != -1
+            || date.indexOf('1/1/0001') != -1
+            || date.indexOf('0001-01-01') != -1) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
     var input = React.createClass({
 
         componentDidUpdate: function() {
@@ -38,7 +53,19 @@ permissions and limitations under the License.
             if (this.refs.datepicker) {
 
                 var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-                var date = new Date(state.contentValue);
+                var date = null;
+
+                if (isEmptyDate(state.contentValue)) {
+
+                    date = new Date();
+
+                }
+                else {
+
+                    date = new Date(state.contentValue);
+
+                }
+
                 $(this.refs.datepicker.getDOMNode()).data('DateTimePicker').date(date);
 
             }
@@ -52,7 +79,7 @@ permissions and limitations under the License.
 
             if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
-                var stateDate;
+                var stateDate = null;
                 var datepickerElement = this.refs.datepicker.getDOMNode();
 
                 $(datepickerElement).datetimepicker({
@@ -61,21 +88,20 @@ permissions and limitations under the License.
                 })
                 .on('dp.change', this.handleChange);
 
-                if (state.contentValue.indexOf('01/01/0001') == -1
-                    && state.contentValue.indexOf('1/1/0001') == -1
-                    && state.contentValue.indexOf('0001-01-01') == -1) {
-
-                    stateDate = new Date(state.contentValue.toLowerCase());
-
-                } else {
+                if (isEmptyDate(state.contentValue)) {
 
                     stateDate = new Date();
 
                 }
+                else {
+
+                    stateDate = new Date(state.contentValue.toLowerCase());
+
+                }
 
                 datepickerElement.value = stateDate.toISOString();
-                $(datepickerElement).data("DateTimePicker").date(stateDate);
                 manywho.state.setComponent(this.props.id, { contentValue: stateDate.toISOString() }, this.props.flowKey, true);
+                $(datepickerElement).data("DateTimePicker").date(stateDate);
 
             }
 
