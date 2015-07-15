@@ -217,7 +217,7 @@ permissions and limitations under the License.
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
-                    flowModel[flowKey].rootFaults = engineInvokeResponse.mapElementInvokeResponses[0].rootFaults;
+                    flowModel[flowKey].rootFaults = [];
 
                     var parentFlowKey = flowKey;
                     if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
@@ -240,6 +240,8 @@ permissions and limitations under the License.
                         }
 
                         fault.name = faultName;
+
+                        flowModel[flowKey].rootFaults.push(fault);
 
                         flowModel[parentFlowKey].notifications.push({
                             message: fault.message,
