@@ -17,6 +17,7 @@ manywho.settings = (function (manywho, $) {
             executing: '',
             loading: '',
             navigating: '',
+            syncing: '',
             joining: 'Joining',
             sending: 'Sending',
             returnToParent: 'Return To Parent'

@@ -706,6 +706,9 @@ manywho.engine = (function (manywho) {
             );
             var self = this;
 
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.syncing') }, flowKey);
+            this.render(flowKey);
+
             return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey))
                 .then(function (response) {
 
