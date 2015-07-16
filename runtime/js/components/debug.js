@@ -79,6 +79,7 @@ permissions and limitations under the License.
         renderValues: function(title, id, values, name, idName) {
 
             var isExpanded = this.state.toggle[id] || false;
+            values = values || [];
 
             return React.DOM.div({ className: 'debug-root' }, [
                 React.DOM.div({ className: 'debug-root-toggle', id: id, onClick: this.toggleHeader }, [
