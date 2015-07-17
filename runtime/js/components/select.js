@@ -49,6 +49,31 @@ permissions and limitations under the License.
 
     }
 
+    function isEmptyObjectData(model) {
+
+        if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
+
+            for (prop in model.objectData[0].properties) {
+
+                if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
+
+                    return false;
+
+                }
+
+            }
+
+        }
+        else {
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
     var select = React.createClass({
 
         handleChange: function(e, args) {
@@ -93,13 +118,13 @@ permissions and limitations under the License.
             manywho.component.handleEvent(this, model, this.props.flowKey);
 
         },
-
+        
         render: function () {
 
             manywho.log.info('Rendering Select: ' + this.props.id);
 
             var options = [];
-            
+
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
@@ -127,7 +152,7 @@ permissions and limitations under the License.
             attributes['data-placeholder'] = model.hintValue || 'Please select an option';
             attributes.defaultValue = '';
 
-            if (objectData) {
+            if (!isEmptyObjectData(model)) {
 
                 options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
                 options.unshift(React.DOM.option({ value: '' }, null));
