@@ -64,7 +64,7 @@ permissions and limitations under the License.
             }
 
         }
-        else {
+        else if (model.objectData) {
 
             return false;
 
@@ -118,7 +118,7 @@ permissions and limitations under the License.
             manywho.component.handleEvent(this, model, this.props.flowKey);
 
         },
-        
+
         render: function () {
 
             manywho.log.info('Rendering Select: ' + this.props.id);
