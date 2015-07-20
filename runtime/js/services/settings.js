@@ -20,7 +20,8 @@ manywho.settings = (function (manywho, $) {
             syncing: '',
             joining: 'Joining',
             sending: 'Sending',
-            returnToParent: 'Return To Parent'
+            returnToParent: 'Return To Parent',
+            status: null
         },
         paging: {
             table: 10,
