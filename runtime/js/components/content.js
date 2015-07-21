@@ -39,7 +39,8 @@ permissions and limitations under the License.
                         image: 'img/example.gif',
                         onclick: function () {
 
-                            self.renderFileDialog();
+                            self.setState({ isImageUploadOpen: true });
+                            self.render();
 
                         }
 
@@ -86,7 +87,8 @@ permissions and limitations under the License.
         getInitialState: function() {
 
             return {
-                isInitialized: false
+                isInitialized: false,
+                isImageUploadOpen: false
             }
 
         },
@@ -166,7 +168,43 @@ permissions and limitations under the License.
 
         renderFileDialog: function () {
 
+            return React.DOM.div({ className: 'modal show' }, [
+                React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
+                    React.DOM.div({ className: 'modal-content full-screen' }, [
+                        React.DOM.div({ className: 'modal-header' }, [
+                            React.DOM.h4({ className: 'modal-title' }, 'File Upload')
+                        ]),
+                        React.DOM.div({ className: 'modal-body' }, [
+                            React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, id: this.props.id, multiple: true, uploadComplete: this.onUploadComplete})
+                        ]),
+                        React.DOM.div({ className: 'modal-footer' }, [
+                            React.DOM.button({ className: 'btn btn-default', onClick: this.onCancel }, 'Cancel')
+                        ])
+                    ])
+                ])
+            ]);
 
+        },
+
+        onUploadComplete: function (response) {
+
+            var imageUri = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Download Uri');
+
+            var imageName = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Name');
+
+            if (imageUri != null && imageUri.length > 0) {
+
+                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri[0].contentValue + '" alt="' + imageName[0].contentValue + '"/>');
+
+                this.setState({ isImageUploadOpen: false });
+
+            }
+
+        },
+
+        onCancel: function (event) {
+
+            this.setState({ isImageUploadOpen: false });
 
         },
 
@@ -218,14 +256,20 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classNames }, [
-                React.DOM.label({ htmlFor: this.props.id }, [
+            var childElements = [React.DOM.label({ htmlFor: this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.message)
-            ]);
+                React.DOM.span({ className: 'help-block' }, model.message)];
+
+            if (this.state.isImageUploadOpen) {
+
+                childElements.push(this.renderFileDialog());
+
+            }
+
+            return React.DOM.div({ className: classNames }, childElements);
             
         }
 
