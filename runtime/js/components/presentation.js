@@ -47,6 +47,14 @@ permissions and limitations under the License.
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "presentation", this.props.flowKey).join(' ');
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            if (!model.isVisible) {
+
+                classes += ' hidden';
+
+            }
+
             return React.DOM.div({ className: classes, id: this.props.id }, null);
 
         }
