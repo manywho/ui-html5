@@ -171,14 +171,26 @@ permissions and limitations under the License.
             return React.DOM.div({ className: 'modal show' }, [
                 React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'modal-content full-screen' }, [
-                        React.DOM.div({ className: 'modal-header' }, [
-                            React.DOM.h4({ className: 'modal-title' }, 'File Upload')
-                        ]),
                         React.DOM.div({ className: 'modal-body' }, [
-                            React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, id: this.props.id, multiple: true, uploadComplete: this.onUploadComplete})
+                            React.DOM.ul({ className: 'nav nav-tabs' }, [
+                                React.DOM.li({ className: 'active' }, [
+                                    React.DOM.a({ href: '#files', 'data-toggle': 'tab'}, 'File List')
+                                ]),
+                                React.DOM.li({ className: '' }, [
+                                    React.DOM.a({ href: '#upload', 'data-toggle': 'tab'}, 'Direct Upload')
+                                ])
+                            ]),
+                            React.DOM.div({ className: 'tab-content'}, [
+                                React.DOM.div({ className: 'tab-pane active', id: 'files'}, [
+                                    React.createElement(manywho.component.getByName('table'), { flowKey: this.props.flowKey, id: this.props.id, onRowClicked: this.onFileTableRowClicked, selectionEnabled: true })
+                                ]),
+                                React.DOM.div({  className: 'tab-pane', id: 'upload'}, [
+                                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, id: this.props.id, multiple: true, uploadComplete: this.onUploadComplete})
+                                ])
+                            ])
                         ]),
                         React.DOM.div({ className: 'modal-footer' }, [
-                            React.DOM.button({ className: 'btn btn-default', onClick: this.onCancel }, 'Cancel')
+                            React.DOM.button({ className: 'btn btn-default', onClick: this.onFileCancel }, 'Cancel')
                         ])
                     ])
                 ])
@@ -202,9 +214,25 @@ permissions and limitations under the License.
 
         },
 
-        onCancel: function (event) {
+        onFileCancel: function (event) {
 
             this.setState({ isImageUploadOpen: false });
+
+        },
+
+        onFileTableRowClicked: function (event) {
+
+            var imageUri = event.currentTarget.lastChild.innerText;
+
+            var imageName = event.currentTarget.firstChild.innerText;
+
+            if (imageUri != null && imageUri.length > 0) {
+
+                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri + '" alt="' + imageName + '"/>');
+
+                this.setState({ isImageUploadOpen: false });
+
+            }
 
         },
 
