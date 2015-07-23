@@ -25,26 +25,12 @@ permissions and limitations under the License.
 
             }
 
-            var self = this;
-			setInterval(function() {
-				
-				if (manywho.utils.isEqual(manywho.model.getInvokeType(self.props.flowKey), 'wait', true) && manywho.utils.isEqual(manywho.model.getInvokeType(self.props.flowKey), 'status', true)) {
-					
-						var invokeRequest = manywho.json.generateInvokeRequest(
-						manywho.state.getState(self.props.flowKey),
-						'SYNC',
-						null,
-						manywho.state.getPageComponentInputResponseRequests(self.props.flowKey),
-						manywho.settings.flow('annotations', self.props.flowKey),
-						manywho.state.getLocation(self.props.flowKey),
-						manywho.settings.flow('mode', self.props.flowKey)
-					);
-					
-					manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(self.props.flowKey), manywho.state.getAuthenticationToken(self.props.flowKey))
-					
-				}
-				
-			}, 10000);
+            window.addEventListener('beforeunload', function (event) {
+
+                manywho.engine.sync(this.props.flowKey);
+
+            }).bind(this);
+			
 
         },
 
