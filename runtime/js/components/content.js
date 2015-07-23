@@ -36,7 +36,7 @@ permissions and limitations under the License.
 
                     editor.addButton('mwimage', {
                         title: 'Images',
-                        image: 'img/example.gif',
+                        icon: 'image',
                         onclick: function () {
 
                             self.setState({ isImageUploadOpen: true });
