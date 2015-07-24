@@ -25,11 +25,11 @@ permissions and limitations under the License.
 
             }
 
-            window.addEventListener('beforeunload', function (event) {
+            window.addEventListener("beforeunload", function (event) {
 
                 manywho.engine.sync(this.props.flowKey);
 
-            }).bind(this);
+            }.bind(this));
 			
 
         },
