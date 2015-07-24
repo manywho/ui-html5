@@ -33,7 +33,7 @@ permissions and limitations under the License.
 
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, customResources) {
+        initialize: function(callback, cdnUrl, customResources, initialTheme) {
 
             $.getJSON(cdnUrl + '/hashes.json', function (data) {
 
@@ -55,7 +55,7 @@ permissions and limitations under the License.
                 }
 
                 // Load the default paper theme manually
-                appendStylesheet(cdnUrl + '/css/themes/mw-paper.css', 'theme');
+                appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
 
                 if (customResources)
                 {
@@ -100,6 +100,6 @@ permissions and limitations under the License.
 
     }
 
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.customResources);
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.customResources, manywho.initialTheme);
 
 }(manywho, window, jQuery));
