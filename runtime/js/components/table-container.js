@@ -359,7 +359,7 @@ permissions and limitations under the License.
             }
 
             var displayColumns = getDisplayColumns(model.columns, this.outcomes);
-            var isSelectionEnabled = areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
+            var isSelectionEnabled = this.props.selectionEnabled || areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
             var hasMoreResults = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
             var content = null;
@@ -394,7 +394,7 @@ permissions and limitations under the License.
                     displayColumns: displayColumns,
                     onOutcome: this.onOutcome,
                     selectedRows: this.state.selectedRows,
-                    onRowClicked: this.onRowClicked,
+                    onRowClicked: this.props.onRowClicked || this.onRowClicked,
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
                     onHeaderClick: this.onHeaderClick,
