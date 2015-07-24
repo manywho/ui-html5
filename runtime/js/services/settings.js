@@ -49,7 +49,8 @@ manywho.settings = (function (manywho, $) {
             ]
         },
         isFullWidth: false,
-        collapsible: false
+        collapsible: false,
+        containerSelector: '#manywho'
     };
 
     var flows = {};

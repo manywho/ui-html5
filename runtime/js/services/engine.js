@@ -125,7 +125,7 @@ manywho.engine = (function (manywho) {
 
     function onInitializeFailed(response) {
 
-        var container = document.getElementById('manywho');
+        var container = document.querySelector(manywho.settings.global('containerSelector', null, '#manywho'))
         container.className += 'mw-bs';
 
         var alert = document.createElement('div');
