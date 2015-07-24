@@ -117,7 +117,6 @@ permissions and limitations under the License.
 
         },
 
-
         handleChange: function (e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -129,8 +128,8 @@ permissions and limitations under the License.
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
-                var utcDate = $(this.refs.datepicker.getDOMNode()).data("DateTimePicker").date().toDate();
-                manywho.state.setComponent(this.props.id, { contentValue: utcDate.toISOString() }, this.props.flowKey, true);
+                var selectedDate = $(this.refs.datepicker.getDOMNode()).data("DateTimePicker").date();
+                manywho.state.setComponent(this.props.id, { contentValue: selectedDate.format() }, this.props.flowKey, true);
 
             }
             else {
