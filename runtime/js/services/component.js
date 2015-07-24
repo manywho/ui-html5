@@ -135,7 +135,7 @@ manywho.component = (function (manywho) {
 
                 // Re-sync with the server here so that any events attached to the component are processed
                 manywho.engine.sync(flowKey).then(function() {
-                
+
                     manywho.engine.render(flowKey);
 
                 });
@@ -209,7 +209,7 @@ manywho.component = (function (manywho) {
 
             if (!container) {
 
-                var manywhoContainer = document.getElementById('manywho');
+                var manywhoContainer = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
 
                 container = document.createElement('div');
                 container.setAttribute('id', flowKey);
