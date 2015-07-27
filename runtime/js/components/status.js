@@ -22,7 +22,7 @@ permissions and limitations under the License.
 
                 manywho.log.info('Rendering Status');
 
-                var message = manywho.model.getWaitMessage(this.props.flowKey);
+                var message = manywho.settings.global('localization.status', this.props.flowKey, null) || manywho.model.getWaitMessage(this.props.flowKey);
 
                 return React.DOM.div({ className: 'status' },
                     React.DOM.div({ className: 'wait-spinner' }, null),
