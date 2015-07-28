@@ -75,7 +75,11 @@ gulp.task('browser-sync', function () {
     browserSync.init(files, {
         server: {
             baseDir: '.',
-            index: 'debug.html'
+            index: 'debug.html',
+            middleware: function (req, res, next) {
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                next();
+            }
         },
         ghostMode: false
     });

@@ -111,6 +111,8 @@ permissions and limitations under the License.
 
             window.addEventListener('scroll', this.handleScroll);
 
+            window.addEventListener('resize', this.handleResize);
+
         },
 
         componentWillUnmount: function () {
@@ -119,20 +121,41 @@ permissions and limitations under the License.
 
         },
 
-        componentDidUpdate: function () {
+        handleResize: function () {
 
             if (this.refs.navigationBar) {
 
                 var navigationElement = this.refs.navigationBar.getDOMNode();
+
+                if (navigationElement.classList.contains('navbar-double-height')) navigationElement.classList.remove('navbar-double-height');
+
+                if (navigationElement.classList.contains('navbar-triple-height')) navigationElement.classList.remove('navbar-triple-height');
+
                 var header = navigationElement.querySelector('.navbar-header');
 
-                if (header.clientHeight > 100 && !navigationElement.classList.contains('navbar-double-height')) {
+                var navigationTitle = header.querySelector('.navbar-brand');
 
-                    navigationElement.classList.add('navbar-double-height')
+                if (!navigationElement.classList.contains('navbar-double-height')) {
+
+                    if (navigationTitle && navigationElement.clientHeight > 100) {
+
+                        navigationElement.classList.add('navbar-triple-height');
+
+                    } else if (!navigationTitle && navigationElement.clientHeight > 100) {
+
+                        navigationElement.classList.add('navbar-double-height');
+
+                    }
 
                 }
 
             }
+
+        },
+
+        componentDidUpdate: function () {
+
+            this.handleResize();
 
         },
 

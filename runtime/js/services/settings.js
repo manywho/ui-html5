@@ -20,7 +20,8 @@ manywho.settings = (function (manywho, $) {
             syncing: '',
             joining: 'Joining',
             sending: 'Sending',
-            returnToParent: 'Return To Parent'
+            returnToParent: 'Return To Parent',
+            status: null
         },
         paging: {
             table: 10,
@@ -49,7 +50,8 @@ manywho.settings = (function (manywho, $) {
             ]
         },
         isFullWidth: false,
-        collapsible: false
+        collapsible: false,
+        containerSelector: '#manywho'
     };
 
     var flows = {};

@@ -28,9 +28,23 @@ permissions and limitations under the License.
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
+                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage',
+
                 setup: function (editor) {
 
                     self.editor = editor;
+
+                    editor.addButton('mwimage', {
+                        title: 'Images',
+                        icon: 'image',
+                        onclick: function () {
+
+                            self.setState({ isImageUploadOpen: true });
+                            self.render();
+
+                        }
+
+                    });
 
                     editor.on('init', function () {
 
@@ -73,7 +87,8 @@ permissions and limitations under the License.
         getInitialState: function() {
 
             return {
-                isInitialized: false
+                isInitialized: false,
+                isImageUploadOpen: false
             }
 
         },
@@ -151,6 +166,76 @@ permissions and limitations under the License.
 
         },
 
+        renderFileDialog: function () {
+
+            return React.DOM.div({ className: 'modal show' }, [
+                React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
+                    React.DOM.div({ className: 'modal-content full-screen' }, [
+                        React.DOM.div({ className: 'modal-body' }, [
+                            React.DOM.ul({ className: 'nav nav-tabs' }, [
+                                React.DOM.li({ className: 'active' }, [
+                                    React.DOM.a({ href: '#files', 'data-toggle': 'tab'}, 'File List')
+                                ]),
+                                React.DOM.li({ className: '' }, [
+                                    React.DOM.a({ href: '#upload', 'data-toggle': 'tab'}, 'Direct Upload')
+                                ])
+                            ]),
+                            React.DOM.div({ className: 'tab-content'}, [
+                                React.DOM.div({ className: 'tab-pane active', id: 'files'}, [
+                                    React.createElement(manywho.component.getByName('table'), { flowKey: this.props.flowKey, id: this.props.id, onRowClicked: this.onFileTableRowClicked, selectionEnabled: true })
+                                ]),
+                                React.DOM.div({  className: 'tab-pane', id: 'upload'}, [
+                                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, id: this.props.id, multiple: true, uploadComplete: this.onUploadComplete})
+                                ])
+                            ])
+                        ]),
+                        React.DOM.div({ className: 'modal-footer' }, [
+                            React.DOM.button({ className: 'btn btn-default', onClick: this.onFileCancel }, 'Cancel')
+                        ])
+                    ])
+                ])
+            ]);
+
+        },
+
+        onUploadComplete: function (response) {
+
+            var imageUri = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Download Uri');
+
+            var imageName = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Name');
+
+            if (imageUri != null && imageUri.length > 0) {
+
+                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri[0].contentValue + '" alt="' + imageName[0].contentValue + '"/>');
+
+                this.setState({ isImageUploadOpen: false });
+
+            }
+
+        },
+
+        onFileCancel: function (event) {
+
+            this.setState({ isImageUploadOpen: false });
+
+        },
+
+        onFileTableRowClicked: function (event) {
+
+            var imageUri = event.currentTarget.lastChild.innerText;
+
+            var imageName = event.currentTarget.firstChild.innerText;
+
+            if (imageUri != null && imageUri.length > 0) {
+
+                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri + '" alt="' + imageName + '"/>');
+
+                this.setState({ isImageUploadOpen: false });
+
+            }
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Content: ' + this.props.id);
@@ -199,14 +284,20 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classNames }, [
-                React.DOM.label({ htmlFor: this.props.id }, [
+            var childElements = [React.DOM.label({ htmlFor: this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.message)
-            ]);
+                React.DOM.span({ className: 'help-block' }, model.message)];
+
+            if (this.state.isImageUploadOpen) {
+
+                childElements.push(this.renderFileDialog());
+
+            }
+
+            return React.DOM.div({ className: classNames }, childElements);
             
         }
 

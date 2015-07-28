@@ -141,7 +141,9 @@ manywho.collaboration = (function (manywho) {
                     flowKey: flowKey
                 };
 
-                socket = io.connect(manywho.settings.global('collaboration.uri'));
+                socket = io.connect(manywho.settings.global('collaboration.uri'), {
+                    transports: ['websocket']
+                });
 
                 socket.on('disconnect', onDisconnect);
                 socket.on('joined', onJoined);
