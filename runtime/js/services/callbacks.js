@@ -22,6 +22,12 @@ manywho.callbacks = (function (manywho) {
 
         },
 
+        get: function(flowKey) {
+
+            return callbacks[flowKey];
+
+        },
+
         execute: function (flowKey, type, name, args) {
 
             if (callbacks[flowKey]) {
@@ -44,7 +50,7 @@ manywho.callbacks = (function (manywho) {
 
                 })
                 .forEach(function (item) {
-                    
+
                     item.execute.apply(item.context, [item].concat(item.args, args));
 
                     callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);

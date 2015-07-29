@@ -207,12 +207,6 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        isModal: function (flowKey) {
-
-            return this.isEqual(this.extractElement(flowKey), 'modal', true);
-
-        },
-
         removeLoadingIndicator: function(id) {
 
             var element = document.getElementById(id);
@@ -234,12 +228,6 @@ manywho.utils = (function (manywho, $) {
         isSmallScreen: function (flowKey) {
 
             return document.getElementById(flowKey).clientWidth < 768;
-
-        },
-
-        isDrawTool: function (flowKey) {
-
-            return this.isEqual(manywho.model.getParentForModal(flowKey), 'draw_draw_draw_main', true);
 
         },
 

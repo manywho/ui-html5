@@ -145,8 +145,11 @@ permissions and limitations under the License.
             flowModel[flowKey].notifications = [];
             flowModel[flowKey].stateValues = [];
             flowModel[flowKey].preCommitStateValues = [];
-            flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
+
             flowModel[flowKey].rootFaults = [];
+
+            if (engineInvokeResponse)
+                flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
@@ -218,15 +221,7 @@ permissions and limitations under the License.
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
                     flowModel[flowKey].rootFaults = [];
-
-                    var parentFlowKey = flowKey;
-                    if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
-
-                        parentFlowKey = this.getParentForModal(flowKey);
-
-                    }
-
-                    flowModel[parentFlowKey].notifications = flowModel[parentFlowKey].notifications || [];
+                    flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
 
                     for (faultName in engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
@@ -243,7 +238,7 @@ permissions and limitations under the License.
 
                         flowModel[flowKey].rootFaults.push(fault);
 
-                        flowModel[parentFlowKey].notifications.push({
+                        flowModel[flowKey].notifications.push({
                             message: fault.message,
                             position: 'center',
                             type: 'danger',
@@ -253,7 +248,7 @@ permissions and limitations under the License.
 
                     }
 
-                    manywho.state.setComponentLoading(manywho.utils.extractElement(parentFlowKey), null, flowKey);
+                    manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
 
                 }
 
@@ -525,44 +520,6 @@ permissions and limitations under the License.
 
             this.componentInputResponseRequests[componentId].contentValue = contentValue;
             this.componentInputResponseRequests[componentId].objectData = objectData;
-
-        },
-
-        setModal: function(flowKey, modalKey) {
-
-            flowModel[flowKey].modal = modalKey;
-
-        },
-
-        getModal: function(flowKey) {
-
-            if (flowModel[flowKey]) {
-
-                return flowModel[flowKey].modal;
-
-            }
-
-        },
-
-        getParentForModal: function(modalKey) {
-
-            for (flowKey in flowModel) {
-
-                if (manywho.utils.isEqual(flowModel[flowKey].modal, modalKey, true)) {
-
-                    return flowKey;
-
-                }
-
-            }
-
-            return null;
-
-        },
-
-        getModalForFlow: function (flowKey) {
-
-            return flowModel[flowKey].modal;
 
         },
 
