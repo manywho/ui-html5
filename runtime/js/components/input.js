@@ -57,12 +57,12 @@ permissions and limitations under the License.
 
                 if (isEmptyDate(state.contentValue)) {
 
-                    date = new Date();
+                    date = moment();
 
                 }
                 else {
 
-                    date = new Date(state.contentValue);
+                    date = moment(state.contentValue);
 
                 }
 
@@ -90,17 +90,17 @@ permissions and limitations under the License.
 
                 if (isEmptyDate(state.contentValue)) {
 
-                    stateDate = new Date();
+                    stateDate = moment();
 
                 }
                 else {
 
-                    stateDate = new Date(state.contentValue.toLowerCase());
+                    stateDate = moment(state.contentValue);
 
                 }
 
-                datepickerElement.value = stateDate.toISOString();
-                manywho.state.setComponent(this.props.id, { contentValue: stateDate.toISOString() }, this.props.flowKey, true);
+                datepickerElement.value = stateDate.format();
+                manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
                 $(datepickerElement).data("DateTimePicker").date(stateDate);
 
             }
