@@ -39,6 +39,9 @@ permissions and limitations under the License.
                         React.DOM.div({ className: 'modal-footer' }, [
                             manywho.component.getOutcomes(outcomes, this.props.flowKey)
                         ]),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
                         React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)
                     ])
                 ])
