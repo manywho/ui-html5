@@ -18,13 +18,14 @@ manywho.callbacks = (function (manywho) {
         register: function (flowKey, options) {
 
             callbacks[flowKey] = callbacks[flowKey] || [];
+
+            if (!options.flowKey) {
+                
+                options.flowKey = flowKey;
+
+            }
+
             callbacks[flowKey].push(options);
-
-        },
-
-        get: function(flowKey) {
-
-            return callbacks[flowKey];
 
         },
 
@@ -51,7 +52,7 @@ manywho.callbacks = (function (manywho) {
                 })
                 .forEach(function (item) {
 
-                    item.execute.apply(item.context, [item].concat(item.args, args));
+                    item.execute.apply(undefined, [item].concat(item.args, args));
 
                     callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);
 

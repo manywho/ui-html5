@@ -13,7 +13,7 @@ manywho.authorization = (function (manywho) {
 
     return {
 
-        setAuthenticationToken: function (callback, flowKey, response) {
+        setAuthenticationToken: function (callback, parentFlowKey, response) {
 
             var authenticationToken = response.outputs.filter(function (output) {
 
@@ -25,14 +25,14 @@ manywho.authorization = (function (manywho) {
 
             })[0];
 
-            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
+            manywho.state.setAuthenticationToken(authenticationToken, parentFlowKey);
 
         },
 
-        hideModal: function(options) {
+        hideModal: function(callback) {
 
-            manywho.model.deleteFlowModel(options.args[0]);
-            manywho.utils.removeFlowFromDOM(options.args[0]);
+            manywho.model.deleteFlowModel(callback.flowKey);
+            manywho.utils.removeFlowFromDOM(callback.flowKey);
 
         },
 
@@ -98,10 +98,10 @@ manywho.authorization = (function (manywho) {
 
                         // Then execute the callback that we were given
                         manywho.callbacks.register(authenticationFlow.key, doneCallback);
+
                         manywho.callbacks.register(authenticationFlow.key, {
                             execute: self.hideModal,
-                            type: 'done',
-                            args: [authenticationFlow.key]
+                            type: 'done'
                         });
 
                         manywho.component.appendFlowContainer(authenticationFlow.key);
