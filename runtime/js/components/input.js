@@ -62,7 +62,7 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    date = moment(state.contentValue);
+                    date = moment(state.contentValue, ["MM/DD/YYYY hh:mm:ss A ZZ", moment.ISO_8601]);
 
                 }
 
@@ -95,7 +95,7 @@ permissions and limitations under the License.
                 }
                 else {
 
-                    stateDate = moment(state.contentValue);
+                    stateDate = moment(state.contentValue, ["MM/DD/YYYY hh:mm:ss A ZZ", moment.ISO_8601]);
 
                 }
 
