@@ -21,8 +21,8 @@ manywho.draw.ajax = (function () {
             if (response && response.outputs) {
 
                 var flowId;
-                var outcome = manywho.utils.extractOutputValue(response.outputs, 'FlowOutcome')[0];
-                var flow = manywho.utils.extractOutputValue(response.outputs, 'FLOW')[0];
+                var outcome = manywho.utils.getOutput(response.outputs, 'FlowOutcome');
+                var flow = manywho.utils.getOutput(response.outputs, 'FLOW');
 
                 if (flow && flow.objectData[0].properties[4].contentValue) {
 

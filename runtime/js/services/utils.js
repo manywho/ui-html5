@@ -231,13 +231,13 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        extractOutputValue: function (outputs, outputName) {
+        getOutput: function (outputs, outputName) {
 
             return outputs.filter(function (output) {
 
                 return manywho.utils.isEqual(output.developerName, outputName, true);
 
-            });
+            })[0];
 
         },
 
