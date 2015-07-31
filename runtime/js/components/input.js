@@ -101,6 +101,20 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
 
             }
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
+                    && !manywho.utils.isNullOrWhitespace(e.target.value)) {
+
+                var max = (Math.pow(10, model.maxSize)) - 1
+                var min = (Math.pow(-10, model.maxSize)) + 1
+                var value = parseInt(e.target.value);
+
+                var value = Math.min(value, max);
+                value = Math.max(value, min);
+
+                manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
+                this.forceUpdate();
+
+            }
             else {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
@@ -183,6 +197,13 @@ permissions and limitations under the License.
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
+
+                }
+                else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
+
+                    attributes.style = { width: (15 * model.size) + "px !important" }
+                    attributes.max = (Math.pow(10, model.maxSize)) - 1
+                    attributes.min = (Math.pow(-10, model.maxSize)) + 1
 
                 }
 
