@@ -48,30 +48,6 @@ permissions and limitations under the License.
 
     var input = React.createClass({
 
-        componentDidUpdate: function() {
-
-            if (this.refs.datepicker) {
-
-                var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-                var date = null;
-
-                if (isEmptyDate(state.contentValue)) {
-
-                    date = moment();
-
-                }
-                else {
-
-                    date = moment(state.contentValue, ["MM/DD/YYYY hh:mm:ss A ZZ", moment.ISO_8601]);
-
-                }
-
-                $(this.refs.datepicker.getDOMNode()).data('DateTimePicker').date(date);
-
-            }
-
-        },
-
         componentDidMount: function () {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -99,7 +75,6 @@ permissions and limitations under the License.
 
                 }
 
-                datepickerElement.value = stateDate.format();
                 manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
                 $(datepickerElement).data("DateTimePicker").date(stateDate);
 
@@ -126,10 +101,18 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
 
             }
-            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
+                    && !manywho.utils.isNullOrWhitespace(e.target.value)) {
 
-                var selectedDate = $(this.refs.datepicker.getDOMNode()).data("DateTimePicker").date();
-                manywho.state.setComponent(this.props.id, { contentValue: selectedDate.format() }, this.props.flowKey, true);
+                var max = (Math.pow(10, model.maxSize)) - 1
+                var min = (Math.pow(-10, model.maxSize)) + 1
+                var value = parseInt(e.target.value);
+
+                var value = Math.min(value, max);
+                value = Math.max(value, min);
+
+                manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
+                this.forceUpdate();
 
             }
             else {
@@ -214,6 +197,13 @@ permissions and limitations under the License.
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
+
+                }
+                else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
+
+                    attributes.style = { width: (15 * model.size) + "px !important" }
+                    attributes.max = (Math.pow(10, model.maxSize)) - 1
+                    attributes.min = (Math.pow(-10, model.maxSize)) + 1
 
                 }
 
