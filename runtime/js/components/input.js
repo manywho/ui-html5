@@ -117,7 +117,7 @@ permissions and limitations under the License.
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
-                var formats = [moment.ISO_8601];
+                var formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
                 if (model.attributes && model.attributes.dateTimeFormat) {
                     formats.push(model.attributes.dateTimeFormat);
                 }
@@ -210,7 +210,7 @@ permissions and limitations under the License.
                     attributes.ref = 'datepicker';
 
                     if (!manywho.utils.isNullOrWhitespace(state.contentValue)) {
-                        var formats = [moment.ISO_8601];
+                        var formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
                         if (model.attributes && model.attributes.dateTimeFormat) {
                             formats.push(model.attributes.dateTimeFormat);
                         }
