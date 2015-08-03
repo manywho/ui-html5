@@ -115,7 +115,7 @@ permissions and limitations under the License.
                 this.forceUpdate();
 
             }
-            else if (manywho.utils.isEqual(modal.contentType, manywho.component.contentTypes.datetime, true)) {
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
 
                 var formats = [moment.ISO_8601];
                 if (model.attributes && model.attributes.dateTimeFormat) {
@@ -127,7 +127,7 @@ permissions and limitations under the License.
 
             }
             else {
-                
+
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
             }
