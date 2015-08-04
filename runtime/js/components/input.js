@@ -115,6 +115,17 @@ permissions and limitations under the License.
                 this.forceUpdate();
 
             }
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
+
+                var formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
+                if (model.attributes && model.attributes.dateTimeFormat) {
+                    formats.push(model.attributes.dateTimeFormat);
+                }
+
+                var date = moment(e.target.value, formats);
+                manywho.state.setComponent(this.props.id, { contentValue: date.format() }, this.props.flowKey, true);
+
+            }
             else {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
@@ -197,6 +208,14 @@ permissions and limitations under the License.
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
+
+                    if (!manywho.utils.isNullOrWhitespace(state.contentValue)) {
+                        var formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
+                        if (model.attributes && model.attributes.dateTimeFormat) {
+                            formats.push(model.attributes.dateTimeFormat);
+                        }
+                        attributes.value = moment(state.contentValue, formats).format(model.attributes.dateTimeFormat || 'MM/DD/YYYY');
+                    }
 
                 }
                 else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
