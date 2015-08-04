@@ -76,7 +76,7 @@ permissions and limitations under the License.
                 search: function (term, callback) {
 
                     manywho.social.getUsers(self.props.flowKey, term)
-                        .done(function(response) { callback(response); })
+                        .done(function(response) { callback(response || []); })
                         .fail(function(response) { callback([]); });
 
                 },
