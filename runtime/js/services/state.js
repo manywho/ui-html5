@@ -120,7 +120,24 @@ manywho.state = (function (manywho) {
 
         setComponent: function(id, values, flowKey, push) {
 
+            // if (values != null && values.objectData != null && values.objectData.length > 0 && components[flowKey][id].objectData != null) {
+            //
+            //     components[flowKey][id].objectData = components[flowKey][id].objectData.map(function(item) {
+            //
+            //         item.isSelected = false;
+            //         return item;
+            //
+            //     });
+            //
+            // }
+
             components[flowKey][id] = $.extend(components[flowKey][id], values);
+
+            if (values != null) {
+
+                components[flowKey][id].objectData = values.objectData;
+
+            }
 
             if (push) {
                 manywho.collaboration.push(id, values, flowKey);

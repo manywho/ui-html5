@@ -29,25 +29,6 @@ permissions and limitations under the License.
 
     }
 
-    function isSelectedObjectData(objectData) {
-
-        if (this && this.objectData && this.objectData.length > 0) {
-
-            if (this.objectData.filter(function(item) {
-
-                return manywho.utils.isEqual(objectData.externalId, item.externalId)
-
-            }).length > 0) {
-
-                return true;
-
-            }
-
-        }
-
-        return objectData.isSelected;
-
-    }
 
     function isEmptyObjectData(model) {
 
@@ -128,7 +109,6 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            var objectData = model.objectData;
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             var attributes = {
@@ -154,17 +134,24 @@ permissions and limitations under the License.
 
             if (!isEmptyObjectData(model)) {
 
-                options = objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
+                options = model.objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
                 options.unshift(React.DOM.option({ value: '' }, null));
 
-                var selectedItems = objectData.filter(isSelectedObjectData, state)
-                                                .map(function(objectData) {
+                var selectedItems = null;
 
-                                                    return objectData.externalId;
+                if (state && state.objectData) {
 
-                                                });
+                    selectedItems = state.objectData.map(function(item) { return item.externalId });
 
-                if (selectedItems.length > 0) {
+                }
+                else {
+
+                    selectedItems = model.objectData.filter(function(item) { return item.isSelected })
+                                                    .map(function(item) { return item.externalId });
+
+                }
+
+                if (selectedItems && selectedItems.length > 0) {
 
                     attributes.defaultValue = (model.isMultiSelect) ? selectedItems : selectedItems[0];
 
