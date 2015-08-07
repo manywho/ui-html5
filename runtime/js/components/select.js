@@ -29,7 +29,6 @@ permissions and limitations under the License.
 
     }
 
-
     function isEmptyObjectData(model) {
 
         if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
@@ -57,7 +56,7 @@ permissions and limitations under the License.
 
     var select = React.createClass({
 
-        handleChange: function(e, args) {
+        handleChange: function(e, values) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -69,21 +68,12 @@ permissions and limitations under the License.
             });
 
             var selectedObjectData = null;
-            var selectedOptions = Array.prototype.slice.call(e.currentTarget.options).filter(function(option) {
 
-                return option.selected;
-
-            });
-
-            if (selectedOptions && selectedOptions.length > 0) {
+            if (values) {
 
                 selectedObjectData = model.objectData.filter(function (item) {
 
-                    return (selectedOptions.filter(function (option) {
-
-                        return manywho.utils.isEqual(item.externalId, option.value, true);
-
-                    }).length > 0);
+                    return values.indexOf(item.externalId) != -1;
 
                 })
                 .map(function (item) {
@@ -151,9 +141,9 @@ permissions and limitations under the License.
 
                 }
 
-                if (selectedItems && selectedItems.length > 0) {
+                if (selectedItems) {
 
-                    attributes.defaultValue = (model.isMultiSelect) ? selectedItems : selectedItems[0];
+                    attributes.value = (model.isMultiSelect) ? selectedItems : selectedItems[0];
 
                 }
 
