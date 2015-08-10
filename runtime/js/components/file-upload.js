@@ -47,7 +47,7 @@ permissions and limitations under the License.
                 var self = this;
 
                 var formData = new FormData();
-                Array.prototype.slice.call(this.refs.upload.getDOMNode().files).forEach(function (file) {
+                Array.prototype.slice.call(this.state.files).forEach(function (file) {
 
                     formData.append('FileData', file);
 
@@ -104,10 +104,19 @@ permissions and limitations under the License.
 
         },
 
-        onFileSelected: function (e) {
+        onDrop: function (files) {
+
+            this.setState({ files: files });
+
+            this.onFileSelected(files);
+
+        },
+
+        onFileSelected: function (files) {
 
             this.setState({
-                fileNames: Array.prototype.slice.call(e.currentTarget.files).map(function(file) { return file.name }),
+                fileNames: Array.prototype.slice.call(files).map(function(file) { return file.name }),
+                files: files,
                 isFileSelected: true
             });
 
@@ -170,8 +179,9 @@ permissions and limitations under the License.
                     React.DOM.div({ className: "input-group" },
                         React.DOM.span({ className: "input-group-btn" },
                             React.DOM.span({ className: browseClasses.join(' ')  },[
-                                this.props.browseCaption,
-                                React.DOM.input({ type: "file", multiple: isMultiple, onChange: this.onFileSelected, ref: 'upload' })
+                                React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, width: 110, height: 110}, [
+                                    React.DOM.div({}, 'Drop files here, or click to select files')
+                                ])
                             ])
                         ),
                         React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })
