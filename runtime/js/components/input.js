@@ -104,8 +104,8 @@ permissions and limitations under the License.
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
                     && !manywho.utils.isNullOrWhitespace(e.target.value)) {
 
-                var max = (Math.pow(10, model.maxSize)) - 1
-                var min = (Math.pow(-10, model.maxSize)) + 1
+                var max = (Math.pow(10, model.maxSize)) - 1;
+                var min = (Math.pow(10, model.maxSize) * -1) + 1;
                 var value = parseInt(e.target.value);
 
                 var value = Math.min(value, max);
