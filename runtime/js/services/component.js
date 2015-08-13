@@ -213,7 +213,7 @@ manywho.component = (function (manywho) {
 
                 container = document.createElement('div');
                 container.setAttribute('id', flowKey);
-                container.className = 'mw-bs';
+                container.className = 'mw-bs flow-container';
                 container.style.minHeight = manywhoContainer.clientHeight + 'px';
                 manywhoContainer.appendChild(container);
 
