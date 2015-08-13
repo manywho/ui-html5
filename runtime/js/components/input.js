@@ -196,7 +196,7 @@ permissions and limitations under the License.
                                 model.label
                             ])
                         ),
-                        React.DOM.span({className: 'help-block'}, model.message),
+                        React.DOM.span({className: 'help-block'}, model.validationMessage),
                         React.DOM.span({ className: 'help-block' }, model.helpInfo)
                     ]);
 
@@ -233,7 +233,7 @@ permissions and limitations under the License.
                             (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                         ]),
                         React.DOM.input(attributes, null),
-                        React.DOM.span({ className: 'help-block' }, model.message),
+                        React.DOM.span({ className: 'help-block' }, model.validationMessage),
                         React.DOM.span({ className: 'help-block' }, model.helpInfo)
                     ]);
 

@@ -288,7 +288,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.message)];
+                React.DOM.span({ className: 'help-block' }, model.validationMessage)];
 
             if (this.state.isImageUploadOpen) {
 
