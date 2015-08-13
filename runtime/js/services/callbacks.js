@@ -20,7 +20,7 @@ manywho.callbacks = (function (manywho) {
             callbacks[flowKey] = callbacks[flowKey] || [];
 
             if (!options.flowKey) {
-                
+
                 options.flowKey = flowKey;
 
             }
@@ -52,7 +52,7 @@ manywho.callbacks = (function (manywho) {
                 })
                 .forEach(function (item) {
 
-                    item.execute.apply(undefined, [item].concat(item.args, args));
+                    item.execute.apply(undefined, [item].concat(item.args || [], args));
 
                     callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);
 
