@@ -302,10 +302,10 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function joinWithAuthorization(callback) {
+    function joinWithAuthorization(callback, flowKey) {
 
         var self = this;
-        var flowKey = callback.flowKey;
+        var flowKey = flowKey || callback.flowKey;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var state = manywho.state.getState(flowKey);
         var isAuthenticated = false;
@@ -686,8 +686,7 @@ manywho.engine = (function (manywho) {
 
             return joinWithAuthorization.call(this,
                 {
-                    execute: joinWithAuthorization,
-                    context: this,
+                    execute: joinWithAuthorization.bind(this),
                     args: [flowKey],
                     name: 'invoke',
                     type: 'done'

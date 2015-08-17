@@ -124,7 +124,8 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function () {
 
-                        manywho.state.setComponentLoading(manywho.utils.extractElement(authenticationFlow.key), null, authenticationFlow.key);
+                        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                        manywho.engine.render(flowKey);
                         manywho.engine.render(authenticationFlow.key);
 
                     })
