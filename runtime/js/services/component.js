@@ -207,13 +207,24 @@ manywho.component = (function (manywho) {
 
             var container = document.getElementById(flowKey);
 
+            // Added this fix because embedded Flows and normal Flows should not be positioned absolute
+            // on their main container, that should only happen for modal containers
+
+            var containerClasses = 'mw-bs flow-container';
+
+            if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal', true)) {
+
+                containerClasses+= ' modal-container';
+
+            }
+
             if (!container) {
 
                 var manywhoContainer = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
 
                 container = document.createElement('div');
                 container.setAttribute('id', flowKey);
-                container.className = 'mw-bs';
+                container.className = containerClasses;
                 container.style.minHeight = manywhoContainer.clientHeight + 'px';
                 manywhoContainer.appendChild(container);
 

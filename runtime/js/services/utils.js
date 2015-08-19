@@ -207,12 +207,6 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        isModal: function (flowKey) {
-
-            return this.isEqual(this.extractElement(flowKey), 'modal', true);
-
-        },
-
         removeLoadingIndicator: function(id) {
 
             var element = document.getElementById(id);
@@ -237,19 +231,13 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        isDrawTool: function (flowKey) {
-
-            return this.isEqual(manywho.model.getParentForModal(flowKey), 'draw_draw_draw_main', true);
-
-        },
-
-        extractOutputValue: function (outputs, outputName) {
+        getOutput: function (outputs, outputName) {
 
             return outputs.filter(function (output) {
 
                 return manywho.utils.isEqual(output.developerName, outputName, true);
 
-            });
+            })[0];
 
         },
 

@@ -18,19 +18,14 @@ permissions and limitations under the License.
         componentDidMount: function() {
 
             manywho.utils.removeLoadingIndicator('loader');
-
-            if (!manywho.model.getModal(this.props.flowKey)) {
-
-                manywho.component.focusInput(this.props.flowKey);
-
-            }
+            manywho.component.focusInput(this.props.flowKey);
 
             window.addEventListener("beforeunload", function (event) {
 
                 manywho.engine.sync(this.props.flowKey);
 
             }.bind(this));
-			
+
 
         },
 
@@ -68,15 +63,6 @@ permissions and limitations under the License.
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var state = manywho.state.getComponent('main', this.props.flowKey) || {};
 
-            var modalKey = manywho.model.getModal(this.props.flowKey);
-            var modal = null;
-
-            if (modalKey) {
-
-                modal = React.createElement(manywho.component.getByName('modal'), { flowKey: modalKey });
-
-            }
-
             var componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
             var outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);
 
@@ -97,7 +83,6 @@ permissions and limitations under the License.
                             React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey }),
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
-                        modal,
                         React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),

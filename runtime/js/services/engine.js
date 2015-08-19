@@ -126,7 +126,7 @@ manywho.engine = (function (manywho) {
     function onInitializeFailed(response) {
 
         var container = document.querySelector(manywho.settings.global('containerSelector', null, '#manywho'))
-        container.className += 'mw-bs';
+        container.classList.add('mw-bs');
 
         var alert = document.createElement('div');
         alert.className = 'alert alert-danger initialize-error';
@@ -138,9 +138,10 @@ manywho.engine = (function (manywho) {
 
     }
 
-    function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, authenticationToken, flowKey) {
+    function initializeWithAuthorization(callback, tenantId, flowId, flowVersionId, container, options, authenticationToken) {
 
         var self = this;
+        var flowKey = callback.flowKey;
         var stateId = (flowKey) ? manywho.utils.extractStateId(flowKey) : null;
         var navigationId, streamId = null;
 
@@ -157,14 +158,14 @@ manywho.engine = (function (manywho) {
 
         if (flowKey) {
 
-            manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.initializing') }, flowKey);
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.initializing') }, flowKey);
             self.render(flowKey);
 
             authenticationToken = authenticationToken || manywho.state.getAuthenticationToken(flowKey);
 
         }
 
-        manywho.ajax.initialize(initializationRequest, tenantId, authenticationToken)
+        return manywho.ajax.initialize(initializationRequest, tenantId, authenticationToken)
             .then(function (response) {
 
                 localStorage.setItem('oauth-' + response.stateId, JSON.stringify({
@@ -185,18 +186,9 @@ manywho.engine = (function (manywho) {
 
                 }
 
-                if (manywho.utils.isEqual(container, 'modal', true)) {
-
-                    var mainKey = manywho.utils.getFlowKey(tenantId, flowId, flowVersionId, response.stateId, 'main');
-                    manywho.model.initializeModel(mainKey);
-                    manywho.model.parseEngineResponse(null, mainKey);
-                    manywho.model.setModal(mainKey, flowKey);
-
-                }
-
                 streamId = response.currentStreamId;
 
-                callback.args[6] = flowKey;
+                callback.flowKey = flowKey;
 
                 manywho.model.initializeModel(flowKey);
                 manywho.settings.initializeFlow(options, flowKey);
@@ -222,7 +214,7 @@ manywho.engine = (function (manywho) {
                 }
 
                 manywho.component.appendFlowContainer(flowKey);
-                manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.initializing') }, flowKey);
+                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.initializing') }, flowKey);
                 self.render(flowKey);
 
                 return isAuthorized(response, flowKey);
@@ -242,7 +234,6 @@ manywho.engine = (function (manywho) {
                 );
 
                 return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey));
-
 
             }, function (response) {
 
@@ -302,6 +293,11 @@ manywho.engine = (function (manywho) {
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);
 
+             })
+             .then(function() {
+
+                return flowKey;
+
              });
 
     }
@@ -309,11 +305,12 @@ manywho.engine = (function (manywho) {
     function joinWithAuthorization(callback, flowKey) {
 
         var self = this;
+        var flowKey = flowKey || callback.flowKey;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var state = manywho.state.getState(flowKey);
         var isAuthenticated = false;
 
-        manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.joining') }, flowKey);
+        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.joining') }, flowKey);
         self.render(flowKey);
 
         return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
@@ -382,23 +379,25 @@ manywho.engine = (function (manywho) {
 
                 if (isAuthenticated) {
 
-                    manywho.state.setComponentLoading('main', null, flowKey);
+                    manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                     self.render(flowKey);
 
                 }
 
+            })
+            .then(function() {
+
+                return flowKey;
+
             });
-
-
-
 
     }
 
     function moveWithAuthorization(callback, invokeRequest, flowKey) {
 
         var self = this;
+        var flowKey = callback.flowKey || flowKey;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-        var parentFlowKey = manywho.model.getParentForModal(flowKey) || flowKey;
         var moveResponse = null;
 
         return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
@@ -421,12 +420,6 @@ manywho.engine = (function (manywho) {
                 manywho.state.setLocation(flowKey);
 
                 manywho.collaboration.move(flowKey);
-
-                if (manywho.utils.isModal(flowKey) && manywho.utils.isEqual(response.invokeType, 'done', true) && !manywho.utils.isDrawTool(flowKey)) {
-
-                    manywho.model.setModal(parentFlowKey, null);
-
-                }
 
                 return response;
 
@@ -457,38 +450,30 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                if (manywho.utils.isDrawTool(flowKey)) {
+                self.render(flowKey);
 
-                    self.render(flowKey);
+                manywho.component.focusInput(flowKey);
+                manywho.component.scrollToTop(flowKey);
 
-                    manywho.component.focusInput(flowKey);
-                    manywho.component.scrollToTop(flowKey);
+            })
+            .always(function() {
 
-                } else {
+                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+                self.render(flowKey);
 
-                    self.render(parentFlowKey);
+            })
+            .always(function () {
 
-                    manywho.component.focusInput(parentFlowKey);
-                    manywho.component.scrollToTop(parentFlowKey);
+                return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
-                }
+            })
+            .then(function() {
 
                 if (moveResponse) {
 
                     manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
                     moveResponse = null;
                 }
-
-            })
-            .always(function() {
-
-                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
-                self.render(parentFlowKey);
-
-            })
-            .always(function () {
-
-                processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             });
 
@@ -525,10 +510,9 @@ manywho.engine = (function (manywho) {
             }
             else {
 
-                initializeWithAuthorization.call(this,
+                return initializeWithAuthorization.call(this,
                 {
-                    execute: initializeWithAuthorization,
-                    context: this,
+                    execute: initializeWithAuthorization.bind(this),
                     args: [config.tenantId, config.flowId, config.flowVersionId, config.container, config.options, authenticationToken || null],
                     name: 'initialize',
                     type: 'done'
@@ -541,96 +525,6 @@ manywho.engine = (function (manywho) {
                 authenticationToken);
 
             }
-
-        },
-
-        initializeSystemFlow: function(flowName, drawKey, inputs, callbacks) {
-
-            var self = this;
-
-            var authenticationToken = manywho.state.getAuthenticationToken(drawKey);
-
-            var flowKey;
-
-            manywho.state.setComponentLoading('modal', { message: 'Initializing...' }, drawKey);
-
-            manywho.ajax.getFlowByName('MANYWHO__' + flowName.toUpperCase() + '__DEFAULT__FLOW', manywho.settings.global('adminTenantId'), manywho.state.getAuthenticationToken(drawKey))
-                .then(function (response) {
-
-                    var initializationRequest = manywho.json.generateInitializationRequest(
-                        { id: response.id.id, versionId: response.id.versionId },
-                        null,
-                        null,
-                        inputs,
-                        manywho.settings.global('playerUrl'),
-                        manywho.settings.global('joinUrl'),
-                        null,
-                        ''
-                    );
-
-                    flowKey = manywho.utils.getFlowKey(manywho.settings.global('adminTenantId'), response.id.id, response.id.versionId, null, 'modal');
-
-                    manywho.model.initializeModel(drawKey);
-                    manywho.model.parseEngineResponse(null, drawKey);
-                    manywho.model.setModal(drawKey, flowKey);
-
-                    return manywho.ajax.initialize(initializationRequest, manywho.settings.global('adminTenantId'), '');
-                })
-                .then(function (response) {
-
-                    manywho.settings.initializeFlow(null, flowKey);
-                    manywho.model.initializeModel(flowKey);
-
-                    manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
-
-                    self.render(flowKey);
-
-                    callbacks.forEach(function (callback) {
-                        manywho.callbacks.register(flowKey, callback);
-                    });
-
-                    var invokeRequest = manywho.json.generateInvokeRequest(
-                        manywho.state.getState(flowKey),
-                        'FORWARD',
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        manywho.settings.flow('annotations', flowKey),
-                        manywho.state.getLocation(flowKey),
-                        manywho.settings.flow('mode', flowKey)
-                    );
-
-                    return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), '');
-
-                })
-                .then(function (response) {
-
-                    self.parseResponse(response, manywho.model.parseEngineResponse, flowKey);
-
-                    manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
-
-                    manywho.state.setLocation(flowKey);
-
-                    var deferreds = [];
-
-                    if (manywho.settings.isDebugEnabled(flowKey)) {
-
-                        deferreds.push(loadExecutionLog(flowKey, authenticationToken));
-
-                    }
-
-                    return $.whenAll(deferreds);
-
-                })
-                .then(function () {
-
-                    manywho.state.setComponentLoading('modal', null, drawKey);
-                    self.render(flowKey);
-                    processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
-
-                });
 
         },
 
@@ -792,8 +686,7 @@ manywho.engine = (function (manywho) {
 
             return joinWithAuthorization.call(this,
                 {
-                    execute: joinWithAuthorization,
-                    context: this,
+                    execute: joinWithAuthorization.bind(this),
                     args: [flowKey],
                     name: 'invoke',
                     type: 'done'
@@ -935,30 +828,9 @@ manywho.engine = (function (manywho) {
         render: function (flowKey) {
 
             var container = document.getElementById(flowKey);
-
-            if (manywho.utils.isDrawTool(flowKey)) {
-
-                container = document.getElementById('draw-modal');
-
-            } else if (manywho.utils.isModal(flowKey) && manywho.model.getParentForModal(flowKey)) {
-
-                flowKey = manywho.model.getParentForModal(flowKey);
-                container = document.getElementById(flowKey);
-
-            }
-
             React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
 
-        },
-
-        renderModal: function (modalKey) {
-
-            var container = document.getElementById('draw-modal');
-
-            React.render(React.createElement('modal', {flowKey: modalKey}), container);
-
         }
-
     }
 
 })(manywho);

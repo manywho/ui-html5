@@ -122,6 +122,12 @@ manywho.state = (function (manywho) {
 
             components[flowKey][id] = $.extend(components[flowKey][id], values);
 
+            if (values != null) {
+
+                components[flowKey][id].objectData = values.objectData;
+
+            }
+
             if (push) {
                 manywho.collaboration.push(id, values, flowKey);
             }

@@ -18,7 +18,7 @@ permissions and limitations under the License.
         editor: null,
 
         initializeEditor: function() {
-            
+
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -98,11 +98,11 @@ permissions and limitations under the License.
             var self = this;
 
             if (!window.tinymce) {
-                
+
                 var component = manywho.component.getByName('content');
 
                 if (!component.isLoadingTinyMce) {
-                                        
+
                     component.loadTinyMce(function () {
 
                         self.initializeEditor();
@@ -145,7 +145,7 @@ permissions and limitations under the License.
             window.clearInterval(this.changeInterval);
 
         },
-        
+
         handleChange: function (e) {
 
             if (this.state.isInitialized && this.editor) {
@@ -200,13 +200,12 @@ permissions and limitations under the License.
 
         onUploadComplete: function (response) {
 
-            var imageUri = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Download Uri');
+            var imageUri = manywho.utils.getOutput(response.objectData[0].properties, 'Download Uri');
+            var imageName = manywho.utils.getOutput(response.objectData[0].properties, 'Name');
 
-            var imageName = manywho.utils.extractOutputValue(response.objectData[0].properties, 'Name');
+            if (imageUri) {
 
-            if (imageUri != null && imageUri.length > 0) {
-
-                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri[0].contentValue + '" alt="' + imageName[0].contentValue + '"/>');
+                tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + imageUri.contentValue + '" alt="' + imageName.contentValue + '"/>');
 
                 this.setState({ isImageUploadOpen: false });
 
@@ -239,7 +238,7 @@ permissions and limitations under the License.
         render: function () {
 
             manywho.log.info('Rendering Content: ' + this.props.id);
-            
+
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
@@ -289,7 +288,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.message)];
+                React.DOM.span({ className: 'help-block' }, model.validationMessage)];
 
             if (this.state.isImageUploadOpen) {
 
@@ -298,7 +297,7 @@ permissions and limitations under the License.
             }
 
             return React.DOM.div({ className: classNames }, childElements);
-            
+
         }
 
     });
