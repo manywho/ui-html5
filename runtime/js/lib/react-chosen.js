@@ -8,10 +8,15 @@
     },
 
     handleChange: function(a, b, c) {
-      // force the update makes it so that we reset chosen to whatever
-      // controlled value the parent dictated
+      var values = $(this.refs.select.getDOMNode())
+                    .children('option:selected')
+                    .map(function(index, element) {
+                        return element.value;
+                    })
+                    .toArray();
+
       this.forceUpdate();
-      this.props.onChange && this.props.onChange(a, b, c);
+      this.props.onChange && this.props.onChange(a, values);
     },
 
     componentDidMount: function() {

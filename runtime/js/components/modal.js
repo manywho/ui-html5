@@ -17,7 +17,7 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
-            manywho.component.focusInput(manywho.model.getParentForModal(this.props.flowKey));
+            manywho.component.focusInput(this.props.flowKey);
 
         },
 
@@ -25,7 +25,6 @@ permissions and limitations under the License.
 
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
-            var drawKey = manywho.model.getParentForModal(this.props.flowKey);
             var state = manywho.state.getComponent('modal', this.props.flowKey) || {};
 
             return React.DOM.div({ className: 'modal show' }, [
@@ -40,6 +39,9 @@ permissions and limitations under the License.
                         React.DOM.div({ className: 'modal-footer' }, [
                             manywho.component.getOutcomes(outcomes, this.props.flowKey)
                         ]),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
+                        React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),
                         React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)
                     ])
                 ])
@@ -49,8 +51,8 @@ permissions and limitations under the License.
 
         renderBackdrop: function(modal) {
 
-            return React.DOM.div({ className: 'modal-container', id: this.props.flowKey, key: this.props.flowKey}, [
-                React.DOM.div({ className: 'modal-backdrop in full-height' }, null),
+            return React.DOM.div(null, [
+                React.DOM.div({ className: 'modal-backdrop full-height' }, null),
                 modal
             ]);
 

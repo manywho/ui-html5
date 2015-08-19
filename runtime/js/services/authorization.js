@@ -13,7 +13,7 @@ manywho.authorization = (function (manywho) {
 
     return {
 
-        setAuthenticationToken: function (callback, flowKey, response) {
+        setAuthenticationToken: function (callback, parentFlowKey, response) {
 
             var authenticationToken = response.outputs.filter(function (output) {
 
@@ -25,7 +25,14 @@ manywho.authorization = (function (manywho) {
 
             })[0];
 
-            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
+            manywho.state.setAuthenticationToken(authenticationToken, parentFlowKey);
+
+        },
+
+        hideModal: function(callback) {
+
+            manywho.model.deleteFlowModel(callback.flowKey);
+            manywho.utils.removeFlowFromDOM(callback.flowKey);
 
         },
 
@@ -48,9 +55,6 @@ manywho.authorization = (function (manywho) {
                     return;
 
                 }
-
-                manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.executing') }, flowKey);
-                manywho.engine.render(flowKey);
 
                 var authenticationFlow = {
                     key: null,
@@ -95,6 +99,15 @@ manywho.authorization = (function (manywho) {
                         // Then execute the callback that we were given
                         manywho.callbacks.register(authenticationFlow.key, doneCallback);
 
+                        manywho.callbacks.register(authenticationFlow.key, {
+                            execute: self.hideModal,
+                            type: 'done'
+                        });
+
+                        manywho.component.appendFlowContainer(authenticationFlow.key);
+                        manywho.state.setComponentLoading(manywho.utils.extractElement(authenticationFlow.key), { message: manywho.settings.global('localization.initializing') }, authenticationFlow.key);
+                        manywho.engine.render(authenticationFlow.key);
+
                         var invokeRequest = manywho.json.generateInvokeRequest({
                             id: response.stateId,
                             token: response.stateToken,
@@ -111,9 +124,9 @@ manywho.authorization = (function (manywho) {
                     })
                     .then(function () {
 
-                        manywho.state.setComponentLoading('main', null, flowKey);
-                        manywho.model.setModal(flowKey, authenticationFlow.key);
+                        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                         manywho.engine.render(flowKey);
+                        manywho.engine.render(authenticationFlow.key);
 
                     })
 
