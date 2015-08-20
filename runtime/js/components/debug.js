@@ -162,7 +162,7 @@ permissions and limitations under the License.
 
                         return React.DOM.tr(null, [
                             React.DOM.td(null, timeStamp.toLocaleString()),
-                            React.DOM.td(null, entry.message),
+                            React.DOM.td(null, entry.message)
                             // TODO: display data
                         ]);
 
@@ -193,11 +193,11 @@ permissions and limitations under the License.
                 var executionLog = manywho.model.getExecutionLog(this.props.flowKey) || {};
 
                 var componentErrors = [];
-                for (var id in manywho.state.getComponents(flowKey)) {
+                for (var id in manywho.state.getComponents(this.props.flowKey)) {
 
-                    if (manywho.state.getComponents(flowKey)[id].error) {
+                    if (manywho.state.getComponents(this.props.flowKey)[id].error) {
 
-                        componentErrors.push(manywho.state.getComponents(flowKey)[id].error);
+                        componentErrors.push(manywho.state.getComponents(this.props.flowKey)[id].error);
 
                     }
 
