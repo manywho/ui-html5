@@ -107,8 +107,14 @@ permissions and limitations under the License.
         onDrop: function (files) {
 
             this.setState({ files: files });
-
             this.onFileSelected(files);
+
+            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+            if (model && model.attributes && model.attributes.isAutoUpload) {
+
+                this.onUpload();
+
+            }
 
         },
 
@@ -138,25 +144,25 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering File Upload ' + this.props.id);
 
-            var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             var progress = (this.state.progress || 0) + '%';
             var isMultiple = this.props.multiple;
+            var isAutoUpload = false;
 
             if (model) {
 
                 isMultiple = model.multiple;
+                isAutoUpload = model.attributes && model.attributes.isAutoUpload;
 
             }
 
-            var uploadClasses = ['btn', 'btn-default', 'pull-left', 'btn-file-upload'];
-            var browseClasses = ['btn', 'btn-primary', 'btn-file'];
+            var uploadClasses = ['btn', 'btn-primary'];
             var inputClasses = ['form-control', 'filenames'];
 
             if (this.props.smallInputs) {
 
                 uploadClasses.push('btn-sm');
-                browseClasses.push('btn-sm');
                 inputClasses.push('input-sm');
 
             }
@@ -167,25 +173,17 @@ permissions and limitations under the License.
 
             }
 
-            if (this.state.fileNames.length == 0) {
-
-                inputClasses.push('hidden');
-
-            }
-
-            return React.DOM.div(null, [
+            return React.DOM.div({ className: 'file-upload' }, [
                 React.DOM.div({ className: 'clearfix' }, [
-                    React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption),
-                    React.DOM.div({ className: "input-group" },
-                        React.DOM.span({ className: "input-group-btn" },
-                            React.DOM.span({ className: browseClasses.join(' ')  },[
-                                React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, width: 110, height: 110}, [
-                                    React.DOM.div({}, 'Drop files here, or click to select files')
-                                ])
-                            ])
-                        ),
-                        React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') })
-                    )
+                    React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, className: 'dropzone' }, [
+                        React.DOM.div(null, 'Drop files here, or click to select files')
+                    ]),
+                    React.DOM.div({ className: 'input-group ' + ((isAutoUpload) ? 'hidden' : '') }, [
+                        React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') }),
+                        React.DOM.span({ className: 'input-group-btn'},
+                            React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption)
+                        )
+                    ])
                 ]),
                 React.DOM.div({ className: 'progress files-progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
                     React.DOM.div({ className: 'progress-bar', style: { width: progress } })

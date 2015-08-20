@@ -220,9 +220,9 @@ permissions and limitations under the License.
                 }
                 else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
 
-                    attributes.style = { width: (15 * model.size) + "px !important" }
-                    attributes.max = (Math.pow(10, model.maxSize)) - 1
-                    attributes.min = (Math.pow(-10, model.maxSize)) + 1
+                    attributes.style = { width: (15 * model.size) + "px !important" };
+                    attributes.max = (Math.pow(10, model.maxSize)) - 1;
+                    attributes.min = (Math.pow(-10, model.maxSize)) + 1;
 
                 }
 
