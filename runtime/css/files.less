@@ -11,30 +11,8 @@ permissions and limitations under the License.
 
 .mw-bs {
 
-    .btn-file-upload {
-        margin-right: 1em;
-    }
-
-    .btn-file {
-        position: relative;
-        overflow: hidden;
-        margin-right: 5px !important;
-    }
-
-    .btn-file input[type=file] {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 100%;
-        min-height: 100%;
-        font-size: 100px;
-        text-align: right;
-        filter: alpha(opacity=0);
-        opacity: 0;
-        outline: none;
-        background: white;
-        cursor: inherit;
-        display: block;
+    .file-upload .input-group {
+        width: 100%;
     }
 
     .filenames[readonly] {
@@ -50,10 +28,16 @@ permissions and limitations under the License.
         margin-top: 0.5em;
     }
 
-    .dropzone div {
+    .dropzone {
+        border: 2px dashed #ddd;
+        font-size: 1.1em;
+        text-align: center;
+        margin-bottom: 0.5em;
+    }
+
+    .dropzone > div {
         padding: 5px;
         white-space: normal;
-
     }
 
 }
