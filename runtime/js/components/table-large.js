@@ -210,7 +210,7 @@ permissions and limitations under the License.
 
                         if (!manywho.utils.isNullOrWhitespace(column.typeElementPropertyToDisplayId)) {
 
-                            if (selectedProperty.objectData != null) {
+                            if (selectedProperty != null && selectedProperty.objectData != null) {
 
                                 selectedProperty = selectedProperty.objectData[0].properties.filter(function (childProperty) {
 
