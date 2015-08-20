@@ -109,7 +109,7 @@ permissions and limitations under the License.
             this.setState({ files: files });
             this.onFileSelected(files);
 
-            var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
             if (model && model.attributes && model.attributes.isAutoUpload) {
 
                 this.onUpload();
@@ -144,7 +144,7 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering File Upload ' + this.props.id);
 
-            var model = manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             var progress = (this.state.progress || 0) + '%';
             var isMultiple = this.props.multiple;
@@ -178,7 +178,7 @@ permissions and limitations under the License.
                     React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, className: 'dropzone' }, [
                         React.DOM.div(null, 'Drop files here, or click to select files')
                     ]),
-                    React.DOM.div({ className: 'input-group ' + ((isAutoUpload) ? 'hideen' : '') }, [
+                    React.DOM.div({ className: 'input-group ' + ((isAutoUpload) ? 'hidden' : '') }, [
                         React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') }),
                         React.DOM.span({ className: 'input-group-btn'},
                             React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption)
