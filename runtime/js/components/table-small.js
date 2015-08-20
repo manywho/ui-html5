@@ -114,31 +114,23 @@ permissions and limitations under the License.
                                 }
                                 else {
 
-                                    var selectedProperty;
+                                    var selectedProperty = item.properties.filter(function (property) {
+
+                                        return property.typeElementPropertyId == column.typeElementPropertyId;
+
+                                    })[0];
 
                                     if (!manywho.utils.isNullOrWhitespace(column.typeElementPropertyToDisplayId)) {
 
-                                        item.properties.forEach(function (property) {
+                                        if (selectedProperty.objectData != null) {
 
-                                            if (property.typeElementPropertyId == column.typeElementPropertyId) {
+                                            selectedProperty = selectedProperty.objectData[0].properties.filter(function (childProperty) {
 
-                                                selectedProperty = property.objectData[0].properties.filter(function (childProperty) {
+                                                return childProperty.typeElementPropertyId == column.typeElementPropertyToDisplayId;
 
-                                                    return childProperty.typeElementPropertyId == column.typeElementPropertyToDisplayId;
+                                            })[0];
 
-                                                })[0];
-
-                                            }
-
-                                        });
-
-                                    } else {
-
-                                        selectedProperty = item.properties.filter(function (property) {
-
-                                            return property.typeElementPropertyId == column.typeElementPropertyId;
-
-                                        })[0];
+                                        }
 
                                     }
 
