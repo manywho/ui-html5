@@ -208,7 +208,7 @@ permissions and limitations under the License.
 
                             item.properties.forEach(function (property) {
 
-                                if (property.typeElementPropertyId == column.typeElementPropertyId) {
+                                if (property.typeElementPropertyId == column.typeElementPropertyId && property.objectData != null) {
 
                                     selectedProperty = property.objectData[0].properties.filter(function (childProperty) {
 
