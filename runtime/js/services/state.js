@@ -44,6 +44,31 @@ manywho.state = (function (manywho) {
 
     }
 
+    function isEmptyObjectData(model) {
+
+        if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
+
+            for (prop in model.objectData[0].properties) {
+
+                if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
+
+                    return false;
+
+                }
+
+            }
+
+        }
+        else if (model.objectData) {
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
     return {
 
         refreshComponents: function(models, flowKey) {
@@ -55,7 +80,7 @@ manywho.state = (function (manywho) {
                 var selectedObjectData = null;
 
                 // We need to do a little work on the object data as we only want the selected values in the state
-                if (models[id].objectData) {
+                if (models[id].objectData && !isEmptyObjectData(models[id])) {
 
                     selectedObjectData = models[id].objectData.filter(function (item) {
 
