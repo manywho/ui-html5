@@ -113,6 +113,8 @@ manywho.state = (function (manywho) {
 
                     if (position != null && position.coords != null) {
 
+                        var nowTime = moment();
+
                         location[flowKey] = {
                             latitude: manywho.utils.getNumber(position.coords.latitude),
                             longitude: manywho.utils.getNumber(position.coords.longitude),
@@ -120,7 +122,9 @@ manywho.state = (function (manywho) {
                             altitude: manywho.utils.getNumber(position.coords.altitude),
                             altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
                             heading: manywho.utils.getNumber(position.coords.heading),
-                            speed: manywho.utils.getNumber(position.coords.speed)
+                            speed: manywho.utils.getNumber(position.coords.speed),
+                            time: nowTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
+
                         }
 
                     }
