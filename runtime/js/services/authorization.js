@@ -88,6 +88,7 @@ manywho.authorization = (function (manywho) {
                         authenticationFlow.key = manywho.utils.getFlowKey(manywho.settings.global('adminTenantId'), authenticationFlow.id, authenticationFlow.versionId, response.stateId, 'modal');
 
                         manywho.model.initializeModel(authenticationFlow.key);
+                        manywho.settings.initializeFlow({ autoFocusInput: true }, authenticationFlow.key);
 
                         // When the authentication flow is "DONE" call setAuthenticationToken
                         manywho.callbacks.register(authenticationFlow.key, {
@@ -125,10 +126,16 @@ manywho.authorization = (function (manywho) {
                     .then(function () {
 
                         manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+
                         manywho.engine.render(flowKey);
                         manywho.engine.render(authenticationFlow.key);
 
                     })
+                    .then(function() {
+
+                        manywho.component.focusInput(authenticationFlow.key);
+
+                    });
 
             }
 
