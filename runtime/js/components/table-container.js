@@ -367,12 +367,10 @@ permissions and limitations under the License.
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
 
-            if (state.error || !manywho.utils.isNullOrWhitespace(model.validationMessage)) {
-
-                var errorMessage = model.validationMessage || state.error.message;
+            if (state.error) {
 
                 content = React.DOM.div({ className: 'table-error' }, [
-                    React.DOM.p({ className: 'lead' }, errorMessage),
+                    React.DOM.p({ className: 'lead' }, state.error.message),
                     React.DOM.button({ className: 'btn btn-danger', onClick: this.search }, 'Retry')
                 ]);
 
@@ -432,6 +430,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: classNames.join(' ') }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
+                (model.isValid) ? null : React.DOM.span({ className: 'help-block' }, model.validationMessage),
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     fileUpload,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),

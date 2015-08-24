@@ -169,8 +169,13 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Table-Small');
 
+            var classNames = [
+                'list-group',
+                (this.props.model.isValid) ? '' : 'table-invalid'
+            ].join(' ');
+
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
-            return React.DOM.div({ className: 'list-group' }, items);
+            return React.DOM.div({ className: classNames }, items);
 
         }
 
