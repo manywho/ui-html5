@@ -114,13 +114,13 @@ permissions and limitations under the License.
 
                 var max = (Math.pow(10, model.maxSize)) - 1;
                 var min = (Math.pow(10, model.maxSize) * -1) + 1;
-                var value = parseInt(e.target.value);
+                var value = parseFloat(e.target.value);
 
                 var value = Math.min(value, max);
                 value = Math.max(value, min);
 
                 manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
-                this.forceUpdate();
+                this.setState({ value: e.target.value });
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
@@ -235,6 +235,7 @@ permissions and limitations under the License.
                     attributes.style = { width: (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, model.maxSize)) - 1;
                     attributes.min = (Math.pow(10, model.maxSize) * -1) + 1;
+                    attributes.value = this.state.value;
 
                 }
 
