@@ -342,6 +342,7 @@ manywho.engine = (function (manywho) {
 
                 if (response.navigationElementReferences && response.navigationElementReferences.length > 0) {
 
+                    manywho.model.setSelectedNavigation(response.navigationElementReferences[0].id, flowKey);
                     deferreds.push(loadNavigation(flowKey, response.stateToken, response.navigationElementReferences[0].id, response.currentMapElementId));
 
                 }
