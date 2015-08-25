@@ -58,35 +58,41 @@ permissions and limitations under the License.
 
         handleChange: function(e, values) {
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            // values will be undefined if we are running on a mobile device as chosen won't be applied to the select box
+            // however it will still fire the change event, then React will fire a change event (values will be undefined here)
+            if (typeof values !== 'undefined') {
 
-            model.objectData = model.objectData.map(function (item) {
+                var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-                item.isSelected = false;
-                return item;
+                model.objectData = model.objectData.map(function (item) {
 
-            });
-
-            var selectedObjectData = null;
-
-            if (values) {
-
-                selectedObjectData = model.objectData.filter(function (item) {
-
-                    return values.indexOf(item.externalId) != -1;
-
-                })
-                .map(function (item) {
-
-                    item.isSelected = true;
+                    item.isSelected = false;
                     return item;
 
                 });
 
-            }
+                var selectedObjectData = null;
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
-            manywho.component.handleEvent(this, model, this.props.flowKey);
+                if (values) {
+
+                    selectedObjectData = model.objectData.filter(function (item) {
+
+                        return values.indexOf(item.externalId) != -1;
+
+                    })
+                    .map(function (item) {
+
+                        item.isSelected = true;
+                        return item;
+
+                    });
+
+                }
+
+                manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
+                manywho.component.handleEvent(this, model, this.props.flowKey);
+
+            }
 
         },
 
@@ -120,7 +126,6 @@ permissions and limitations under the License.
             }
 
             attributes['data-placeholder'] = model.hintValue || 'Please select an option';
-            attributes.defaultValue = '';
 
             if (!isEmptyObjectData(model)) {
 
@@ -180,6 +185,7 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.div({ className: 'input-wrapper' }, [
                     React.createElement(Chosen, attributes, options),
+                    //React.DOM.select(attributes, options),
                     React.DOM.span({ className: iconClassNames.join(' ') }, null)
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
