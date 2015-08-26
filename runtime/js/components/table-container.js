@@ -109,7 +109,7 @@ permissions and limitations under the License.
 
         if (footerElements.length > 0) {
 
-            return React.DOM.div({ className: 'table-footer' }, footerElements);
+            return React.DOM.div({ className: 'table-footer clearfix' }, footerElements);
 
         }
 
