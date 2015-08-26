@@ -101,7 +101,7 @@ manywho.collaboration = (function (manywho) {
         var element = manywho.utils.extractElement(flowKey);
 
         // Re-join the flow here so that we sync with the latest state from the manywho server
-        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, manywho.state.getAuthenticationToken(flowKey)).then(function () {
+        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, manywho.state.getAuthenticationToken(flowKey), manywho.settings.flow(null, flowKey)).then(function () {
 
             socket.emit('getValues', data);
 

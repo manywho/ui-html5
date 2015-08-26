@@ -145,7 +145,16 @@ manywho.settings = (function (manywho, $) {
 
         flow: function(path, flowKey) {
 
-            return manywho.utils.getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+            if (manywho.utils.isNullOrWhitespace(path)) {
+
+                return flows[flowKey];
+
+            }
+            else {
+
+                return manywho.utils.getValueByPath(flows[flowKey] || {}, path.toLowerCase());
+
+            }
 
         },
 

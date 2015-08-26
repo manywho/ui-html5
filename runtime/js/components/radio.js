@@ -1,27 +1,40 @@
-﻿/*!
-Copyright 2015 ManyWho, Inc.
-Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
-file except in compliance with the License.
-You may obtain a copy of the License at: http://manywho.com/sharedsource
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-*/
+/*!
+ Copyright 2015 ManyWho, Inc.
+ Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+ file except in compliance with the License.
+ You may obtain a copy of the License at: http://manywho.com/sharedsource
+ Unless required by applicable law or agreed to in writing, software distributed under
+ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the specific language governing
+ permissions and limitations under the License.
+ */
 
 (function (manywho) {
 
-    function renderOption (item) {
+    function renderOption (item, attributes, column, developerName) {
+
+        var optionAttributes = {};
 
         if (item.properties) {
 
             var label = item.properties.filter(function (value) {
 
-                return manywho.utils.isEqual(value.typeElementPropertyId, this.column, true);
+                return manywho.utils.isEqual(value.typeElementPropertyId, column, true);
 
             }, this)[0];
 
-            return React.DOM.option({ value: item.externalId }, label.contentValue);
+            $.extend(optionAttributes, attributes, { type: 'radio', name: developerName, value: item.externalId });
+
+            if (attributes.value == item.externalId) {
+
+                optionAttributes.checked = 'checked';
+
+            }
+
+            return React.DOM.label({ className: 'radio' }, [
+                    React.DOM.input(optionAttributes),
+                    label.contentValue
+            ]);
 
         }
 
@@ -54,32 +67,28 @@ permissions and limitations under the License.
 
     }
 
-    var select = React.createClass({
+    var radio = React.createClass({
 
-        handleChange: function(e, values) {
+        handleChange: function(e) {
 
-            // values will be undefined if we are running on a mobile device as chosen won't be applied to the select box
-            // however it will still fire the change event, then React will fire a change event (values will be undefined here)
-            if (typeof values !== 'undefined') {
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-                var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            model.objectData = model.objectData.map(function (item) {
 
-                model.objectData = model.objectData.map(function (item) {
+                item.isSelected = false;
+                return item;
 
-                    item.isSelected = false;
-                    return item;
+            });
 
-                });
+            var selectedObjectData = null;
 
-                var selectedObjectData = null;
+            if (e.target) {
 
-                if (values) {
+                selectedObjectData = model.objectData.filter(function (item) {
 
-                    selectedObjectData = model.objectData.filter(function (item) {
+                    return e.target.value == item.externalId;
 
-                        return values.indexOf(item.externalId) != -1;
-
-                    })
+                })
                     .map(function (item) {
 
                         item.isSelected = true;
@@ -87,12 +96,10 @@ permissions and limitations under the License.
 
                     });
 
-                }
-
-                manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
-                manywho.component.handleEvent(this, model, this.props.flowKey);
-
             }
+
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
+            manywho.component.handleEvent(this, model, this.props.flowKey);
 
         },
 
@@ -108,9 +115,7 @@ permissions and limitations under the License.
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             var attributes = {
-                onChange: this.handleChange,
-                containerClasses: 'select',
-                className: 'chosen-select'
+                onClick: this.handleChange
             };
 
             if (model.isRequired) {
@@ -121,16 +126,7 @@ permissions and limitations under the License.
                 attributes.disabled = 'disabled';
             }
 
-            if (model.isMultiSelect) {
-                attributes.multiple = true;
-            }
-
-            attributes['data-placeholder'] = model.hintValue || 'Please select an option';
-
             if (!isEmptyObjectData(model)) {
-
-                options = model.objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
-                options.unshift(React.DOM.option({ value: '' }, null));
 
                 var selectedItems = null;
 
@@ -142,7 +138,7 @@ permissions and limitations under the License.
                 else {
 
                     selectedItems = model.objectData.filter(function(item) { return item.isSelected })
-                                                    .map(function(item) { return item.externalId });
+                        .map(function(item) { return item.externalId });
 
                 }
 
@@ -151,6 +147,10 @@ permissions and limitations under the License.
                     attributes.value = (model.isMultiSelect) ? selectedItems : selectedItems[0];
 
                 }
+
+                options = model.objectData.map(function (item) {
+                    return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
+                });
 
             }
 
@@ -168,7 +168,7 @@ permissions and limitations under the License.
 
             }
 
-            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
+            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'radio', this.props.flowKey));
 
             var iconClassNames = ['glyphicon', 'glyphicon-refresh', 'select-loading-icon spin'];
 
@@ -183,10 +183,8 @@ permissions and limitations under the License.
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
-                React.DOM.div({ className: 'input-wrapper' }, [
-                    React.createElement(Chosen, attributes, options),
-                    //React.DOM.select(attributes, options),
-                    React.DOM.span({ className: iconClassNames.join(' ') }, null)
+                React.DOM.div({ className: 'radio-group' }, [
+                    options
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo)
@@ -196,6 +194,6 @@ permissions and limitations under the License.
 
     });
 
-    manywho.component.register('select', select);
+    manywho.component.register('radio', radio);
 
 })(manywho);

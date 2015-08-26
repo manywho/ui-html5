@@ -15,12 +15,6 @@ permissions and limitations under the License.
 
         mixins: [manywho.component.mixins.enterKeyHandler],
 
-        componentDidMount: function () {
-
-            manywho.component.focusInput(this.props.flowKey);
-
-        },
-
         renderModal: function() {
 
             var children = manywho.model.getChildren('root', this.props.flowKey);

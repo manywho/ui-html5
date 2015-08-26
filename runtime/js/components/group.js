@@ -41,7 +41,28 @@ permissions and limitations under the License.
 
         componentDidMount: function() {
 
-            $(this.refs.group.getDOMNode().children[0].querySelector('a')).tab('show');
+            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
+
+        },
+
+        componentDidUpdate: function() {
+
+            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
+
+        },
+
+        getInitialState: function() {
+
+            return {
+                activeTabIndex: 0
+            }
+
+        },
+
+        onTabSelected: function(index) {
+
+            this.setState({ activeTabIndex: index });
+            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
 
         },
 
@@ -52,7 +73,7 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            var childElements = children.map(function(child) {
+            var childElements = children.map(function(child, index) {
 
                 var classNames = [];
 
@@ -63,7 +84,7 @@ permissions and limitations under the License.
                 }
 
                 return React.createElement('li', { className: classNames.join(' ') },
-                            React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label' }, child.label)
+                            React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label', onChange: this.onTabSelected.bind(null, index) }, child.label)
                         );
 
             }, this);

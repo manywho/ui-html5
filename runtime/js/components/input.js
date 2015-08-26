@@ -92,6 +92,14 @@ permissions and limitations under the License.
 
         },
 
+        getInitialState: function() {
+
+            return {
+                value: null
+            }
+
+        },
+
         handleChange: function (e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -106,13 +114,13 @@ permissions and limitations under the License.
 
                 var max = (Math.pow(10, model.maxSize)) - 1;
                 var min = (Math.pow(10, model.maxSize) * -1) + 1;
-                var value = parseInt(e.target.value);
+                var value = parseFloat(e.target.value);
 
                 var value = Math.min(value, max);
                 value = Math.max(value, min);
 
                 manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
-                this.forceUpdate();
+                this.setState({ value: e.target.value });
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
@@ -123,7 +131,18 @@ permissions and limitations under the License.
                 }
 
                 var date = moment(e.target.value, formats);
-                manywho.state.setComponent(this.props.id, { contentValue: date.format() }, this.props.flowKey, true);
+                if (date.isValid()) {
+
+                    manywho.state.setComponent(this.props.id, { contentValue: date.format() }, this.props.flowKey, true);
+
+                }
+                else {
+
+                    manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+
+                }
+
+                this.setState({ value: e.target.value });
 
             }
             else {
@@ -208,21 +227,15 @@ permissions and limitations under the License.
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
-
-                    if (!manywho.utils.isNullOrWhitespace(state.contentValue)) {
-                        var formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
-                        if (model.attributes && model.attributes.dateTimeFormat) {
-                            formats.push(model.attributes.dateTimeFormat);
-                        }
-                        attributes.value = moment(state.contentValue, formats).format(model.attributes.dateTimeFormat || 'MM/DD/YYYY');
-                    }
+                    attributes.value = this.state.value;
 
                 }
                 else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
 
                     attributes.style = { width: (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, model.maxSize)) - 1;
-                    attributes.min = (Math.pow(-10, model.maxSize)) + 1;
+                    attributes.min = (Math.pow(10, model.maxSize) * -1) + 1;
+                    attributes.value = this.state.value;
 
                 }
 
