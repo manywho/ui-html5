@@ -192,6 +192,13 @@ manywho.settings = (function (manywho, $) {
 
             }
 
+        },
+
+        remove: function(flowKey) {
+
+            flows[flowKey] == null;
+            delete flows[flowKey];
+
         }
 
     }

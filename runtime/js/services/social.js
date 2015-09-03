@@ -218,6 +218,13 @@ manywho.social = (function (manywho) {
 
             return manywho.ajax.uploadSocialFile(formData, stream.id, tenantId, authenticationToken, progress);
 
+        },
+
+        remove: function(flowKey) {
+
+            streams[flowKey] == null;
+            delete streams[flowKey];
+
         }
 
     }
