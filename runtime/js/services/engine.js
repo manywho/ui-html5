@@ -805,13 +805,17 @@ manywho.engine = (function (manywho) {
 
                         if (response)
                         {
+                            var options = {
+                                mode: manywho.settings.isDebugEnabled(flowKey) ? 'DEBUG' : ''
+                            };
 
                             self.join(manywho.utils.extractTenantId(flowKey),
                                         manywho.utils.extractFlowId(flowKey),
                                         manywho.utils.extractFlowVersionId(flowKey),
                                         manywho.utils.extractElement(flowKey),
                                         state.id,
-                                        manywho.state.getAuthenticationToken(flowKey));
+                                        manywho.state.getAuthenticationToken(flowKey),
+                                        options);
 
                         }
                         else {
