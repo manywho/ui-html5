@@ -85,9 +85,6 @@ permissions and limitations under the License.
 
         initialize: function(callback, cdnUrl, hashes, customResources, initialTheme) {
 
-            // Load the default paper theme manually
-            appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
-
             var hashesCount = 0;
             var scripts = [];
 
@@ -109,6 +106,9 @@ permissions and limitations under the License.
                         }
 
                     }
+
+                    // Load the default paper theme manually
+                    appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
 
                     hashesCount++;
                     if (hashesCount == hashes.length) {
