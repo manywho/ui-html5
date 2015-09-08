@@ -62,7 +62,7 @@ permissions and limitations under the License.
         onTabSelected: function(index) {
 
             this.setState({ activeTabIndex: index });
-            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
+            $(this.refs.tabs.getDOMNode().children[index].querySelector('a')).tab('show');
 
         },
 
@@ -84,13 +84,13 @@ permissions and limitations under the License.
                 }
 
                 return React.createElement('li', { className: classNames.join(' ') },
-                            React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label', onChange: this.onTabSelected.bind(null, index) }, child.label)
+                            React.createElement('a', { href: '#' + child.id, "data-toggle": "tab", className: 'control-label', onClick: this.onTabSelected.bind(null, index) }, child.label)
                         );
 
             }, this);
 
             return React.DOM.div({ className: classes, ref: 'group' }, [
-                React.createElement('ul', { className: 'nav nav-tabs' }, childElements),
+                React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, childElements),
                 React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
 

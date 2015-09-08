@@ -31,67 +31,92 @@ permissions and limitations under the License.
 
     }
 
+    function loadCustomResources(resources) {
+
+        if (resources) {
+
+            var scripts = [];
+
+            resources.forEach(function(url) {
+
+                if (url.match('\.css$')) {
+
+                    appendStylesheet(url);
+
+                }
+                else if (url.match('\.js$')) {
+
+                    scripts.push(url);
+
+                }
+
+            });
+
+            return scripts;
+
+        }
+
+        return [];
+
+    }
+
+    function loadScripts(scripts, callback) {
+
+        var loadedScriptCount = 0;
+
+        scripts.forEach(function(url, index, scripts) {
+
+            appendScript(url, function() {
+
+                loadedScriptCount++;
+                if (loadedScriptCount == scripts.length) {
+
+                    callback();
+
+                }
+
+            });
+
+        });
+
+    }
+
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, customResources, initialTheme) {
+        initialize: function(callback, cdnUrl, hashes, customResources, initialTheme) {
 
-            $.getJSON(cdnUrl + '/hashes.json', function (data) {
+            var hashesCount = 0;
+            var scripts = [];
 
-                var scripts = [];
+            hashes.forEach(function(url) {
 
-                for (hash in data) {
+                $.getJSON(url, function (data) {
 
-                    if (data[hash].match('\.css$')) {
+                    for (hash in data) {
 
-                        appendStylesheet(cdnUrl + data[hash]);
+                        if (data[hash].match('\.css$')) {
+
+                            appendStylesheet(cdnUrl + data[hash]);
+
+                        }
+                        else if (data[hash].match('\.js$')) {
+
+                            scripts.push(cdnUrl + data[hash]);
+
+                        }
 
                     }
-                    else if (data[hash].match('\.js$')) {
 
-                        scripts.push(cdnUrl + data[hash]);
+                    // Load the default paper theme manually
+                    appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+
+                    hashesCount++;
+                    if (hashesCount == hashes.length) {
+
+                        scripts = scripts.concat(loadCustomResources(customResources));
+                        loadScripts(scripts, callback);
 
                     }
-
-                }
-
-                // Load the default paper theme manually
-                appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
-
-                if (customResources)
-                {
-
-                    customResources.forEach(function(url) {
-
-                        if (url.match('\.css$')) {
-
-                            appendStylesheet(url);
-
-                        }
-                        else if (url.match('\.js$')) {
-
-                            scripts.push(url);
-
-                        }
-
-                    });
-
-                }
-
-                var loadedScriptCount = 0;
-
-                scripts.forEach(function(url, index, scripts) {
-
-                    appendScript(url, function() {
-
-                        loadedScriptCount++;
-                        if (loadedScriptCount == scripts.length) {
-
-                            callback();
-
-                        }
-
-                    });
-
                 });
 
             });
@@ -100,6 +125,12 @@ permissions and limitations under the License.
 
     }
 
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.customResources, manywho.initialTheme);
+    var hashes = [manywho.cdnUrl + '/hashes.json']
+                    .concat(manywho.customHashes)
+                    .filter(function(hash) {
+                        return hash != undefined && hash != null;
+                    });
+
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, hashes, manywho.customResources, manywho.initialTheme);
 
 }(manywho, window, jQuery));

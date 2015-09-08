@@ -269,6 +269,13 @@ manywho.state = (function (manywho) {
 
             components[flowKey][componentId].error.id = componentId;
 
+        },
+
+        remove: function(flowKey) {
+
+            components[flowKey] == null;
+            delete components[flowKey];
+            
         }
 
     }

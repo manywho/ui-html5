@@ -257,6 +257,14 @@ manywho.collaboration = (function (manywho) {
 
             emit(flowKey, 'syncFeed');
 
+        },
+
+        remove: function(flowKey) {
+
+            var stateId = manywho.utils.extractStateId(flowKey);
+            rooms[stateId] == null;
+            delete rooms[stateId];
+
         }
 
     }

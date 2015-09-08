@@ -274,6 +274,7 @@ manywho.utils = (function (manywho, $) {
 
                 if (rootElement.children[i].id == flowKey) {
 
+                    React.unmountComponentAtNode(rootElement.children[i]);
                     rootElement.removeChild(rootElement.children[i]);
 
                 }
