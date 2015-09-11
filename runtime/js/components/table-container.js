@@ -232,8 +232,18 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [objectDataId]) }, this.props.flowKey, true);
 
+            var flowKey = this.props.flowKey;
             var outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
-            manywho.engine.move(outcome, this.props.flowKey);
+            manywho.engine.move(outcome, this.props.flowKey)
+                .then(function() {
+
+                    if (outcome.isOut) {
+
+                        manywho.engine.flowOut(outcome, flowKey);
+
+                    }
+
+                });
 
         },
 
