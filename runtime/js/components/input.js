@@ -66,17 +66,17 @@ permissions and limitations under the License.
 
                 if (isEmptyDate(state.contentValue)) {
 
-                    stateDate = moment();
+                    manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
 
                 }
                 else {
 
                     stateDate = moment(state.contentValue, ["MM/DD/YYYY hh:mm:ss A ZZ", moment.ISO_8601]);
-
+                    manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
+                    $(datepickerElement).data("DateTimePicker").date(stateDate);
                 }
 
-                manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
-                $(datepickerElement).data("DateTimePicker").date(stateDate);
+
 
             }
 
