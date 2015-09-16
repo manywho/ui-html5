@@ -258,16 +258,21 @@ manywho.state = (function (manywho) {
 
                 components[flowKey][componentId].error = error;
 
+                components[flowKey][componentId].error.id = componentId;
+
             }
-            else {
+            else if (typeof error == 'string') {
 
                 components[flowKey][componentId].error = {
-                    message: error
+                    message: error,
+                    id: componentId
                 }
 
-            }
+            } else if(!error) {
 
-            components[flowKey][componentId].error.id = componentId;
+                components[flowKey][componentId].error = null;
+
+            }
 
         },
 
