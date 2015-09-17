@@ -73,11 +73,11 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            var childElements = children.map(function(child, index) {
+            var tabs = children.map(function(child, index) {
 
                 var classNames = [];
 
-                if (childContainsInvalidItems(child, this.props.flowKey)) {
+                if (!this.props.isDesignTime && childContainsInvalidItems(child, this.props.flowKey)) {
 
                     classNames.push('has-error');
 
@@ -90,8 +90,8 @@ permissions and limitations under the License.
             }, this);
 
             return React.DOM.div({ className: classes, ref: 'group' }, [
-                React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, childElements),
-                React.createElement('div', { className: classes + ' tab-content' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
+                React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, tabs),
+                React.createElement('div', { className: classes + ' tab-content' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
             ]);
 
         }

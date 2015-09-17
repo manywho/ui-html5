@@ -20,16 +20,18 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Vertical: ' + this.props.id);
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey).join(' ');
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey);
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            var contentClass = this.state.isVisible ? '' : ' hidden';
-            
-            return React.DOM.div({ className: classes, id: this.props.id }, [
+            if (!this.state.isVisible) {
+
+                classes.push('hidden');
+
+            }
+                
+            return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                 this.getLabel(model.label),
-                React.DOM.div({ className: contentClass, id: this.props.id }, [
-                    manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
-                ])
+                this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
             ]);
 
         }
