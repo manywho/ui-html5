@@ -44,6 +44,7 @@ permissions and limitations under the License.
         var headerElements = [];
         var searchElement = null;
         var outcomesElement = null;
+        var mainElement = document.getElementById(flowKey);
 
         if (isSearchEnabled) {
 
@@ -68,7 +69,7 @@ permissions and limitations under the License.
 
         }
 
-        if (document.getElementById(flowKey).clientWidth < 768) {
+        if (mainElement && mainElement.clientWidth < 768) {
 
             headerElements = [outcomesElement, searchElement];
 
