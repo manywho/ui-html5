@@ -75,7 +75,9 @@ permissions and limitations under the License.
 
     }
 
-    function flattenContainers(containers, parent, result) {
+    function flattenContainers(containers, parent, result, propertyName) {
+
+        propertyName = propertyName || 'pageContainerResponses'
 
         if (containers != null) {
 
@@ -97,7 +99,7 @@ permissions and limitations under the License.
                 }
 
                 result.push(item);
-                flattenContainers(item.pageContainerResponses, item, result);
+                flattenContainers(item[propertyName], item, result);
 
             }
         }
@@ -161,50 +163,13 @@ permissions and limitations under the License.
 
                     flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses != null) {
+                    this.setContainers(flowKey,
+                                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses,
+                                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses);
 
-                        var flattenedContainers = flattenContainers(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses, null, []);
-                        flattenedContainers.forEach(function (item) {
-
-                            flowModel[flowKey].containers[item.id] = item;
-
-                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item.id, 'pageContainerId')) {
-                                flowModel[flowKey].containers[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses, item, 'pageContainerId');
-
-                            }
-
-                        }, this);
-
-                    }
-
-                    var decodeTextArea = document.createElement('textarea');
-
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses != null) {
-
-                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses.forEach(function (item) {
-
-                            item.attributes = item.attributes || {};
-
-                            flowModel[flowKey].components[item.id] = item;
-
-                            if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
-
-                                flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
-
-                            }
-
-                            flowModel[flowKey].containers[item.pageContainerId].childCount++;
-
-                            if (manywho.utils.contains(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item.id, 'pageComponentId')) {
-
-                                flowModel[flowKey].components[item.id] = updateData(engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses, item, 'pageComponentId');
-                                flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
-
-                            }
-
-                        }, this);
-
-                    }
+                    this.setComponents(flowKey,
+                                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentResponses,
+                                        engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses);
 
                 }
 
@@ -623,6 +588,67 @@ permissions and limitations under the License.
         getRootFaults: function(flowKey) {
 
             return flowModel[flowKey].rootFaults || [];
+
+        },
+
+        setContainers: function(flowKey, containers, data, propertyName) {
+
+            propertyName = propertyName || 'pageContainerResponses';
+
+            if (containers) {
+
+                flowModel[flowKey].containers = {};
+
+                var flattenedContainers = flattenContainers(containers, null, [], propertyName);
+                flattenedContainers.forEach(function (item) {
+
+                    flowModel[flowKey].containers[item.id] = item;
+
+                    if (data && manywho.utils.contains(data, item.id, 'pageContainerId')) {
+
+                        flowModel[flowKey].containers[item.id] = updateData(data, item, 'pageContainerId');
+
+                    }
+
+                }, this);
+
+            }
+
+        },
+
+        setComponents: function(flowKey, components, data) {
+
+            if (components) {
+
+                flowModel[flowKey].components = {};
+
+                var decodeTextArea = document.createElement('textarea');
+
+                components.forEach(function (item) {
+
+                    item.attributes = item.attributes || {};
+
+                    flowModel[flowKey].components[item.id] = item;
+
+                    if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+
+                        flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+
+                    }
+
+                    flowModel[flowKey].containers[item.pageContainerId].childCount++;
+
+                    if (data && manywho.utils.contains(data, item.id, 'pageComponentId')) {
+
+                        flowModel[flowKey].components[item.id] = updateData(data, item, 'pageComponentId');
+
+                    }
+
+                    flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
+
+                }, this);
+
+            }
 
         }
 

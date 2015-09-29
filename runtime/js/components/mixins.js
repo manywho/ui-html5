@@ -15,7 +15,10 @@ permissions and limitations under the License.
 
         onEnter: function (e) {
 
-            if (e.keyCode == 13 && !e.shiftKey && (e.target.className && e.target.className.indexOf('feed') == -1)) {
+            if (e.keyCode == 13
+                && !e.shiftKey
+                && (e.target.className && e.target.className.indexOf('feed') == -1)
+                && manywho.settings.global('shortcuts.progressOnEnter', this.props.flowKey, true)) {
 
                 var outcome = manywho.model.getOutcomes(null, this.props.flowKey)
                     .sort(function (a, b) {

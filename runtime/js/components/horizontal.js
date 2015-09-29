@@ -24,11 +24,11 @@ permissions and limitations under the License.
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
             var contentClass = this.state.isVisible ? '' : ' hidden';
-            
+
             return React.DOM.div({ className: classes, id: this.props.id }, [
                 this.getLabel(model.label),
                 React.DOM.div({ className: contentClass, id: this.props.id }, [
-                    React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
+                    this.props.children || React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
                 ])
             ]);
 

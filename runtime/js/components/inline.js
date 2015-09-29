@@ -22,7 +22,7 @@ permissions and limitations under the License.
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
             return React.DOM.div({ className: classes, id: this.props.id },
-                manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
+                this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
             );
 
         }

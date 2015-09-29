@@ -31,7 +31,7 @@ permissions and limitations under the License.
             var attributes = {
                 id: this.props.id,
                 placeholder: model.hintValue,
-                value: state.contentValue,
+                value: state.contentValue || '',
                 maxLength: model.maxSize,
                 onChange: this.handleChange,
                 cols: model.width,
