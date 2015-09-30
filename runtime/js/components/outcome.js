@@ -29,7 +29,6 @@ permissions and limitations under the License.
                     return 'btn-success';
                 case 'edit':
                 case 'escalate':
-                case 'import':
                 case 'query':
                     return 'btn-info';
                 case 'delete':
