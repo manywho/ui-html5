@@ -217,13 +217,6 @@ permissions and limitations under the License.
 
                 }
 
-                if (engineInvokeResponse.parentStateId) {
-
-                    var navigationComponents = manywho.settings.global("navigation.components", flowKey, []);
-                    navigationComponents.push(React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: engineInvokeResponse.parentStateId }));
-
-                }
-
                 flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
                 flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
 
@@ -291,6 +284,14 @@ permissions and limitations under the License.
                     }
 
                 }
+
+            }
+
+            var parentStateId = this.getParentStateId(flowKey);
+
+            if (parentStateId) {
+
+                flowModel[flowKey].navigation[id].returnToParent = React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: parentStateId })
 
             }
 

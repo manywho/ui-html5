@@ -53,7 +53,7 @@ permissions and limitations under the License.
                     element = React.DOM.li({ className: classNames.join(' ').trim() }, [
                         React.DOM.a({ href: '#', id: item.id, 'data-toggle': "dropdown" }, [
                             item.label,
-                            React.DOM.span({ className: 'caret' }),
+                            React.DOM.span({ className: 'caret' })
                         ]),
                         React.DOM.ul({ className: 'dropdown-menu'.trim() }, this.getNavElements(item.items))
                     ]);
@@ -172,6 +172,8 @@ permissions and limitations under the License.
                 navElements = navElements.concat(manywho.settings.global('navigation.components') || []);
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
 
+                var returnToParent = navigation.returnToParent || null;
+
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
                 var classNames = [
                     'navbar navbar-default',
@@ -208,7 +210,8 @@ permissions and limitations under the License.
                             React.DOM.div({ className: (isFullWidth) ? '' : 'container' }, [
                                 this.getHeaderElement(this.props.id, navigation),
                                 React.DOM.div({ className: 'collapse navbar-collapse', id: this.props.id, ref: 'container' },
-                                    React.DOM.ul({ className: 'nav navbar-nav' }, navElements)
+                                    React.DOM.ul({ className: 'nav navbar-nav' }, navElements),
+                                    returnToParent
                                 )
                             ])
                         );
