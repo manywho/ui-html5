@@ -570,11 +570,19 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+            this.render(flowKey);
+
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
 
                         manywho.model.deleteFlowModel(flowKey);
+                        manywho.settings.remove(flowKey);
+                        manywho.state.remove(flowKey);
+                        manywho.social.remove(flowKey);
+                        manywho.collaboration.remove(flowKey);
                         manywho.utils.removeFlowFromDOM(flowKey);
+
                         manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, {});
 
                     });
