@@ -110,7 +110,6 @@ permissions and limitations under the License.
         componentDidMount: function () {
 
             window.addEventListener('scroll', this.handleScroll);
-
             window.addEventListener('resize', this.handleResize);
 
         },
@@ -118,6 +117,7 @@ permissions and limitations under the License.
         componentWillUnmount: function () {
 
             window.removeEventListener('scroll', this.handleScroll);
+            window.removeEventListener('resize', this.handleResize);
 
         },
 
