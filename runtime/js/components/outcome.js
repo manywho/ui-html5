@@ -17,10 +17,25 @@ permissions and limitations under the License.
 
             switch (action.toLowerCase()) {
                 case 'save':
+                case 'new':
+                case 'apply':
+                case 'submit':
+                case 'insert':
                     return 'btn-primary';
+                case 'add':
+                case 'import':
+                case 'update':
+                case 'upsert':
+                    return 'btn-success';
                 case 'edit':
+                case 'escalate':
+                case 'import':
+                case 'query':
                     return 'btn-info';
                 case 'delete':
+                case 'cancel':
+                case 'reject':
+                case 'remove':
                     return 'btn-danger';
                 default:
                     return 'btn-default';
@@ -83,7 +98,7 @@ permissions and limitations under the License.
 
             var classes = [
                 'outcome btn',
-                getButtonType(model.pageActionBindingType),
+                getButtonType(model.pageActionType || model.pageActionBindingType),
                 getButtonSize(model.pageObjectBindingId)
             ].join(' ');
 
