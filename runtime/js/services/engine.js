@@ -587,9 +587,9 @@ manywho.engine = (function (manywho) {
                             autoFocusInput: manywho.settings.global('autoFocusInput', flowKey, true),
                             annotations: manywho.settings.global('annotations', flowKey, null),
                             navigation: {
-                                isFixed: manywho.settings.global('navigation.isFixed', flowKey, false);
+                                isFixed: manywho.settings.global('navigation.isFixed', flowKey, false)
                             },
-                            isFullWidth: manywho.settings.global('isFullWidth', flowKey, false);
+                            isFullWidth: manywho.settings.global('isFullWidth', flowKey, false)
                         }
 
                         manywho.model.deleteFlowModel(flowKey);
