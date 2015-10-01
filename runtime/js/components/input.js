@@ -163,6 +163,12 @@ permissions and limitations under the License.
 
             }
 
+            this.forceUpdate();
+
+        },
+
+        handleEvent: function () {
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -184,6 +190,10 @@ permissions and limitations under the License.
                 maxLength: model.maxSize,
                 size: model.size
             };
+
+            if (model.hasEvents) {
+                attributes.onBlur = this.handleEvent;
+            }
 
             if (!model.isEnabled) {
                 attributes.disabled = 'disabled';
