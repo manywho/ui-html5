@@ -42,7 +42,7 @@ permissions and limitations under the License.
 
                 var classNames = [
                     (item.isCurrent) ? 'active' : '',
-                    (item.isVisible == false) ? '' : 'hidden',
+                    (item.isVisible == false) ? 'hidden' : '',
                     (item.isEnabled) ? '' : 'disabled'
                ];
 

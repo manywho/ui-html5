@@ -202,8 +202,8 @@ permissions and limitations under the License.
             }
 
             var containerClassNames = [
-                (model.isVisible == false) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error',
+                (model.isVisible == false) ? 'hidden' : '',
                 (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
