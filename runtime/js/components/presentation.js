@@ -49,7 +49,7 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-            if (!model.isVisible) {
+            if (model.isVisible == false) {
 
                 classes += ' hidden';
 

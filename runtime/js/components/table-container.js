@@ -432,7 +432,7 @@ permissions and limitations under the License.
             if (isSmall)
                 classNames.push('table-container-small');
 
-            if (!model.isVisible)
+            if (model.isVisible == false)
                 classNames.push('hidden');
 
             classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));

@@ -202,7 +202,7 @@ permissions and limitations under the License.
             }
 
             var containerClassNames = [
-                (model.isVisible) ? '' : 'hidden',
+                (model.isVisible == false) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error',
                 (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]

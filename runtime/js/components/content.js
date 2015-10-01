@@ -270,7 +270,7 @@ permissions and limitations under the License.
 
             var classNames = [
                 'form-group',
-                (model.isVisible && this.state.isInitialized) ? '' : 'hidden',
+                (model.isVisible == false && this.state.isInitialized) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))

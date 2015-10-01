@@ -164,6 +164,7 @@ permissions and limitations under the License.
             var uploadClasses = ['btn', 'btn-primary'];
             var inputClasses = ['form-control', 'filenames'];
             var progressClasses = ['progress-bar'];
+            var componentClasses = ['file-upload'];
 
             if (this.props.smallInputs) {
 
@@ -184,7 +185,13 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: 'file-upload' }, [
+            if (model.isVisible == false) {
+
+                componentClasses.push('hidden');
+
+            }
+
+            return React.DOM.div({ className: componentClasses.join(' ') }, [
                 React.DOM.div({ className: 'clearfix' }, [
                     React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, className: 'dropzone' }, [
                         React.DOM.div(null, 'Drop files here, or click to select files')

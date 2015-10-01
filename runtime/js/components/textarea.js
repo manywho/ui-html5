@@ -57,7 +57,7 @@ permissions and limitations under the License.
 
             var classNames = [
                 'form-group',
-                (model.isVisible) ? '' : 'hidden',
+                (model.isVisible == false) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error'
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'textarea', this.props.flowKey))

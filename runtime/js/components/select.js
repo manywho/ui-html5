@@ -162,7 +162,7 @@ permissions and limitations under the License.
 
             }
 
-            if (!model.isVisible) {
+            if (model.isVisible == false) {
 
                 containerClassNames.push('hidden');
 

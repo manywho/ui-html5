@@ -18,6 +18,12 @@
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
+            if (model.isVisible == false) {
+
+                classes.push('hidden');
+
+            }
+
             return React.DOM.div({ className: classes }, [
                 React.DOM.img({ className: 'img-responsive' , src: model.content, alt: model.developerName, id: this.props.id }, null)
             ]);
