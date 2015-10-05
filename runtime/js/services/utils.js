@@ -42,7 +42,7 @@ manywho.utils = (function (manywho, $) {
 
                 for (var queryParameter in queryParameters) {
 
-                    if (queryParameter != 'tenant-id' && queryParameter != 'flow-id' && queryParameter != 'flow-version-id') {
+                    if (queryParameter != 'tenant-id' && queryParameter != 'flow-id' && queryParameter != 'flow-version-id' && queryParameter != 'navigation-element-id' && queryParameter != 'join') {
 
                         newJoinUri += '&' + queryParameter + '=' + queryParameters[queryParameter];
 
