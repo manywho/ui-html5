@@ -23,7 +23,7 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey);
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
-            if (!this.state.isVisible) {
+            if (this.state.isVisible == false) {
 
                 classes.push('hidden');
 

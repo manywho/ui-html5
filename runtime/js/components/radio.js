@@ -162,7 +162,7 @@
 
             }
 
-            if (!model.isVisible) {
+            if (model.isVisible == false) {
 
                 containerClassNames.push('hidden');
 

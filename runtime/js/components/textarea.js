@@ -16,6 +16,13 @@ permissions and limitations under the License.
         handleChange: function(e) {
 
             manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+
+            this.forceUpdate();
+
+        },
+
+        handleEvent: function () {
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -39,6 +46,10 @@ permissions and limitations under the License.
                 className: 'form-control'
             };
 
+            if (model.hasEvents) {
+                attributes.onBlur = this.handleEvent;
+            }
+
             if (!model.isEnabled) {
                 attributes.disabled = 'disabled';
             }
@@ -57,7 +68,7 @@ permissions and limitations under the License.
 
             var classNames = [
                 'form-group',
-                (model.isVisible) ? '' : 'hidden',
+                (model.isVisible == false) ? 'hidden' : '',
                 (isValid) ? '' : 'has-error'
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'textarea', this.props.flowKey))

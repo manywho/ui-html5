@@ -21,6 +21,12 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
+            if (model.isVisible == false) {
+
+                classes.push('hidden');
+
+            }
+
             return React.DOM.div({ className: classes, id: this.props.id },
                 this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
             );

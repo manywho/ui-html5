@@ -74,11 +74,14 @@ permissions and limitations under the License.
                     self.setState({
                         isUploadDisabled: false,
                         isFileSelected: false,
-                        isProgressVisible: false,
-                        progress: 0,
+                        isUploadComplete: true,
                         fileNames: [],
                         error: null
                     });
+
+                    setTimeout(function() {
+                        self.setState({ isUploadComplete: false, isProgressVisible: false, progress: 100, });
+                    }, 2000);
 
                     self.refs.upload.getDOMNode().value = '';
 
@@ -134,6 +137,7 @@ permissions and limitations under the License.
                 isUploadDisabled: false,
                 isFileSelected: false,
                 isProgressVisible: false,
+                isUploadComplete: false,
                 fileNames: [],
                 error: null
             }
@@ -159,6 +163,8 @@ permissions and limitations under the License.
 
             var uploadClasses = ['btn', 'btn-primary'];
             var inputClasses = ['form-control', 'filenames'];
+            var progressClasses = ['progress-bar'];
+            var componentClasses = ['file-upload'];
 
             if (this.props.smallInputs) {
 
@@ -173,7 +179,19 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: 'file-upload' }, [
+            if (this.state.isUploadComplete) {
+
+                progressClasses.push('progress-bar-success');
+
+            }
+
+            if (model.isVisible == false) {
+
+                componentClasses.push('hidden');
+
+            }
+
+            return React.DOM.div({ className: componentClasses.join(' ') }, [
                 React.DOM.div({ className: 'clearfix' }, [
                     React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, className: 'dropzone' }, [
                         React.DOM.div(null, 'Drop files here, or click to select files')
@@ -186,7 +204,7 @@ permissions and limitations under the License.
                     ])
                 ]),
                 React.DOM.div({ className: 'progress files-progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
-                    React.DOM.div({ className: 'progress-bar', style: { width: progress } })
+                    React.DOM.div({ className: progressClasses.join(' '), style: { width: progress } })
                 )
             ]);
 

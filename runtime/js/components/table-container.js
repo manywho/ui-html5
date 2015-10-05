@@ -44,6 +44,7 @@ permissions and limitations under the License.
         var headerElements = [];
         var searchElement = null;
         var outcomesElement = null;
+        var mainElement = document.getElementById(flowKey);
 
         if (isSearchEnabled) {
 
@@ -68,7 +69,7 @@ permissions and limitations under the License.
 
         }
 
-        if (document.getElementById(flowKey).clientWidth < 768) {
+        if (mainElement && mainElement.clientWidth < 768) {
 
             headerElements = [outcomesElement, searchElement];
 
@@ -408,7 +409,8 @@ permissions and limitations under the License.
                     onHeaderClick: this.onHeaderClick,
                     lastSortedBy: this.state.lastSortedBy,
                     sortByOrder: this.state.sortByOrder,
-                    isFiles: manywho.utils.isEqual(model.componentType, 'files', true)
+                    isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
+                    isValid: isValid
                 });
 
             }
@@ -427,20 +429,24 @@ permissions and limitations under the License.
 
             var classNames = ['table-container', 'clear-fix'];
 
-            if (typeof model.isValid !== 'undefined' && model.isValid == false)
-                classNames.push('has-error');
-
             if (isSmall)
                 classNames.push('table-container-small');
 
-            if (!model.isVisible)
+            if (model.isVisible == false)
                 classNames.push('hidden');
 
             classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));
 
+            var validationElement = null;
+            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+
+                validationElement = React.DOM.div({ className: 'has-error' }, React.DOM.span({ className: 'help-block' }, model.validationMessage));
+
+            }
+
             return React.DOM.div({ className: classNames.join(' ') }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
-                (model.isValid) ? null : React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     fileUpload,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),

@@ -52,10 +52,14 @@ permissions and limitations under the License.
 
                      });
 
+                    editor.on('change', self.handleChange);
+
+                    if (model.hasEvents) {
+                        editor.on('blur', self.handleEvent);
+                    }
+
                  }
             });
-
-            this.changeInterval = window.setInterval(this.handleChange, 1000);
 
             this.setState({ isInitialized: true });
 
@@ -158,11 +162,15 @@ permissions and limitations under the License.
                     manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
                     this.skipSetContent = true;
 
-                    manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
-
                 }
 
             }
+
+        },
+
+        handleEvent: function (e) {
+
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
 
@@ -270,7 +278,7 @@ permissions and limitations under the License.
 
             var classNames = [
                 'form-group',
-                (model.isVisible && this.state.isInitialized) ? '' : 'hidden',
+                (model.isVisible == false || !this.state.isInitialized) ? 'hidden' : '',
                 (isValid) ? '' : 'has-error'
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))

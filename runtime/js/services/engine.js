@@ -570,12 +570,36 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+            this.render(flowKey);
+
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
 
+                        var options = {
+                            mode: manywho.settings.global('mode', flowKey, null),
+                            reportingMode: manywho.settings.global('reportingMode', flowKey, null),
+                            trackLocation: manywho.settings.global('trackLocation', flowKey, false),
+                            replaceUrl: manywho.settings.global('replaceUrl', flowKey, true),
+                            collaboration: {
+                                isEnabled: manywho.settings.global('collaboration.isEnabled', flowKey, false)
+                            },
+                            autoFocusInput: manywho.settings.global('autoFocusInput', flowKey, true),
+                            annotations: manywho.settings.global('annotations', flowKey, null),
+                            navigation: {
+                                isFixed: manywho.settings.global('navigation.isFixed', flowKey, false)
+                            },
+                            isFullWidth: manywho.settings.global('isFullWidth', flowKey, false)
+                        }
+
                         manywho.model.deleteFlowModel(flowKey);
+                        manywho.settings.remove(flowKey);
+                        manywho.state.remove(flowKey);
+                        manywho.social.remove(flowKey);
+                        manywho.collaboration.remove(flowKey);
                         manywho.utils.removeFlowFromDOM(flowKey);
-                        manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, {});
+
+                        manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, options);
 
                     });
 

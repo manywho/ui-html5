@@ -163,6 +163,12 @@ permissions and limitations under the License.
 
             }
 
+            this.forceUpdate();
+
+        },
+
+        handleEvent: function () {
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -185,6 +191,10 @@ permissions and limitations under the License.
                 size: model.size
             };
 
+            if (model.hasEvents) {
+                attributes.onBlur = this.handleEvent;
+            }
+
             if (!model.isEnabled) {
                 attributes.disabled = 'disabled';
             }
@@ -202,8 +212,8 @@ permissions and limitations under the License.
             }
 
             var containerClassNames = [
-                (model.isVisible) ? '' : 'hidden',
                 (isValid) ? '' : 'has-error',
+                (model.isVisible == false) ? 'hidden' : '',
                 (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))

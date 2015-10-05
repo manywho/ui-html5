@@ -34,11 +34,25 @@ manywho.utils = (function (manywho, $) {
         replaceBrowserUrl: function(response) {
 
             // Check to make sure the browser supports the switch of the url
-            if (history && history.replaceState && !manywho.utils.isEmbedded()) {
+            if (history && history.replaceState) {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                var newJoinUri = response.joinFlowUri;
+
+                for (var queryParameter in queryParameters) {
+
+                    if (queryParameter != 'tenant-id' && queryParameter != 'flow-id' && queryParameter != 'flow-version-id' && queryParameter != 'navigation-element-id' && queryParameter != 'join') {
+
+                        newJoinUri += '&' + queryParameter + '=' + queryParameters[queryParameter];
+
+                    }
+
+                }
 
                 try
                 {
-                    history.replaceState(response.stateToken, "Title", response.joinFlowUri);
+                    history.replaceState(response.stateToken, "Title", newJoinUri);
                 }
                 catch (ex)
                 {
