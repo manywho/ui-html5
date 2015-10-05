@@ -590,7 +590,7 @@ manywho.engine = (function (manywho) {
                                 isFixed: manywho.settings.global('navigation.isFixed', flowKey, false)
                             },
                             isFullWidth: manywho.settings.global('isFullWidth', flowKey, false)
-                        }
+                        };
 
                         manywho.model.deleteFlowModel(flowKey);
                         manywho.settings.remove(flowKey);
@@ -725,10 +725,26 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
+            var options = {
+                mode: manywho.settings.global('mode', flowKey, null),
+                reportingMode: manywho.settings.global('reportingMode', flowKey, null),
+                trackLocation: manywho.settings.global('trackLocation', flowKey, false),
+                replaceUrl: manywho.settings.global('replaceUrl', flowKey, true),
+                collaboration: {
+                    isEnabled: manywho.settings.global('collaboration.isEnabled', flowKey, false)
+                },
+                autoFocusInput: manywho.settings.global('autoFocusInput', flowKey, true),
+                annotations: manywho.settings.global('annotations', flowKey, null),
+                navigation: {
+                    isFixed: manywho.settings.global('navigation.isFixed', flowKey, false)
+                },
+                isFullWidth: manywho.settings.global('isFullWidth', flowKey, false)
+            };
+
             manywho.model.deleteFlowModel(flowKey);
             manywho.utils.removeFlowFromDOM(flowKey);
 
-            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, {});
+            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
 
         },
 
