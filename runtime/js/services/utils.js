@@ -295,6 +295,16 @@ manywho.utils = (function (manywho, $) {
 
             }
 
+        },
+
+        getObjectDataProperty: function (properties, propertyName) {
+
+            return properties.properties.filter(function (property) {
+
+                return property.developerName == propertyName;
+
+            })[0];
+
         }
 
     }
