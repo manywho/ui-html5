@@ -176,7 +176,8 @@ permissions and limitations under the License.
 
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
                 var classNames = [
-                    'navbar navbar-default',
+                    'navbar',
+                    (manywho.settings.global('navigation.isWizard', this.props.flowKey, true)) ? 'navbar-wizard': 'navbar-default',
                     (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
                 ];
 

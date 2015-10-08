@@ -9,6 +9,41 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+@wizard-background: #f9f9f9;
+@border-color: #d4d4d4;
+
+@complete-color : #468847;
+@complete-background : #dff0d8;
+
+@active-color : #3a87ad;
+@active-background : #d9edf7;
+
+@incomplete-color : lighten(#000, 60%);
+@incomplete-background : #ededed;
+
+.li-color(@color, @background) {
+  color: @color;
+  background: @background;
+  &:after {
+    border-left: 16px solid @background;
+  }
+  a, a:active, a:visited, a:focus {
+    color: @color;
+    background: @background;
+  }
+}
+
+.chevron-comp(@color) {
+  position: absolute;
+  display: block;
+  border: 32px solid transparent;
+  border-left: 16px solid @color;
+  border-right: 0;
+  top: -1px;
+  z-index: 10;
+  content: '';
+}
+
 .mw-bs {
 
     .navbar {
@@ -16,8 +51,58 @@ permissions and limitations under the License.
         z-index: 1100;
     }
 
+    .navbar-wizard {
+      background-color: @wizard-background;
+      overflow: hidden;
+
+      .navbar-nav {
+        border-top: 1px solid @border-color;
+        border-left: 1px solid @border-color;
+      }
+
+      &:before {
+      }
+
+      &after {
+      }
+
+      li {
+        padding: 0 20px 0 30px;
+        .li-color(@complete-color, @complete-background);
+
+        a {
+          font-size: 1.2em;
+          padding-left: 20px;
+          left: -10px;
+
+          &:hover {
+            background-color: transparent;
+          }
+        }
+
+        &.active {
+          .li-color(@active-color, @active-background);
+        }
+
+        &:before {
+          .chevron-comp(@border-color);
+          right: -16px;
+        }
+
+        &:after {
+          .chevron-comp(@wizard-background);
+          border-left: 16px solid @complete-background;
+          right: -15px;
+        }
+      }
+
+      .active ~ li {
+        .li-color(@incomplete-color, @incomplete-background);
+      }
+    }
+
     .navbar-fixed-top + .main {
-        padding-top: 50px;
+        padding-top: 60px;
     }
 
     .navbar-double-height + .main {
@@ -33,11 +118,11 @@ permissions and limitations under the License.
 @media (max-width: 768px) {
 
   .navbar-double-height + .main {
-    padding-top: 50px !important;
+    padding-top: 60px !important;
   }
 
   .navbar-triple-height + .main {
-    padding-top: 50px !important;
+    padding-top: 60px !important;
   }
 
 }
