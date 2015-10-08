@@ -165,29 +165,39 @@ permissions and limitations under the License.
 
             var selectedRows = this.state.selectedRows;
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
             if (selectedRows.indexOf(e.currentTarget.id) == -1) {
 
-                var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-                if (model.isMultiSelect) {
-
-                    selectedRows.push(e.currentTarget.id);
-
-                }
-                else {
-
-                    selectedRows = [e.currentTarget.id];
-
-                }
+                model.isMultiSelect ? selectedRows.push(e.currentTarget.id) : selectedRows = [e.currentTarget.id];
 
             }
             else {
 
-                selectedRows.pop(e.currentTarget.id);
+                selectedRows.splice(selectedRows.indexOf(e.currentTarget.id), 1);
 
             }
 
             this.setState({ selectedRows: selectedRows });
             manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
+
+        },
+
+        selectAll: function (objectData, e) {
+
+            var selectedRows = [];
+
+            if (e.currentTarget.checked) {
+
+                objectData.forEach(function (item) {
+
+                    selectedRows.push(item.externalId);
+
+                });
+
+            }
+
+            this.setState({ selectedRows: selectedRows });
 
         },
 
@@ -404,6 +414,7 @@ permissions and limitations under the License.
                     onOutcome: this.onOutcome,
                     selectedRows: this.state.selectedRows,
                     onRowClicked: this.props.onRowClicked || this.onRowClicked,
+                    selectAll: this.selectAll.bind(this, objectData),
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
                     onHeaderClick: this.onHeaderClick,

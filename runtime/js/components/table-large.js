@@ -66,7 +66,17 @@ permissions and limitations under the License.
 
             var self = this;
 
-            return React.DOM.tr(null, displayColumns.map(function(column) {
+            var columns = [];
+
+            if (self.props.model.isMultiSelect) {
+
+                columns.push(React.DOM.th({ className: 'checkbox-cell' }, [
+                    React.DOM.input({ type: 'checkbox', onChange: self.props.selectAll })
+                ]));
+
+            }
+
+            columns = columns.concat(displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
 
@@ -99,6 +109,8 @@ permissions and limitations under the License.
                 }
 
             }));
+
+            return React.DOM.tr(null, columns);
 
         },
 
@@ -179,7 +191,7 @@ permissions and limitations under the License.
 
         renderRows: function (flowKey, objectData, outcomes, displayColumns, selectedRows, onRowClicked) {
 
-            var outcomeComponent = manywho.component.getByName('outcome');
+            var outcomeComponent = manywho.component.getByName('outcome'), self = this;
 
             return objectData.map(function (item) {
 
@@ -189,7 +201,19 @@ permissions and limitations under the License.
 
                 var onClick = !isTableEditable(displayColumns) && onRowClicked;
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, displayColumns.map(function (column) {
+                var columns = [];
+
+                if (this.props.model.isMultiSelect) {
+
+                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+
+                    columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
+                        React.DOM.input({ id: item.externalId ,type: 'checkbox', checked: checked })
+                    ]));
+
+                }
+
+                columns = columns.concat(displayColumns.map(function (column) {
 
                     if (column == 'mw-outcomes') {
 
@@ -251,6 +275,8 @@ permissions and limitations under the License.
                     }
 
                 }, this));
+
+                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, columns);
 
             }, this);
 
