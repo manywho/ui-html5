@@ -245,16 +245,6 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        getOutput: function (outputs, outputName) {
-
-            return outputs.filter(function (output) {
-
-                return manywho.utils.isEqual(output.developerName, outputName, true);
-
-            })[0];
-
-        },
-
         // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
         getValueByPath: function(obj, path) {
 
@@ -301,9 +291,10 @@ manywho.utils = (function (manywho, $) {
 
             return properties.filter(function (property) {
 
-                return property.developerName == propertyName;
+                return manywho.utils.isEqual(property.developerName, propertyName, true);
 
             })[0];
+
 
         },
 
@@ -311,11 +302,11 @@ manywho.utils = (function (manywho, $) {
 
             var property = properties.filter(function (property) {
 
-                return property.developerName == propertyName;
+                return manywho.utils.isEqual(property.developerName, propertyName, true);
 
             })[0];
 
-            property.contentValue = value;
+            if (property) property.contentValue = value;
 
         }
 
