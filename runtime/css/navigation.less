@@ -9,17 +9,17 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
-@wizard-background: #f9f9f9;
+@wizard-background: #fefefe;
 @border-color: #d4d4d4;
 
-@complete-color : #468847;
-@complete-background : #dff0d8;
+@complete-color : #ffffff;
+@complete-background : #13ae02;
 
-@active-color : #3a87ad;
-@active-background : #d9edf7;
+@active-color : #ffffff;
+@active-background : #006fd0;
 
 @incomplete-color : lighten(#000, 60%);
-@incomplete-background : #ededed;
+@incomplete-background : #dddddd;
 
 .li-color(@color, @background) {
   color: @color;
@@ -36,7 +36,7 @@ permissions and limitations under the License.
 .chevron-comp(@color) {
   position: absolute;
   display: block;
-  border: 32px solid transparent;
+  border: 21px solid transparent;
   border-left: 16px solid @color;
   border-right: 0;
   top: -1px;
@@ -53,30 +53,47 @@ permissions and limitations under the License.
 
     .navbar-wizard {
       background-color: @wizard-background;
+      border: 0;
       overflow: hidden;
 
-      .navbar-nav {
-        border-top: 1px solid @border-color;
-        border-left: 1px solid @border-color;
+      .navbar-collapse {
+        position: relative;
       }
 
-      &:before {
+      .navbar-header {
+        .navbar-brand {
+          color: @active-background;
+        }
       }
 
-      &after {
+      ul {
+        position: absolute;
+        top: 50%;
+        margin-top: -20px;
+        margin-left: 100px;
       }
 
       li {
+        position: relative;
+        width: 150px;
+        height: 40px;
         padding: 0 20px 0 30px;
         .li-color(@complete-color, @complete-background);
+        margin-right: 5px;
 
         a {
+          position: absolute;
+          top: 50%;
+          left: 1em;
+          margin-top: -10px;
+          height: 40px;
           font-size: 1.2em;
-          padding-left: 20px;
-          left: -10px;
+          padding-top: 0;
+          padding-left: 30px;
+          background-color: transparent !important;
 
           &:hover {
-            background-color: transparent;
+            color: #cbcbcb !important;
           }
         }
 
@@ -84,14 +101,19 @@ permissions and limitations under the License.
           .li-color(@active-color, @active-background);
         }
 
+        &:first-child:before {
+          border-left: 0;
+        }
+
         &:before {
-          .chevron-comp(@border-color);
-          right: -16px;
+          .chevron-comp(@wizard-background);
+          left: 0;
         }
 
         &:after {
           .chevron-comp(@wizard-background);
           border-left: 16px solid @complete-background;
+          z-index: 1000;
           right: -15px;
         }
       }
@@ -116,6 +138,57 @@ permissions and limitations under the License.
 }
 
 @media (max-width: 768px) {
+
+  .navbar-wizard {
+    background-color: #e9e9e9 !important;
+
+    .navbar-nav {
+      position: relative !important;
+      margin: 10.25px -15px 0px -15px !important;
+      visibility: visible !important;
+      top: 0 !important;
+      overflow: hidden !important;
+    }
+
+    li {
+      width: 100% !important;
+      .li-color(@complete-color, @complete-background);
+      border: 1px solid @border-color;
+
+      a {
+        width: 100% !important;
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        font-size: 1.2em;
+        margin-top: 10px !important;
+        padding: 0 !important;
+        text-align: center;
+
+        &:hover {
+          background-color: transparent !important;
+        }
+      }
+
+      &.active {
+        .li-color(@active-color, @active-background);
+      }
+
+      &:before {
+        border: 0 !important;
+        left: 0;
+      }
+
+      &:after {
+        border: 0 !important;
+        z-index: 1000;
+      }
+    }
+
+    .active ~ li {
+      .li-color(@incomplete-color, @incomplete-background);
+    }
+  }
 
   .navbar-double-height + .main {
     padding-top: 60px !important;

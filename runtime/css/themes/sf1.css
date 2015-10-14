@@ -882,7 +882,9 @@ select,
 textarea,
 label,
 span,
-table{
+table,
+p,
+div{
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     font-family: "ProximaNovaSoft-Regular", Calibri, "Gill Sans", "Gill Sans MT", Candara, Segoe, "Segoe UI", Arial, sans-serif;
     font-size: 14px;
@@ -13264,7 +13266,6 @@ header > .navbar {
 }
 .navbar .navbar-nav > li > a {
     font-size: 14px;
-    margin: -1px 0;
     line-height: 22px;
 }
 .navbar-brand {
