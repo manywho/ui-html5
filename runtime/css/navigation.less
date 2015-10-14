@@ -27,7 +27,7 @@ permissions and limitations under the License.
   &:after {
     border-left: 16px solid @background;
   }
-  a, a:active, a:visited, a:focus {
+  & > a, & > a:active, & > a:visited, & > a:focus {
     color: @color;
     background: @background;
   }
@@ -54,7 +54,6 @@ permissions and limitations under the License.
     .navbar-wizard {
       background-color: @wizard-background;
       border: 0;
-      overflow: hidden;
 
       .navbar-collapse {
         position: relative;
@@ -66,14 +65,14 @@ permissions and limitations under the License.
         }
       }
 
-      ul {
+      .navbar-nav {
         position: absolute;
         top: 50%;
         margin-top: -20px;
         margin-left: 100px;
       }
 
-      li {
+      .top-nav-element {
         position: relative;
         width: 150px;
         height: 40px;
@@ -81,7 +80,7 @@ permissions and limitations under the License.
         .li-color(@complete-color, @complete-background);
         margin-right: 5px;
 
-        a {
+        & > a {
           position: absolute;
           top: 50%;
           left: 1em;
@@ -150,12 +149,12 @@ permissions and limitations under the License.
       overflow: hidden !important;
     }
 
-    li {
+    .top-nav-element {
       width: 100% !important;
       .li-color(@complete-color, @complete-background);
       border: 1px solid @border-color;
 
-      a {
+      & > a {
         width: 100% !important;
         position: relative !important;
         top: 0 !important;
