@@ -219,7 +219,7 @@ permissions and limitations under the License.
 
                         return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId }, outcomes.map(function (outcome) {
 
-                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey }, null);
+                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) }, null);
 
                         }, this));
 
