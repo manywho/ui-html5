@@ -50,6 +50,7 @@ manywho.settings = (function (manywho, $) {
                 "table directionality emoticons paste textcolor"
             ]
         },
+        outcomes: null,
         shortcuts: {
             progressOnEnter: true
         },

@@ -46,6 +46,53 @@ permissions and limitations under the License.
 
     }
 
+    function getIconType(action) {
+
+        if (!manywho.utils.isNullOrWhitespace(action)) {
+
+            switch (action.toLowerCase()) {
+                case 'save':
+                    return 'glyphicon-floppy-disk';
+                case 'new':
+                    return 'glyphicon-new-window';
+                case 'apply':
+                    return 'glyphicon-ok';
+                case 'submit':
+                    return 'glyphicon-circle-arrow-down';
+                case 'insert':
+                    return 'glyphicon-log-in';
+                case 'add':
+                    return 'glyphicon-plus';
+                case 'import':
+                    return 'glyphicon-import';
+                case 'update':
+                    return 'glyphicon-edit';
+                case 'upsert':
+                    return 'glyphicon-chevron-up';
+                case 'edit':
+                    return 'glyphicon-pencil';
+                case 'escalate':
+                    return 'glyphicon-hand-up';
+                case 'query':
+                    return 'glyphicon-console';
+                case 'delete':
+                    return 'glyphicon-trash';
+                case 'cancel':
+                    return 'glyphicon-arrow-left';
+                case 'reject':
+                    return 'glyphicon-thumbs-down';
+                case 'remove':
+                    return 'glyphicon-remove';
+                default:
+                    return 'glyphicon-plus';
+            }
+
+        }
+
+        return 'btn-default';
+
+    }
+
     function getButtonSize(bindingId) {
 
         if (!manywho.utils.isNullOrWhitespace(bindingId)) {
@@ -99,9 +146,27 @@ permissions and limitations under the License.
                 'outcome btn',
                 getButtonType(model.pageActionType || model.pageActionBindingType),
                 getButtonSize(model.pageObjectBindingId)
-            ].join(' ');
+            ];
 
-            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, model.label);
+            var content;
+
+            if (this.props.outcomeDisplay == 'icons' && model.pageActionType) {
+
+                var icon = 'glyphicon ' + getIconType(model.pageActionType || model.pageActionBindingType);
+
+                classes.push('btn-icons');
+
+                content = React.DOM.span({ className: icon, title: model.pageActionType || model.pageActionBindingType }, null);
+
+            } else {
+
+                content = model.label;
+
+            }
+
+            classes = classes.join(' ');
+
+            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, content);
 
         }
 
