@@ -28,7 +28,7 @@ permissions and limitations under the License.
     border-left: 16px solid @background;
   }
   & > a, & > a:active, & > a:visited, & > a:focus {
-    color: @color;
+    color: @color !important;
     background: @background;
   }
 }
@@ -36,10 +36,9 @@ permissions and limitations under the License.
 .chevron-comp(@color) {
   position: absolute;
   display: block;
-  border: 21px solid transparent;
-  border-left: 16px solid @color;
+  border: 20px solid transparent;
+  border-left: 15px solid @color;
   border-right: 0;
-  top: -1px;
   z-index: 10;
   content: '';
 }
@@ -68,28 +67,33 @@ permissions and limitations under the License.
       .navbar-nav {
         position: absolute;
         top: 50%;
+        left: 0;
+        right: 0;
         margin-top: -20px;
-        margin-left: 100px;
+        text-align: center;
+
       }
 
       .top-nav-element {
+        float: none;
+        display: inline-block;
         position: relative;
-        width: 150px;
+        min-width: 150px;
         height: 40px;
-        padding: 0 20px 0 30px;
         .li-color(@complete-color, @complete-background);
         margin-right: 5px;
 
         & > a {
-          position: absolute;
-          top: 50%;
-          left: 1em;
-          margin-top: -10px;
-          height: 40px;
+          display: inline-block;
+          position: relative;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 40px !important;
           font-size: 1.2em;
-          padding-top: 0;
-          padding-left: 30px;
           background-color: transparent !important;
+          white-space: nowrap;
+          padding: 10px 15px !important;
 
           &:hover {
             color: #cbcbcb !important;
@@ -100,8 +104,19 @@ permissions and limitations under the License.
           .li-color(@active-color, @active-background);
         }
 
-        &:first-child:before {
-          border-left: 0;
+        &:first-child {
+
+          &:before {
+            border: 21px transparent solid;
+            border-left: 16px @wizard-background solid !important;
+            content: '';
+            border-left: 0;
+          }
+
+          &:after {
+            right: -15px;
+          }
+
         }
 
         &:before {
@@ -110,11 +125,17 @@ permissions and limitations under the License.
         }
 
         &:after {
+          position: absolute;
+          top: 0;
           .chevron-comp(@wizard-background);
-          border-left: 16px solid @complete-background;
+          border-left: 15px solid @complete-background;
           z-index: 1000;
           right: -15px;
         }
+      }
+
+      .active:after {
+        right: -16px !important;
       }
 
       .active ~ li {
@@ -160,7 +181,6 @@ permissions and limitations under the License.
         top: 0 !important;
         left: 0 !important;
         font-size: 1.2em;
-        margin-top: 10px !important;
         padding: 0 !important;
         text-align: center;
 
