@@ -308,6 +308,31 @@ manywho.utils = (function (manywho, $) {
 
             if (property) property.contentValue = value;
 
+        },
+
+        isEmptyObjectData: function(model) {
+
+            if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
+
+                for (prop in model.objectData[0].properties) {
+
+                    if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
+
+                        return false;
+
+                    }
+
+                }
+
+            }
+            else if (model.objectData) {
+
+                return false;
+
+            }
+
+            return true;
+
         }
 
     }

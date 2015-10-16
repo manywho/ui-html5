@@ -11,146 +11,73 @@ permissions and limitations under the License.
 
 (function (manywho) {
 
-    function renderOption (item) {
-
-        if (item.properties) {
-
-            var label = item.properties.filter(function (value) {
-
-                return manywho.utils.isEqual(value.typeElementPropertyId, this.column, true);
-
-            }, this)[0];
-
-            return React.DOM.option({ value: item.externalId }, label.contentValue);
-
-        }
-
-        return null;
-
-    }
-
-    function isEmptyObjectData(model) {
-
-        if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
-
-            for (prop in model.objectData[0].properties) {
-
-                if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
-
-                    return false;
-
-                }
-
-            }
-
-        }
-        else if (model.objectData) {
-
-            return false;
-
-        }
-
-        return true;
-
-    }
-
     var select = React.createClass({
 
-        handleChange: function(e, values) {
+        onChange: function(value, selectedValues) {
 
-            // values will be undefined if we are running on a mobile device as chosen won't be applied to the select box
-            // however it will still fire the change event, then React will fire a change event (values will be undefined here)
-            if (typeof values !== 'undefined') {
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-                var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            model.objectData = model.objectData.map(function (item) {
 
-                model.objectData = model.objectData.map(function (item) {
+                item.isSelected = false;
+                return item;
 
-                    item.isSelected = false;
+            });
+
+            var selectedObjectData = null;
+
+            if (selectedValues) {
+
+                var selectedIds = selectedValues.map(function(item) { return item.value });
+
+                selectedObjectData = model.objectData.filter(function (item) {
+
+                    return selectedIds.indexOf(item.externalId) != -1;
+
+                })
+                .map(function (item) {
+
+                    item.isSelected = true;
                     return item;
 
                 });
 
-                var selectedObjectData = null;
-
-                if (values) {
-
-                    selectedObjectData = model.objectData.filter(function (item) {
-
-                        return values.indexOf(item.externalId) != -1;
-
-                    })
-                    .map(function (item) {
-
-                        item.isSelected = true;
-                        return item;
-
-                    });
-
-                }
-
-                manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
-                manywho.component.handleEvent(this, model, this.props.flowKey);
-
             }
 
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
+            manywho.component.handleEvent(this, model, this.props.flowKey);
         },
 
         render: function () {
 
             manywho.log.info('Rendering Select: ' + this.props.id);
 
-            var options = [];
-
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
+            var options = null;
+            var value = null;
 
-            var attributes = {
-                onChange: this.handleChange,
-                containerClasses: 'select',
-                className: 'chosen-select'
-            };
-
-            if (model.isRequired) {
-                attributes.required = 'required';
-            }
-
-            if (!model.isEnabled || !model.isEditable) {
-                attributes.disabled = 'disabled';
-            }
-
-            if (model.isMultiSelect) {
-                attributes.multiple = true;
-            }
-
-            attributes['data-placeholder'] = model.hintValue || 'Please select an option';
-
-            if (!isEmptyObjectData(model)) {
-
-                options = model.objectData.map(renderOption, { column: columnTypeElementPropertyId, state: state });
-                options.unshift(React.DOM.option({ value: '' }, null));
-
-                var selectedItems = null;
+            if (!manywho.utils.isEmptyObjectData(model)) {
 
                 if (state && state.objectData) {
 
-                    selectedItems = state.objectData.map(function(item) { return item.externalId });
+                    value = state.objectData.map(function(item) { return item.externalId });
 
                 }
                 else {
 
-                    selectedItems = model.objectData.filter(function(item) { return item.isSelected })
+                    value = model.objectData.filter(function(item) { return item.isSelected })
                                                     .map(function(item) { return item.externalId });
 
                 }
 
-                if (selectedItems) {
+                options = model.objectData.map(function(item) {
 
-                    attributes.value = (model.isMultiSelect) ? selectedItems : selectedItems[0];
+                    var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
+                    return { value: item.externalId, label: label.contentValue };
 
-                }
+                });
 
             }
 
@@ -183,9 +110,15 @@ permissions and limitations under the License.
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
-                React.DOM.div({ className: 'input-wrapper' }, [
-                    React.createElement(Chosen, attributes, options),
-                    //React.DOM.select(attributes, options),
+                React.DOM.div({ className: 'select-wrapper' }, [
+                    React.createElement(Select, {
+                        multi: model.isMultiSelect,
+                        disabled: !model.isEnabled || !model.isEditable,
+                        placeholder: model.hintValue || 'Please select an option',
+                        options: options,
+                        value: value,
+                        onChange: this.onChange
+                    }),
                     React.DOM.span({ className: iconClassNames.join(' ') }, null)
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
