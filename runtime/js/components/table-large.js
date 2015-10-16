@@ -191,7 +191,7 @@ permissions and limitations under the License.
 
         renderRows: function (flowKey, objectData, outcomes, displayColumns, selectedRows, onRowClicked) {
 
-            var outcomeComponent = manywho.component.getByName('outcome'), self = this;
+            var outcomeComponent = manywho.component.getByName('outcome');
 
             return objectData.map(function (item) {
 
