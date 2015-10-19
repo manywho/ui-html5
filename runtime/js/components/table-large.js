@@ -116,7 +116,7 @@ permissions and limitations under the License.
 
         onOutcomeClick: function (e, outcome) {
 
-            var objectDataId = e.target.parentElement.getAttribute('data-item');
+            var objectDataId = e.target.parentElement.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
 
         },
