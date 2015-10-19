@@ -160,7 +160,7 @@ permissions and limitations under the License.
 
             } else {
 
-                content = React.DOM.span(null, model.label);
+                content = model.label;
 
             }
 
