@@ -97,7 +97,7 @@ gulp.task('clean-dist', function (cb) {
 
 gulp.task('less-dist', function () {
 
-    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/bootstrap-chosen.css', 'css/lib/bootstrap-datetimepicker.css', 'css/lib/jquery.textcomplete.css'])
+    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/react-select.css', 'css/lib/bootstrap-datetimepicker.css', 'css/lib/jquery.textcomplete.css'])
                 .pipe(concat('compiled.less'))
                 .pipe(less())
                 .pipe(minifyCSS())
@@ -109,13 +109,6 @@ gulp.task('fonts-dist', function () {
 
     return gulp.src('css/fonts/*.*')
                 .pipe(gulp.dest('./dist/css/fonts'));
-
-});
-
-gulp.task('chosen-dist', function () {
-
-    return gulp.src('css/lib/*.png')
-                .pipe(gulp.dest('./dist/css'));
 
 });
 
