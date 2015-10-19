@@ -97,7 +97,7 @@ permissions and limitations under the License.
 
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
 
-            var iconClassNames = ['glyphicon', 'glyphicon-refresh', 'select-loading-icon spin'];
+            var iconClassNames = ['select-loading-icon'];
 
             if (!state.loading || state.error) {
 
@@ -113,13 +113,13 @@ permissions and limitations under the License.
                 React.DOM.div({ className: 'select-wrapper' }, [
                     React.createElement(Select, {
                         multi: model.isMultiSelect,
-                        disabled: !model.isEnabled || !model.isEditable,
+                        disabled: !model.isEnabled || !model.isEditable || state.loading,
                         placeholder: model.hintValue || 'Please select an option',
                         options: options,
                         value: value,
                         onChange: this.onChange
                     }),
-                    React.DOM.span({ className: iconClassNames.join(' ') }, null)
+                    React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo)
