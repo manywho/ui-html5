@@ -142,9 +142,9 @@ manywho.collaboration = (function (manywho) {
 
         initialize: function (enable, flowKey) {
 
-            if (!socket && enable) {
+            var stateId = manywho.utils.extractStateId(flowKey);
 
-                var stateId = manywho.utils.extractStateId(flowKey);
+            if ((!socket || !rooms[stateId]) && enable) {
 
                 rooms[stateId] = {
                     isEnabled: true,
