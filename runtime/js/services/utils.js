@@ -39,10 +39,11 @@ manywho.utils = (function (manywho, $) {
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 var newJoinUri = response.joinFlowUri;
+                var ignoreParameters = ['tenant-id', 'flow-id', 'flow-version-id', 'navigation-element-id', 'join', 'initialization', 'authorization'];
 
                 for (var queryParameter in queryParameters) {
 
-                    if (queryParameter != 'tenant-id' && queryParameter != 'flow-id' && queryParameter != 'flow-version-id' && queryParameter != 'navigation-element-id' && queryParameter != 'join') {
+                    if (ignoreParameters.indexOf(queryParameter) == -1) {
 
                         newJoinUri += '&' + queryParameter + '=' + queryParameters[queryParameter];
 

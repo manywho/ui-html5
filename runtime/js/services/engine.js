@@ -420,7 +420,11 @@ manywho.engine = (function (manywho) {
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
                 manywho.state.setLocation(flowKey);
 
-                manywho.collaboration.move(flowKey);
+                if (manywho.collaboration.isInitialized(flowKey)) {
+
+                    manywho.collaboration.move(flowKey);
+
+                }
 
                 return response;
 
@@ -742,6 +746,10 @@ manywho.engine = (function (manywho) {
             };
 
             manywho.model.deleteFlowModel(flowKey);
+            manywho.settings.remove(flowKey);
+            manywho.state.remove(flowKey);
+            manywho.social.remove(flowKey);
+            manywho.collaboration.remove(flowKey);
             manywho.utils.removeFlowFromDOM(flowKey);
 
             manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
