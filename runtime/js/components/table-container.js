@@ -204,10 +204,8 @@ permissions and limitations under the License.
         },
 
         clearSelection: function () {
-
-            var selectedRows = [];
-
-            this.setState({ selectedRows: selectedRows });
+            
+            this.setState({ selectedRows: [] });
         },
 
         onHeaderClick: function (e) {
