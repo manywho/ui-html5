@@ -191,10 +191,6 @@ permissions and limitations under the License.
                 size: model.size
             };
 
-            if (model.hasEvents) {
-                attributes.onBlur = this.handleEvent;
-            }
-
             if (!model.isEnabled) {
                 attributes.disabled = 'disabled';
             }
@@ -229,6 +225,10 @@ permissions and limitations under the License.
                     attributes.disabled = 'disabled';
                 }
 
+                if (model.hasEvents) {
+                    attributes.onChange = this.handleEvent;
+                }
+
                 return React.DOM.div({ className: containerClassNames},
                     [
                         React.DOM.div({ className: 'checkbox ' },
@@ -242,6 +242,10 @@ permissions and limitations under the License.
                     ]);
 
             } else {
+
+                if (model.hasEvents) {
+                    attributes.onBlur = this.handleEvent;
+                }
 
                 attributes.className = 'form-control ';
 
