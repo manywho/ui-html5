@@ -70,8 +70,12 @@ permissions and limitations under the License.
 
             if (self.props.model.isMultiSelect) {
 
+                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll };
+
+                checkboxAttributes.checked = this.props.selectedRows.length == this.props.objectData.length ? 'checked' : '';
+
                 columns.push(React.DOM.th({ className: 'checkbox-cell' }, [
-                    React.DOM.input({ type: 'checkbox', onChange: self.props.selectAll })
+                    React.DOM.input(checkboxAttributes)
                 ]));
 
             }
