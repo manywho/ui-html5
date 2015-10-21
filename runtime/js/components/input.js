@@ -163,6 +163,12 @@ permissions and limitations under the License.
 
             }
 
+            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+
+                this.handleEvent();
+
+            }
+
             this.forceUpdate();
 
         },
@@ -223,10 +229,6 @@ permissions and limitations under the License.
 
                 if (!model.isEditable) {
                     attributes.disabled = 'disabled';
-                }
-
-                if (model.hasEvents) {
-                    attributes.onChange = this.handleEvent;
                 }
 
                 return React.DOM.div({ className: containerClassNames},
