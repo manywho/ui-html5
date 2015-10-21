@@ -150,6 +150,8 @@ permissions and limitations under the License.
 
             if (request) {
 
+                this.clearSelection();
+
                 manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
 
             }
@@ -199,6 +201,11 @@ permissions and limitations under the License.
 
             this.setState({ selectedRows: selectedRows });
 
+        },
+
+        clearSelection: function () {
+            
+            this.setState({ selectedRows: [] });
         },
 
         onHeaderClick: function (e) {
