@@ -32,7 +32,7 @@ permissions and limitations under the License.
 
         },
 
-        getNavElements: function(items) {
+        getNavElements: function(items, isTopLevel) {
 
             var elements = [];
 
@@ -43,7 +43,8 @@ permissions and limitations under the License.
                 var classNames = [
                     (item.isCurrent) ? 'active' : '',
                     (item.isVisible == false) ? 'hidden' : '',
-                    (item.isEnabled) ? '' : 'disabled'
+                    (item.isEnabled) ? '' : 'disabled',
+                    (isTopLevel) ? 'top-nav-element': ''
                ];
 
                 if (item.items != null) {
@@ -55,7 +56,7 @@ permissions and limitations under the License.
                             item.label,
                             React.DOM.span({ className: 'caret' })
                         ]),
-                        React.DOM.ul({ className: 'dropdown-menu'.trim() }, this.getNavElements(item.items))
+                        React.DOM.ul({ className: 'dropdown-menu'.trim() }, this.getNavElements(item.items, false))
                     ]);
 
                 }
@@ -167,7 +168,7 @@ permissions and limitations under the License.
 
                 manywho.log.info("Rendering Navigation");
 
-                var navElements = this.getNavElements(navigation.items);
+                var navElements = this.getNavElements(navigation.items, true);
 
                 navElements = navElements.concat(manywho.settings.global('navigation.components') || []);
                 navElements = navElements.concat(manywho.settings.flow('navigation.components', this.props.flowKey) || []);
@@ -177,6 +178,7 @@ permissions and limitations under the License.
                 var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
                 var classNames = [
                     'navbar navbar-default',
+                    (manywho.settings.global('navigation.isWizard', this.props.flowKey, true)) && 'navbar-wizard',
                     (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
                 ];
 

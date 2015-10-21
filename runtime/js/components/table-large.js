@@ -66,7 +66,21 @@ permissions and limitations under the License.
 
             var self = this;
 
-            return React.DOM.tr(null, displayColumns.map(function(column) {
+            var columns = [];
+
+            if (self.props.model.isMultiSelect) {
+
+                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll };
+
+                checkboxAttributes.checked = this.props.selectedRows.length == this.props.objectData.length ? 'checked' : '';
+
+                columns.push(React.DOM.th({ className: 'checkbox-cell' }, [
+                    React.DOM.input(checkboxAttributes)
+                ]));
+
+            }
+
+            columns = columns.concat(displayColumns.map(function(column) {
 
                 if (column == 'mw-outcomes') {
 
@@ -100,11 +114,13 @@ permissions and limitations under the License.
 
             }));
 
+            return React.DOM.tr(null, columns);
+
         },
 
         onOutcomeClick: function (e, outcome) {
 
-            var objectDataId = e.target.parentElement.getAttribute('data-item');
+            var objectDataId = e.currentTarget.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
 
         },
@@ -189,13 +205,25 @@ permissions and limitations under the License.
 
                 var onClick = !isTableEditable(displayColumns) && onRowClicked;
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, displayColumns.map(function (column) {
+                var columns = [];
+
+                if (this.props.model.isMultiSelect) {
+
+                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+
+                    columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
+                        React.DOM.input({ id: item.externalId ,type: 'checkbox', checked: checked })
+                    ]));
+
+                }
+
+                columns = columns.concat(displayColumns.map(function (column) {
 
                     if (column == 'mw-outcomes') {
 
                         return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId }, outcomes.map(function (outcome) {
 
-                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey }, null);
+                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) }, null);
 
                         }, this));
 
@@ -251,6 +279,8 @@ permissions and limitations under the License.
                     }
 
                 }, this));
+
+                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, columns);
 
             }, this);
 

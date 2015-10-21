@@ -208,8 +208,8 @@ permissions and limitations under the License.
 
         onUploadComplete: function (response) {
 
-            var imageUri = manywho.utils.getOutput(response.objectData[0].properties, 'Download Uri');
-            var imageName = manywho.utils.getOutput(response.objectData[0].properties, 'Name');
+            var imageUri = manywho.utils.getObjectDataProperty(response.objectData[0].properties, 'Download Uri');
+            var imageName = manywho.utils.getObjectDataProperty(response.objectData[0].properties, 'Name');
 
             if (imageUri) {
 

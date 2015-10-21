@@ -246,16 +246,6 @@ manywho.utils = (function (manywho, $) {
 
         },
 
-        getOutput: function (outputs, outputName) {
-
-            return outputs.filter(function (output) {
-
-                return manywho.utils.isEqual(output.developerName, outputName, true);
-
-            })[0];
-
-        },
-
         // Stolen from here: http://stackoverflow.com/questions/8817394/javascript-get-deep-value-from-object-by-passing-path-to-it-as-string
         getValueByPath: function(obj, path) {
 
@@ -295,6 +285,54 @@ manywho.utils = (function (manywho, $) {
                 }
 
             }
+
+        },
+
+        getObjectDataProperty: function (properties, propertyName) {
+
+            return properties.filter(function (property) {
+
+                return manywho.utils.isEqual(property.developerName, propertyName, true);
+
+            })[0];
+
+
+        },
+
+        setObjectDataProperty: function (properties, propertyName, value) {
+
+            var property = properties.filter(function (property) {
+
+                return manywho.utils.isEqual(property.developerName, propertyName, true);
+
+            })[0];
+
+            if (property) property.contentValue = value;
+
+        },
+
+        isEmptyObjectData: function(model) {
+
+            if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
+
+                for (prop in model.objectData[0].properties) {
+
+                    if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
+
+                        return false;
+
+                    }
+
+                }
+
+            }
+            else if (model.objectData) {
+
+                return false;
+
+            }
+
+            return true;
 
         }
 

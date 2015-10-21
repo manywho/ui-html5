@@ -34,7 +34,8 @@ manywho.settings = (function (manywho, $) {
             uri: ''
         },
         navigation: {
-            isFixed: true
+            isFixed: true,
+            isWizard: false
         },
         files: {
             downloadUriPropertyId: '6611067a-7c86-4696-8845-3cdc79c73289',
@@ -49,6 +50,7 @@ manywho.settings = (function (manywho, $) {
                 "table directionality emoticons paste textcolor"
             ]
         },
+        outcomes: null,
         shortcuts: {
             progressOnEnter: true
         },
