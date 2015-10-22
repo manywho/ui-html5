@@ -79,6 +79,20 @@ permissions and limitations under the License.
 
                 });
 
+                if (value && value.length > 0) {
+
+                    value = value.filter(function (item) {
+
+                        return options.filter(function (option) {
+
+                            return item == option.value;
+
+                        }).length > 0;
+
+                    });
+
+                }
+
             }
 
             var containerClassNames = ['form-group'];
