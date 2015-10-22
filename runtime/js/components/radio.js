@@ -170,7 +170,7 @@
 
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'radio', this.props.flowKey));
 
-            var iconClassNames = ['glyphicon', 'glyphicon-refresh', 'select-loading-icon spin'];
+            var iconClassNames = ['select-loading-icon'];
 
             if (!state.loading || state.error) {
 
@@ -186,6 +186,7 @@
                 React.DOM.div({ className: 'radio-group' }, [
                     options
                 ]),
+                React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null)),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo)
             ]);
