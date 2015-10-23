@@ -142,7 +142,7 @@ permissions and limitations under the License.
                                             (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
                                             || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
 
-                                            element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info' }, 'Download');
+                                            element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info', target: '_blank' }, 'Download');
 
                                         }
 
