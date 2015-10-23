@@ -580,21 +580,7 @@ manywho.engine = (function (manywho) {
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
 
-                        var options = {
-                            mode: manywho.settings.global('mode', flowKey, null),
-                            reportingMode: manywho.settings.global('reportingMode', flowKey, null),
-                            trackLocation: manywho.settings.global('trackLocation', flowKey, false),
-                            replaceUrl: manywho.settings.global('replaceUrl', flowKey, true),
-                            collaboration: {
-                                isEnabled: manywho.settings.global('collaboration.isEnabled', flowKey, false)
-                            },
-                            autoFocusInput: manywho.settings.global('autoFocusInput', flowKey, true),
-                            annotations: manywho.settings.global('annotations', flowKey, null),
-                            navigation: {
-                                isFixed: manywho.settings.global('navigation.isFixed', flowKey, false)
-                            },
-                            isFullWidth: manywho.settings.global('isFullWidth', flowKey, false)
-                        };
+                        var options = manywho.settings.getGlobals(flowKey);
 
                         manywho.model.deleteFlowModel(flowKey);
                         manywho.settings.remove(flowKey);
