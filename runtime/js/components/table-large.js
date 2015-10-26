@@ -307,7 +307,9 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Table-Large');
 
             var tableClassNames = [
-                'table table-bordered',
+                'table',
+                (this.props.model.attributes.borderless && manywho.utils.isEqual(this.props.model.attributes.borderless, "true", true)) ? '' : 'table-bordered',
+                (this.props.model.attributes.striped && manywho.utils.isEqual(this.props.model.attributes.striped, "true", true)) ? 'table-striped' : '',
                 (this.props.isSelectionEnabled) ? 'table-hover' : '',
                 (this.props.model.isValid) ? '' : 'table-invalid'
             ].join(' ');
