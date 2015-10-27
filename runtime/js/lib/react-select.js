@@ -507,7 +507,7 @@ var Select = React.createClass({
 		var _this7 = this;
 
 		var menuDOM = React.findDOMNode(this.refs.menu);
-        if (document.activeElement.isEqualNode(menuDOM)) {
+        if (menuDOM && document.activeElement.isEqualNode(menuDOM)) {
             return;
         }
 
