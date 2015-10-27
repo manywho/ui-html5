@@ -826,9 +826,7 @@ manywho.engine = (function (manywho) {
 
                         if (response)
                         {
-                            var options = {
-                                mode: manywho.settings.isDebugEnabled(flowKey) ? 'DEBUG' : ''
-                            };
+                            var options = manywho.settings.getGlobals(flowKey);
 
                             self.join(manywho.utils.extractTenantId(flowKey),
                                         manywho.utils.extractFlowId(flowKey),
