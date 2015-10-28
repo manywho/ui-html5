@@ -506,8 +506,8 @@ var Select = React.createClass({
 	handleInputBlur: function handleInputBlur(event) {
 		var _this7 = this;
 
-		var menuDOM = ReactDOM.findDOMNode(this.refs.menu);
-        if (document.activeElement.isEqualNode(menuDOM)) {
+		var menuDOM = React.findDOMNode(this.refs.menu);
+        if (menuDOM && document.activeElement.isEqualNode(menuDOM)) {
             return;
         }
 
