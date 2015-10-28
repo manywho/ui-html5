@@ -23,7 +23,7 @@
 
             }, this)[0];
 
-            $.extend(optionAttributes, attributes, { type: 'radio', name: developerName, value: item.externalId });
+            manywho.utils.extend(optionAttributes, [attributes, { type: 'radio', name: developerName, value: item.externalId }]);
 
             if (attributes.value == item.externalId) {
 
@@ -124,6 +124,10 @@
 
             if (!model.isEnabled || !model.isEditable) {
                 attributes.disabled = 'disabled';
+            }
+
+            if (model.isMultiSelect) {
+                attributes.multiSelect = true;
             }
 
             if (!isEmptyObjectData(model)) {

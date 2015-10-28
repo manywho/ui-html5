@@ -11,6 +11,44 @@ permissions and limitations under the License.
 
 manywho.utils = (function (manywho, $) {
 
+    function extendShallow(mergedObject, objects) {
+
+        objects.forEach(function(object) {
+
+            for (var key in object) {
+
+                if (object.hasOwnProperty(key)) mergedObject[key] = object[key];
+
+            }
+
+        });
+
+        return mergedObject;
+
+    }
+
+    function extendDeep(mergedObject, object) {
+
+        for (var key in object) {
+
+            try {
+
+                if (object[key].constructor == Object) {
+                    mergedObject[key] = extendDeep(mergedObject[key], object[key]);
+                } else if (object.hasOwnProperty(key)) {
+                    mergedObject[key] = object[key];
+                }
+
+            } catch (e) {
+                mergedObject[key] = object[key];
+            }
+
+        }
+
+        return mergedObject;
+
+    }
+
     return {
 
         getNumber: function(number) {
@@ -78,6 +116,22 @@ manywho.utils = (function (manywho, $) {
             }
 
             return params;
+        },
+
+        extend: function (mergedObject, objects, isDeep) {
+
+            if (arguments.length == 2) {
+                mergedObject = extendShallow(mergedObject, objects);
+            } else if (arguments.length == 3 && isDeep) {
+                objects.forEach(function (object) {
+
+                    mergedObject = extendDeep(mergedObject, object);
+
+                });
+            }
+
+            return mergedObject;
+
         },
 
         isNullOrWhitespace: function (value) {

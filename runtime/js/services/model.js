@@ -67,7 +67,7 @@ permissions and limitations under the License.
 
             }
 
-            return $.extend({}, item, data);
+            return manywho.utils.extend({}, [item, data]);
 
         }
 
@@ -122,7 +122,7 @@ permissions and limitations under the License.
 
                 })[0];
 
-                navigationItems[item.id] = $.extend({}, item, data);
+                navigationItems[item.id] = manywho.utils.extend({}, [item, data]);
 
                 if (item.navigationItems != null) {
                     navigationItems[item.id].items = getNavigationItems(item.navigationItems, dataResponse);
@@ -237,13 +237,13 @@ permissions and limitations under the License.
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
+                    flowModel[flowKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[flowKey].containers[item.pageContainerId], [item]);
 
                 }, this);
 
                 response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
+                    flowModel[flowKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[flowKey].components[item.pageComponentId], [item]);
 
                 }, this);
 

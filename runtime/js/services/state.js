@@ -149,7 +149,7 @@ manywho.state = (function (manywho) {
 
         setComponent: function(id, values, flowKey, push) {
 
-            components[flowKey][id] = $.extend(components[flowKey][id], values);
+            components[flowKey][id] = manywho.utils.extend(components[flowKey][id], [values]);
 
             if (values != null) {
 
