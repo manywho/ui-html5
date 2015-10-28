@@ -148,6 +148,12 @@ manywho.settings = (function (manywho, $) {
 
         },
 
+        getGlobals: function (flowKey) {
+
+            return $.extend({}, globals, flows[flowKey]);
+
+        },
+
         flow: function(path, flowKey) {
 
             if (manywho.utils.isNullOrWhitespace(path)) {

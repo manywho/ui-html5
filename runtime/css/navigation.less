@@ -52,26 +52,27 @@ permissions and limitations under the License.
 
     .navbar-wizard {
       background-color: @wizard-background;
+      min-height: 64px !important;
+      height: 64px !important;
       border: 0;
-
-      .navbar-collapse {
-        position: relative;
-      }
 
       .navbar-header {
         .navbar-brand {
+          height: 50px !important;
+          padding: 20px 10px;
           color: @active-background;
         }
       }
 
       .navbar-nav {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        margin-top: -20px;
+        margin-top: 12px;
+        margin-left: 1em;
         text-align: center;
 
+      }
+
+      .return-to-parent {
+        margin-top: 15px;
       }
 
       .top-nav-element {
@@ -164,7 +165,7 @@ permissions and limitations under the License.
 
     .navbar-nav {
       position: relative !important;
-      margin: 10.25px -15px 0px -15px !important;
+      margin: 0px -15px 0px -15px !important;
       visibility: visible !important;
       top: 0 !important;
       overflow: hidden !important;

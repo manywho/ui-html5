@@ -117,6 +117,7 @@ var Dropzone = React.createClass({
                     className: className,
                     style: style,
                     onClick: this.onClick,
+                    onTouchEnd: this.onClick,
                     onDragLeave: this.onDragLeave,
                     onDragOver: this.onDragOver,
                     onDrop: this.onDrop

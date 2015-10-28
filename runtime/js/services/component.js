@@ -40,7 +40,10 @@ manywho.component = (function (manywho) {
             number: 'CONTENTNUMBER',
             boolean: 'CONTENTBOOLEAN',
             password: 'CONTENTPASSWORD',
-            datetime: 'CONTENTDATETIME'
+            datetime: 'CONTENTDATETIME',
+            content: 'CONTENTCONTENT',
+            object: 'CONTENTOBJECT',
+            list: 'CONTENTLIST'
         },
 
         register: function (name, component, alias) {
