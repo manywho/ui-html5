@@ -78,6 +78,10 @@ permissions and limitations under the License.
                     React.DOM.input(checkboxAttributes)
                 ]));
 
+            } else if (manywho.utils.isEqual(self.props.model.attributes.radio, "true", true)) {
+
+                columns.push(React.DOM.th({  }));
+
             }
 
             columns = columns.concat(displayColumns.map(function(column) {
@@ -213,6 +217,14 @@ permissions and limitations under the License.
 
                     columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
                         React.DOM.input({ id: item.externalId ,type: 'checkbox', checked: checked })
+                    ]));
+
+                } else if (manywho.utils.isEqual(this.props.model.attributes.radio, "true", true)) {
+
+                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+
+                    columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
+                        React.DOM.input({ id: item.externalId, value: item.externalId, type: 'radio', checked: checked })
                     ]));
 
                 }
