@@ -23,7 +23,9 @@
 
             }, this)[0];
 
-            manywho.utils.extend(optionAttributes, [attributes, { type: 'radio', name: developerName, value: item.externalId }]);
+            var type = attributes.multiSelect ? 'checkbox' : 'radio';
+
+            manywho.utils.extend(optionAttributes, [attributes, { type: type, name: developerName, value: item.externalId }]);
 
             if (attributes.value == item.externalId) {
 
@@ -31,7 +33,7 @@
 
             }
 
-            return React.DOM.label({ className: 'radio' }, [
+            return React.DOM.label({ className: type }, [
                     React.DOM.input(optionAttributes),
                     label.contentValue
             ]);
@@ -72,6 +74,23 @@
         handleChange: function(e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            var selectedObjectData = null;
+
+            if (!manywho.utils.isEmptyObjectData(model)) {
+
+                if (state && state.objectData) {
+
+                    selectedObjectData = state.objectData.filter(function(item) { return item.isSelected });
+
+                } else {
+
+                    selectedObjectData = model.objectData.filter(function(item) { return item.isSelected });
+
+                }
+
+            }
 
             model.objectData = model.objectData.map(function (item) {
 
@@ -80,23 +99,37 @@
 
             });
 
-            var selectedObjectData = null;
+            if (model.isMultiSelect) {
 
-            if (e.target) {
+                if (selectedObjectData.indexOf(e.target.value) != -1) {
+
+                    selectedObjectData.splice(selectedObjectData.indexOf(e.target.value));
+
+                } else {
+
+                    selectedObjectData.push(model.objectData.filter(function (item) {
+
+                        return e.target.value == item.externalId;
+
+                    })[0]);
+                }
+
+            } else {
 
                 selectedObjectData = model.objectData.filter(function (item) {
 
                     return e.target.value == item.externalId;
 
                 })
-                    .map(function (item) {
-
-                        item.isSelected = true;
-                        return item;
-
-                    });
 
             }
+
+            selectedObjectData = selectedObjectData.map(function (item) {
+
+                item.isSelected = true;
+                return item;
+
+            });
 
             manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
             manywho.component.handleEvent(this, model, this.props.flowKey);
@@ -105,7 +138,7 @@
 
         render: function () {
 
-            manywho.log.info('Rendering Select: ' + this.props.id);
+            manywho.log.info('Rendering Radio Buttons: ' + this.props.id);
 
             var options = [];
 
@@ -146,9 +179,9 @@
 
                 }
 
-                if (selectedItems) {
+                if (selectedItems && !model.isMultiSelect) {
 
-                    attributes.value = (model.isMultiSelect) ? selectedItems : selectedItems[0];
+                    attributes.value = selectedItems[0];
 
                 }
 
