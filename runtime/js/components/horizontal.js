@@ -21,13 +21,12 @@ permissions and limitations under the License.
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey).join(' ');
+            var childClasses = this.state.isVisible ? [] : ['hidden'];
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
-
-            var contentClass = this.state.isVisible == false ? 'hidden' : '';
 
             return React.DOM.div({ className: classes, id: this.props.id }, [
                 this.getLabel(model.label),
-                React.DOM.div({ className: contentClass, id: this.props.id }, [
+                React.DOM.div({ className: childClasses.join(' ') }, [
                     this.props.children || React.DOM.div({ className: 'row' }, manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
                 ])
             ]);
