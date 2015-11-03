@@ -13,6 +13,8 @@ permissions and limitations under the License.
 
     var inline = React.createClass({
 
+        mixins: [manywho.component.mixins.collapse],
+
         render: function () {
 
             manywho.log.info('Rendering Inline: ' + this.props.id);
@@ -24,7 +26,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: classes, id: this.props.id },
                 this.getLabel(model.label),
-                React.DOM.div({ className: childClasses.join(' ') } [
+                React.DOM.div({ className: childClasses.join(' ') }, [
                     this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ])
             );
