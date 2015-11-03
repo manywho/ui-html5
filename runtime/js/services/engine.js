@@ -500,6 +500,12 @@ manywho.engine = (function (manywho) {
 
             }
 
+            if (options.theme) {
+
+                manywho.theming.apply(options.theme);
+
+            }
+
             var storedConfig = localStorage.getItem('oauth-' + stateId);
             var config = (stateId) ? !manywho.utils.isNullOrWhitespace(storedConfig) && JSON.parse(storedConfig) : null;
             if (!config) {
