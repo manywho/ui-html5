@@ -33,6 +33,11 @@ manywho.authorization = (function (manywho) {
 
             manywho.model.deleteFlowModel(callback.flowKey);
             manywho.utils.removeFlowFromDOM(callback.flowKey);
+            manywho.settings.remove(callback.flowKey);
+            manywho.state.remove(callback.flowKey);
+            manywho.social.remove(callback.flowKey);
+            manywho.collaboration.remove(callback.flowKey);
+            manywho.callbacks.remove(callback.flowKey);
 
         },
 
