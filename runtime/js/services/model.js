@@ -227,6 +227,17 @@ permissions and limitations under the License.
                         break;
                 }
 
+            } else if (manywho.utils.isEqual(engineInvokeResponse.invokeType, 'not_allowed', true)) {
+
+                flowModel[flowKey].notifications.push({
+                    message: 'You are not authorized to access this content. Please contact your administrator for more details.',
+                    position: 'center',
+                    type: 'danger',
+                    timeout: '0',
+                    dismissible: false
+
+                });
+
             }
 
         },
@@ -357,7 +368,11 @@ permissions and limitations under the License.
 
         getOutcome: function (outcomeId, flowKey) {
 
-            return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+            if (flowModel[flowKey].outcomes) {
+
+                return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+
+            }
 
         },
 
