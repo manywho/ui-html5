@@ -268,7 +268,23 @@ permissions and limitations under the License.
                                 (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
                                 || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
 
-                                return React.DOM.td(null, React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info btn-sm', target: '_blank'  }, 'Download'));
+                                var attributes = { href: selectedProperty.contentValue, target: '_blank' };
+                                var buttonClasses = ['btn', 'btn-sm'];
+
+                                if (manywho.utils.isNullOrWhitespace(selectedProperty.contentValue)) {
+
+                                    buttonClasses.push('btn-default');
+                                    attributes.disabled = 'disabled';
+
+                                } else {
+
+                                    buttonClasses.push('btn-info');
+
+                                }
+
+                                attributes.className = buttonClasses.join(' ');
+
+                                return React.DOM.td(null, React.DOM.a(attributes, 'Download'));
 
                             }
                             else if (manywho.utils.isEqual(this.state.currentCellEdit, column.typeElementPropertyId + '|' + item.externalId, true)) {
@@ -285,6 +301,10 @@ permissions and limitations under the License.
                                 );
 
                             }
+
+                        } else {
+
+                            return React.DOM.td(null, '');
 
                         }
 
