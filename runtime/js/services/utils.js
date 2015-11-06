@@ -11,7 +11,7 @@ permissions and limitations under the License.
 
 manywho.utils = (function (manywho, $) {
 
-    function extendShallow(mergedObject, objects) {
+    function extendShallow (mergedObject, objects) {
 
         objects.forEach(function(object) {
 
@@ -27,7 +27,7 @@ manywho.utils = (function (manywho, $) {
 
     }
 
-    function extendDeep(mergedObject, object) {
+    function extendDeep (mergedObject, object) {
 
         for (var key in object) {
 
@@ -35,6 +35,8 @@ manywho.utils = (function (manywho, $) {
 
                 if (object[key].constructor == Object) {
                     mergedObject[key] = extendDeep(mergedObject[key], object[key]);
+                } else if (object[key].constructor == Array) {
+                    mergedObject[key] = extendArray(mergedObject[key] || [], object[key]);
                 } else if (object.hasOwnProperty(key)) {
                     mergedObject[key] = object[key];
                 }
@@ -47,6 +49,14 @@ manywho.utils = (function (manywho, $) {
 
         return mergedObject;
 
+    }
+
+    function extendArray (mergedArray, array) {
+        mergedArray = mergedArray.concat(array.map(function (child) {
+            return extendDeep({}, child);
+        }));
+
+        return mergedArray;
     }
 
     return {
@@ -124,9 +134,7 @@ manywho.utils = (function (manywho, $) {
                 mergedObject = extendShallow(mergedObject, objects);
             } else if (arguments.length == 3 && isDeep) {
                 objects.forEach(function (object) {
-
                     mergedObject = extendDeep(mergedObject, object);
-
                 });
             }
 
