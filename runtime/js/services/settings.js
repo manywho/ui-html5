@@ -56,8 +56,7 @@ manywho.settings = (function (manywho, $) {
         },
         isFullWidth: false,
         collapsible: false,
-        containerSelector: '#manywho',
-        theme: 'paper'
+        containerSelector: '#manywho'
     };
 
     var flows = {};
