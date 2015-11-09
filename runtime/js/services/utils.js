@@ -34,15 +34,23 @@ manywho.utils = (function (manywho, $) {
             try {
 
                 if (object[key].constructor == Object) {
+
                     mergedObject[key] = extendDeep(mergedObject[key], object[key]);
+
                 } else if (object[key].constructor == Array) {
+
                     mergedObject[key] = extendArray(mergedObject[key] || [], object[key]);
+
                 } else if (object.hasOwnProperty(key)) {
+
                     mergedObject[key] = object[key];
+
                 }
 
             } catch (e) {
+
                 mergedObject[key] = object[key];
+
             }
 
         }
