@@ -77,7 +77,7 @@ permissions and limitations under the License.
 
     function flattenContainers(containers, parent, result, propertyName) {
 
-        propertyName = propertyName || 'pageContainerResponses'
+        propertyName = propertyName || 'pageContainerResponses';
 
         if (containers != null) {
 
@@ -99,7 +99,7 @@ permissions and limitations under the License.
                 }
 
                 result.push(item);
-                flattenContainers(item[propertyName], item, result);
+                flattenContainers(item[propertyName], item, result, propertyName);
 
             }
         }
