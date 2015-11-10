@@ -60,9 +60,12 @@ manywho.utils = (function (manywho, $) {
     }
 
     function extendArray (mergedArray, array) {
-        mergedArray = mergedArray.concat(array.map(function (child) {
-            return extendDeep({}, child);
-        }));
+
+        array.forEach(function (child) {
+
+            mergedArray.push(child);
+
+        });
 
         return mergedArray;
     }
