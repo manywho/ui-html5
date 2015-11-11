@@ -23,9 +23,9 @@
 
         },
 
-        renderOutcome: function (outcome, selectedOutcome, outcomeWidth, outcomeClass) {
+        renderOutcome: function (outcome, selectedOutcome, outcomeWidth) {
 
-            var classes = 'outcome-info alert ' + outcomeClass;
+            var classes = 'outcome-info alert ';
             if (outcome.id == selectedOutcome) classes += ' selected-outcome';
 
             return React.DOM.div({ className: classes, style: { width: outcomeWidth }}, [
@@ -44,16 +44,15 @@
 
                     var outcomes = step.outcomes || [];
 
-                    var outcomeWidth = Math.floor(100 / outcomes.length)-outcomes.length + '%';
-                    var outcomeNumber = outcomes.length % 2 > 0 ? 'outcome-odd' : 'outcome-even';
+                    var outcomeWidth = Math.floor(100 / outcomes.length)-2 + '%';
 
                     return React.DOM.div({ className: 'history-row' }, [
-                        React.DOM.div({ id: step.id, className: 'alert bg-primary', onClick: self.onClick }, [
+                        React.DOM.div({ id: step.id, className: 'alert step bg-primary', onClick: self.onClick }, [
                             React.DOM.div({ className: 'step-title' }, step.label || step.name),
                             React.DOM.div({ className: 'step-content', dangerouslySetInnerHTML: {__html: step.content || '' } })
                         ]),
                         outcomes.map(function (outcome) {
-                            return self.renderOutcome(outcome, step.selectedOutcome, outcomeWidth, outcomeNumber);
+                            return self.renderOutcome(outcome, step.selectedOutcome, outcomeWidth);
                         })
                     ]);
 
