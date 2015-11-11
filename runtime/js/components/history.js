@@ -47,7 +47,7 @@
                     var outcomeWidth = Math.floor(100 / outcomes.length)-2 + '%';
 
                     return React.DOM.div({ className: 'history-row' }, [
-                        React.DOM.div({ id: step.id, className: 'alert step bg-primary', onClick: self.onClick }, [
+                        React.DOM.div({ id: step.id, className: 'step bg-primary', onClick: self.onClick }, [
                             React.DOM.div({ className: 'step-title' }, step.label || step.name),
                             React.DOM.div({ className: 'step-content', dangerouslySetInnerHTML: {__html: step.content || '' } })
                         ]),

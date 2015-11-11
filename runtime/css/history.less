@@ -25,19 +25,32 @@ permissions and limitations under the License.
         overflow: scroll;
 
         .history-row {
-            margin-bottom: 100px;
+            margin-bottom: 80px;
 
             .step {
+                border: 1px solid transparent;
+                border-radius: 3px;
+                margin-bottom: 10px;
+                padding: 0;
                 cursor: pointer;
 
                 .step-title {
                     font-size: 20px;
                     text-align: center;
                 }
+
+                .step-content {
+                    padding: 5px 15px;
+
+                    p {
+                        margin: 0;
+                    }
+                }
             }
 
             .outcome-info {
                 float: left;
+                padding: 10px;
                 background: rgba(221,221,221,0.6);
                 text-align: center;
                 color: #333333;
