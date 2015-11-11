@@ -26,7 +26,7 @@
         renderOutcome: function (outcome, selectedOutcome, outcomeWidth, outcomeClass) {
 
             var classes = 'outcome-info alert ' + outcomeClass;
-            if (outcome.id == selectedOutcome) classes += ' bg-success';
+            if (outcome.id == selectedOutcome) classes += ' selected-outcome';
 
             return React.DOM.div({ className: classes, style: { width: outcomeWidth }}, [
                 React.DOM.p({ align: 'center' }, outcome.label)
