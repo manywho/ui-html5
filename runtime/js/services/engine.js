@@ -500,6 +500,12 @@ manywho.engine = (function (manywho) {
 
             }
 
+            if (options.theme) {
+
+                manywho.theming.apply(options.theme);
+
+            }
+
             var storedConfig = localStorage.getItem('oauth-' + stateId);
             var config = (stateId) ? !manywho.utils.isNullOrWhitespace(storedConfig) && JSON.parse(storedConfig) : null;
             if (!config) {
@@ -587,6 +593,7 @@ manywho.engine = (function (manywho) {
                         manywho.state.remove(flowKey);
                         manywho.social.remove(flowKey);
                         manywho.collaboration.remove(flowKey);
+                        manywho.callbacks.remove(flowKey);
                         manywho.utils.removeFlowFromDOM(flowKey);
 
                         manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, options);
@@ -722,6 +729,7 @@ manywho.engine = (function (manywho) {
             manywho.state.remove(flowKey);
             manywho.social.remove(flowKey);
             manywho.collaboration.remove(flowKey);
+            manywho.callbacks.remove(flowKey);
             manywho.utils.removeFlowFromDOM(flowKey);
 
             manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);

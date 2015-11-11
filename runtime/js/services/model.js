@@ -67,7 +67,7 @@ permissions and limitations under the License.
 
             }
 
-            return $.extend({}, item, data);
+            return manywho.utils.extend({}, [item, data]);
 
         }
 
@@ -77,7 +77,7 @@ permissions and limitations under the License.
 
     function flattenContainers(containers, parent, result, propertyName) {
 
-        propertyName = propertyName || 'pageContainerResponses'
+        propertyName = propertyName || 'pageContainerResponses';
 
         if (containers != null) {
 
@@ -99,7 +99,7 @@ permissions and limitations under the License.
                 }
 
                 result.push(item);
-                flattenContainers(item[propertyName], item, result);
+                flattenContainers(item[propertyName], item, result, propertyName);
 
             }
         }
@@ -122,7 +122,7 @@ permissions and limitations under the License.
 
                 })[0];
 
-                navigationItems[item.id] = $.extend({}, item, data);
+                navigationItems[item.id] = manywho.utils.extend({}, [item, data]);
 
                 if (item.navigationItems != null) {
                     navigationItems[item.id].items = getNavigationItems(item.navigationItems, dataResponse);
@@ -227,6 +227,17 @@ permissions and limitations under the License.
                         break;
                 }
 
+            } else if (manywho.utils.isEqual(engineInvokeResponse.invokeType, 'not_allowed', true)) {
+
+                flowModel[flowKey].notifications.push({
+                    message: 'You are not authorized to access this content. Please contact your administrator for more details.',
+                    position: 'center',
+                    type: 'danger',
+                    timeout: '0',
+                    dismissible: false
+
+                });
+
             }
 
         },
@@ -237,13 +248,13 @@ permissions and limitations under the License.
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].containers[item.pageContainerId] = $.extend(flowModel[flowKey].containers[item.pageContainerId], item);
+                    flowModel[flowKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[flowKey].containers[item.pageContainerId], [item]);
 
                 }, this);
 
                 response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].components[item.pageComponentId] = $.extend(flowModel[flowKey].components[item.pageComponentId], item);
+                    flowModel[flowKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[flowKey].components[item.pageComponentId], [item]);
 
                 }, this);
 
@@ -357,7 +368,11 @@ permissions and limitations under the License.
 
         getOutcome: function (outcomeId, flowKey) {
 
-            return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+            if (flowModel[flowKey].outcomes) {
+
+                return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+
+            }
 
         },
 

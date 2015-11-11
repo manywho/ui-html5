@@ -37,17 +37,41 @@ permissions and limitations under the License.
 
     }
 
+    function clearActivePanes(groupContainer) {
+
+        for (var i = 0; i < groupContainer.children.length; i++) {
+
+            var child = groupContainer.children[i];
+
+            for (var j = 0; j < child.children.length; j++) {
+
+                child.children[j].classList.remove('active');
+
+            }
+
+        }
+
+    }
+
     var group = React.createClass({
 
         componentDidMount: function() {
 
-            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
+            clearActivePanes(this.refs.group.getDOMNode());
+
+            this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+
+            this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
 
         },
 
         componentDidUpdate: function() {
 
-            $(this.refs.group.getDOMNode().children[this.state.activeTabIndex].querySelector('a')).tab('show');
+            clearActivePanes(this.refs.group.getDOMNode());
+
+            this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+
+            this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
 
         },
 

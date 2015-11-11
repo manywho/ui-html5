@@ -78,6 +78,10 @@ permissions and limitations under the License.
                     React.DOM.input(checkboxAttributes)
                 ]));
 
+            } else if (manywho.utils.isEqual(self.props.model.attributes.radio, "true", true)) {
+
+                columns.push(React.DOM.th({  }));
+
             }
 
             columns = columns.concat(displayColumns.map(function(column) {
@@ -215,6 +219,14 @@ permissions and limitations under the License.
                         React.DOM.input({ id: item.externalId ,type: 'checkbox', checked: checked })
                     ]));
 
+                } else if (manywho.utils.isEqual(this.props.model.attributes.radio, "true", true)) {
+
+                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+
+                    columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
+                        React.DOM.input({ id: item.externalId, value: item.externalId, type: 'radio', checked: checked })
+                    ]));
+
                 }
 
                 columns = columns.concat(displayColumns.map(function (column) {
@@ -256,7 +268,23 @@ permissions and limitations under the License.
                                 (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
                                 || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
 
-                                return React.DOM.td(null, React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info btn-sm', target: '_blank'  }, 'Download'));
+                                var attributes = { href: selectedProperty.contentValue, target: '_blank' };
+                                var buttonClasses = ['btn', 'btn-sm'];
+
+                                if (manywho.utils.isNullOrWhitespace(selectedProperty.contentValue)) {
+
+                                    buttonClasses.push('btn-default');
+                                    attributes.disabled = 'disabled';
+
+                                } else {
+
+                                    buttonClasses.push('btn-info');
+
+                                }
+
+                                attributes.className = buttonClasses.join(' ');
+
+                                return React.DOM.td(null, React.DOM.a(attributes, 'Download'));
 
                             }
                             else if (manywho.utils.isEqual(this.state.currentCellEdit, column.typeElementPropertyId + '|' + item.externalId, true)) {
@@ -273,6 +301,10 @@ permissions and limitations under the License.
                                 );
 
                             }
+
+                        } else {
+
+                            return React.DOM.td(null, '');
 
                         }
 
@@ -307,7 +339,9 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Table-Large');
 
             var tableClassNames = [
-                'table table-bordered',
+                'table',
+                (this.props.model.attributes.borderless && manywho.utils.isEqual(this.props.model.attributes.borderless, "true", true)) ? '' : 'table-bordered',
+                (this.props.model.attributes.striped && manywho.utils.isEqual(this.props.model.attributes.striped, "true", true)) ? 'table-striped' : '',
                 (this.props.isSelectionEnabled) ? 'table-hover' : '',
                 (this.props.model.isValid) ? '' : 'table-invalid'
             ].join(' ');

@@ -373,7 +373,7 @@ permissions and limitations under the License.
 
                     if (stateObjectData) {
 
-                        return $.extend({}, modelItem, stateObjectData);
+                        return manywho.utils.extend({}, [modelItem, stateObjectData]);
 
                     }
                     else {

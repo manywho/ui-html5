@@ -60,6 +60,12 @@ manywho.callbacks = (function (manywho) {
 
             }
 
+        },
+
+        remove: function(flowKey) {
+
+            callbacks[flowKey] = null;
+
         }
 
     }
