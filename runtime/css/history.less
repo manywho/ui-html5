@@ -1,0 +1,61 @@
+/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
+.mw-bs {
+
+    .main-history {
+        width: 60% !important;
+        float: left;
+    }
+
+    .history-view {
+        height: 100%;
+        width: calc(~"40% - 20px");
+        margin-left: 1em;
+        margin-bottom: 0;
+        float: right;
+        overflow: scroll;
+
+        .history-row {
+            margin-bottom: 100px;
+
+            &:first-child {
+                cursor: pointer;
+            }
+
+            .step-title {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .outcome-info {
+                float: left;
+                background: rgba(221,221,221,0.6);
+                text-align: center;
+                color: #333333;
+            }
+
+            .outcome-even {
+                margin-left: 1%;
+            }
+
+            .outcome-odd {
+                margin-left: 2%;
+            }
+
+            .selected-outcome {
+                color: #FFFFFF;
+                background: rgba(76, 175, 80, 0.6);
+            }
+        }
+    }
+
+}

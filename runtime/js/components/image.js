@@ -15,7 +15,7 @@
 
         render: function () {
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'image', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             if (model.isVisible == false) {
