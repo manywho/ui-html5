@@ -860,6 +860,13 @@ manywho.engine = (function (manywho) {
         render: function (flowKey) {
 
             var container = document.getElementById(flowKey);
+
+            if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal-standalone', true)) {
+
+                container = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
+
+            }
+
             React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
 
         }
