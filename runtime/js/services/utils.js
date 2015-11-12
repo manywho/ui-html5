@@ -33,13 +33,13 @@ manywho.utils = (function (manywho, $) {
 
             try {
 
-                if (object[key].constructor == Object) {
-
-                    mergedObject[key] = extendDeep(mergedObject[key], object[key]);
-
-                } else if (object[key].constructor == Array) {
+                if (Array.isArray(object[key])) {
 
                     mergedObject[key] = extendArray(mergedObject[key] || [], object[key]);
+
+                }else if (object[key].constructor == Object) {
+
+                    mergedObject[key] = extendDeep(mergedObject[key], object[key]);
 
                 } else if (object.hasOwnProperty(key)) {
 
@@ -141,7 +141,7 @@ manywho.utils = (function (manywho, $) {
 
         extend: function (mergedObject, objects, isDeep) {
 
-            if (objects.constructor != Array) {
+            if (Array.isArray(objects.constructor)) {
                 objects = [objects];
             }
 
