@@ -39,7 +39,7 @@ permissions and limitations under the License.
 
     }
 
-    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
+    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isDesignTime) {
 
         var headerElements = [];
         var searchElement = null;
@@ -48,10 +48,15 @@ permissions and limitations under the License.
 
         if (isSearchEnabled) {
 
+            var buttonAttributes = { className: 'btn btn-default', onClick: search };
+
+            if (isDesignTime)
+                buttonAttributes.disabled = 'disabled';
+
             searchElement = React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
-                        React.DOM.button({ className: 'btn btn-default', onClick: search },
+                        React.DOM.button(buttonAttributes,
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
@@ -102,7 +107,8 @@ permissions and limitations under the License.
                     hasMoreResults: hasMoreResults,
                     containerClasses: 'pull-right',
                     onNext: onNext,
-                    onPrev: onPrev
+                    onPrev: onPrev,
+                    isDesignTime: this.props.isDesignTime
                 }
             ));
 
@@ -362,16 +368,11 @@ permissions and limitations under the License.
             var isValid = true;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
 
             this.outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-            var objectData = model.objectData;
-
-            if (this.props.isDesignTime) {
-                state = { error: null, loading: false };
-                objectData = [];
-            }
+            var objectData = this.props.isDesignTime ? [] : model.objectData;
 
             if (model.objectData && state.objectData) {
 
@@ -424,25 +425,32 @@ permissions and limitations under the License.
             }
             else {
 
-                content = React.createElement(tableComponent, {
+                var contentAttributes = {
                     id: this.props.id,
                     model: model,
                     objectData: objectData,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
-                    onOutcome: !this.props.isDesignTime && this.onOutcome,
                     selectedRows: this.state.selectedRows,
-                    onRowClicked: !this.props.isDesignTime && (this.props.onRowClicked || this.onRowClicked),
-                    selectAll: !this.props.isDesignTime && this.selectAll.bind(this, objectData),
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
-                    onHeaderClick:!this.props.isDesignTime &&  this.onHeaderClick,
                     lastSortedBy: this.state.lastSortedBy,
                     sortByOrder: this.state.sortByOrder,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
                     isValid: isValid,
                     isDesignTime: this.props.isDesignTime
-                });
+                };
+
+                if (!this.props.isDesignTime) {
+                    contentAttributes = manywho.utils.extend(contentAttributes, {
+                        onOutcome: this.onOutcome,
+                        onRowClicked: (this.props.onRowClicked || this.onRowClicked),
+                        selectAll: this.selectAll.bind(this, objectData),
+                        onHeaderClick: this.onHeaderClick
+                    })
+                }
+
+                content = React.createElement(tableComponent, contentAttributes);
 
             }
 

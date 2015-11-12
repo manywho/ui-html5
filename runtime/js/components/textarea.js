@@ -32,38 +32,29 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Textarea: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
-
-            if (this.props.isDesignTime) {
-                state = { contentValue: '' }
-            }
 
             var attributes = {
                 id: this.props.id,
                 placeholder: model.hintValue,
                 value: state.contentValue || '',
                 maxLength: model.maxSize,
-                onChange: !this.props.isDesignTime && this.handleChange,
                 cols: model.width,
                 rows: model.height,
-                className: 'form-control'
+                className: 'form-control',
+                disabled: !model.isEnabled && 'disabled',
+                required: model.isRequired && '',
+                readOnly: (!model.isEditable || this.props.isDesignTime) && 'readonly'
             };
 
-            if (model.hasEvents) {
-                attributes.onBlur = this.handleEvent;
-            }
+            if (!this.props.isDesignTime) {
 
-            if (!model.isEnabled) {
-                attributes.disabled = 'disabled';
-            }
+                attributes = manywho.utils.extend(attributes, { onChange: !this.props.isDesignTime && this.handleChange });
 
-            if (model.isRequired) {
-                attributes.required = '';
-            }
-
-            if (!model.isEditable || this.props.isDesignTime) {
-                attributes.readOnly = 'readonly';
+                if (model.hasEvents) {
+                    attributes.onBlur = this.handleEvent;
+                }
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {

@@ -48,6 +48,12 @@ permissions and limitations under the License.
 
                         });
 
+                        editor.on('change', self.handleChange);
+
+                        if (model.hasEvents) {
+                            editor.on('blur', self.handleEvent);
+                        }
+
                     }
 
                     editor.on('init', function () {
@@ -55,12 +61,6 @@ permissions and limitations under the License.
                          this.getDoc().body.style.fontSize = manywho.settings.global('richtext.fontsize', self.props.flowKey, '13px');
 
                      });
-
-                    editor.on('change', self.handleChange);
-
-                    if (model.hasEvents) {
-                        editor.on('blur', self.handleEvent);
-                    }
 
                  }
             });
@@ -156,7 +156,7 @@ permissions and limitations under the License.
 
         handleChange: function (e) {
 
-            if (this.state.isInitialized && this.editor && !this.props.isDesignTime) {
+            if (this.state.isInitialized && this.editor) {
 
                 var content = this.editor.getContent();
                 var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
@@ -174,14 +174,28 @@ permissions and limitations under the License.
 
         handleEvent: function (e) {
 
-            if (this.props.isDesignTime)
-                return;
-
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
 
         renderFileDialog: function () {
+
+            var tableAttributes = {
+                flowKey: this.props.flowKey,
+                id: this.props.id,
+                selectionEnabled: true
+            };
+
+            var uploadAttributes = {
+                flowKey: this.props.flowKey,
+                id: this.props.id,
+                multiple: true
+            };
+
+            if (!this.props.isDesignTime) {
+                tableAttributes = manywho.utils.extend(tableAttributes,  { onRowClicked: this.onFileTableRowClicked });
+                uploadAttributes = manywho.utils.extend(tableAttributes,  { uploadComplete: this.onUploadComplete });
+            }
 
             return React.DOM.div({ className: 'modal show' }, [
                 React.DOM.div({ className: 'modal-dialog full-screen', onKeyUp: this.onEnter }, [
@@ -197,10 +211,10 @@ permissions and limitations under the License.
                             ]),
                             React.DOM.div({ className: 'tab-content'}, [
                                 React.DOM.div({ className: 'tab-pane active', id: 'files'}, [
-                                    React.createElement(manywho.component.getByName('table'), { flowKey: this.props.flowKey, id: this.props.id, onRowClicked: this.onFileTableRowClicked, selectionEnabled: true })
+                                    React.createElement(manywho.component.getByName('table'), tableAttributes)
                                 ]),
                                 React.DOM.div({  className: 'tab-pane', id: 'upload'}, [
-                                    React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, id: this.props.id, multiple: true, uploadComplete: this.onUploadComplete})
+                                    React.createElement(manywho.component.getByName('file-upload'), uploadAttributes)
                                 ])
                             ])
                         ]),
@@ -236,9 +250,6 @@ permissions and limitations under the License.
 
         onFileTableRowClicked: function (event) {
 
-            if (this.props.isDesignTime)
-                return;
-
             var imageUri = event.currentTarget.lastChild.innerText;
 
             var imageName = event.currentTarget.firstChild.innerText;
@@ -261,30 +272,22 @@ permissions and limitations under the License.
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
 
+            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+                isValid = false;
+            }
+
             var attributes = {
                 id: this.props.id,
                 placeholder: model.hintValue,
                 defaultValue: state.contentValue,
                 maxLength: model.maxSize,
                 cols: model.width,
-                rows: model.height
+                rows: model.height,
+                disabled: !model.isEnabled && 'disabled',
+                required: model.isRequired && '',
+                readOnly: !model.isEditable && ''
+
             };
-
-            if (!model.isEnabled) {
-                attributes.disabled = 'disabled';
-            }
-
-            if (model.isRequired) {
-                attributes.required = '';
-            }
-
-            if (!model.isEditable) {
-                attributes.readOnly = '';
-            }
-
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
-                isValid = false;
-            }
 
             var classNames = [
                 'form-group',

@@ -119,9 +119,6 @@ permissions and limitations under the License.
 
         handleChange: function (e) {
 
-            if (this.props.isDesignTime)
-                return;
-
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.boolean, true)) {
@@ -178,9 +175,6 @@ permissions and limitations under the License.
 
         handleEvent: function () {
 
-            if (this.props.isDesignTime)
-                return true;
-
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -196,30 +190,25 @@ permissions and limitations under the License.
             var contentValue = (state && state.contentValue) || model.contentValue;
 
             var attributes = {
-                type: getInputType(contentType),
+                type: !this.props.isDesignTime ? getInputType(contentType) : 'text',
                 placeholder: model.hintValue,
                 value: contentValue,
-                onChange: this.handleChange,
                 id: this.props.id,
                 maxLength: model.maxSize,
-                size: model.size
+                size: model.size,
+                disabled: (!model.isEnabled || this.props.isDesignTime) && 'disabled',
+                readOnly: !model.isEditable && 'readonly'
             };
 
-            if (!model.isEnabled) {
-                attributes.disabled = 'disabled';
+            if (!this.props.isDesignTime) {
+                attributes = manywho.utils.extend(attributes, { onChange: this.handleChange });
             }
 
-            if (model.isRequired) {
+            if (model.isRequired)
                 attributes.required = '';
-            }
 
-            if (!model.isEditable) {
-                attributes.readOnly = 'readonly';
-            }
-
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+            if (typeof model.isValid !== 'undefined' && model.isValid == false)
                 isValid = false;
-            }
 
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
@@ -253,7 +242,7 @@ permissions and limitations under the License.
 
             } else {
 
-                if (model.hasEvents) {
+                if (model.hasEvents && !this.props.isDesignTime) {
                     attributes.onBlur = this.handleEvent;
                 }
 

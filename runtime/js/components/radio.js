@@ -73,9 +73,6 @@
 
         handleChange: function(e) {
 
-            if (this.props.isDesignTime)
-                return;
-
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -146,31 +143,19 @@
             var options = [];
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-
-            if (this.props.isDesignTime) {
-                state = { error: null, loading: false }
-            }
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
 
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             var attributes = {
-                onClick: this.handleChange
+                required: model.isRequired && 'required',
+                disabled: (!model.isEnabled || !model.isEditable) && 'disabled',
+                multiSelect: model.isMultiSelect
             };
 
-            if (model.isRequired) {
-                attributes.required = 'required';
-            }
-
-            if (!model.isEnabled || !model.isEditable) {
-                attributes.disabled = 'disabled';
-            }
-
-            if (model.isMultiSelect) {
-                attributes.multiSelect = true;
-            }
-
             if (!this.props.isDesignTime) {
+
+                manywho.utils.extend(attributes, { onClick: this.handleChange });
 
                 if (!isEmptyObjectData(model)) {
 
@@ -204,7 +189,7 @@
             else {
 
                 var type = attributes.multiSelect ? 'checkbox' : 'radio';
-                options = []
+                options = [];
 
                 for (var i = 1; i < 4; i++) {
                     options.push(React.DOM.label({ className: type }, [
@@ -217,27 +202,18 @@
 
             var containerClassNames = ['form-group'];
 
-            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || state.error) {
-
+            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || state.error)
                 containerClassNames.push('has-error');
 
-            }
-
-            if (model.isVisible == false) {
-
+            if (model.isVisible == false)
                 containerClassNames.push('hidden');
-
-            }
 
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'radio', this.props.flowKey));
 
             var iconClassNames = ['select-loading-icon'];
 
-            if ((!state.loading || state.error)) {
-
+            if (!state.loading || state.error)
                 iconClassNames.push('hidden');
-
-            }
 
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
