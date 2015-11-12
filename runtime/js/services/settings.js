@@ -103,8 +103,8 @@ manywho.settings = (function (manywho, $) {
 
         initialize: function(custom, handlers) {
 
-            globals = manywho.utils.extend(globals, [custom], true);
-            events = manywho.utils.extend(events, [handlers], true);
+            globals = manywho.utils.extend(globals, custom, true);
+            events = manywho.utils.extend(events, handlers, true);
 
             toLowerCaseKeys(globals);
             toLowerCaseKeys(events);
@@ -150,7 +150,7 @@ manywho.settings = (function (manywho, $) {
 
         getGlobals: function (flowKey) {
 
-            return manywho.utils.extend(globals, [flows[flowKey]]);
+            return manywho.utils.extend(globals, flows[flowKey]);
 
         },
 
