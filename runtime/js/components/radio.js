@@ -25,7 +25,7 @@
 
             var type = attributes.multiSelect ? 'checkbox' : 'radio';
 
-            manywho.utils.extend(optionAttributes, attributes, { type: type, name: developerName, value: item.externalId });
+            manywho.utils.extend(optionAttributes, [attributes, { type: type, name: developerName, value: item.externalId }]);
 
             if (attributes.value == item.externalId) {
 
