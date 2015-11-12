@@ -344,13 +344,14 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
-            window.addEventListener('resize', this.handleResize);
+            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200)
+            window.addEventListener('resize', this.handleResizeDebounced);
 
         },
 
         componentWillUnmount: function () {
 
-            window.removeEventListener('resize', this.handleResize);
+            window.removeEventListener('resize', this.handleResizeDebounced);
 
         },
 
