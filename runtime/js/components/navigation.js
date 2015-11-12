@@ -89,8 +89,6 @@ permissions and limitations under the License.
 
         handleScroll: function(e) {
 
-            console.log('scrolling');
-
             var isFixed = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
 
             if (isFixed && manywho.utils.isEmbedded()) {
@@ -128,8 +126,6 @@ permissions and limitations under the License.
         },
 
         handleResize: function () {
-
-            console.log('resizing');
 
             if (this.refs.navigationBar) {
 
