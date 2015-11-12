@@ -141,6 +141,10 @@ manywho.utils = (function (manywho, $) {
 
         extend: function (mergedObject, objects, isDeep) {
 
+            if (objects.constructor != Array) {
+                objects = [objects];
+            }
+
             if (arguments.length == 2) {
                 mergedObject = extendShallow(mergedObject, objects);
             } else if (arguments.length == 3 && isDeep) {
