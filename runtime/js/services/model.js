@@ -248,13 +248,13 @@ permissions and limitations under the License.
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[flowKey].containers[item.pageContainerId], [item]);
+                    flowModel[flowKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[flowKey].containers[item.pageContainerId], item);
 
                 }, this);
 
                 response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[flowKey].components[item.pageComponentId], [item]);
+                    flowModel[flowKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[flowKey].components[item.pageComponentId], item);
 
                 }, this);
 
