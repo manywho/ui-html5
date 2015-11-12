@@ -34,17 +34,21 @@ permissions and limitations under the License.
 
                     self.editor = editor;
 
-                    editor.addButton('mwimage', {
-                        title: 'Images',
-                        icon: 'image',
-                        onclick: function () {
+                    if (!self.props.isDesignTime) {
 
-                            self.setState({ isImageUploadOpen: true });
-                            self.render();
+                        editor.addButton('mwimage', {
+                            title: 'Images',
+                            icon: 'image',
+                            onclick: function () {
 
-                        }
+                                self.setState({ isImageUploadOpen: true });
+                                self.render();
 
-                    });
+                            }
+
+                        });
+
+                    }
 
                     editor.on('init', function () {
 
@@ -152,7 +156,7 @@ permissions and limitations under the License.
 
         handleChange: function (e) {
 
-            if (this.state.isInitialized && this.editor) {
+            if (this.state.isInitialized && this.editor && !this.props.isDesignTime) {
 
                 var content = this.editor.getContent();
                 var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
@@ -169,6 +173,9 @@ permissions and limitations under the License.
         },
 
         handleEvent: function (e) {
+
+            if (this.props.isDesignTime)
+                return;
 
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
@@ -228,6 +235,9 @@ permissions and limitations under the License.
         },
 
         onFileTableRowClicked: function (event) {
+
+            if (this.props.isDesignTime)
+                return;
 
             var imageUri = event.currentTarget.lastChild.innerText;
 

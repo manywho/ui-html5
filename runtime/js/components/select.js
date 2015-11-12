@@ -58,7 +58,13 @@ permissions and limitations under the License.
             var options = null;
             var value = null;
 
-            if (!manywho.utils.isEmptyObjectData(model)) {
+            if (this.props.isDesignTime) {
+
+                state = { error: null, loading: false }
+
+            }
+
+            if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
 
                 if (state && state.objectData) {
 
@@ -127,11 +133,11 @@ permissions and limitations under the License.
                 React.DOM.div({ className: 'select-wrapper' }, [
                     React.createElement(Select, {
                         multi: model.isMultiSelect,
-                        disabled: !model.isEnabled || !model.isEditable || state.loading,
+                        disabled: !model.isEnabled || !model.isEditable || state.loading || this.props.isDesignTime,
                         placeholder: model.hintValue || 'Please select an option',
                         options: options,
                         value: value,
-                        onChange: this.onChange
+                        onChange: !this.props.isDesignTime && this.onChange
                     }),
                     React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
                 ]),

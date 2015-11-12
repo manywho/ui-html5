@@ -126,13 +126,16 @@ permissions and limitations under the License.
 
         onSearchChanged: function (e) {
 
+            if (this.props.isDesignTime)
+                return;
+
             manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
 
         },
 
         onSearchEnter: function (e) {
 
-            if (e.keyCode == 13) {
+            if (e.keyCode == 13 && !this.props.isDesignTime) {
 
                 e.stopPropagation();
                 this.search();
@@ -142,6 +145,9 @@ permissions and limitations under the License.
         },
 
         search: function () {
+
+            if (this.props.isDesignTime)
+                return;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
@@ -204,7 +210,7 @@ permissions and limitations under the License.
         },
 
         clearSelection: function () {
-            
+
             this.setState({ selectedRows: [] });
         },
 
@@ -361,6 +367,11 @@ permissions and limitations under the License.
 
             var objectData = model.objectData;
 
+            if (this.props.isDesignTime) {
+                state = { error: null, loading: false };
+                objectData = [];
+            }
+
             if (model.objectData && state.objectData) {
 
                 objectData = model.objectData.map(function (modelItem) {
@@ -418,17 +429,18 @@ permissions and limitations under the License.
                     objectData: objectData,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
-                    onOutcome: this.onOutcome,
+                    onOutcome: !this.props.isDesignTime && this.onOutcome,
                     selectedRows: this.state.selectedRows,
-                    onRowClicked: this.props.onRowClicked || this.onRowClicked,
-                    selectAll: this.selectAll.bind(this, objectData),
+                    onRowClicked: !this.props.isDesignTime && (this.props.onRowClicked || this.onRowClicked),
+                    selectAll: !this.props.isDesignTime && this.selectAll.bind(this, objectData),
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
-                    onHeaderClick: this.onHeaderClick,
+                    onHeaderClick:!this.props.isDesignTime &&  this.onHeaderClick,
                     lastSortedBy: this.state.lastSortedBy,
                     sortByOrder: this.state.sortByOrder,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
-                    isValid: isValid
+                    isValid: isValid,
+                    isDesignTime: this.props.isDesignTime
                 });
 
             }

@@ -119,6 +119,9 @@ permissions and limitations under the License.
 
         handleChange: function (e) {
 
+            if (this.props.isDesignTime)
+                return;
+
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.boolean, true)) {
@@ -175,6 +178,9 @@ permissions and limitations under the License.
 
         handleEvent: function () {
 
+            if (this.props.isDesignTime)
+                return true;
+
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
 
         },
@@ -186,11 +192,13 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
+            var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
+            var contentValue = (state && state.contentValue) || model.contentValue;
 
             var attributes = {
-                type: getInputType(model.contentType),
+                type: getInputType(contentType),
                 placeholder: model.hintValue,
-                value: state.contentValue || model.contentValue,
+                value: contentValue,
                 onChange: this.handleChange,
                 id: this.props.id,
                 maxLength: model.maxSize,
@@ -216,14 +224,14 @@ permissions and limitations under the License.
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
                 (model.isVisible == false) ? 'hidden' : '',
-                (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
+                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+            if (contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                if ((typeof state.contentValue == "string" && manywho.utils.isEqual(state.contentValue, "true", true)) || state.contentValue === true) {
+                if ((typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true) {
                     attributes.checked = 'checked';
                 }
 
@@ -251,21 +259,20 @@ permissions and limitations under the License.
 
                 attributes.className = 'form-control ';
 
-                if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+                if (contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
                     attributes.value = this.state.value;
 
                 }
-                else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
+                else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
                     attributes.style = { width: (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, model.maxSize)) - 1;
                     attributes.min = (Math.pow(10, model.maxSize) * -1) + 1;
                     attributes.value = (null != this.state.value && this.state.value)
-                                         || (null != state.contentValue && state.contentValue)
-                                         || (null != model.contentValue && state.contentValue)
+                                         || (null != contentValue && contentValue)
                                          || null;
 
                 }

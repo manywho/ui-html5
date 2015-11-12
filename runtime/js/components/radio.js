@@ -73,6 +73,9 @@
 
         handleChange: function(e) {
 
+            if (this.props.isDesignTime)
+                return;
+
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -145,6 +148,10 @@
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
+            if (this.props.isDesignTime) {
+                state = { error: null, loading: false }
+            }
+
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             var attributes = {
@@ -163,37 +170,54 @@
                 attributes.multiSelect = true;
             }
 
-            if (!isEmptyObjectData(model)) {
+            if (!this.props.isDesignTime) {
 
-                var selectedItems = null;
+                if (!isEmptyObjectData(model)) {
 
-                if (state && state.objectData) {
+                    var selectedItems = null;
 
-                    selectedItems = state.objectData.map(function(item) { return item.externalId });
+                    if (state && state.objectData) {
+
+                        selectedItems = state.objectData.map(function(item) { return item.externalId });
+
+                    }
+                    else {
+
+                        selectedItems = model.objectData.filter(function(item) { return item.isSelected })
+                            .map(function(item) { return item.externalId });
+
+                    }
+
+                    if (selectedItems && !model.isMultiSelect) {
+
+                        attributes.value = selectedItems[0];
+
+                    }
+
+                    options = model.objectData.map(function (item) {
+                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
+                    });
 
                 }
-                else {
 
-                    selectedItems = model.objectData.filter(function(item) { return item.isSelected })
-                        .map(function(item) { return item.externalId });
+            }
+            else {
 
+                var type = attributes.multiSelect ? 'checkbox' : 'radio';
+                options = []
+
+                for (var i = 1; i < 4; i++) {
+                    options.push(React.DOM.label({ className: type }, [
+                                    React.DOM.input({ type: type }),
+                                    'Radio ' + i
+                                ]));
                 }
-
-                if (selectedItems && !model.isMultiSelect) {
-
-                    attributes.value = selectedItems[0];
-
-                }
-
-                options = model.objectData.map(function (item) {
-                    return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
-                });
 
             }
 
             var containerClassNames = ['form-group'];
 
-            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || (state.error)) {
+            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || state.error) {
 
                 containerClassNames.push('has-error');
 
@@ -209,7 +233,7 @@
 
             var iconClassNames = ['select-loading-icon'];
 
-            if (!state.loading || state.error) {
+            if ((!state.loading || state.error)) {
 
                 iconClassNames.push('hidden');
 

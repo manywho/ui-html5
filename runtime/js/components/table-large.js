@@ -124,6 +124,9 @@ permissions and limitations under the License.
 
         onOutcomeClick: function (e, outcome) {
 
+            if (this.props.isDesignTime)
+                return;
+
             var objectDataId = e.currentTarget.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
 
@@ -133,6 +136,9 @@ permissions and limitations under the License.
 
             e.preventDefault();
             e.stopPropagation();
+
+            if (this.props.isDesignTime)
+                return;
 
             if (this.state.currentCellEdit) {
 
@@ -166,7 +172,7 @@ permissions and limitations under the License.
 
         onCellKeyUp: function(e) {
 
-            if (e.keyCode == 13) {
+            if (e.keyCode == 13 && !this.props.isDesignTime) {
 
                 e.preventDefault();
                 e.stopPropagation();
@@ -338,12 +344,14 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Table-Large');
 
+            var isValid = (this.props.model.isValid !== undefined) ? this.props.model.isValid : this.props.isDesignTime && true;
+
             var tableClassNames = [
                 'table',
                 (this.props.model.attributes.borderless && manywho.utils.isEqual(this.props.model.attributes.borderless, "true", true)) ? '' : 'table-bordered',
                 (this.props.model.attributes.striped && manywho.utils.isEqual(this.props.model.attributes.striped, "true", true)) ? 'table-striped' : '',
                 (this.props.isSelectionEnabled) ? 'table-hover' : '',
-                (this.props.model.isValid) ? '' : 'table-invalid'
+                (isValid) ? '' : 'table-invalid'
             ].join(' ');
 
             var rows = [this.renderHeaderRow(this.props.displayColumns)];

@@ -109,13 +109,17 @@ permissions and limitations under the License.
 
         onDrop: function (files) {
 
-            this.setState({ files: files });
-            this.onFileSelected(files);
+            if (!this.props.isDesignTime) {
 
-            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
-            if (model && model.attributes && model.attributes.isAutoUpload) {
+                this.setState({ files: files });
+                this.onFileSelected(files);
 
-                this.onUpload();
+                var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+                if (model && model.attributes && model.attributes.isAutoUpload) {
+
+                    this.onUpload();
+
+                }
 
             }
 

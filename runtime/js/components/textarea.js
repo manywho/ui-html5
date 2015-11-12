@@ -35,12 +35,16 @@ permissions and limitations under the License.
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
 
+            if (this.props.isDesignTime) {
+                state = { contentValue: '' }
+            }
+
             var attributes = {
                 id: this.props.id,
                 placeholder: model.hintValue,
                 value: state.contentValue || '',
                 maxLength: model.maxSize,
-                onChange: this.handleChange,
+                onChange: !this.props.isDesignTime && this.handleChange,
                 cols: model.width,
                 rows: model.height,
                 className: 'form-control'
@@ -58,7 +62,7 @@ permissions and limitations under the License.
                 attributes.required = '';
             }
 
-            if (!model.isEditable) {
+            if (!model.isEditable || this.props.isDesignTime) {
                 attributes.readOnly = 'readonly';
             }
 
