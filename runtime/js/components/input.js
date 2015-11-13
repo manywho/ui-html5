@@ -50,6 +50,11 @@ permissions and limitations under the License.
 
         if (value != null) {
 
+            value = value.replace(/^\s+|\s+$/g, '');
+
+            if (value == '')
+                return value;
+
             var max = (Math.pow(10, maxSize)) - 1;
             var min = (Math.pow(10, maxSize) * -1) + 1;
             var parsedValue = parseFloat(value);
@@ -127,12 +132,12 @@ permissions and limitations under the License.
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
-                    && !manywho.utils.isNullOrWhitespace(e.target.value)) {
+                    && e.target.validity && !e.target.validity.badInput) {
 
                 var value = parseValue(e.target.value, model.maxSize);
 
                 manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
-                this.setState({ value: e.target.value });
+                this.setState({ value: value });
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
@@ -258,8 +263,8 @@ permissions and limitations under the License.
                 else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
                     attributes.style = { width: (15 * model.size) + "px !important" };
-                    attributes.max = (Math.pow(10, model.maxSize)) - 1;
-                    attributes.min = (Math.pow(10, model.maxSize) * -1) + 1;
+                    attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
+                    attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
                     attributes.value = (null != this.state.value && this.state.value)
                                          || (null != contentValue && contentValue)
                                          || null;
