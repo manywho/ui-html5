@@ -142,7 +142,7 @@ manywho.utils = (function (manywho, $) {
         extend: function (mergedObject, objects, isDeep) {
 
             if (!mergedObject)
-                return null;
+                return {};
 
             if (objects) {
                 if (!Array.isArray(objects)) {
