@@ -52,7 +52,7 @@ permissions and limitations under the License.
 
             value = value.replace(/^\s+|\s+$/g, '');
 
-            if (value == '')
+            if (manywho.utils.isNullOrWhitespace(value))
                 return value;
 
             var max = (Math.pow(10, maxSize)) - 1;
