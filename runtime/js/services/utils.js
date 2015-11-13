@@ -141,6 +141,9 @@ manywho.utils = (function (manywho, $) {
 
         extend: function (mergedObject, objects, isDeep) {
 
+            if (!mergedObject)
+                return null;
+
             if (objects) {
                 if (!Array.isArray(objects)) {
                     objects = [objects];
