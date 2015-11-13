@@ -95,7 +95,7 @@ permissions and limitations under the License.
 
     }
 
-    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev) {
+    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev, isDesignTime) {
 
         var footerElements = [];
 
@@ -108,7 +108,7 @@ permissions and limitations under the License.
                     containerClasses: 'pull-right',
                     onNext: onNext,
                     onPrev: onPrev,
-                    isDesignTime: this.props.isDesignTime
+                    isDesignTime: isDesignTime
                 }
             ));
 
@@ -490,7 +490,7 @@ permissions and limitations under the License.
                     fileUpload,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                     content,
-                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
+                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev, this.props.isDesignTime),
                     React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
                 ])
             ]);
