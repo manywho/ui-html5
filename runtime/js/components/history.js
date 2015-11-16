@@ -15,9 +15,7 @@
 
         onClick: function (e) {
 
-            var mapElementId = e.currentTarget.id;
-
-            manywho.model.popHistory(mapElementId, this.props.flowKey);
+            manywho.model.popHistory(e.currentTarget.id, this.props.flowKey);
 
             manywho.engine.navigate(this.props.id, null, e.currentTarget.id, this.props.flowKey);
 
@@ -52,13 +50,13 @@
                             React.DOM.div({ className: 'step-content', dangerouslySetInnerHTML: {__html: step.content || '' } })
                         ]),
                         outcomes.map(function (outcome) {
-                            return self.renderOutcome(outcome, step.selectedOutcome, outcomeWidth);
-                        })
+                            return this.renderOutcome(outcome, step.selectedOutcome, outcomeWidth);
+                        }, this)
                     ]);
 
                 }
 
-            });
+            }, this);
 
         },
 
