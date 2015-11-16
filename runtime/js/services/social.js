@@ -222,8 +222,12 @@ manywho.social = (function (manywho) {
 
         remove: function(flowKey) {
 
-            streams[flowKey] == null;
-            delete streams[flowKey];
+            if (streams[flowKey]) {
+
+                streams[flowKey] == null;
+                delete streams[flowKey];
+
+            }
 
         }
 

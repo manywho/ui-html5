@@ -28,7 +28,7 @@ manywho.settings = (function (manywho, $) {
             select: 250
         },
         collaboration: {
-            uri: 'https://realtime.manywho.com'
+            uri: 'http://localhost:4444'
         },
         platform: {
             uri: ''
@@ -150,7 +150,7 @@ manywho.settings = (function (manywho, $) {
 
         getGlobals: function (flowKey) {
 
-            return manywho.utils.extend(globals, flows[flowKey]);
+            return manywho.utils.extend(globals, flows[flowKey], true);
 
         },
 

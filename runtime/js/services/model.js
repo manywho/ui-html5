@@ -413,19 +413,27 @@ permissions and limitations under the License.
 
         removeNotification: function(flowKey, notification) {
 
-            var index = flowModel[flowKey].notifications.indexOf(notification);
-            flowModel[flowKey].notifications.splice(index, 1);
+            if (flowModel[flowKey]) {
 
-            manywho.engine.render(flowKey);
+                var index = flowModel[flowKey].notifications.indexOf(notification);
+                flowModel[flowKey].notifications.splice(index, 1);
+
+                manywho.engine.render(flowKey);
+
+            }
 
         },
 
         addNotification: function(flowKey, notification) {
 
-            flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
+            if (flowModel[flowKey]) {
 
-            flowModel[flowKey].notifications.push(notification);
-            manywho.engine.render(flowKey);
+                flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
+
+                flowModel[flowKey].notifications.push(notification);
+                manywho.engine.render(flowKey);
+
+            }
 
         },
 

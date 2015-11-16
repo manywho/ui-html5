@@ -355,7 +355,7 @@ manywho.utils = (function (manywho, $) {
 
         removeFlowFromDOM: function(flowKey) {
 
-            var rootElement = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'))
+            var rootElement = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
 
             for (var i = 0, len = rootElement.children.length; i < len; i++) {
 
@@ -437,6 +437,18 @@ manywho.utils = (function (manywho, $) {
         			func.apply(context, args);
         		}
         	};
+        },
+
+        removeFlow: function (flowKey) {
+
+            manywho.model.deleteFlowModel(flowKey);
+            manywho.settings.remove(flowKey);
+            manywho.state.remove(flowKey);
+            manywho.social.remove(flowKey);
+            manywho.collaboration.remove(flowKey);
+            manywho.callbacks.remove(flowKey);
+            manywho.utils.removeFlowFromDOM(flowKey);
+
         }
 
     }

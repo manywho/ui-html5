@@ -69,6 +69,8 @@ manywho.collaboration = (function (manywho) {
 
         manywho.log.info(data.user + ' has left ' + data.flowKey);
 
+        var stateId = data.parentStateId || data.stateId;
+
         manywho.model.addNotification(rooms[data.stateId].flowKey, {
             message: data.user + ' has left',
             position: 'right',
@@ -109,6 +111,59 @@ manywho.collaboration = (function (manywho) {
 
     }
 
+    function onFlowOut(data) {
+
+        manywho.log.info('joining subflow ' + data.subStateId);
+
+        var tenantId = manywho.utils.extractTenantId(data.parentFlowKey);
+        var element = manywho.utils.extractElement(data.parentFlowKey);
+        var parentFlowId = manywho.utils.extractFlowId(data.parentFlowKey);
+        var parentFlowVersionId = manywho.utils.extractFlowVersionId(data.parentFlowKey);
+        var parentStateId = manywho.utils.extractStateId(data.parentFlowKey);
+
+        var flowKey = manywho.utils.getFlowKey(tenantId, parentFlowId, parentFlowVersionId, null, element);
+        var stateKey = manywho.utils.getFlowKey(tenantId, null, null, parentStateId, element);
+
+        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+        manywho.engine.render(flowKey);
+
+        manywho.utils.removeFlow(flowKey);
+        manywho.collaboration.initialize(true, data.subFlowKey);
+
+        var flowId = manywho.utils.extractFlowId(data.subFlowKey);
+        var flowVersionId = manywho.utils.extractFlowVersionId(data.subFlowKey);
+        var stateId = manywho.utils.extractStateId(data.subFlowKey);
+
+        // Re-join the flow here so that we sync with the latest state from the manywho server
+        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, null, manywho.settings.flow(null, data.parentFlowKey)).then(function () {
+
+            socket.emit('getValues', data);
+
+        });
+
+    }
+
+    function onReturnToParent(data) {
+
+        manywho.log.info('returning to parent ' + data.parentStateId);
+
+        var flowKey = rooms[data.parentStateId].flowKey;
+
+        var tenantId = manywho.utils.extractTenantId(flowKey);
+        var flowId = manywho.utils.extractFlowId(flowKey);
+        var flowVersionId = manywho.utils.extractFlowVersionId(flowKey);
+        var stateId = manywho.utils.extractStateId(flowKey);
+        var element = manywho.utils.extractElement(flowKey);
+
+        // Re-join the flow here so that we sync with the latest state from the manywho server
+        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, manywho.state.getAuthenticationToken(flowKey), manywho.settings.flow(null, flowKey)).then(function () {
+
+            socket.emit('getValues', data);
+
+        });
+
+    }
+
     function onSync(data) {
 
         manywho.log.info('syncing ' + data.stateId);
@@ -118,8 +173,10 @@ manywho.collaboration = (function (manywho) {
 
     function onGetValues(data) {
 
-        manywho.log.info('get values from: ' + data.owner + ' in ' + data.stateId);
-        socket.emit('setValues', { stateId: data.stateId, id: data.id, components: manywho.state.getComponents(rooms[data.stateId].flowKey) });
+        var stateId = data.subStateId || data.stateId;
+
+        manywho.log.info('get values from: ' + data.owner + ' in ' + stateId);
+        socket.emit('setValues', { stateId: stateId, id: data.id, components: manywho.state.getComponents(rooms[stateId].flowKey) });
 
     }
 
@@ -160,6 +217,8 @@ manywho.collaboration = (function (manywho) {
                 socket.on('left', onLeft);
                 socket.on('change', onChange);
                 socket.on('move', onMove);
+                socket.on('flowOut', onFlowOut);
+                socket.on('returnToParent', onReturnToParent);
                 socket.on('sync', onSync);
                 socket.on('getValues', onGetValues);
                 socket.on('setValues', onSetValues);
@@ -244,6 +303,18 @@ manywho.collaboration = (function (manywho) {
         move: function (flowKey) {
 
             emit(flowKey, 'move');
+
+        },
+
+        flowOut: function (flowKey, stateId, subFlowKey) {
+
+            emit(flowKey, 'flowOut', { subStateId: stateId, parentFlowKey: flowKey, subFlowKey: subFlowKey });
+
+        },
+
+        returnToParent: function (flowKey, parentStateId) {
+
+            emit(flowKey, 'returnToParent', { parentStateId: parentStateId, stateId: manywho.utils.extractStateId(flowKey) });
 
         },
 
