@@ -42,15 +42,21 @@ permissions and limitations under the License.
                 maxLength: model.maxSize,
                 cols: model.width,
                 rows: model.height,
-                className: 'form-control',
-                disabled: !model.isEnabled && 'disabled',
-                required: model.isRequired && '',
-                readOnly: (!model.isEditable || this.props.isDesignTime) && 'readonly'
+                className: 'form-control'
             };
+
+            if (!model.isEnabled)
+                attributes.disabled = 'disabled';
+
+            if (model.isRequired)
+                attributes.required = '';
+
+            if (!model.isEditable)
+                attributes.readOnly = 'readonly';
 
             if (!this.props.isDesignTime) {
 
-                attributes = manywho.utils.extend(attributes, { onChange: !this.props.isDesignTime && this.handleChange });
+                attributes = manywho.utils.extend(attributes, { onChange: this.handleChange });
 
                 if (model.hasEvents) {
                     attributes.onBlur = this.handleEvent;

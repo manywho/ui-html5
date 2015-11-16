@@ -282,12 +282,17 @@ permissions and limitations under the License.
                 defaultValue: state.contentValue,
                 maxLength: model.maxSize,
                 cols: model.width,
-                rows: model.height,
-                disabled: !model.isEnabled && 'disabled',
-                required: model.isRequired && '',
-                readOnly: !model.isEditable && ''
-
+                rows: model.height
             };
+
+            if (!model.isEnabled)
+                attributes.disabled = 'disabled';
+
+            if (model.isRequired)
+                attributes.required = '';
+
+            if (!model.isEditable)
+                attributes.readOnly = 'readonly';
 
             var classNames = [
                 'form-group',
