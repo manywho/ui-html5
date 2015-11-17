@@ -182,7 +182,8 @@ permissions and limitations under the License.
                 var classNames = [
                     'navbar navbar-default',
                     (manywho.settings.global('navigation.isWizard', this.props.flowKey, true)) && 'navbar-wizard',
-                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
+                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : '',
+                    (manywho.settings.global('history'), this.props.flowKey) ? 'nav-history' : ''
                 ];
 
                 var inlineStyles = null;

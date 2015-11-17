@@ -217,7 +217,7 @@ permissions and limitations under the License.
 
                 }
 
-                if (manywho.settings.global('history', flowKey)) {
+                if (manywho.settings.global('history', flowKey) && manywho.utils.isEqual(engineInvokeResponse.invokeType, 'FORWARD', true)) {
 
                     manywho.model.setHistory(engineInvokeResponse, flowKey);
 
