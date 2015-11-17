@@ -114,7 +114,7 @@ manywho.settings = (function (manywho, $) {
 
         initializeFlow: function(settings, flowKey) {
 
-            flows[flowKey] = settings;
+            flows[flowKey] = manywho.utils.extend({}, [globals, settings], true);
             toLowerCaseKeys(flows[flowKey]);
 
         },
