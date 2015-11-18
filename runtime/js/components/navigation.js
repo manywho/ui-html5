@@ -83,7 +83,7 @@ permissions and limitations under the License.
 
             }
 
-            manywho.engine.navigate(this.props.id, e.target.id, this.props.flowKey);
+            manywho.engine.navigate(this.props.id, e.target.id, null, this.props.flowKey);
 
         },
 
@@ -110,15 +110,18 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
-            window.addEventListener('scroll', this.handleScroll);
-            window.addEventListener('resize', this.handleResize);
+            this.handleScrollDebounced = manywho.utils.debounce(this.handleScroll, 100);
+            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200);
+
+            window.addEventListener('scroll', this.handleScrollDebounced);
+            window.addEventListener('resize', this.handleResizeDebounced);
 
         },
 
         componentWillUnmount: function () {
 
-            window.removeEventListener('scroll', this.handleScroll);
-            window.removeEventListener('resize', this.handleResize);
+            window.removeEventListener('scroll', this.handleScrollDebounced);
+            window.removeEventListener('resize', this.handleResizeDebounced);
 
         },
 
@@ -179,7 +182,8 @@ permissions and limitations under the License.
                 var classNames = [
                     'navbar navbar-default',
                     (manywho.settings.global('navigation.isWizard', this.props.flowKey, true)) && 'navbar-wizard',
-                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : ''
+                    (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'nav-debug' : '',
+                    (manywho.settings.global('history', this.props.flowKey)) ? 'nav-history' : ''
                 ];
 
                 var inlineStyles = null;

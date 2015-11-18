@@ -39,7 +39,7 @@ permissions and limitations under the License.
 
     }
 
-    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search) {
+    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isDesignTime) {
 
         var headerElements = [];
         var searchElement = null;
@@ -48,10 +48,15 @@ permissions and limitations under the License.
 
         if (isSearchEnabled) {
 
+            var buttonAttributes = { className: 'btn btn-default', onClick: search };
+
+            if (isDesignTime)
+                buttonAttributes.disabled = 'disabled';
+
             searchElement = React.DOM.div({ className: 'input-group table-search' }, [
                     React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
-                        React.DOM.button({ className: 'btn btn-default', onClick: search },
+                        React.DOM.button(buttonAttributes,
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
                         )
                     )
@@ -90,7 +95,7 @@ permissions and limitations under the License.
 
     }
 
-    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev) {
+    function renderFooter(pageIndex, hasMoreResults, onNext, onPrev, isDesignTime) {
 
         var footerElements = [];
 
@@ -102,7 +107,8 @@ permissions and limitations under the License.
                     hasMoreResults: hasMoreResults,
                     containerClasses: 'pull-right',
                     onNext: onNext,
-                    onPrev: onPrev
+                    onPrev: onPrev,
+                    isDesignTime: isDesignTime
                 }
             ));
 
@@ -126,13 +132,16 @@ permissions and limitations under the License.
 
         onSearchChanged: function (e) {
 
+            if (this.props.isDesignTime)
+                return;
+
             manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
 
         },
 
         onSearchEnter: function (e) {
 
-            if (e.keyCode == 13) {
+            if (e.keyCode == 13 && !this.props.isDesignTime) {
 
                 e.stopPropagation();
                 this.search();
@@ -142,6 +151,9 @@ permissions and limitations under the License.
         },
 
         search: function () {
+
+            if (this.props.isDesignTime)
+                return;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
@@ -204,7 +216,7 @@ permissions and limitations under the License.
         },
 
         clearSelection: function () {
-            
+
             this.setState({ selectedRows: [] });
         },
 
@@ -338,13 +350,14 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
-            window.addEventListener('resize', this.handleResize);
+            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200)
+            window.addEventListener('resize', this.handleResizeDebounced);
 
         },
 
         componentWillUnmount: function () {
 
-            window.removeEventListener('resize', this.handleResize);
+            window.removeEventListener('resize', this.handleResizeDebounced);
 
         },
 
@@ -355,11 +368,11 @@ permissions and limitations under the License.
             var isValid = true;
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
 
             this.outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-            var objectData = model.objectData;
+            var objectData = this.props.isDesignTime ? [] : model.objectData;
 
             if (model.objectData && state.objectData) {
 
@@ -412,24 +425,32 @@ permissions and limitations under the License.
             }
             else {
 
-                content = React.createElement(tableComponent, {
+                var contentAttributes = {
                     id: this.props.id,
                     model: model,
                     objectData: objectData,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
-                    onOutcome: this.onOutcome,
                     selectedRows: this.state.selectedRows,
-                    onRowClicked: this.props.onRowClicked || this.onRowClicked,
-                    selectAll: this.selectAll.bind(this, objectData),
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
-                    onHeaderClick: this.onHeaderClick,
                     lastSortedBy: this.state.lastSortedBy,
                     sortByOrder: this.state.sortByOrder,
                     isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
-                    isValid: isValid
-                });
+                    isValid: isValid,
+                    isDesignTime: this.props.isDesignTime
+                };
+
+                if (!this.props.isDesignTime) {
+                    contentAttributes = manywho.utils.extend(contentAttributes, {
+                        onOutcome: this.onOutcome,
+                        onRowClicked: (this.props.onRowClicked || this.onRowClicked),
+                        selectAll: this.selectAll.bind(this, objectData),
+                        onHeaderClick: this.onHeaderClick
+                    })
+                }
+
+                content = React.createElement(tableComponent, contentAttributes);
 
             }
 
@@ -469,7 +490,7 @@ permissions and limitations under the License.
                     fileUpload,
                     renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
                     content,
-                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev),
+                    renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev, this.props.isDesignTime),
                     React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
                 ])
             ]);

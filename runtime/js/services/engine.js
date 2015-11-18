@@ -401,6 +401,12 @@ manywho.engine = (function (manywho) {
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var moveResponse = null;
 
+        if (manywho.settings.global('history', flowKey)) {
+
+            manywho.model.setHistorySelectedOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
+
+        }
+
         return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
@@ -645,7 +651,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        navigate: function(navigationId, navigationElementId, flowKey) {
+        navigate: function(navigationId, navigationElementId, mapElementId, flowKey) {
 
             manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.navigating') }, flowKey);
             this.render(flowKey);
@@ -654,6 +660,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 navigationId,
                 navigationElementId,
+                mapElementId,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey)
@@ -860,6 +867,13 @@ manywho.engine = (function (manywho) {
         render: function (flowKey) {
 
             var container = document.getElementById(flowKey);
+
+            if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal-standalone', true)) {
+
+                container = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
+
+            }
+
             React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
 
         }

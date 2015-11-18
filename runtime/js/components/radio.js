@@ -143,77 +143,77 @@
             var options = [];
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
 
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             var attributes = {
-                onClick: this.handleChange
+                required: model.isRequired && 'required',
+                disabled: (!model.isEnabled || !model.isEditable) && 'disabled',
+                multiSelect: model.isMultiSelect
             };
 
-            if (model.isRequired) {
-                attributes.required = 'required';
-            }
+            if (!this.props.isDesignTime) {
 
-            if (!model.isEnabled || !model.isEditable) {
-                attributes.disabled = 'disabled';
-            }
+                manywho.utils.extend(attributes, { onClick: this.handleChange });
 
-            if (model.isMultiSelect) {
-                attributes.multiSelect = true;
-            }
+                if (!isEmptyObjectData(model)) {
 
-            if (!isEmptyObjectData(model)) {
+                    var selectedItems = null;
 
-                var selectedItems = null;
+                    if (state && state.objectData) {
 
-                if (state && state.objectData) {
+                        selectedItems = state.objectData.map(function(item) { return item.externalId });
 
-                    selectedItems = state.objectData.map(function(item) { return item.externalId });
+                    }
+                    else {
 
-                }
-                else {
+                        selectedItems = model.objectData.filter(function(item) { return item.isSelected })
+                            .map(function(item) { return item.externalId });
 
-                    selectedItems = model.objectData.filter(function(item) { return item.isSelected })
-                        .map(function(item) { return item.externalId });
+                    }
 
-                }
+                    if (selectedItems && !model.isMultiSelect) {
 
-                if (selectedItems && !model.isMultiSelect) {
+                        attributes.value = selectedItems[0];
 
-                    attributes.value = selectedItems[0];
+                    }
+
+                    options = model.objectData.map(function (item) {
+                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
+                    });
 
                 }
 
-                options = model.objectData.map(function (item) {
-                    return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
-                });
+            }
+            else {
+
+                var type = attributes.multiSelect ? 'checkbox' : 'radio';
+                options = [];
+
+                for (var i = 1; i < 4; i++) {
+                    options.push(React.DOM.label({ className: type }, [
+                                    React.DOM.input({ type: type }),
+                                    'Radio ' + i
+                                ]));
+                }
 
             }
 
             var containerClassNames = ['form-group'];
 
-            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || (state.error)) {
-
+            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || state.error)
                 containerClassNames.push('has-error');
 
-            }
-
-            if (model.isVisible == false) {
-
+            if (model.isVisible == false)
                 containerClassNames.push('hidden');
-
-            }
 
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'radio', this.props.flowKey));
 
             var iconClassNames = ['select-loading-icon'];
 
-            if (!state.loading || state.error) {
-
+            if (!state.loading || state.error)
                 iconClassNames.push('hidden');
-
-            }
 
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [

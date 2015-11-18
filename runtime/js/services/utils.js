@@ -33,16 +33,24 @@ manywho.utils = (function (manywho, $) {
 
             try {
 
-                if (object[key].constructor == Object) {
-                    mergedObject[key] = extendDeep(mergedObject[key], object[key]);
-                } else if (object[key].constructor == Array) {
+                if (Array.isArray(object[key])) {
+
                     mergedObject[key] = extendArray(mergedObject[key] || [], object[key]);
+
+                }else if (object[key].constructor == Object) {
+
+                    mergedObject[key] = extendDeep(mergedObject[key], object[key]);
+
                 } else if (object.hasOwnProperty(key)) {
+
                     mergedObject[key] = object[key];
+
                 }
 
             } catch (e) {
+
                 mergedObject[key] = object[key];
+
             }
 
         }
@@ -133,12 +141,21 @@ manywho.utils = (function (manywho, $) {
 
         extend: function (mergedObject, objects, isDeep) {
 
-            if (arguments.length == 2) {
-                mergedObject = extendShallow(mergedObject, objects);
-            } else if (arguments.length == 3 && isDeep) {
-                objects.forEach(function (object) {
-                    mergedObject = extendDeep(mergedObject, object);
-                });
+            if (!mergedObject)
+                return {};
+
+            if (objects) {
+                if (!Array.isArray(objects)) {
+                    objects = [objects];
+                }
+
+                if (arguments.length == 2) {
+                    mergedObject = extendShallow(mergedObject, objects);
+                } else if (arguments.length == 3 && isDeep) {
+                    objects.forEach(function (object) {
+                        mergedObject = extendDeep(mergedObject, object);
+                    });
+                }
             }
 
             return mergedObject;
@@ -399,6 +416,27 @@ manywho.utils = (function (manywho, $) {
 
             return true;
 
+        },
+
+        // Stolen from: https://github.com/johndugan/javascript-debounce/blob/master/debounce.js
+        debounce: function(func, wait, immediate) {
+        	var timeout;
+        	return function() {
+        		var context = this,
+        			args = arguments;
+        		var later = function() {
+        			timeout = null;
+        			if ( !immediate ) {
+        				func.apply(context, args);
+        			}
+        		};
+        		var callNow = immediate && !timeout;
+        		clearTimeout(timeout);
+        		timeout = setTimeout(later, wait || 200);
+        		if ( callNow ) {
+        			func.apply(context, args);
+        		}
+        	};
         }
 
     }

@@ -53,12 +53,20 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Select: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
             var options = null;
             var value = null;
 
-            if (!manywho.utils.isEmptyObjectData(model)) {
+            var selectAttributes = {
+                multi: model.isMultiSelect,
+                disabled: !model.isEnabled || !model.isEditable || state.loading || this.props.isDesignTime,
+                placeholder: model.hintValue || 'Please select an option'
+            };
+
+            if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
+
+                selectAttributes = manywho.utils.extend(selectAttributes, { onChange: this.onChange });
 
                 if (state && state.objectData) {
 
@@ -93,6 +101,10 @@ permissions and limitations under the License.
 
                 }
 
+                selectAttributes.options = options;
+
+                selectAttributes.value = value;
+
             }
 
             var containerClassNames = ['form-group'];
@@ -125,14 +137,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.div({ className: 'select-wrapper' }, [
-                    React.createElement(Select, {
-                        multi: model.isMultiSelect,
-                        disabled: !model.isEnabled || !model.isEditable || state.loading,
-                        placeholder: model.hintValue || 'Please select an option',
-                        options: options,
-                        value: value,
-                        onChange: this.onChange
-                    }),
+                    React.createElement(Select, selectAttributes),
                     React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),

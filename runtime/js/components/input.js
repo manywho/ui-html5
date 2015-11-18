@@ -50,6 +50,11 @@ permissions and limitations under the License.
 
         if (value != null) {
 
+            value = value.replace(/^\s+|\s+$/g, '');
+
+            if (manywho.utils.isNullOrWhitespace(value))
+                return value;
+
             var max = (Math.pow(10, maxSize)) - 1;
             var min = (Math.pow(10, maxSize) * -1) + 1;
             var parsedValue = parseFloat(value);
@@ -127,12 +132,12 @@ permissions and limitations under the License.
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
-                    && !manywho.utils.isNullOrWhitespace(e.target.value)) {
+                    && e.target.validity && !e.target.validity.badInput) {
 
                 var value = parseValue(e.target.value, model.maxSize);
 
                 manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
-                this.setState({ value: e.target.value });
+                this.setState({ value: value });
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
@@ -186,44 +191,48 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
+            var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
+            var contentValue = (state && state.contentValue) || model.contentValue;
 
             var attributes = {
-                type: getInputType(model.contentType),
+                type: !this.props.isDesignTime ? getInputType(contentType) : 'text',
                 placeholder: model.hintValue,
-                value: state.contentValue || model.contentValue,
-                onChange: this.handleChange,
+                value: contentValue,
                 id: this.props.id,
                 maxLength: model.maxSize,
                 size: model.size
             };
 
-            if (!model.isEnabled) {
-                attributes.disabled = 'disabled';
-            }
-
-            if (model.isRequired) {
-                attributes.required = '';
-            }
-
-            if (!model.isEditable) {
+            if (!model.isEditable)
                 attributes.readOnly = 'readonly';
+
+            if (!this.props.isDesignTime) {
+
+                attributes = manywho.utils.extend(attributes, { onChange: this.handleChange });
+
+            } else if (!model.isEnabled) {
+
+                attributes.disabled = 'disabled';
+
             }
 
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
+            if (model.isRequired)
+                attributes.required = '';
+
+            if (typeof model.isValid !== 'undefined' && model.isValid == false)
                 isValid = false;
-            }
 
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
                 (model.isVisible == false) ? 'hidden' : '',
-                (manywho.utils.isEqual(model.contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
+                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
 
-            if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+            if (contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                if ((typeof state.contentValue == "string" && manywho.utils.isEqual(state.contentValue, "true", true)) || state.contentValue === true) {
+                if ((typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true) {
                     attributes.checked = 'checked';
                 }
 
@@ -245,27 +254,26 @@ permissions and limitations under the License.
 
             } else {
 
-                if (model.hasEvents) {
+                if (model.hasEvents && !this.props.isDesignTime) {
                     attributes.onBlur = this.handleEvent;
                 }
 
                 attributes.className = 'form-control ';
 
-                if (model.contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
+                if (contentType.toUpperCase() == manywho.component.contentTypes.datetime) {
 
                     attributes.className += 'datepicker';
                     attributes.ref = 'datepicker';
                     attributes.value = this.state.value;
 
                 }
-                else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
+                else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
                     attributes.style = { width: (15 * model.size) + "px !important" };
-                    attributes.max = (Math.pow(10, model.maxSize)) - 1;
-                    attributes.min = (Math.pow(10, model.maxSize) * -1) + 1;
+                    attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
+                    attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
                     attributes.value = (null != this.state.value && this.state.value)
-                                         || (null != state.contentValue && state.contentValue)
-                                         || (null != model.contentValue && state.contentValue)
+                                         || (null != contentValue && contentValue)
                                          || null;
 
                 }

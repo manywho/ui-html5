@@ -18,18 +18,14 @@ permissions and limitations under the License.
             manywho.log.info("Rendering Pagination");
             
             var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev };
-            if (this.props.pageIndex <= 1) {
 
+            if (this.props.pageIndex <= 1 || this.props.isDeisgnTime)
                 previousAttributes.disabled = 'disabled';
 
-            }
-
             var nextAttributes = { className: 'btn btn-default', onClick: this.props.onNext };
-            if (!this.props.hasMoreResults) {
 
+            if (!this.props.hasMoreResults || this.props.isDeisgnTime)
                 nextAttributes.disabled = 'disabled';
-
-            }
 
             return React.DOM.div({ className: this.props.containerClasses }, [
                 React.DOM.button(previousAttributes,

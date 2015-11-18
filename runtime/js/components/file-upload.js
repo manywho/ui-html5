@@ -109,13 +109,17 @@ permissions and limitations under the License.
 
         onDrop: function (files) {
 
-            this.setState({ files: files });
-            this.onFileSelected(files);
+            if (!this.props.isDesignTime) {
 
-            var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
-            if (model && model.attributes && model.attributes.isAutoUpload) {
+                this.setState({ files: files });
+                this.onFileSelected(files);
 
-                this.onUpload();
+                var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+                if (model && model.attributes && model.attributes.isAutoUpload) {
+
+                    this.onUpload();
+
+                }
 
             }
 
@@ -151,15 +155,10 @@ permissions and limitations under the License.
             var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
 
             var progress = (this.state.progress || 0) + '%';
-            var isMultiple = this.props.multiple;
             var isAutoUpload = false;
 
-            if (model) {
-
-                isMultiple = model.multiple;
+            if (model)
                 isAutoUpload = model.attributes && model.attributes.isAutoUpload;
-
-            }
 
             var uploadClasses = ['btn', 'btn-primary'];
             var inputClasses = ['form-control', 'filenames'];
@@ -173,33 +172,39 @@ permissions and limitations under the License.
 
             }
 
-            if (!this.props.isUploadVisible) {
-
+            if (!this.props.isUploadVisible)
                 uploadClasses.push('hidden');
 
-            }
-
-            if (this.state.isUploadComplete) {
-
+            if (this.state.isUploadComplete)
                 progressClasses.push('progress-bar-success');
 
-            }
-
-            if (model.isVisible == false) {
-
+            if (model.isVisible == false)
                 componentClasses.push('hidden');
 
+            var dropzoneAttributes = {
+                ref: 'upload',
+                multiple: (null != this.props.multiple) ? this.props.multiple : model.multiple,
+                className: 'dropzone'
+            };
+
+            var buttonAttributes = {
+                className: uploadClasses.join(' '),
+                disabled: this.state.isUploadDisabled || !this.state.isFileSelected || this.props.isDesignTime
+            };
+
+            if (!this.props.isDesignTime) {
+                dropzoneAttributes = manywho.utils.extend(dropzoneAttributes, { onDrop: this.onDrop });
             }
 
             return React.DOM.div({ className: componentClasses.join(' ') }, [
                 React.DOM.div({ className: 'clearfix' }, [
-                    React.createElement(Dropzone, { onDrop: this.onDrop, ref: 'upload', multiple: isMultiple, className: 'dropzone' }, [
+                    React.createElement(Dropzone, dropzoneAttributes, [
                         React.DOM.div(null, 'Drop files here, or click to select files')
                     ]),
                     React.DOM.div({ className: 'input-group ' + ((isAutoUpload) ? 'hidden' : '') }, [
                         React.DOM.input({ type: "text", className: inputClasses.join(' '), readOnly: true, value: this.state.fileNames.join(' ') }),
                         React.DOM.span({ className: 'input-group-btn'},
-                            React.DOM.button({ className: uploadClasses.join(' '), disabled: this.state.isUploadDisabled || !this.state.isFileSelected, onClick: this.onUpload }, this.props.uploadCaption)
+                            React.DOM.button(buttonAttributes, this.props.uploadCaption)
                         )
                     ])
                 ]),

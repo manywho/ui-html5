@@ -54,7 +54,11 @@ manywho.callbacks = (function (manywho) {
 
                     item.execute.apply(undefined, [item].concat(item.args || [], args));
 
-                    callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);
+                    if (callbacks[flowKey]) {
+
+                        callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);
+
+                    }
 
                 })
 

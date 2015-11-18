@@ -68,6 +68,6 @@ permissions and limitations under the License.
 
     });
 
-    manywho.component.register("modal", modal);
+    manywho.component.register("modal", modal, ["modal-standalone"]);
 
 }(manywho));

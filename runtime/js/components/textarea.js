@@ -32,7 +32,7 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Textarea: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey);
             var isValid = true;
 
             var attributes = {
@@ -40,26 +40,27 @@ permissions and limitations under the License.
                 placeholder: model.hintValue,
                 value: state.contentValue || '',
                 maxLength: model.maxSize,
-                onChange: this.handleChange,
                 cols: model.width,
                 rows: model.height,
                 className: 'form-control'
             };
 
-            if (model.hasEvents) {
-                attributes.onBlur = this.handleEvent;
-            }
-
-            if (!model.isEnabled) {
+            if (!model.isEnabled)
                 attributes.disabled = 'disabled';
-            }
 
-            if (model.isRequired) {
+            if (model.isRequired)
                 attributes.required = '';
-            }
 
-            if (!model.isEditable) {
+            if (!model.isEditable)
                 attributes.readOnly = 'readonly';
+
+            if (!this.props.isDesignTime) {
+
+                attributes = manywho.utils.extend(attributes, { onChange: this.handleChange });
+
+                if (model.hasEvents) {
+                    attributes.onBlur = this.handleEvent;
+                }
             }
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {

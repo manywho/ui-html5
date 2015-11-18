@@ -30,12 +30,18 @@ permissions and limitations under the License.
 
         onOutcomeClick: function(e, outcome) {
 
+            if (this.props.isDesignTime)
+                return;
+
             var objectDataId = e.target.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
 
         },
 
         onItemClick: function(e) {
+
+            if (this.props.isDesignTime)
+                return;
 
             var objectDataId = e.currentTarget.getAttribute('data-item');
             var outcomeId = e.currentTarget.getAttribute('data-outcome');
@@ -169,9 +175,11 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Table-Small');
 
+            var isValid = (this.props.model.isValid !== undefined) ? this.props.model.isValid : this.props.isDesignTime && true;
+
             var classNames = [
                 'list-group',
-                (this.props.model.isValid) ? '' : 'table-invalid'
+                (isValid) ? '' : 'table-invalid'
             ].join(' ');
 
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);

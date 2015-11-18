@@ -57,21 +57,29 @@ permissions and limitations under the License.
 
         componentDidMount: function() {
 
-            clearActivePanes(this.refs.group.getDOMNode());
+            if (this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
 
-            this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+                clearActivePanes(this.refs.group.getDOMNode());
 
-            this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+
+                this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+
+            }
 
         },
 
         componentDidUpdate: function() {
 
-            clearActivePanes(this.refs.group.getDOMNode());
+            if (this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
 
-            this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+                clearActivePanes(this.refs.group.getDOMNode());
 
-            this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+
+                this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+                
+            }
 
         },
 
