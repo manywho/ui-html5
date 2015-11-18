@@ -73,7 +73,9 @@ manywho.state = (function (manywho) {
 
         refreshComponents: function(models, flowKey) {
 
-            components[flowKey] = {};
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            components[lookUpKey] = {};
 
             for (id in models) {
 
@@ -90,7 +92,7 @@ manywho.state = (function (manywho) {
 
                 }
 
-                components[flowKey][id] = {
+                components[lookUpKey][id] = {
                     contentValue: models[id].contentValue || null,
                     objectData: selectedObjectData || null
                 }
@@ -101,7 +103,9 @@ manywho.state = (function (manywho) {
 
         getLocation: function (flowKey) {
 
-            return location[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return location[lookUpKey];
 
         },
 
@@ -109,13 +113,15 @@ manywho.state = (function (manywho) {
 
             if ("geolocation" in navigator && manywho.settings.global('trackLocation', flowKey, false)) {
 
+                var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
                 navigator.geolocation.getCurrentPosition(function (position) {
 
                     if (position != null && position.coords != null) {
 
                         var nowTime = moment();
 
-                        location[flowKey] = {
+                        location[lookUpKey] = {
                             latitude: manywho.utils.getNumber(position.coords.latitude),
                             longitude: manywho.utils.getNumber(position.coords.longitude),
                             accuracy: manywho.utils.getNumber(position.coords.accuracy),
@@ -137,23 +143,29 @@ manywho.state = (function (manywho) {
 
         getComponent: function(id, flowKey) {
 
-            return (components[flowKey] || {})[id];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return (components[lookUpKey] || {})[id];
 
         },
 
         getComponents: function(flowKey) {
 
-            return components[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return components[lookUpKey];
 
         },
 
         setComponent: function(id, values, flowKey, push) {
 
-            components[flowKey][id] = manywho.utils.extend(components[flowKey][id], values);
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            components[lookUpKey][id] = manywho.utils.extend(components[lookUpKey][id], values);
 
             if (values != null) {
 
-                components[flowKey][id].objectData = values.objectData;
+                components[lookUpKey][id].objectData = values.objectData;
 
             }
 
@@ -165,26 +177,30 @@ manywho.state = (function (manywho) {
 
         setComponents: function (value, flowKey) {
 
-            components[flowKey] = value;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            components[lookUpKey] = value;
 
         },
 
         getPageComponentInputResponseRequests: function(flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             var pageComponentInputResponseRequests = null;
 
-            if (components[flowKey] != null) {
+            if (components[lookUpKey] != null) {
 
                 pageComponentInputResponseRequests = [];
 
-                for (id in components[flowKey]) {
+                for (id in components[lookUpKey]) {
 
                     if (guidRegex.test(id)) {
 
                         pageComponentInputResponseRequests.push({
                             pageComponentId: id,
-                            contentValue: components[flowKey][id].contentValue,
-                            objectData: components[flowKey][id].objectData
+                            contentValue: components[lookUpKey][id].contentValue,
+                            objectData: components[lookUpKey][id].objectData
                         });
 
                     }
@@ -199,7 +215,9 @@ manywho.state = (function (manywho) {
 
         setState: function(id, token, mapElementId, flowKey) {
 
-            state[flowKey] = {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            state[lookUpKey] = {
                 id: id,
                 token: token,
                 currentMapElementId: mapElementId
@@ -209,31 +227,41 @@ manywho.state = (function (manywho) {
 
         getState: function(flowKey) {
 
-            return state[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return state[lookUpKey];
 
         },
 
         setAuthenticationToken: function (token, flowKey) {
 
-            authenticationToken[flowKey] = token;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            authenticationToken[lookUpKey] = token;
 
         },
 
         getAuthenticationToken: function (flowKey) {
 
-            return authenticationToken[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return authenticationToken[lookUpKey];
 
         },
 
         getSessionData: function (flowKey) {
 
-            return sessionId[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return sessionId[lookUpKey];
 
         },
 
         setSessionData: function (sessionID, sessionUrl, flowKey) {
 
-            sessionId[flowKey] = {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            sessionId[lookUpKey] = {
                 id: sessionID,
                 url: sessionUrl
             };
@@ -242,35 +270,39 @@ manywho.state = (function (manywho) {
 
         setComponentLoading: function (componentId, data, flowKey) {
 
-            components[flowKey] = components[flowKey] || {};
-            components[flowKey][componentId] = components[flowKey][componentId] || {};
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            components[flowKey][componentId].loading = data;
+            components[lookUpKey] = components[lookUpKey] || {};
+            components[lookUpKey][componentId] = components[lookUpKey][componentId] || {};
+
+            components[lookUpKey][componentId].loading = data;
 
         },
 
         setComponentError: function(componentId, error, flowKey) {
 
-            components[flowKey] = components[flowKey] || {};
-            components[flowKey][componentId] = components[flowKey][componentId] || {};
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            components[lookUpKey] = components[lookUpKey] || {};
+            components[lookUpKey][componentId] = components[lookUpKey][componentId] || {};
 
             if (error !== null && typeof error === 'object') {
 
-                components[flowKey][componentId].error = error;
+                components[lookUpKey][componentId].error = error;
 
-                components[flowKey][componentId].error.id = componentId;
+                components[lookUpKey][componentId].error.id = componentId;
 
             }
             else if (typeof error == 'string') {
 
-                components[flowKey][componentId].error = {
+                components[lookUpKey][componentId].error = {
                     message: error,
                     id: componentId
                 }
 
             } else if(!error) {
 
-                components[flowKey][componentId].error = null;
+                components[lookUpKey][componentId].error = null;
 
             }
 
@@ -278,8 +310,10 @@ manywho.state = (function (manywho) {
 
         remove: function(flowKey) {
 
-            components[flowKey] == null;
-            delete components[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            components[lookUpKey] == null;
+            delete components[lookUpKey];
             
         }
 

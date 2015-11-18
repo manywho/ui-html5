@@ -427,13 +427,17 @@ manywho.engine = (function (manywho) {
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
                 manywho.state.setLocation(flowKey);
 
-                var outcome = response.mapElementInvokeResponses[0].outcomeResponses.filter(function (outcome) {
+                if (response.mapElementInvokeResponses[0].outcomeResponses) {
 
-                    return outcome.id == selectedOutcomeId;
+                    var outcome = response.mapElementInvokeResponses[0].outcomeResponses.filter(function (outcome) {
 
-                })[0];
+                        return outcome.id == selectedOutcomeId;
 
-                if (manywho.collaboration.isInitialized(flowKey) && (outcome && !outcome.isOut)) {
+                    })[0];
+
+                }
+
+                if (manywho.collaboration.isInitialized(flowKey) && (!outcome || !outcome.isOut)) {
 
                     manywho.collaboration.move(flowKey);
 
@@ -603,18 +607,31 @@ manywho.engine = (function (manywho) {
 
                         var subFlowKey = manywho.utils.getFlowKey(tenantId, null, null, response.stateId, manywho.utils.extractElement(flowKey));
 
-                        manywho.collaboration.initialize(manywho.settings.global('collaboration.isEnabled', flowKey), subFlowKey);
                         manywho.collaboration.flowOut(flowKey, response.stateId, subFlowKey);
 
                         manywho.utils.removeFlow(flowKey);
 
-                        manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, options).then(function() {
-
-                            manywho.collaboration.remove(flowKey);
-
-                        });
+                        manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, options);
 
                     });
+
+        },
+
+        returnToParent: function(flowKey, parentStateId) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+            var options = manywho.settings.getGlobals(flowKey);
+
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+            this.render(flowKey);
+
+            manywho.collaboration.returnToParent(flowKey, parentStateId);
+
+            manywho.utils.removeFlow(flowKey);
+
+            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
 
         },
 
@@ -731,24 +748,6 @@ manywho.engine = (function (manywho) {
                     type: 'done'
                 },
                 flowKey);
-
-        },
-
-        returnToParent: function(flowKey, parentStateId) {
-
-            var tenantId = manywho.utils.extractTenantId(flowKey);
-            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-
-            var options = manywho.settings.getGlobals(flowKey);
-
-            var parentFlowKey = manywho.utils.getFlowKey(tenantId, null, null, parentStateId, manywho.utils.extractElement(flowKey));
-
-            manywho.collaboration.returnToParent(flowKey, parentStateId);
-            manywho.collaboration.initialize(manywho.settings.global('collaboration.isEnabled', flowKey), parentFlowKey);
-
-            manywho.utils.removeFlow(flowKey);
-
-            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
 
         },
 
@@ -875,7 +874,9 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            var container = document.getElementById(flowKey);
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var container = document.getElementById(lookUpKey);
 
             if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal-standalone', true)) {
 

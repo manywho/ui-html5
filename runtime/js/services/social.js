@@ -11,11 +11,13 @@ permissions and limitations under the License.
 
 manywho.social = (function (manywho) {
 
-    var streams = {}
+    var streams = {};
 
     return {
 
         initialize: function(flowKey, streamId) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
             manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
 
@@ -23,28 +25,28 @@ manywho.social = (function (manywho) {
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-            streams[flowKey] = {
+            streams[lookUpKey] = {
                 id: streamId
             };
 
             return manywho.ajax.getSocialMe(tenantId, streamId, stateId, authenticationToken)
                 .then(function (response) {
 
-                    streams[flowKey].me = response;
+                    streams[lookUpKey].me = response;
 
                     return manywho.ajax.getSocialFollowers(tenantId, streamId, stateId, authenticationToken);
 
                 })
                 .then(function (response) {
 
-                    streams[flowKey].followers = response;
+                    streams[lookUpKey].followers = response;
 
                     return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 1, 10, authenticationToken);
 
                 })
                 .then(function (response) {
 
-                    streams[flowKey].messages = response;
+                    streams[lookUpKey].messages = response;
 
                     manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
@@ -55,11 +57,15 @@ manywho.social = (function (manywho) {
 
         getStream: function(flowKey) {
 
-            return streams[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return streams[lookUpKey];
 
         },
 
         refreshMessages: function(flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
             manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
@@ -67,12 +73,12 @@ manywho.social = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var streamId = streams[flowKey].id;
+            var streamId = streams[lookUpKey].id;
 
             return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, 1, 10, authenticationToken)
                 .then(function (response) {
 
-                    streams[flowKey].messages = response;
+                    streams[lookUpKey].messages = response;
 
                     manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
@@ -83,19 +89,21 @@ manywho.social = (function (manywho) {
 
         getMessages: function(flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var streamId = streams[flowKey].id;
+            var streamId = streams[lookUpKey].id;
 
-            return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, streams[flowKey].messages.nextPage, 10, authenticationToken)
+            return manywho.ajax.getSocialMessages(tenantId, streamId, stateId, streams[lookUpKey].messages.nextPage, 10, authenticationToken)
                 .then(function (response) {
 
-                    streams[flowKey].messages.messages = streams[flowKey].messages.messages.concat(response.messages);
-                    streams[flowKey].messages.nextPage = response.nextPage;
+                    streams[lookUpKey].messages.messages = streams[lookUpKey].messages.messages.concat(response.messages);
+                    streams[lookUpKey].messages.nextPage = response.nextPage;
 
                     manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
@@ -112,17 +120,19 @@ manywho.social = (function (manywho) {
 
             }
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var stream = streams[flowKey];
+            var stream = streams[lookUpKey];
 
             var request = {
                 mentionedWhos: manywho.utils.convertToArray(mentionedUsers),
                 messageText: message,
                 senderId: stream.me.id,
                 uploadedFiles: attachments
-            }
+            };
 
             if (repliedTo) {
 
@@ -172,10 +182,12 @@ manywho.social = (function (manywho) {
 
         toggleFollow: function(flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var stream = streams[flowKey];
+            var stream = streams[lookUpKey];
 
             manywho.state.setComponentLoading('feed', { message: manywho.settings.global('localization.loading') }, flowKey);
             manywho.engine.render(flowKey);
@@ -190,7 +202,7 @@ manywho.social = (function (manywho) {
                 })
                 .then(function (response) {
 
-                    streams[flowKey].followers = response;
+                    streams[lookUpKey].followers = response;
 
                     manywho.state.setComponentLoading('feed', null, flowKey);
                     manywho.engine.render(flowKey);
@@ -201,10 +213,12 @@ manywho.social = (function (manywho) {
 
         getUsers: function (flowKey, name) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var stateId = manywho.utils.extractStateId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var stream = streams[flowKey];
+            var stream = streams[lookUpKey];
 
             return manywho.ajax.getSocialUsers(tenantId, stream.id, stateId, name, authenticationToken);
 
@@ -212,9 +226,11 @@ manywho.social = (function (manywho) {
 
         attachFiles: function (flowKey, formData, progress) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-            var stream = streams[flowKey];
+            var stream = streams[lookUpKey];
 
             return manywho.ajax.uploadSocialFile(formData, stream.id, tenantId, authenticationToken, progress);
 
@@ -222,10 +238,12 @@ manywho.social = (function (manywho) {
 
         remove: function(flowKey) {
 
-            if (streams[flowKey]) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                streams[flowKey] == null;
-                delete streams[flowKey];
+            if (streams[lookUpKey]) {
+
+                streams[lookUpKey] == null;
+                delete streams[lookUpKey];
 
             }
 

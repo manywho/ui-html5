@@ -115,27 +115,22 @@ manywho.collaboration = (function (manywho) {
 
         manywho.log.info('joining subflow ' + data.subStateId);
 
-        var tenantId = manywho.utils.extractTenantId(data.parentFlowKey);
+        var lookUpKey = manywho.utils.getLookUpKey(data.parentFlowKey);
+
+        var tenantId = lookUpKey.split('_')[0];
+        var parentStateId = lookUpKey.split('_')[1];
         var element = manywho.utils.extractElement(data.parentFlowKey);
-        var parentFlowId = manywho.utils.extractFlowId(data.parentFlowKey);
-        var parentFlowVersionId = manywho.utils.extractFlowVersionId(data.parentFlowKey);
-        var parentStateId = manywho.utils.extractStateId(data.parentFlowKey);
 
-        var flowKey = manywho.utils.getFlowKey(tenantId, parentFlowId, parentFlowVersionId, null, element);
-        var stateKey = manywho.utils.getFlowKey(tenantId, null, null, parentStateId, element);
+        var flowKey = manywho.utils.getFlowKey(tenantId, null, null, parentStateId, element);
 
-        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+        manywho.state.setComponentLoading(element, null, flowKey);
         manywho.engine.render(flowKey);
 
         manywho.utils.removeFlow(flowKey);
-        manywho.collaboration.initialize(true, data.subFlowKey);
-
-        var flowId = manywho.utils.extractFlowId(data.subFlowKey);
-        var flowVersionId = manywho.utils.extractFlowVersionId(data.subFlowKey);
         var stateId = manywho.utils.extractStateId(data.subFlowKey);
 
         // Re-join the flow here so that we sync with the latest state from the manywho server
-        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, null, manywho.settings.flow(null, data.parentFlowKey)).then(function () {
+        manywho.engine.join(tenantId, null, null, element, stateId, null, manywho.settings.flow(null, data.parentFlowKey)).then(function () {
 
             socket.emit('getValues', data);
 
@@ -147,16 +142,20 @@ manywho.collaboration = (function (manywho) {
 
         manywho.log.info('returning to parent ' + data.parentStateId);
 
-        var flowKey = rooms[data.parentStateId].flowKey;
+        var flowKey = data.subFlowKey;
 
-        var tenantId = manywho.utils.extractTenantId(flowKey);
-        var flowId = manywho.utils.extractFlowId(flowKey);
-        var flowVersionId = manywho.utils.extractFlowVersionId(flowKey);
-        var stateId = manywho.utils.extractStateId(flowKey);
+        var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+        var tenantId = lookUpKey.split('_')[0];
         var element = manywho.utils.extractElement(flowKey);
 
+        manywho.state.setComponentLoading(element, null, flowKey);
+        manywho.engine.render(flowKey);
+
+        manywho.utils.removeFlow(flowKey);
+
         // Re-join the flow here so that we sync with the latest state from the manywho server
-        manywho.engine.join(tenantId, flowId, flowVersionId, element, stateId, manywho.state.getAuthenticationToken(flowKey), manywho.settings.flow(null, flowKey)).then(function () {
+        manywho.engine.join(tenantId, null, null, element, data.parentStateId, manywho.state.getAuthenticationToken(flowKey), manywho.settings.flow(null, flowKey)).then(function () {
 
             socket.emit('getValues', data);
 
@@ -314,7 +313,7 @@ manywho.collaboration = (function (manywho) {
 
         returnToParent: function (flowKey, parentStateId) {
 
-            emit(flowKey, 'returnToParent', { parentStateId: parentStateId, stateId: manywho.utils.extractStateId(flowKey) });
+            emit(flowKey, 'returnToParent', { subFlowKey: flowKey, parentStateId: parentStateId, stateId: manywho.utils.extractStateId(flowKey) });
 
         },
 

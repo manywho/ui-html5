@@ -140,28 +140,30 @@ permissions and limitations under the License.
 
         parseEngineResponse: function (engineInvokeResponse, flowKey) {
 
-            flowModel[flowKey].containers = {};
-            flowModel[flowKey].components = {};
-            flowModel[flowKey].outcomes = {};
-            flowModel[flowKey].label = null;
-            flowModel[flowKey].notifications = [];
-            flowModel[flowKey].stateValues = [];
-            flowModel[flowKey].preCommitStateValues = [];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            flowModel[flowKey].rootFaults = [];
+            flowModel[lookUpKey].containers = {};
+            flowModel[lookUpKey].components = {};
+            flowModel[lookUpKey].outcomes = {};
+            flowModel[lookUpKey].label = null;
+            flowModel[lookUpKey].notifications = [];
+            flowModel[lookUpKey].stateValues = [];
+            flowModel[lookUpKey].preCommitStateValues = [];
+
+            flowModel[lookUpKey].rootFaults = [];
 
             if (engineInvokeResponse)
-                flowModel[flowKey].parentStateId = engineInvokeResponse.parentStateId;
+                flowModel[lookUpKey].parentStateId = engineInvokeResponse.parentStateId;
 
             if (engineInvokeResponse && engineInvokeResponse.mapElementInvokeResponses) {
 
-                flowModel[flowKey].invokeType = engineInvokeResponse.invokeType;
-                flowModel[flowKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
-                flowModel[flowKey].vote = engineInvokeResponse.voteResponse || null;
+                flowModel[lookUpKey].invokeType = engineInvokeResponse.invokeType;
+                flowModel[lookUpKey].waitMessage = engineInvokeResponse.notAuthorizedMessage || engineInvokeResponse.waitMessage;
+                flowModel[lookUpKey].vote = engineInvokeResponse.voteResponse || null;
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
-                    flowModel[flowKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
+                    flowModel[lookUpKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
                     this.setContainers(flowKey,
                                         engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses,
@@ -177,7 +179,7 @@ permissions and limitations under the License.
 
                     engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.forEach(function (item) {
 
-                        flowModel[flowKey].outcomes[item.id.toLowerCase()] = item;
+                        flowModel[lookUpKey].outcomes[item.id.toLowerCase()] = item;
 
                     }, this);
 
@@ -185,8 +187,8 @@ permissions and limitations under the License.
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
-                    flowModel[flowKey].rootFaults = [];
-                    flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
+                    flowModel[lookUpKey].rootFaults = [];
+                    flowModel[lookUpKey].notifications = flowModel[lookUpKey].notifications || [];
 
                     for (faultName in engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
@@ -201,9 +203,9 @@ permissions and limitations under the License.
 
                         fault.name = faultName;
 
-                        flowModel[flowKey].rootFaults.push(fault);
+                        flowModel[lookUpKey].rootFaults.push(fault);
 
-                        flowModel[flowKey].notifications.push({
+                        flowModel[lookUpKey].notifications.push({
                             message: fault.message,
                             position: 'center',
                             type: 'danger',
@@ -223,8 +225,8 @@ permissions and limitations under the License.
 
                 }
 
-                flowModel[flowKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
-                flowModel[flowKey].stateValues = engineInvokeResponse.stateValues;
+                flowModel[lookUpKey].preCommitStateValues = engineInvokeResponse.preCommitStateValues;
+                flowModel[lookUpKey].stateValues = engineInvokeResponse.stateValues;
 
                 switch (engineInvokeResponse.invokeType.toLowerCase())
                 {
@@ -235,7 +237,7 @@ permissions and limitations under the License.
 
             } else if (manywho.utils.isEqual(engineInvokeResponse.invokeType, 'not_allowed', true)) {
 
-                flowModel[flowKey].notifications.push({
+                flowModel[lookUpKey].notifications.push({
                     message: 'You are not authorized to access this content. Please contact your administrator for more details.',
                     position: 'center',
                     type: 'danger',
@@ -250,17 +252,19 @@ permissions and limitations under the License.
 
         parseEngineSyncResponse: function(response, flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             if (response.mapElementInvokeResponses) {
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[flowKey].containers[item.pageContainerId], item);
+                    flowModel[lookUpKey].containers[item.pageContainerId] = manywho.utils.extend(flowModel[lookUpKey].containers[item.pageContainerId], item);
 
                 }, this);
 
                 response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.forEach(function (item) {
 
-                    flowModel[flowKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[flowKey].components[item.pageComponentId], item);
+                    flowModel[lookUpKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[lookUpKey].components[item.pageComponentId], item);
 
                 }, this);
 
@@ -270,22 +274,24 @@ permissions and limitations under the License.
 
         parseNavigationResponse: function (id, response, flowKey, currentMapElementId) {
 
-            flowModel[flowKey].navigation = {};
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            flowModel[flowKey].navigation[id] = {
+            flowModel[lookUpKey].navigation = {};
+
+            flowModel[lookUpKey].navigation[id] = {
                 culture: response.culture,
                 developerName: response.developerName,
                 label: response.label,
                 tags: response.tags
             };
 
-            flowModel[flowKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+            flowModel[lookUpKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
 
             var selectedItem = null;
-            for (itemId in flowModel[flowKey].navigation[id].items) {
+            for (itemId in flowModel[lookUpKey].navigation[id].items) {
 
-                if (flowModel[flowKey].navigation[id].items[itemId].isCurrent) {
-                    selected = flowModel[flowKey].navigation[id].items[itemId];
+                if (flowModel[lookUpKey].navigation[id].items[itemId].isCurrent) {
+                    selected = flowModel[lookUpKey].navigation[id].items[itemId];
                     break;
                 }
 
@@ -293,10 +299,10 @@ permissions and limitations under the License.
 
             if (selectedItem == null && currentMapElementId) {
 
-                for (itemId in flowModel[flowKey].navigation[id].items) {
+                for (itemId in flowModel[lookUpKey].navigation[id].items) {
 
-                    if (manywho.utils.isEqual(flowModel[flowKey].navigation[id].items[itemId].locationMapElementId, currentMapElementId)) {
-                        flowModel[flowKey].navigation[id].items[itemId].isCurrent = true;
+                    if (manywho.utils.isEqual(flowModel[lookUpKey].navigation[id].items[itemId].locationMapElementId, currentMapElementId)) {
+                        flowModel[lookUpKey].navigation[id].items[itemId].isCurrent = true;
                         break;
                     }
 
@@ -308,7 +314,7 @@ permissions and limitations under the License.
 
             if (parentStateId) {
 
-                flowModel[flowKey].navigation[id].returnToParent = React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: parentStateId })
+                flowModel[lookUpKey].navigation[id].returnToParent = React.createElement(manywho.component.getByName('returnToParent'), { flowKey: flowKey, parentStateId: parentStateId })
 
             }
 
@@ -316,13 +322,17 @@ permissions and limitations under the License.
 
         getLabel: function (flowKey) {
 
-            return flowModel[flowKey].label;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].label;
 
         },
 
         getChildren: function (containerId, flowKey) {
 
-            if(flowModel[flowKey] === undefined || flowModel[flowKey].containers === undefined) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            if(flowModel[lookUpKey] === undefined || flowModel[lookUpKey].containers === undefined) {
 
                 return [];
 
@@ -330,17 +340,17 @@ permissions and limitations under the License.
 
             if (containerId == 'root') {
 
-                return manywho.utils.getAll(flowModel[flowKey].containers, null, 'parent');
+                return manywho.utils.getAll(flowModel[lookUpKey].containers, null, 'parent');
 
             }
 
             var children = [];
-            var container = flowModel[flowKey].containers[containerId];
+            var container = flowModel[lookUpKey].containers[containerId];
 
             if (container != null) {
 
-                children = children.concat(manywho.utils.getAll(flowModel[flowKey].containers, containerId, 'parent'));
-                children = children.concat(manywho.utils.getAll(flowModel[flowKey].components, containerId, 'pageContainerId'));
+                children = children.concat(manywho.utils.getAll(flowModel[lookUpKey].containers, containerId, 'parent'));
+                children = children.concat(manywho.utils.getAll(flowModel[lookUpKey].components, containerId, 'pageContainerId'));
 
             }
 
@@ -356,27 +366,35 @@ permissions and limitations under the License.
 
         getContainer: function (containerId, flowKey) {
 
-            return flowModel[flowKey].containers[containerId];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].containers[containerId];
 
         },
 
         getComponent: function (componentId, flowKey) {
 
-            return flowModel[flowKey].components[componentId];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].components[componentId];
 
         },
 
         getComponents: function (flowKey) {
 
-            return flowModel[flowKey].components;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].components;
 
         },
 
         getOutcome: function (outcomeId, flowKey) {
 
-            if (flowModel[flowKey].outcomes) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                return flowModel[flowKey].outcomes[outcomeId.toLowerCase()];
+            if (flowModel[lookUpKey].outcomes) {
+
+                return flowModel[lookUpKey].outcomes[outcomeId.toLowerCase()];
 
             }
 
@@ -384,13 +402,15 @@ permissions and limitations under the License.
 
         getOutcomes: function (pageObjectId, flowKey) {
 
-            if (flowModel[flowKey] === undefined || flowModel[flowKey].outcomes === undefined) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            if (flowModel[lookUpKey] === undefined || flowModel[lookUpKey].outcomes === undefined) {
 
                 return [];
 
             }
 
-            var outcomesArray = manywho.utils.convertToArray(flowModel[flowKey].outcomes) || [];
+            var outcomesArray = manywho.utils.convertToArray(flowModel[lookUpKey].outcomes) || [];
 
             return outcomesArray.filter(function (outcome) {
 
@@ -403,9 +423,11 @@ permissions and limitations under the License.
 
         getNotifications: function(flowKey, position) {
 
-            if (flowModel[flowKey].notifications) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                return flowModel[flowKey].notifications.filter(function (notification) {
+            if (flowModel[lookUpKey].notifications) {
+
+                return flowModel[lookUpKey].notifications.filter(function (notification) {
 
                     return manywho.utils.isEqual(notification.position, position, true);
 
@@ -419,10 +441,12 @@ permissions and limitations under the License.
 
         removeNotification: function(flowKey, notification) {
 
-            if (flowModel[flowKey]) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                var index = flowModel[flowKey].notifications.indexOf(notification);
-                flowModel[flowKey].notifications.splice(index, 1);
+            if (flowModel[lookUpKey]) {
+
+                var index = flowModel[lookUpKey].notifications.indexOf(notification);
+                flowModel[lookUpKey].notifications.splice(index, 1);
 
                 manywho.engine.render(flowKey);
 
@@ -432,11 +456,13 @@ permissions and limitations under the License.
 
         addNotification: function(flowKey, notification) {
 
-            if (flowModel[flowKey]) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                flowModel[flowKey].notifications = flowModel[flowKey].notifications || [];
+            if (flowModel[lookUpKey]) {
 
-                flowModel[flowKey].notifications.push(notification);
+                flowModel[lookUpKey].notifications = flowModel[lookUpKey].notifications || [];
+
+                flowModel[lookUpKey].notifications.push(notification);
                 manywho.engine.render(flowKey);
 
             }
@@ -445,21 +471,27 @@ permissions and limitations under the License.
 
         getSelectedNavigation: function (flowKey) {
 
-            return flowModel[flowKey].selectedNavigation;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].selectedNavigation;
 
         },
 
         setSelectedNavigation: function (navigationId, flowKey) {
 
-            flowModel[flowKey].selectedNavigation = navigationId;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey].selectedNavigation = navigationId;
 
         },
 
         getNavigation: function (navigationId, flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             if (navigationId) {
 
-                return flowModel[flowKey].navigation[navigationId];
+                return flowModel[lookUpKey].navigation[navigationId];
 
             }
 
@@ -467,9 +499,11 @@ permissions and limitations under the License.
 
         getDefaultNavigationId: function(flowKey) {
 
-            if (flowModel[flowKey].navigation) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                return Object.keys(flowModel[flowKey].navigation)[0];
+            if (flowModel[lookUpKey].navigation) {
+
+                return Object.keys(flowModel[lookUpKey].navigation)[0];
 
             }
 
@@ -501,13 +535,17 @@ permissions and limitations under the License.
 
         getInvokeType: function(flowKey) {
 
-            return flowModel[flowKey].invokeType;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].invokeType;
 
         },
 
         getWaitMessage: function (flowKey) {
 
-            return flowModel[flowKey].waitMessage;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].waitMessage;
 
         },
 
@@ -520,39 +558,51 @@ permissions and limitations under the License.
 
         getPreCommitStateValues: function (flowKey) {
 
-            return flowModel[flowKey].preCommitStateValues;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].preCommitStateValues;
 
         },
 
         getStateValues: function (flowKey) {
 
-            return flowModel[flowKey].stateValues;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].stateValues;
 
         },
 
         getExecutionLog: function (flowKey) {
 
-            return flowModel[flowKey].executionLog;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].executionLog;
 
         },
 
         setExecutionLog: function (flowKey, executionLog) {
 
-            flowModel[flowKey].executionLog = executionLog;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey].executionLog = executionLog;
 
         },
 
         getHistory: function (flowKey) {
 
-            if (!flowModel[flowKey].history) flowModel[flowKey].history = [];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            return flowModel[flowKey].history;
+            if (!flowModel[lookUpKey].history) flowModel[lookUpKey].history = [];
+
+            return flowModel[lookUpKey].history;
 
         },
 
         setHistory: function (engineInvokeResponse, flowKey) {
 
-            if (!flowModel[flowKey].history) flowModel[flowKey].history = [];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            if (!flowModel[lookUpKey].history) flowModel[lookUpKey].history = [];
 
             if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
 
@@ -564,9 +614,9 @@ permissions and limitations under the License.
 
             }
 
-            var length = flowModel[flowKey].history.length;
+            var length = flowModel[lookUpKey].history.length;
 
-            flowModel[flowKey].history[length] = manywho.utils.extend(flowModel[flowKey].history[length] || {}, [{
+            flowModel[lookUpKey].history[length] = manywho.utils.extend(flowModel[lookUpKey].history[length] || {}, [{
                 name: engineInvokeResponse.mapElementInvokeResponses[0].developerName,
                 id: engineInvokeResponse.mapElementInvokeResponses[0].mapElementId,
                 label: engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label,
@@ -578,15 +628,17 @@ permissions and limitations under the License.
 
         setHistorySelectedOutcome: function (selectedOutcome, flowKey) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             if (selectedOutcome) {
 
-                if (!flowModel[flowKey].history) flowModel[flowKey].history = [];
+                if (!flowModel[lookUpKey].history) flowModel[lookUpKey].history = [];
 
-                var length = flowModel[flowKey].history.length-1;
+                var length = flowModel[lookUpKey].history.length-1;
 
-                if (!flowModel[flowKey].history[length]) flowModel[flowKey].history[length] = {};
+                if (!flowModel[lookUpKey].history[length]) flowModel[lookUpKey].history[length] = {};
 
-                flowModel[flowKey].history[length].selectedOutcome = selectedOutcome;
+                flowModel[lookUpKey].history[length].selectedOutcome = selectedOutcome;
 
             }
 
@@ -594,11 +646,13 @@ permissions and limitations under the License.
 
         popHistory: function (mapElementId, flowKey) {
 
-            var length = flowModel[flowKey].history.length;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var length = flowModel[lookUpKey].history.length;
 
             for (var i = length; i > 0; i--) {
 
-                var mapElement = flowModel[flowKey].history.pop();
+                var mapElement = flowModel[lookUpKey].history.pop();
 
                 if (mapElement.id == mapElementId) {
 
@@ -618,9 +672,11 @@ permissions and limitations under the License.
 
         initializeModel: function (flowKey) {
 
-            if (!flowModel[flowKey]) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                flowModel[flowKey] = {};
+            if (!flowModel[lookUpKey]) {
+
+                flowModel[lookUpKey] = {};
 
             }
 
@@ -672,39 +728,47 @@ permissions and limitations under the License.
 
         getParentStateId: function(flowKey) {
 
-            return flowModel[flowKey].parentStateId;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].parentStateId;
 
         },
 
         deleteFlowModel: function(flowKey) {
 
-            flowModel[flowKey] = null;
-            delete flowModel[flowKey];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey] = null;
+            delete flowModel[lookUpKey];
 
         },
 
         getRootFaults: function(flowKey) {
 
-            return flowModel[flowKey].rootFaults || [];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].rootFaults || [];
 
         },
 
         setContainers: function(flowKey, containers, data, propertyName) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             propertyName = propertyName || 'pageContainerResponses';
 
             if (containers) {
 
-                flowModel[flowKey].containers = {};
+                flowModel[lookUpKey].containers = {};
 
                 var flattenedContainers = flattenContainers(containers, null, [], propertyName);
                 flattenedContainers.forEach(function (item) {
 
-                    flowModel[flowKey].containers[item.id] = item;
+                    flowModel[lookUpKey].containers[item.id] = item;
 
                     if (data && manywho.utils.contains(data, item.id, 'pageContainerId')) {
 
-                        flowModel[flowKey].containers[item.id] = updateData(data, item, 'pageContainerId');
+                        flowModel[lookUpKey].containers[item.id] = updateData(data, item, 'pageContainerId');
 
                     }
 
@@ -716,9 +780,11 @@ permissions and limitations under the License.
 
         setComponents: function(flowKey, components, data) {
 
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
             if (components) {
 
-                flowModel[flowKey].components = {};
+                flowModel[lookUpKey].components = {};
 
                 var decodeTextArea = document.createElement('textarea');
 
@@ -726,23 +792,23 @@ permissions and limitations under the License.
 
                     item.attributes = item.attributes || {};
 
-                    flowModel[flowKey].components[item.id] = item;
+                    flowModel[lookUpKey].components[item.id] = item;
 
-                    if (!flowModel[flowKey].containers[item.pageContainerId].childCount) {
+                    if (!flowModel[lookUpKey].containers[item.pageContainerId].childCount) {
 
-                        flowModel[flowKey].containers[item.pageContainerId].childCount = 0;
+                        flowModel[lookUpKey].containers[item.pageContainerId].childCount = 0;
 
                     }
 
-                    flowModel[flowKey].containers[item.pageContainerId].childCount++;
+                    flowModel[lookUpKey].containers[item.pageContainerId].childCount++;
 
                     if (data && manywho.utils.contains(data, item.id, 'pageComponentId')) {
 
-                        flowModel[flowKey].components[item.id] = updateData(data, item, 'pageComponentId');
+                        flowModel[lookUpKey].components[item.id] = updateData(data, item, 'pageComponentId');
 
                     }
 
-                    flowModel[flowKey].components[item.id] = decodeEntities(flowModel[flowKey].components[item.id], decodeTextArea);
+                    flowModel[lookUpKey].components[item.id] = decodeEntities(flowModel[lookUpKey].components[item.id], decodeTextArea);
 
                 }, this);
 
