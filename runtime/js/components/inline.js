@@ -23,7 +23,14 @@ permissions and limitations under the License.
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
-            var childClasses = this.state.isVisible ? ['clearfix'] : ['hidden'];
+            var childClasses = ['clearfix'];
+
+            if (this.containerHeight != undefined) {
+
+                var childStyle = this.state.isVisible ? { transition: 'height 0.3s ease', height: this.containerHeight } : { transition: 'height 0.3s ease', height: 0 };
+
+            }
+
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
             var outcomeButtons = outcomes && outcomes.map(function (outcome) {
@@ -32,7 +39,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: classes, id: this.props.id },
                 this.getLabel(model.label),
-                React.DOM.div({ className: childClasses.join(' ') }, [
+                React.DOM.div({ className: childClasses.join(' '), style: childStyle }, [
                     this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ]),
                 outcomeButtons

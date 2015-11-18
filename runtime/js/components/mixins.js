@@ -56,6 +56,18 @@ permissions and limitations under the License.
 
         },
 
+        componentDidMount: function () {
+
+            var containerElement = React.findDOMNode(this);
+
+            if (containerElement.children[1]) {
+
+                this.containerHeight = React.findDOMNode(this).children[1].clientHeight;
+
+            }
+
+        },
+
         toggleVisibility: function (event) {
 
             event.preventDefault();
