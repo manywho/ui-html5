@@ -71,7 +71,8 @@ permissions and limitations under the License.
             var classNames = [
                 'main',
                 (isFullWidth) ? 'container-fluid full-width' : 'container',
-                (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : ''
+                (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : '',
+                (manywho.settings.global('history', this.props.flowKey)) ? 'main-history': ''
             ];
 
             return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [
@@ -84,6 +85,7 @@ permissions and limitations under the License.
                             React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })
                         ]),
                         React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey }),
+                        React.createElement(manywho.component.getByName('history'), { flowKey: this.props.flowKey }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' }),
                         React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' }),

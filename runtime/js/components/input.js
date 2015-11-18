@@ -200,13 +200,20 @@ permissions and limitations under the License.
                 value: contentValue,
                 id: this.props.id,
                 maxLength: model.maxSize,
-                size: model.size,
-                disabled: (!model.isEnabled || this.props.isDesignTime) && 'disabled',
-                readOnly: !model.isEditable && 'readonly'
+                size: model.size
             };
 
+            if (!model.isEditable)
+                attributes.readOnly = 'readonly';
+
             if (!this.props.isDesignTime) {
+
                 attributes = manywho.utils.extend(attributes, { onChange: this.handleChange });
+
+            } else if (!model.isEnabled) {
+
+                attributes.disabled = 'disabled';
+
             }
 
             if (model.isRequired)

@@ -402,6 +402,12 @@ manywho.engine = (function (manywho) {
         var moveResponse = null;
         var selectedOutcomeId = invokeRequest.mapElementInvokeRequest.selectedOutcomeId;
 
+        if (manywho.settings.global('history', flowKey)) {
+
+            manywho.model.setHistorySelectedOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
+
+        }
+
         return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
@@ -655,7 +661,7 @@ manywho.engine = (function (manywho) {
 
         },
 
-        navigate: function(navigationId, navigationElementId, flowKey) {
+        navigate: function(navigationId, navigationElementId, mapElementId, flowKey) {
 
             manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.navigating') }, flowKey);
             this.render(flowKey);
@@ -664,6 +670,7 @@ manywho.engine = (function (manywho) {
                 manywho.state.getState(flowKey),
                 navigationId,
                 navigationElementId,
+                mapElementId,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey)

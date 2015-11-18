@@ -70,7 +70,7 @@ manywho.json = (function (manywho) {
             }
         },
 
-        generateNavigateRequest: function (stateData, navigationId, navigationElementId, pageComponentInputResponses, annotations, location) {
+        generateNavigateRequest: function (stateData, navigationId, navigationElementId, mapElementId, pageComponentInputResponses, annotations, location) {
 
             return {
                 'stateId': stateData.id,
@@ -78,6 +78,7 @@ manywho.json = (function (manywho) {
                 'currentMapElementId': stateData.currentMapElementId,
                 'invokeType': 'NAVIGATE',
                 'navigationElementId': navigationId,
+                'selectedMapElementId': mapElementId,
                 'selectedNavigationItemId': navigationElementId,
                 'annotations': annotations || null,
                 'geoLocation': location || null,
@@ -86,7 +87,7 @@ manywho.json = (function (manywho) {
                         'pageComponentInputResponses': pageComponentInputResponses || null
                     },
                     'selectedOutcomeId': null
-                },
+                }
             }
 
         },
