@@ -190,6 +190,8 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+
             var isValid = true;
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
             var contentValue = (state && state.contentValue) || model.contentValue;
@@ -225,10 +227,15 @@ permissions and limitations under the License.
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
                 (model.isVisible == false) ? 'hidden' : '',
-                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
+                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : '',
+                (outcomes) ? 'has-outcomes' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
+
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
 
             if (contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
@@ -249,7 +256,8 @@ permissions and limitations under the License.
                             ])
                         ),
                         React.DOM.span({className: 'help-block'}, model.validationMessage),
-                        React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                        React.DOM.span({ className: 'help-block' }, model.helpInfo),                        
+                        outcomeButtons
                     ]);
 
             } else {
@@ -286,7 +294,8 @@ permissions and limitations under the License.
                         ]),
                         React.DOM.input(attributes, null),
                         React.DOM.span({ className: 'help-block' }, model.validationMessage),
-                        React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                        React.DOM.span({ className: 'help-block' }, model.helpInfo),
+                        outcomeButtons
                     ]);
 
             }
