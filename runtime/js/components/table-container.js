@@ -49,7 +49,7 @@ permissions and limitations under the License.
 
         if (isObjectData) {
 
-            var refreshAttributes = { className: 'btn btn-default', onClick: refresh };
+            var refreshAttributes = { className: 'btn btn-sm btn-default', onClick: refresh };
 
             if (isDesignTime)
                 refreshAttributes.disabled = 'disabled';
@@ -91,12 +91,12 @@ permissions and limitations under the License.
 
         if (mainElement && mainElement.clientWidth < 768) {
 
-            headerElements = [refreshElement, outcomesElement, searchElement];
+            headerElements = [outcomesElement, searchElement, refreshElement];
 
         }
         else {
 
-            headerElements = [searchElement, outcomesElement, refreshElement];
+            headerElements = [refreshElement, searchElement, outcomesElement];
 
         }
 
