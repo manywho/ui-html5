@@ -194,6 +194,7 @@ permissions and limitations under the License.
 
             if (!this.props.isDesignTime) {
                 dropzoneAttributes = manywho.utils.extend(dropzoneAttributes, { onDrop: this.onDrop });
+                buttonAttributes = manywho.utils.extend(buttonAttributes, { onClick: this.onUpload });
             }
 
             return React.DOM.div({ className: componentClasses.join(' ') }, [
