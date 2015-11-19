@@ -57,6 +57,11 @@ permissions and limitations under the License.
 
             var max = (Math.pow(10, maxSize)) - 1;
             var min = (Math.pow(10, maxSize) * -1) + 1;
+
+            if (value.indexOf('.', value.length-1) !== -1) {
+                return value;
+            }
+
             var parsedValue = parseFloat(value);
 
             parsedValue = Math.min(parsedValue, max);
@@ -119,6 +124,20 @@ permissions and limitations under the License.
             return {
                 value: null
             }
+
+        },
+
+        parseNumberInput: function (e) {
+
+            var parsedValue = parseFloat(e.target.value);
+
+            if (parsedValue) {
+
+                manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+
+            }
+
+            this.setState({ value: parsedValue });
 
         },
 
@@ -277,6 +296,7 @@ permissions and limitations under the License.
                 }
                 else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
+                    attributes.onBlur = this.parseNumberInput;
                     attributes.style = { width: (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
                     attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
