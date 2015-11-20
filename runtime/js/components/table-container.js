@@ -39,12 +39,27 @@ permissions and limitations under the License.
 
     }
 
-    function renderHeader(outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isDesignTime) {
+    function renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
 
         var headerElements = [];
         var searchElement = null;
         var outcomesElement = null;
+        var refreshElement = null;
         var mainElement = document.getElementById(flowKey);
+
+        if (isObjectData) {
+
+            var refreshAttributes = { className: 'btn btn-sm btn-default', onClick: refresh };
+
+            if (isDesignTime)
+                refreshAttributes.disabled = 'disabled';
+
+            refreshElement = React.DOM.div({ className: 'table-refresh' },
+                React.DOM.button(refreshAttributes,
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null))
+            );
+
+        }
 
         if (isSearchEnabled) {
 
@@ -54,7 +69,7 @@ permissions and limitations under the License.
                 buttonAttributes.disabled = 'disabled';
 
             searchElement = React.DOM.div({ className: 'input-group table-search' }, [
-                    React.DOM.input({ type: 'text', className: 'form-control', placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
+                    React.DOM.input({ type: 'text', className: 'form-control', value: searchValue, placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
                         React.DOM.button(buttonAttributes,
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
@@ -76,12 +91,12 @@ permissions and limitations under the License.
 
         if (mainElement && mainElement.clientWidth < 768) {
 
-            headerElements = [outcomesElement, searchElement];
+            headerElements = [outcomesElement, searchElement, refreshElement];
 
         }
         else {
 
-            headerElements = [searchElement, outcomesElement];
+            headerElements = [refreshElement, searchElement, outcomesElement];
 
         }
 
@@ -172,6 +187,17 @@ permissions and limitations under the License.
                 manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
 
             }
+
+        },
+
+        refresh: function () {
+
+            if (this.props.isDesignTime)
+                return;
+
+            manywho.state.setComponent(this.props.id, { search: '' }, this.props.flowKey, true);
+
+            this.search();
 
         },
 
@@ -350,7 +376,7 @@ permissions and limitations under the License.
 
         componentDidMount: function () {
 
-            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200)
+            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200);
             window.addEventListener('resize', this.handleResizeDebounced);
 
         },
@@ -488,7 +514,7 @@ permissions and limitations under the License.
                 validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     fileUpload,
-                    renderHeader(headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search),
+                    renderHeader(state.search, headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search, (model.objectDataRequest || model.fileDataRequest), this.refresh, this.props.isDesignTime),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev, this.props.isDesignTime),
                     React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)

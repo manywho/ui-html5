@@ -48,6 +48,16 @@ permissions and limitations under the License.
             manywho.component.handleEvent(this, model, this.props.flowKey);
         },
 
+        refresh: function (e) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            var request = model.objectDataRequest || model.fileDataRequest;
+
+            manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, null, null, null, null, null);
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Select: ' + this.props.id);
@@ -57,12 +67,15 @@ permissions and limitations under the License.
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
             var options = null;
             var value = null;
+            var refreshButton = null;
 
             var selectAttributes = {
                 multi: model.isMultiSelect,
                 disabled: !model.isEnabled || !model.isEditable || state.loading || this.props.isDesignTime,
                 placeholder: model.hintValue || 'Please select an option'
             };
+
+            var wrapperClasses = ['select-wrapper'];
 
             if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
 
@@ -105,6 +118,16 @@ permissions and limitations under the License.
 
                 selectAttributes.value = value;
 
+                if (model.objectDataRequest || model.fileDataRequest) {
+
+                    wrapperClasses.push('input-group');
+
+                    refreshButton = React.DOM.button({ className: 'btn btn-default', onClick: this.refresh },
+                        React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
+                    )
+
+                }
+
             }
 
             var containerClassNames = ['form-group'];
@@ -136,8 +159,9 @@ permissions and limitations under the License.
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
-                React.DOM.div({ className: 'select-wrapper' }, [
+                React.DOM.div({ className: wrapperClasses.join(' ') }, [
                     React.createElement(Select, selectAttributes),
+                    refreshButton,
                     React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
