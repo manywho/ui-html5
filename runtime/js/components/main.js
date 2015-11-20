@@ -78,6 +78,7 @@ permissions and limitations under the License.
             return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [
                         React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' }),
                         React.DOM.div({ className: classNames.join(' '), onKeyUp: this.onEnter, ref: 'main' }, [
+                            React.DOM.h2({ className: 'page-label' }, manywho.model.getLabel(this.props.flowKey)),
                             componentElements,
                             outcomeElements,
                             React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey }),
