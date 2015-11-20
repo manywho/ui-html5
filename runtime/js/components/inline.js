@@ -25,9 +25,10 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
             var childClasses = ['clearfix'];
 
-            if (this.containerHeight != undefined) {
+            if (this.containerHeight != undefined && manywho.settings.flow('collapsible', this.props.flowKey)) {
 
                 var childStyle = this.state.isVisible ? { transition: 'height 0.3s ease', height: this.containerHeight } : { transition: 'height 0.3s ease', height: 0 };
+                this.state.isVisible ? childClasses.push('collapsible-container') : childClasses.push('collapsible-container', 'collapsed-container');
 
             }
 
