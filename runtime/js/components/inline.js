@@ -25,9 +25,8 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
             var childClasses = ['clearfix'];
 
-            if (this.containerHeight != undefined && manywho.settings.flow('collapsible', this.props.flowKey)) {
+            if (manywho.settings.flow('collapsible', this.props.flowKey)) {
 
-                var childStyle = this.state.isVisible ? { transition: 'height 0.3s ease', height: this.containerHeight } : { transition: 'height 0.3s ease', height: 0 };
                 this.state.isVisible ? childClasses.push('collapsible-container') : childClasses.push('collapsible-container', 'collapsed-container');
 
             }
@@ -40,7 +39,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: classes, id: this.props.id },
                 this.getLabel(model.label),
-                React.DOM.div({ className: childClasses.join(' '), style: childStyle }, [
+                React.DOM.div({ className: childClasses.join(' ')}, [
                     this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ]),
                 outcomeButtons
