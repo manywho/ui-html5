@@ -49,14 +49,13 @@ permissions and limitations under the License.
 
         if (isObjectData) {
 
-            var refreshAttributes = { className: 'btn btn-sm btn-default', onClick: refresh };
+            var refreshAttributes = { className: 'btn btn-sm btn-default table-refresh', onClick: refresh };
 
             if (isDesignTime)
                 refreshAttributes.disabled = 'disabled';
 
-            refreshElement = React.DOM.div({ className: 'table-refresh' },
-                React.DOM.button(refreshAttributes,
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null))
+            refreshElement = React.DOM.button(refreshAttributes,
+                React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null)
             );
 
         }

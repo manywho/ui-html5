@@ -134,7 +134,16 @@ body {
         vertical-align: middle;
     }
 
+    .collapsible-container {
+        transition: max-height 0.3s;
+        transition-timing-function: cubic-bezier(0,1,0,1);
+        max-height: 2000px;
+    }
+
     .collapsed-container {
+        transition: max-height 0.3s;
+        transition-timing-function: cubic-bezier(0,1,0,1);
+        max-height: 0;
         overflow: hidden;
     }
 
