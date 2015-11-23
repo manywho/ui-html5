@@ -118,15 +118,15 @@ permissions and limitations under the License.
 
                 selectAttributes.value = value;
 
-                if (model.objectDataRequest || model.fileDataRequest) {
+            }
 
-                    wrapperClasses.push('input-group');
+            if (model.objectDataRequest || model.fileDataRequest) {
 
-                    refreshButton = React.DOM.button({ className: 'btn btn-default', onClick: this.refresh },
-                        React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
-                    )
+                wrapperClasses.push('input-group');
 
-                }
+                refreshButton = React.DOM.button({ className: 'btn btn-default', onClick: this.refresh },
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
+                )
 
             }
 
