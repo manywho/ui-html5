@@ -101,17 +101,20 @@
 
             if (model.isMultiSelect) {
 
-                if (selectedObjectData.indexOf(e.target.value) != -1) {
+                selectedObjectData = selectedObjectData.filter(function (object) {
 
-                    selectedObjectData.splice(selectedObjectData.indexOf(e.target.value));
+                    return object.externalId != e.target.value;
 
-                } else {
+                });
+
+                if (e.target.checked) {
 
                     selectedObjectData.push(model.objectData.filter(function (item) {
 
                         return e.target.value == item.externalId;
 
                     })[0]);
+
                 }
 
             } else {
