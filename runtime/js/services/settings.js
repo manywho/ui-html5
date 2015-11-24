@@ -83,23 +83,6 @@ manywho.settings = (function (manywho, $) {
         ping: {}
     };
 
-    function toLowerCaseKeys(obj) {
-
-        for (var prop in obj) {
-
-            var temp = obj[prop];
-
-            if (temp !== null && typeof temp === 'object') {
-                toLowerCaseKeys(temp)
-            }
-
-            delete obj[prop];
-            obj[prop.toLowerCase()] = temp;
-
-        }
-
-    }
-
     return {
 
         initialize: function(custom, handlers) {
@@ -107,15 +90,11 @@ manywho.settings = (function (manywho, $) {
             globals = manywho.utils.extend(globals, custom, true);
             events = manywho.utils.extend(events, handlers, true);
 
-            toLowerCaseKeys(globals);
-            toLowerCaseKeys(events);
-
         },
 
         initializeFlow: function(settings, flowKey) {
 
             flows[flowKey] = manywho.utils.extend({}, [globals, settings], true);
-            toLowerCaseKeys(flows[flowKey]);
 
         },
 
