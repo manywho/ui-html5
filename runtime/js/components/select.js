@@ -71,7 +71,7 @@ permissions and limitations under the License.
 
             var selectAttributes = {
                 multi: model.isMultiSelect,
-                disabled: !model.isEnabled || !model.isEditable || state.loading || this.props.isDesignTime,
+                disabled: !model.isEnabled || !model.isEditable || (state && state.loading) || this.props.isDesignTime,
                 placeholder: model.hintValue || 'Please select an option'
             };
 

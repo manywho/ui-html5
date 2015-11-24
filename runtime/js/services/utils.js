@@ -274,6 +274,18 @@ manywho.utils = (function (manywho, $) {
 
         },
 
+        getLookUpKey: function (flowKey) {
+
+            if (flowKey) {
+
+                return [flowKey.split('_')[0], flowKey.split('_')[3]].join('_');
+
+            }
+
+            return null;
+
+        },
+
         extractElement: function (flowKey) {
 
             return flowKey.split('_')[4];
@@ -324,7 +336,9 @@ manywho.utils = (function (manywho, $) {
 
         isSmallScreen: function (flowKey) {
 
-            return document.getElementById(flowKey).clientWidth < 768;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return document.getElementById(lookUpKey).clientWidth < 768;
 
         },
 
@@ -355,11 +369,13 @@ manywho.utils = (function (manywho, $) {
 
         removeFlowFromDOM: function(flowKey) {
 
-            var rootElement = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'))
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var rootElement = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
 
             for (var i = 0, len = rootElement.children.length; i < len; i++) {
 
-                if (rootElement.children[i].id == flowKey) {
+                if (rootElement.children[i].id == lookUpKey) {
 
                     React.unmountComponentAtNode(rootElement.children[i]);
                     rootElement.removeChild(rootElement.children[i]);
@@ -437,6 +453,19 @@ manywho.utils = (function (manywho, $) {
         			func.apply(context, args);
         		}
         	};
+        },
+
+        removeFlow: function (flowKey) {
+
+            manywho.model.deleteFlowModel(flowKey);
+            manywho.settings.remove(flowKey);
+            manywho.state.remove(flowKey);
+            manywho.social.remove(flowKey);
+            manywho.collaboration.leave('Another user', flowKey);
+            manywho.collaboration.remove(flowKey);
+            manywho.callbacks.remove(flowKey);
+            manywho.utils.removeFlowFromDOM(flowKey);
+
         }
 
     }
