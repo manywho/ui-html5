@@ -95,7 +95,7 @@ permissions and limitations under the License.
 
                     }
 
-                    parent.childCount++;
+                    parent.childCount = containers.length;
                 }
 
                 result.push(item);
