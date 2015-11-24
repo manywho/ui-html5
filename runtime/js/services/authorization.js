@@ -79,7 +79,7 @@ manywho.authorization = (function (manywho) {
                             { loginUrl: response.authorizationContext.loginUrl },
                             { ManyWhoTenantId: manywho.utils.extractTenantId(flowKey) },
                             { DirectoryName: response.authorizationContext.directoryName },
-                            { StateId: manywho.utils.extractStateId(flowKey)}
+                            { StateId: manywho.utils.extractStateId(flowKey) }
                         ];
 
                         var inputData = manywho.json.generateFlowInputs(inputObject);
