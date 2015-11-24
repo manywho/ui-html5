@@ -2600,6 +2600,9 @@ input[type="search"] {
     line-height: 45px;
   }
 }
+.select-wrapper.input-group > .btn {
+  height: 40px;
+}
 .form-group {
   margin-bottom: 15px;
 }
