@@ -28,7 +28,7 @@ manywho.settings = (function (manywho, $) {
             select: 250
         },
         collaboration: {
-            uri: 'http://localhost:4444'
+            uri: 'https://realtime.manywho.com'
         },
         platform: {
             uri: ''
