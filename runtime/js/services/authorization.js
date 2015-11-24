@@ -75,12 +75,12 @@ manywho.authorization = (function (manywho) {
                         authenticationFlow.id = data.id.id;
                         authenticationFlow.versionId = data.id.versionId;
 
-                        var inputObject = {
-                            loginUrl: response.authorizationContext.loginUrl,
-                            ManyWhoTenantId: manywho.utils.extractTenantId(flowKey),
-                            DirectoryName: response.authorizationContext.directoryName,
-                            StateId: manywho.utils.extractStateId(flowKey)
-                        };
+                        var inputObject = [
+                            { loginUrl: response.authorizationContext.loginUrl },
+                            { ManyWhoTenantId: manywho.utils.extractTenantId(flowKey) },
+                            { DirectoryName: response.authorizationContext.directoryName },
+                            { StateId: manywho.utils.extractStateId(flowKey)}
+                        ];
 
                         var inputData = manywho.json.generateFlowInputs(inputObject);
                         var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.global('playerUrl'), manywho.settings.global('joinUrl'));
