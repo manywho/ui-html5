@@ -340,7 +340,22 @@ manywho.utils = (function (manywho, $) {
             try {
 
                 for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
-                    obj = obj[path[i]];
+
+                    var foundKey = null;
+
+                    for (var key in obj) {
+                        if (key.toLowerCase() == path[i].toLowerCase()) {
+
+                            foundKey = key;
+
+                        }
+                    }
+
+                    if (foundKey) {
+                        obj = obj[foundKey];
+                    } else {
+                        obj = null;
+                    }
                 }
                 return obj;
 
