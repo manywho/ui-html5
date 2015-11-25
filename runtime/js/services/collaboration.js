@@ -53,29 +53,37 @@ manywho.collaboration = (function (manywho) {
 
     function onJoined(data) {
 
-        manywho.log.info(data.user + ' has joined ' + data.stateId);
+        if (rooms[data.stateId]) {
 
-        manywho.model.addNotification(rooms[data.stateId].flowKey, {
-            message: data.user + ' has joined',
-            position: 'right',
-            type: 'success',
-            timeout: '2000',
-            dismissible: false
-        });
+            manywho.log.info(data.user + ' has joined ' + data.stateId);
+
+            manywho.model.addNotification(rooms[data.stateId].flowKey, {
+                message: data.user + ' has joined',
+                position: 'right',
+                type: 'success',
+                timeout: '2000',
+                dismissible: false
+            });
+
+        }
 
     }
 
     function onLeft(data) {
 
-        manywho.log.info(data.user + ' has left ' + data.flowKey);
+        if (rooms[data.stateId]) {
 
-        manywho.model.addNotification(rooms[data.stateId].flowKey, {
-            message: data.user + ' has left',
-            position: 'right',
-            type: 'danger',
-            timeout: '2000',
-            dismissible: false
-        });
+            manywho.log.info(data.user + ' has left ' + data.flowKey);
+
+            manywho.model.addNotification(rooms[data.stateId].flowKey, {
+                message: data.user + ' has left',
+                position: 'right',
+                type: 'danger',
+                timeout: '2000',
+                dismissible: false
+            });
+
+        }
 
     }
 
@@ -109,6 +117,41 @@ manywho.collaboration = (function (manywho) {
 
     }
 
+    function onFlowOut(data) {
+
+        manywho.log.info('joining subflow ' + data.subStateId);
+
+        var element = manywho.utils.extractElement(data.parentFlowKey);
+        var tenantId = manywho.utils.extractTenantId(data.parentFlowKey);
+
+        manywho.state.setComponentLoading(element, null, data.parentFlowKey);
+        manywho.engine.render(data.parentFlowKey);
+
+        manywho.utils.removeFlow(data.parentFlowKey);
+        var stateId = manywho.utils.extractStateId(data.subFlowKey);
+
+        // Re-join the flow here so that we sync with the latest state from the manywho server
+        manywho.engine.join(tenantId, null, null, element, stateId, null, manywho.settings.flow(null, data.parentFlowKey));
+
+    }
+
+    function onReturnToParent(data) {
+
+        manywho.log.info('returning to parent ' + data.parentStateId);
+
+        var tenantId = manywho.utils.extractTenantId(data.subFlowKey);
+        var element = manywho.utils.extractElement(data.subFlowKey);
+
+        manywho.state.setComponentLoading(element, null, data.subFlowKey);
+        manywho.engine.render(data.subFlowKey);
+
+        manywho.utils.removeFlow(data.subFlowKey);
+
+        // Re-join the flow here so that we sync with the latest state from the manywho server
+        manywho.engine.join(tenantId, null, null, element, data.parentStateId, manywho.state.getAuthenticationToken(data.subFlowKey), manywho.settings.flow(null, data.subFlowKey));
+
+    }
+
     function onSync(data) {
 
         manywho.log.info('syncing ' + data.stateId);
@@ -118,8 +161,10 @@ manywho.collaboration = (function (manywho) {
 
     function onGetValues(data) {
 
-        manywho.log.info('get values from: ' + data.owner + ' in ' + data.stateId);
-        socket.emit('setValues', { stateId: data.stateId, id: data.id, components: manywho.state.getComponents(rooms[data.stateId].flowKey) });
+        var stateId = data.subStateId || data.stateId;
+
+        manywho.log.info('get values from: ' + data.owner + ' in ' + stateId);
+        socket.emit('setValues', { stateId: stateId, id: data.id, components: manywho.state.getComponents(rooms[stateId].flowKey) });
 
     }
 
@@ -144,12 +189,7 @@ manywho.collaboration = (function (manywho) {
 
             var stateId = manywho.utils.extractStateId(flowKey);
 
-            if ((!socket || !rooms[stateId]) && enable) {
-
-                rooms[stateId] = {
-                    isEnabled: true,
-                    flowKey: flowKey
-                };
+            if (!socket && enable) {
 
                 socket = io.connect(manywho.settings.global('collaboration.uri'), {
                     transports: ['websocket']
@@ -160,6 +200,8 @@ manywho.collaboration = (function (manywho) {
                 socket.on('left', onLeft);
                 socket.on('change', onChange);
                 socket.on('move', onMove);
+                socket.on('flowOut', onFlowOut);
+                socket.on('returnToParent', onReturnToParent);
                 socket.on('sync', onSync);
                 socket.on('getValues', onGetValues);
                 socket.on('setValues', onSetValues);
@@ -170,6 +212,15 @@ manywho.collaboration = (function (manywho) {
                     onDisconnect();
 
                 });
+
+            }
+
+            if (!rooms[stateId] && enable) {
+
+                rooms[stateId] = {
+                    isEnabled: true,
+                    flowKey: flowKey
+                };
 
             }
 
@@ -223,9 +274,11 @@ manywho.collaboration = (function (manywho) {
 
         },
 
-        leave: function(flowKey) {
+        leave: function(user, flowKey) {
 
-            emit(flowKey, 'left');
+            var stateId = manywho.utils.extractStateId(flowKey);
+
+            socket.emit('left', { user: user, stateId: stateId })
 
         },
 
@@ -244,6 +297,18 @@ manywho.collaboration = (function (manywho) {
         move: function (flowKey) {
 
             emit(flowKey, 'move');
+
+        },
+
+        flowOut: function (flowKey, stateId, subFlowKey) {
+
+            emit(flowKey, 'flowOut', { subStateId: stateId, parentFlowKey: flowKey, subFlowKey: subFlowKey });
+
+        },
+
+        returnToParent: function (flowKey, parentStateId) {
+
+            emit(flowKey, 'returnToParent', { subFlowKey: flowKey, parentStateId: parentStateId, stateId: manywho.utils.extractStateId(flowKey) });
 
         },
 

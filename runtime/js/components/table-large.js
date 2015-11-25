@@ -68,7 +68,7 @@ permissions and limitations under the License.
 
             var columns = [];
 
-            if (self.props.model.isMultiSelect) {
+            if (self.props.model.isMultiSelect && this.props.objectData) {
 
                 var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll };
 

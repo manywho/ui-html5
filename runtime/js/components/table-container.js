@@ -41,11 +41,12 @@ permissions and limitations under the License.
 
     function renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
 
+        var lookUpKey = manywho.utils.getLookUpKey(flowKey);
         var headerElements = [];
         var searchElement = null;
         var outcomesElement = null;
         var refreshElement = null;
-        var mainElement = document.getElementById(flowKey);
+        var mainElement = document.getElementById(lookUpKey);
 
         if (isObjectData) {
 

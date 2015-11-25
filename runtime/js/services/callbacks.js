@@ -17,7 +17,9 @@ manywho.callbacks = (function (manywho) {
 
         register: function (flowKey, options) {
 
-            callbacks[flowKey] = callbacks[flowKey] || [];
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            callbacks[lookUpKey] = callbacks[lookUpKey] || [];
 
             if (!options.flowKey) {
 
@@ -25,15 +27,17 @@ manywho.callbacks = (function (manywho) {
 
             }
 
-            callbacks[flowKey].push(options);
+            callbacks[lookUpKey].push(options);
 
         },
 
         execute: function (flowKey, type, name, args) {
 
-            if (callbacks[flowKey]) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-                callbacks[flowKey].filter(function (item) {
+            if (callbacks[lookUpKey]) {
+
+                callbacks[lookUpKey].filter(function (item) {
 
                     if (type && !manywho.utils.isEqual(item.type, type, true)) {
 
@@ -54,9 +58,9 @@ manywho.callbacks = (function (manywho) {
 
                     item.execute.apply(undefined, [item].concat(item.args || [], args));
 
-                    if (callbacks[flowKey]) {
+                    if (callbacks[lookUpKey]) {
 
-                        callbacks[flowKey].splice(callbacks[flowKey].indexOf(item), 1);
+                        callbacks[lookUpKey].splice(callbacks[lookUpKey].indexOf(item), 1);
 
                     }
 
@@ -68,7 +72,9 @@ manywho.callbacks = (function (manywho) {
 
         remove: function(flowKey) {
 
-            callbacks[flowKey] = null;
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            callbacks[lookUpKey] = null;
 
         }
 
