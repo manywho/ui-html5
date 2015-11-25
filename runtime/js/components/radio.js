@@ -11,7 +11,7 @@
 
 (function (manywho) {
 
-    function renderOption (item, attributes, column, developerName) {
+    function renderOption (item, attributes, column, developerName, selectedItems) {
 
         var optionAttributes = {};
 
@@ -27,9 +27,21 @@
 
             manywho.utils.extend(optionAttributes, [attributes, { type: type, name: developerName, value: item.externalId }]);
 
-            if (attributes.value == item.externalId) {
+            if (attributes.multiSelect) {
 
-                optionAttributes.checked = 'checked';
+                var isSelected = selectedItems.filter(function (selectedItem) {
+                    return item.externalId == selectedItem;
+                }).length > 0;
+
+                optionAttributes.checked = isSelected ? 'checked' : '';
+
+            } else {
+
+                if (attributes.value == item.externalId) {
+
+                    optionAttributes.checked = 'checked';
+
+                }
 
             }
 
@@ -74,7 +86,7 @@
         handleChange: function(e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
             var selectedObjectData = null;
 
@@ -183,7 +195,7 @@
                     }
 
                     options = model.objectData.map(function (item) {
-                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName);
+                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName, selectedItems);
                     });
 
                 }
