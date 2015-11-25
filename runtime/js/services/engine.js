@@ -400,6 +400,7 @@ manywho.engine = (function (manywho) {
         var flowKey = callback.flowKey || flowKey;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var moveResponse = null;
+        var selectedOutcomeId = invokeRequest.mapElementInvokeRequest.selectedOutcomeId;
 
         if (manywho.settings.global('history', flowKey)) {
 
@@ -426,7 +427,17 @@ manywho.engine = (function (manywho) {
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
                 manywho.state.setLocation(flowKey);
 
-                if (manywho.collaboration.isInitialized(flowKey)) {
+                if (response.mapElementInvokeResponses[0].outcomeResponses) {
+
+                    var outcome = response.mapElementInvokeResponses[0].outcomeResponses.filter(function (outcome) {
+
+                        return outcome.id == selectedOutcomeId;
+
+                    })[0];
+
+                }
+
+                if (manywho.collaboration.isInitialized(flowKey) && (!outcome || !outcome.isOut)) {
 
                     manywho.collaboration.move(flowKey);
 
@@ -594,17 +605,33 @@ manywho.engine = (function (manywho) {
 
                         var options = manywho.settings.getGlobals(flowKey);
 
-                        manywho.model.deleteFlowModel(flowKey);
-                        manywho.settings.remove(flowKey);
-                        manywho.state.remove(flowKey);
-                        manywho.social.remove(flowKey);
-                        manywho.collaboration.remove(flowKey);
-                        manywho.callbacks.remove(flowKey);
-                        manywho.utils.removeFlowFromDOM(flowKey);
+                        var subFlowKey = manywho.utils.getFlowKey(tenantId, null, null, response.stateId, manywho.utils.extractElement(flowKey));
+
+                        manywho.collaboration.flowOut(flowKey, response.stateId, subFlowKey);
+
+                        manywho.utils.removeFlow(flowKey);
 
                         manywho.engine.join(tenantId, null, null, 'main', response.stateId, authenticationToken, options);
 
                     });
+
+        },
+
+        returnToParent: function(flowKey, parentStateId) {
+
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+            var options = manywho.settings.getGlobals(flowKey);
+
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+            this.render(flowKey);
+
+            manywho.collaboration.returnToParent(flowKey, parentStateId);
+
+            manywho.utils.removeFlow(flowKey);
+
+            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
 
         },
 
@@ -721,25 +748,6 @@ manywho.engine = (function (manywho) {
                     type: 'done'
                 },
                 flowKey);
-
-        },
-
-        returnToParent: function(flowKey, parentStateId) {
-
-            var tenantId = manywho.utils.extractTenantId(flowKey);
-            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-
-            var options = manywho.settings.getGlobals(flowKey);
-
-            manywho.model.deleteFlowModel(flowKey);
-            manywho.settings.remove(flowKey);
-            manywho.state.remove(flowKey);
-            manywho.social.remove(flowKey);
-            manywho.collaboration.remove(flowKey);
-            manywho.callbacks.remove(flowKey);
-            manywho.utils.removeFlowFromDOM(flowKey);
-
-            manywho.engine.join(tenantId, null, null, 'main', parentStateId, authenticationToken, options);
 
         },
 
@@ -866,7 +874,9 @@ manywho.engine = (function (manywho) {
 
         render: function (flowKey) {
 
-            var container = document.getElementById(flowKey);
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var container = document.getElementById(lookUpKey);
 
             if (manywho.utils.isEqual(manywho.utils.extractElement(flowKey), 'modal-standalone', true)) {
 
@@ -874,7 +884,11 @@ manywho.engine = (function (manywho) {
 
             }
 
-            React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
+            if (container) {
+
+                React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
+
+            }
 
         }
     }

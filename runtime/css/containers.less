@@ -92,24 +92,21 @@ body {
         margin-bottom: 0;
     }
 
-    .mw-horizontal_flow > .row > * {
-        margin-bottom: 0;
-    }
-
     .mw-horizontal_flow > div > .row > * {
         padding-left: 0;
+        margin-bottom: 0;
     }
 
     .mw-inline_flow {
         .mw-container;
     }
 
-    .mw-inline_flow > * {
+    .mw-inline_flow > div > * {
         display: inline-block;
         margin-right: @container-margin;
     }
 
-    .mw-inline_flow > *:last-child {
+    .mw-inline_flow > div > *:last-child {
         margin-right: 0;
     }
 
@@ -118,7 +115,7 @@ body {
     }
 
     .container-label {
-        font-size: 2em;
+        margin-top: 0;
     }
 
     .container-label:empty {
@@ -132,8 +129,32 @@ body {
 
     .toggle-icon {
         font-size: 0.5em;
+        margin-top: -0.5em;
         margin-right: 0.6em;
         vertical-align: middle;
+    }
+
+    .collapsible-container {
+        transition: max-height 0.3s;
+        transition-timing-function: cubic-bezier(0,1,0,1);
+        max-height: 2000px;
+    }
+
+    .collapsed-container {
+        transition: max-height 0.3s;
+        transition-timing-function: cubic-bezier(0,1,0,1);
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .page-label {
+        margin-top: 0;
+        display: none;
+    }
+
+    .page-label:empty {
+        margin: 0;
+        display: none;
     }
 
 }

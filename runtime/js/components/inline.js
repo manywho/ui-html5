@@ -20,15 +20,29 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Inline: ' + this.props.id);
 
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "inline_flow", this.props.flowKey).join(' ');
-            var childClasses = this.state.isVisible ? [] : ['hidden'];
+            var childClasses = ['clearfix'];
+
+            if (manywho.settings.flow('collapsible', this.props.flowKey)) {
+
+                this.state.isVisible ? childClasses.push('collapsible-container') : childClasses.push('collapsible-container', 'collapsed-container');
+
+            }
+
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
+
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
 
             return React.DOM.div({ className: classes, id: this.props.id },
                 this.getLabel(model.label),
-                React.DOM.div({ className: childClasses.join(' ') }, [
+                React.DOM.div({ className: childClasses.join(' ')}, [
                     this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
-                ])
+                ]),
+                outcomeButtons
             );
 
         }

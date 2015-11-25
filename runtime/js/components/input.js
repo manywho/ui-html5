@@ -57,6 +57,11 @@ permissions and limitations under the License.
 
             var max = (Math.pow(10, maxSize)) - 1;
             var min = (Math.pow(10, maxSize) * -1) + 1;
+
+            if (value.indexOf('.', value.length-1) !== -1) {
+                return value;
+            }
+
             var parsedValue = parseFloat(value);
 
             parsedValue = Math.min(parsedValue, max);
@@ -119,6 +124,20 @@ permissions and limitations under the License.
             return {
                 value: null
             }
+
+        },
+
+        parseNumberInput: function (e) {
+
+            var parsedValue = parseFloat(e.target.value);
+
+            if (parsedValue) {
+
+                manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+
+            }
+
+            this.setState({ value: parsedValue });
 
         },
 
@@ -190,6 +209,8 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+
             var isValid = true;
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
             var contentValue = (state && state.contentValue) || model.contentValue;
@@ -225,10 +246,15 @@ permissions and limitations under the License.
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
                 (model.isVisible == false) ? 'hidden' : '',
-                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : ''
+                (manywho.utils.isEqual(contentType, 'ContentDateTime', true)) ? 'datetime-container' : '',
+                (outcomes) ? 'has-outcomes' : ''
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey))
             .join(' ');
+
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
 
             if (contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
@@ -249,7 +275,8 @@ permissions and limitations under the License.
                             ])
                         ),
                         React.DOM.span({className: 'help-block'}, model.validationMessage),
-                        React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                        React.DOM.span({ className: 'help-block' }, model.helpInfo),                        
+                        outcomeButtons
                     ]);
 
             } else {
@@ -269,6 +296,7 @@ permissions and limitations under the License.
                 }
                 else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
+                    attributes.onBlur = this.parseNumberInput;
                     attributes.style = { width: (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
                     attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
@@ -286,7 +314,8 @@ permissions and limitations under the License.
                         ]),
                         React.DOM.input(attributes, null),
                         React.DOM.span({ className: 'help-block' }, model.validationMessage),
-                        React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                        React.DOM.span({ className: 'help-block' }, model.helpInfo),
+                        outcomeButtons
                     ]);
 
             }

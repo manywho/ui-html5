@@ -208,7 +208,9 @@ manywho.component = (function (manywho) {
 
         appendFlowContainer: function (flowKey) {
 
-            var container = document.getElementById(flowKey);
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var container = document.getElementById(lookUpKey);
             var containerType = manywho.utils.extractElement(flowKey);
 
             // Added this fix because embedded Flows and normal Flows should not be positioned absolute
@@ -227,7 +229,7 @@ manywho.component = (function (manywho) {
                 var manywhoContainer = document.querySelector(manywho.settings.global('containerSelector', flowKey, '#manywho'));
 
                 container = document.createElement('div');
-                container.setAttribute('id', flowKey);
+                container.setAttribute('id', lookUpKey);
                 container.className = containerClasses;
                 container.style.minHeight = manywhoContainer.clientHeight + 'px';
                 manywhoContainer.appendChild(container);
@@ -262,7 +264,9 @@ manywho.component = (function (manywho) {
 
         scrollToTop: function (flowKey) {
 
-            var container = document.getElementById(flowKey);
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            var container = document.getElementById(lookUpKey);
             if (container) {
 
                 window.scroll(0, container.offsetTop);

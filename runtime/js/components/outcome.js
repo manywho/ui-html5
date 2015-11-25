@@ -93,11 +93,20 @@ permissions and limitations under the License.
 
     }
 
-    function getButtonSize(bindingId) {
+    function getButtonSize(bindingId, flowKey) {
 
         if (!manywho.utils.isNullOrWhitespace(bindingId)) {
 
-            return 'btn-sm';
+            var component = manywho.model.getComponent(bindingId, flowKey);
+            if (component) {
+
+                switch (component.componentType.toUpperCase()) {
+                    case 'TABLE':
+                    case 'INPUT':
+                        return 'btn-sm';
+                }
+
+            }
 
         }
 
@@ -145,7 +154,7 @@ permissions and limitations under the License.
             var classes = [
                 'outcome btn',
                 getButtonType(model.pageActionType || model.pageActionBindingType),
-                getButtonSize(model.pageObjectBindingId)
+                getButtonSize(model.pageObjectBindingId, this.props.flowKey)
             ];
 
             var content;
