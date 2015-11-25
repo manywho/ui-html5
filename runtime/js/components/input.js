@@ -58,7 +58,7 @@ permissions and limitations under the License.
             var max = (Math.pow(10, maxSize)) - 1;
             var min = (Math.pow(10, maxSize) * -1) + 1;
 
-            if (value.indexOf('.', value.length-1) !== -1) {
+            if (value.indexOf('.', value.length-1) !== -1 || value.indexOf('0', value.length-1) !== -1) {
                 return value;
             }
 
