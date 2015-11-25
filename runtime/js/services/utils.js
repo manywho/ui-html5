@@ -162,6 +162,45 @@ manywho.utils = (function (manywho, $) {
 
         },
 
+        extendObjectData: function (mergedObjectData, objectData) {
+
+            if (objectData) {
+
+                if (!mergedObjectData) {
+                    mergedObjectData = [];
+                    mergedObjectData.push(objectData[0]);
+                    return;
+                }
+
+                objectData.forEach(function (objectProperty) {
+
+                    if (mergedObjectData && mergedObjectData.length > 0) {
+
+                        mergedObjectData.forEach(function (property) {
+
+                            if (manywho.utils.isEqual(property.developerName, objectProperty.developerName, true)) {
+
+                                if (objectProperty.contentValue != null) {
+                                    manywho.utils.extend(property, objectProperty, true);
+                                } else if (objectProperty.objectData != null) {
+                                    property.objectData = objectProperty.objectData;
+                                }
+
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
+            }
+
+            return mergedObjectData;
+
+        },
+
         isNullOrWhitespace: function (value) {
 
             if (typeof value === 'undefined' || value == null) {
