@@ -502,6 +502,17 @@ permissions and limitations under the License.
 
             classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));
 
+            if (model.attributes && model.attributes.classes) {
+
+                classNames = classNames.join(' ') + ' ' + model.attributes.classes;
+
+            }
+            else {
+
+                classNames = classNames.join(' ');
+
+            }
+
             var validationElement = null;
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
 
@@ -509,7 +520,7 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classNames.join(' ') }, [
+            return React.DOM.div({ className: classNames }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
                 validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
