@@ -153,7 +153,7 @@ manywho.component = (function (manywho) {
 
         getSelectedRows: function (model, selectedIds) {
 
-            var selectedObjectData = null;
+            var selectedObjectData = [];
 
             if (selectedIds) {
 
@@ -161,7 +161,7 @@ manywho.component = (function (manywho) {
 
                     if (!manywho.utils.isNullOrWhitespace(selectedIds[selectedId])) {
 
-                        selectedObjectData = model.objectData.filter(function (item) {
+                        selectedObjectData = selectedObjectData.concat(model.objectData.filter(function (item) {
 
                             return manywho.utils.isEqual(item.externalId, selectedIds[selectedId], true);
 
@@ -171,7 +171,7 @@ manywho.component = (function (manywho) {
                             item.isSelected = true;
                             return item;
 
-                        });
+                        }));
 
                     }
 

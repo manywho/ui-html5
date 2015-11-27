@@ -227,6 +227,8 @@ permissions and limitations under the License.
 
             var selectedRows = [];
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
             if (e.currentTarget.checked) {
 
                 objectData.forEach(function (item) {
@@ -238,12 +240,15 @@ permissions and limitations under the License.
             }
 
             this.setState({ selectedRows: selectedRows });
+            manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
 
         },
 
         clearSelection: function () {
 
             this.setState({ selectedRows: [] });
+            manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
+
         },
 
         onHeaderClick: function (e) {
