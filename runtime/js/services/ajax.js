@@ -1,13 +1,13 @@
 /*!
-Copyright 2015 ManyWho, Inc.
-Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
-file except in compliance with the License.
-You may obtain a copy of the License at: http://manywho.com/sharedsource
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-*/
+ Copyright 2015 ManyWho, Inc.
+ Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+ file except in compliance with the License.
+ You may obtain a copy of the License at: http://manywho.com/sharedsource
+ Unless required by applicable law or agreed to in writing, software distributed under
+ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the specific language governing
+ permissions and limitations under the License.
+ */
 
 manywho.ajax = (function (manywho) {
 
@@ -83,7 +83,7 @@ manywho.ajax = (function (manywho) {
                     );
 
                 },
-                500
+                100
             );
 
             // Send the deferred object back ready to be resolved
@@ -95,17 +95,17 @@ manywho.ajax = (function (manywho) {
         } else {
 
             return $.ajax({
-                 url: url,
-                 type: methodType,
-                 dataType: 'json',
-                 contentType: 'application/json',
-                 processData: true,
-                 data: JSON.stringify(requestObject),
-                 beforeSend: function (xhr) {
+                url: url,
+                type: methodType,
+                dataType: 'json',
+                contentType: 'application/json',
+                processData: true,
+                data: JSON.stringify(requestObject),
+                beforeSend: function (xhr) {
 
-                     beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix);
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix);
 
-                 }
+                }
             })
                 .done(function (responseObject) {
                     cachedResponses[requestIdentifier] = responseObject;
@@ -114,7 +114,7 @@ manywho.ajax = (function (manywho) {
                 .fail(onError)
                 .fail(manywho.settings.event(eventPrefix + '.fail'));
 
-         }
+        }
 
     }
 
@@ -146,9 +146,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('login.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('login.fail'));
+                .done(manywho.settings.event('login.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('login.fail'));
 
         },
 
@@ -169,9 +169,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('initialization.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('initialization.fail'));
+                .done(manywho.settings.event('initialization.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('initialization.fail'));
 
         },
 
@@ -188,9 +188,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('flowOut.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('flowOut.fail'));
+                .done(manywho.settings.event('flowOut.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('flowOut.fail'));
 
         },
 
@@ -209,9 +209,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('join.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('join.fail'));
+                .done(manywho.settings.event('join.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('join.fail'));
 
         },
 
@@ -219,9 +219,20 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Invoking State: ' + engineInvokeRequest.stateId);
 
+            var requestIdentifier = null;
+
+            if (engineInvokeRequest.mapElementInvokeRequest != null &&
+                manywho.utils.isNullOrWhitespace(engineInvokeRequest.mapElementInvokeRequest.selectedOutcomeId) == false) {
+                requestIdentifier = engineInvokeRequest.mapElementInvokeRequest.selectedOutcomeId;
+            } else if (manywho.utils.isNullOrWhitespace(engineInvokeRequest.selectedNavigationItemId) == false) {
+                requestIdentifier = engineInvokeRequest.selectedNavigationItemId;
+            } else if (manywho.utils.isNullOrWhitespace(engineInvokeRequest.selectedMapElementId) == false) {
+                requestIdentifier = engineInvokeRequest.selectedMapElementId;
+            }
+
             return getDeferred(
                 this,
-                engineInvokeRequest.currentMapElementId,
+                requestIdentifier,
                 'invoke',
                 manywho.settings.global('platform.uri') + '/api/run/1/state/' + engineInvokeRequest.stateId,
                 'POST',
@@ -310,9 +321,9 @@ manywho.ajax = (function (manywho) {
             })
 
             return deferred.promise()
-                    .done(manywho.settings.event('fileData.done'))
-                    .fail(onError)
-                    .fail(manywho.settings.event('fileData.fail'));
+                .done(manywho.settings.event('fileData.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('fileData.fail'));
 
         },
 
@@ -344,9 +355,9 @@ manywho.ajax = (function (manywho) {
             });
 
             return deferred.promise()
-                    .done(manywho.settings.event('fileData.done'))
-                    .fail(onError)
-                    .fail(manywho.settings.event('fileData.fail'));
+                .done(manywho.settings.event('fileData.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('fileData.fail'));
 
         },
 
@@ -368,9 +379,9 @@ manywho.ajax = (function (manywho) {
                 }
 
             })
-            .done(manywho.settings.event('sessionAuthentication.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('sessionAuthentication.fail'));
+                .done(manywho.settings.event('sessionAuthentication.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('sessionAuthentication.fail'));
         },
 
         ping: function (tenantId, stateId, stateToken, authenticationToken) {
@@ -386,7 +397,7 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .fail(onError);
+                .fail(onError);
 
         },
 
@@ -403,9 +414,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('log.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('log.fail'));
+                .done(manywho.settings.event('log.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('log.fail'));
 
         },
 
@@ -424,9 +435,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -445,9 +456,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -466,9 +477,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -491,9 +502,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -515,9 +526,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         },
 
@@ -539,9 +550,9 @@ manywho.ajax = (function (manywho) {
 
                 }
             })
-            .done(manywho.settings.event('social.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('social.fail'));
+                .done(manywho.settings.event('social.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('social.fail'));
 
         }
 
