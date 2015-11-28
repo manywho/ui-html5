@@ -11,6 +11,8 @@ permissions and limitations under the License.
 
 manywho.ajax = (function (manywho) {
 
+    var cachedResponses = {};
+
     function onError(xhr, status, error) {
 
         manywho.log.error(error);
@@ -46,22 +48,73 @@ manywho.ajax = (function (manywho) {
             request.listFilter.offset = (page - 1) * request.listFilter.limit;
         }
 
-        return $.ajax({
-            url: manywho.settings.global('platform.uri') + url,
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            processData: true,
-            data: JSON.stringify(request),
-            beforeSend: function (xhr) {
+        return getDeferred(
+            this,
+            request.typeElementBindingId,
+            eventPrefix,
+            manywho.settings.global('platform.uri') + url,
+            'POST',
+            tenantId,
+            authenticationToken,
+            request
+        );
 
-                beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix);
+    }
 
-            }
-        })
-        .done(manywho.settings.event(eventPrefix + '.done'))
-        .fail(onError)
-        .fail(manywho.settings.event(eventPrefix + '.fail'));
+    function isOnline() {
+        return navigator.onLine;
+    }
+
+    function getDeferred(resolveContext, requestIdentifier, eventPrefix, url, methodType, tenantId, authenticationToken, requestObject) {
+
+        // Check to see if the engine is running offline
+        if (isOnline() == false) {
+
+            var deferred = new jQuery.Deferred();
+            var resolveArguments = cachedResponses[requestIdentifier];
+
+            // Set a timeout to resolve of 500 milliseconds to give the UI time to render
+            setTimeout(function () {
+
+                    // Once the timer is done, we resolve
+                    deferred.resolveWith(
+                        resolveContext,
+                        [resolveArguments]
+                    );
+
+                },
+                500
+            );
+
+            // Send the deferred object back ready to be resolved
+            return deferred
+                .done(manywho.settings.event(eventPrefix + '.done'))
+                .fail(onError)
+                .fail(manywho.settings.event(eventPrefix + '.fail'));
+
+        } else {
+
+            return $.ajax({
+                 url: url,
+                 type: methodType,
+                 dataType: 'json',
+                 contentType: 'application/json',
+                 processData: true,
+                 data: JSON.stringify(requestObject),
+                 beforeSend: function (xhr) {
+
+                     beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix);
+
+                 }
+            })
+                .done(function (responseObject) {
+                    cachedResponses[requestIdentifier] = responseObject;
+                })
+                .done(manywho.settings.event(eventPrefix + '.done'))
+                .fail(onError)
+                .fail(manywho.settings.event(eventPrefix + '.fail'));
+
+         }
 
     }
 
@@ -166,43 +219,31 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Invoking State: ' + engineInvokeRequest.stateId);
 
-            return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/run/1/state/' + engineInvokeRequest.stateId,
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify(engineInvokeRequest),
-                beforeSend: function (xhr) {
-
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'invoke');
-
-                }
-            })
-            .done(manywho.settings.event('invoke.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('invoke.fail'));
+            return getDeferred(
+                this,
+                engineInvokeRequest.currentMapElementId,
+                'invoke',
+                manywho.settings.global('platform.uri') + '/api/run/1/state/' + engineInvokeRequest.stateId,
+                'POST',
+                tenantId,
+                authenticationToken,
+                engineInvokeRequest
+            );
 
         },
 
         getNavigation: function (stateId, stateToken, navigationElementId, tenantId, authenticationToken) {
 
-            return $.ajax({
-                url: manywho.settings.global('platform.uri') + '/api/run/1/navigation/' + stateId,
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                processData: true,
-                data: JSON.stringify({ 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }),
-                beforeSend: function (xhr) {
-
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'navigation');
-
-                }
-            })
-            .done(manywho.settings.event('navigation.done'))
-            .fail(onError)
-            .fail(manywho.settings.event('navigation.fail'));
+            return getDeferred(
+                this,
+                stateToken + navigationElementId,
+                'navigation',
+                manywho.settings.global('platform.uri') + '/api/run/1/navigation/' + stateId,
+                'POST',
+                tenantId,
+                authenticationToken,
+                { 'stateId': stateId, 'stateToken': stateToken, 'navigationElementId': navigationElementId }
+            );
 
         },
 
