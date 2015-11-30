@@ -89,12 +89,6 @@ permissions and limitations under the License.
 
                     item.parent = parent.id;
 
-                    if (!parent.childCount) {
-
-                        parent.childCount = 0;
-
-                    }
-
                     parent.childCount = containers.length;
                 }
 
