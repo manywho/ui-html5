@@ -264,8 +264,13 @@ manywho.ajax = (function (manywho) {
 
     function cacheRequest(requestObject) {
 
+        // TODO: the cached identifier needs to be based on the map element in the sequence or it won't be tracked
+        // TODO: but somehow it also needs to somehow know when it's done - perhaps fill up the sequence and when
+        // TODO: the sequence is full, commit, so forget the whole entry point piece
+
         // Check to see if we have requests to cache
         if (requestObject != null &&
+            isOnline() == false &&
             manywho.settings.global('offline.requestsToCache') != null) {
 
             var requestsToCache = manywho.settings.global('offline.requestsToCache');
@@ -299,10 +304,10 @@ manywho.ajax = (function (manywho) {
 
                             for (var j = 0; j < requestsToCache[i].sequence.length; j++) {
 
-                                if (manywho.utils.isEqual(requestObject.currentMapElementId, sequence.mapElementId, true) == true) {
+                                if (manywho.utils.isEqual(requestObject.currentMapElementId, requestsToCache[i].sequence[j].mapElementId, true) == true) {
 
                                     // This request is for a map element in the sequence
-                                    getCachedRequests().apply(cachedIdentifier, sequence.mapElementId, requestObject);
+                                    getCachedRequests().apply(cachedIdentifier, requestsToCache[i].sequence[j].mapElementId, requestObject);
                                     break;
 
                                 }

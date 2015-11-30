@@ -27,8 +27,7 @@ manywho.settings = (function (manywho, $) {
             responsesCache: null,
             requestsCache: null,
             requestsToCache: null,
-            isEnabled: false,
-            isDynamic: true
+            isEnabled: false
         },
         paging: {
             table: 10,

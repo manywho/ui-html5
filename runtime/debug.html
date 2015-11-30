@@ -171,11 +171,17 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
                         uri: 'https://flow.manywho.com'
+                    },
+                    offline: {
+                        responsesCache: manywho.responses,
+                        requestsCache: manywho.requests,
+                        requestsToCache: manywho.cache.requestsToCache,
+                        isEnabled: true
                     }
                 },
                 {
@@ -233,20 +239,13 @@
                         isFixed: true,
                         isWizard: false
                     },
-                    offline: {
-                        responsesCache: null,
-                        requestsCache: null,
-                        requestsToCache: null,
-                        isEnabled: false,
-                        isDynamic: true
-                    },
                     callbacks: [],
                     collapsible: true,
                     history: queryParameters['history'],
                     theme: queryParameters['theme']
                 };
 
-                var tenantId = queryParameters['tenant-id'];
+                /*var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
 
                     tenantId = window.location.pathname
@@ -257,13 +256,16 @@
 
                             })[0];
 
-                }
+                }*/
+
+                var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // ADD YOUR TENANT ID HERE
+                var flowId = '3ca32f1c-0278-477b-9ce1-ff88210be747'; // ADD YOUR FLOW ID HERE
 
                 manywho.log.enableAll();
 
                 manywho.engine.initialize(
                     tenantId,
-                    queryParameters['flow-id'],
+                    flowId,
                     queryParameters['flow-version-id'],
                     'main',
                     queryParameters['join'],
@@ -329,6 +331,10 @@
     <script src="js/components/returnToParent.js"></script>
     <script src="js/components/radio.js"></script>
     <script src="js/components/history.js"></script>
+
+    <script src="example/config.js"></script>
+    <script src="example/requests-cache.js"></script>
+    <script src="example/responses-cache.js"></script>
 
     <script src="https://flow.manywho.com/js/constants"></script>
 
