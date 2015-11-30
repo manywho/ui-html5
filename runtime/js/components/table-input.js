@@ -47,7 +47,7 @@ permissions and limitations under the License.
 
         },
 
-        componentWillMount() {
+        componentWillMount: function() {
 
             this.setState({ value: this.props.value });
             
