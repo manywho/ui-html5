@@ -23,6 +23,13 @@ manywho.settings = (function (manywho, $) {
             returnToParent: 'Return To Parent',
             status: null
         },
+        offline: {
+            responsesCache: null,
+            requestsCache: null,
+            requestsToCache: null,
+            isEnabled: false,
+            isDynamic: true,
+        },
         paging: {
             table: 10,
             select: 250
