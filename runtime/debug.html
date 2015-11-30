@@ -107,6 +107,19 @@
         </div>
     </div>
 
+    <div class="mw-bs container">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="responsesCache">Responses Cache</label>
+                <textarea class="form-control small" rows="5" id="responsesCache"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label for="requestsToCache">Requests To Cache (Recording)</label>
+                <textarea class="form-control small" rows="5" id="requestsToCache"></textarea>
+            </div>
+        </div>
+    </div>
+
     <link rel="stylesheet" href="css/mw-bootstrap.css" />
     <link rel="stylesheet" href="css/themes/mw-paper.css" id="theme" />
 
@@ -143,6 +156,14 @@
 
     <script>
 
+        function handleString(string) {
+            if (manywho.utils.isNullOrWhitespace(string) == false) {
+                return '"' + string + '"';
+            } else {
+                return 'null';
+            }
+        }
+
         var manywho = {
             cdnUrl: '',
             initialize: function () {
@@ -155,6 +176,40 @@
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
                         uri: 'https://flow.manywho.com'
+                    }
+                },
+                {
+                    invoke: {
+                        beforeSend: function (xhr, request) {
+
+                            var selectedOutcomeId = null;
+
+                            if (request.mapElementInvokeRequest != null) {
+                                selectedOutcomeId = request.mapElementInvokeRequest.selectedOutcomeId;
+                            }
+
+                            // Append the first part of the entry
+                            $('#requestsToCache').append(
+                                    '{\r' +
+                                    '    "entryOutcomeId": ' + handleString(selectedOutcomeId) + ',\r' +
+                                    '    "entryNavigationItemId": ' + handleString(request.selectedNavigationItemId) + ',\r' +
+                                    '    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');
+
+                        },
+                        done: function (response) {
+
+                            // Now the request has completed, append the rest of the request info
+                            $('#requestsToCache').append(
+                                    '    "sequence": [\r' +
+                                    '        {\r' +
+                                    '            "mapElementId": ' + handleString(response.currentMapElementId) + '\r' +
+                                    '        }\r' +
+                                    '    ]\r' +
+                                    '}\r');
+
+                            $('#responsesCache').val(JSON.stringify(manywho.ajax.cachedResponses.getAll(), null, 4));
+
+                        }
                     }
                 });
 
@@ -178,6 +233,13 @@
                         isFixed: true,
                         isWizard: false
                     },
+                    offline: {
+                        responsesCache: null,
+                        requestsCache: null,
+                        requestsToCache: null,
+                        isEnabled: false,
+                        isDynamic: true
+                    },
                     callbacks: [],
                     collapsible: true,
                     history: queryParameters['history'],
@@ -188,12 +250,12 @@
                 if (!tenantId) {
 
                     tenantId = window.location.pathname
-                                .split('/')
-                                .filter(function (path) {
+                            .split('/')
+                            .filter(function (path) {
 
-                                    return path && path.length > 0;
+                                return path && path.length > 0;
 
-                                })[0];
+                            })[0];
 
                 }
 
