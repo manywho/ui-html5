@@ -11,8 +11,6 @@
 
 manywho.ajax = (function (manywho) {
 
-    var cachedResponses = {};
-
     function onError(xhr, status, error) {
 
         manywho.log.error(error);
@@ -93,7 +91,7 @@ manywho.ajax = (function (manywho) {
             request.listFilter.offset = (page - 1) * request.listFilter.limit;
         }
 
-        return getDeferred(
+        return this.getDeferred(
             this,
             generateIdentifierForRequest(request),
             eventPrefix,
@@ -128,11 +126,19 @@ manywho.ajax = (function (manywho) {
                 // resilience
                 manywho.ajax.cachedRequests = {
 
+                    completedCachedRequests: [],
+
                     cachedRequests: {},
 
-                    getAll: function () {
+                    getCompleted: function () {
 
-                        return cachedRequests;
+                        return this.completedCachedRequests;
+
+                    },
+
+                    getLive: function () {
+
+                        return this.cachedRequests;
 
                     },
 
@@ -151,7 +157,7 @@ manywho.ajax = (function (manywho) {
                         cachedRequest[mapElementId] = requestObject;
 
                         // Set the cached request entry back into the cache
-                        cachedRequests[identifier] = cachedRequest;
+                        this.cachedRequests[identifier] = cachedRequest;
 
                     }
 
@@ -186,19 +192,19 @@ manywho.ajax = (function (manywho) {
 
                     get: function (identifier) {
 
-                        return cachedResponses[identifier];
+                        return this.cachedResponses[identifier];
 
                     },
 
                     getAll: function () {
 
-                        return cachedResponses;
+                        return this.cachedResponses;
 
                     },
 
                     set: function (identifier, responseObject) {
 
-                        cachedResponses[identifier] = responseObject;
+                        this.cachedResponses[identifier] = responseObject;
 
                     }
 
@@ -212,61 +218,7 @@ manywho.ajax = (function (manywho) {
 
     }
 
-    function generateRequestsToCacheIdentifier(outcomeId, navigationItemId, mapElementId) {
-
-        if (manywho.utils.isNullOrWhitespace(outcomeId) == false) {
-
-            return outcomeId;
-
-        } else if (manywho.utils.isNullOrWhitespace(navigationItemId) == false ) {
-
-            return navigationItemId;
-
-        } else if (manywho.utils.isNullOrWhitespace(mapElementId) == false) {
-
-            return mapElementId;
-
-        } else {
-
-            return null;
-
-        }
-
-    }
-
-    function generateRequestsToCacheIdentifierFromRequest(requestObject) {
-
-        if ('mapElementInvokeRequest' in requestObject ||
-            'selectedNavigationItemId' in requestObject ||
-            'selectedMapElementId' in requestObject) {
-
-            var selectedOutcomeId = null;
-
-            if (requestObject.mapElementInvokeRequest != null &&
-                manywho.utils.isNullOrWhitespace(requestObject.mapElementInvokeRequest.selectedOutcomeId) == false) {
-
-                selectedOutcomeId = requestObject.mapElementInvokeRequest.selectedOutcomeId;
-
-            }
-
-            return generateRequestsToCacheIdentifier(
-                selectedOutcomeId,
-                requestObject.selectedNavigationItemId,
-                requestObject.selectedMapElementId);
-
-        } else {
-
-            // We don't have a request identifier and can't/shouldn't cache the request
-            return null;
-        }
-
-    }
-
     function cacheRequest(requestObject) {
-
-        // TODO: the cached identifier needs to be based on the map element in the sequence or it won't be tracked
-        // TODO: but somehow it also needs to somehow know when it's done - perhaps fill up the sequence and when
-        // TODO: the sequence is full, commit, so forget the whole entry point piece
 
         // Check to see if we have requests to cache
         if (requestObject != null &&
@@ -278,39 +230,20 @@ manywho.ajax = (function (manywho) {
             // Check to make sure we have entries in the array of cache requests
             if (requestsToCache.length > 0) {
 
-                // Get out the relevant information from this request
-                var selectedIdentifier = generateRequestsToCacheIdentifierFromRequest(requestObject);
+                for (var i = 0; i < requestsToCache.length; i++) {
 
-                // If the request doesn't have any entry identifiers, we cannot associate it with a sequence to cache
-                // TODO: Currently this does mean the first page in the app is ignored
-                if (selectedIdentifier != null) {
+                    // Check to see if sequence to cache
+                    if (requestsToCache[i].sequence != null &&
+                        requestsToCache[i].sequence.length > 0) {
 
-                    for (var i = 0; i < requestsToCache.length; i++) {
+                        // Go through each item in the sequence to see if it contains this request
+                        for (var j = 0; j < requestsToCache[i].sequence.length; j++) {
 
-                        // We only do something with the requests to cache if we have a valid entry point and
-                        // we have a sequence of map elements to monitor.
-                        var cachedIdentifier = generateRequestsToCacheIdentifier(
-                            requestsToCache[i].entryOutcomeId,
-                            requestsToCache[i].entryNavigationItemId,
-                            requestsToCache[i].entryMapElementId
-                        );
+                            if (manywho.utils.isEqual(requestObject.currentMapElementId, requestsToCache[i].sequence[j].mapElementId, true) == true) {
 
-                        // Check to see if the selected identifier matches the cached identifier and we also have a
-                        // sequence to cache
-                        if (manywho.utils.isNullOrWhitespace(cachedIdentifier) == false &&
-                            manywho.utils.isEqual(selectedIdentifier, cachedIdentifier, true) == true &&
-                            requestsToCache[i].sequence != null &&
-                            requestsToCache[i].sequence.length > 0) {
-
-                            for (var j = 0; j < requestsToCache[i].sequence.length; j++) {
-
-                                if (manywho.utils.isEqual(requestObject.currentMapElementId, requestsToCache[i].sequence[j].mapElementId, true) == true) {
-
-                                    // This request is for a map element in the sequence
-                                    getCachedRequests().apply(cachedIdentifier, requestsToCache[i].sequence[j].mapElementId, requestObject);
-                                    break;
-
-                                }
+                                // This request is for a map element in the sequence
+                                getCachedRequests().apply(requestsToCache[i], requestsToCache[i].sequence[j].mapElementId, requestObject);
+                                break;
 
                             }
 
@@ -326,101 +259,108 @@ manywho.ajax = (function (manywho) {
 
     }
 
-    function getOfflineDeferred(resolveContext, requestIdentifier, eventPrefix) {
-
-        var deferred = new jQuery.Deferred();
-        var resolveArguments = getCachedResponses().get(eventPrefix + '_' + requestIdentifier);
-
-        // Set a timeout to resolve of 100 milliseconds to give the UI time to render
-        setTimeout(function () {
-
-                // Once the timer is done, we resolve
-                deferred.resolveWith(
-                    resolveContext,
-                    [resolveArguments]
-                );
-
-            },
-            100
-        );
-
-        // Send the deferred object back ready to be resolved
-        return deferred
-            .done(manywho.settings.event(eventPrefix + '.done'))
-            .fail(onError)
-            .fail(manywho.settings.event(eventPrefix + '.fail'));
-
-    }
-
-    function getOnlineDeferred(requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject) {
-
-        var jsonData = null;
-
-        if (requestObject != null) {
-            jsonData = JSON.stringify(requestObject);
-        }
-
-        return $.ajax({
-            url: url,
-            type: methodType,
-            dataType: 'json',
-            contentType: 'application/json',
-            processData: true,
-            data: jsonData,
-            beforeSend: function (xhr) {
-
-                cacheRequest(requestObject);
-
-                beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix, requestObject);
-
-                if (manywho.utils.isNullOrWhitespace(stateId) == false) {
-                    xhr.setRequestHeader('ManyWhoState', stateId);
-                }
-
-            }
-        })
-            .done(function (responseObject) {
-
-                if (manywho.settings.global('offline.isEnabled')) {
-                    getCachedResponses().set(eventPrefix + '_' + requestIdentifier, responseObject);
-                }
-
-            })
-            .done(manywho.settings.event(eventPrefix + '.done'))
-            .fail(onError)
-            .fail(manywho.settings.event(eventPrefix + '.fail'));
-
-    }
-
-    function getDeferred(resolveContext, requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject) {
-
-        // Check to make sure a request identifier is present if we have caching enabled
-        if (manywho.settings.global('offline.isEnabled') &&
-            manywho.utils.isNullOrWhitespace(requestIdentifier) == true) {
-            manywho.log.info('A request identifier could not be found for invoke request. Caching will not function for "' + eventPrefix + '" request.');
-        }
-
-        // Check to see if the engine is running offline
-        if (manywho.settings.global('offline.isEnabled') &&
-            isOnline() == false) {
-
-            // Send back the offline deferred as we don't have a connection
-            return getOfflineDeferred(resolveContext, requestIdentifier, eventPrefix);
-
-        } else {
-
-            // Send back the online deferred as we do have a connection
-            return getOnlineDeferred(requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject);
-
-        }
-
-    }
-
     return {
 
         cachedResponses: null,
 
         cachedRequests: null,
+
+        getDeferred: function (resolveContext, requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject) {
+
+            // Check to make sure a request identifier is present if we have caching enabled
+            if (manywho.settings.global('offline.isEnabled') &&
+                manywho.utils.isNullOrWhitespace(requestIdentifier) == true) {
+                manywho.log.info('A request identifier could not be found for invoke request. Caching will not function for "' + eventPrefix + '" request.');
+            }
+
+            // Check to see if the engine is running offline
+            if (manywho.settings.global('offline.isEnabled') &&
+                isOnline() == false) {
+
+                // Send back the offline deferred as we don't have a connection
+                return this.getOfflineDeferred(resolveContext, requestIdentifier, eventPrefix, requestObject);
+
+            } else {
+
+                // Send back the online deferred as we do have a connection
+                return this.getOnlineDeferred(requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject);
+
+            }
+
+        },
+
+        getOfflineDeferred: function (resolveContext, requestIdentifier, eventPrefix, requestObject) {
+
+            var deferred = new jQuery.Deferred();
+            var resolveArguments = getCachedResponses().get(eventPrefix + '_' + requestIdentifier);
+
+            // Cache the request if needed
+            cacheRequest(requestObject);
+
+            // Set a timeout to resolve of 100 milliseconds to give the UI time to render
+            setTimeout(function () {
+
+                    // Once the timer is done, we resolve
+                    deferred.resolveWith(
+                        resolveContext,
+                        [resolveArguments]
+                    );
+
+                },
+                100
+            );
+
+            // Send the deferred object back ready to be resolved
+            return deferred
+                .done(manywho.settings.event(eventPrefix + '.done'))
+                .fail(onError)
+                .fail(manywho.settings.event(eventPrefix + '.fail'));
+
+        },
+
+        getOnlineDeferred: function (requestIdentifier, eventPrefix, url, methodType, tenantId, stateId, authenticationToken, requestObject, isAsync) {
+
+            var jsonData = null;
+
+            if (requestObject != null) {
+                jsonData = JSON.stringify(requestObject);
+            }
+
+            // If async isn't provided assume the method call is async
+            if (isAsync == null) {
+                isAsync = true;
+            }
+
+            return $.ajax({
+                url: url,
+                type: methodType,
+                dataType: 'json',
+                async: isAsync,
+                contentType: 'application/json',
+                processData: true,
+                data: jsonData,
+                beforeSend: function (xhr) {
+
+                    beforeSend.call(this, xhr, tenantId, authenticationToken, eventPrefix, requestObject);
+
+                    if (manywho.utils.isNullOrWhitespace(stateId) == false) {
+                        xhr.setRequestHeader('ManyWhoState', stateId);
+                    }
+
+                }
+            })
+                .done(function (responseObject) {
+
+                    if (manywho.settings.global('offline.isEnabled')) {
+                        getCachedResponses().set(eventPrefix + '_' + requestIdentifier, responseObject);
+                    }
+
+                })
+                .done(manywho.settings.event(eventPrefix + '.done'))
+                .fail(onError)
+                .fail(manywho.settings.event(eventPrefix + '.fail'));
+
+        },
 
         login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId, authenticationToken) {
 
@@ -464,7 +404,7 @@ manywho.ajax = (function (manywho) {
                 requestIdentifier += requestIdentifier + engineInitializationRequest.flowId.versionId;
             }
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 requestIdentifier,
                 'initialization',
@@ -482,7 +422,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Flow Out using Outcome: ' + selectedOutcomeId);
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 selectedOutcomeId,
                 'flowOut',
@@ -500,7 +440,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Joining State: ' + stateId);
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 stateId,
                 'join',
@@ -541,7 +481,7 @@ manywho.ajax = (function (manywho) {
 
             }
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 requestIdentifier,
                 'invoke',
@@ -559,7 +499,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Navigation for: ' + navigationElementId);
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 stateToken + navigationElementId,
                 'navigation',
@@ -577,7 +517,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Flows for name: ' + flowName);
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 flowName,
                 'getFlowByName',
@@ -703,7 +643,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Pinging for changes');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 stateId,
                 'ping',
@@ -721,7 +661,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Execution Log');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 stateId,
                 'log',
@@ -739,7 +679,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Social User, Me');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'me_' + streamId,
                 'social',
@@ -757,7 +697,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Social Followers');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'followers_' + streamId,
                 'social',
@@ -775,7 +715,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Getting Social Messages');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'messages_' + streamId,
                 'social',
@@ -793,7 +733,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Sending Social Message');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'message_' + streamId,
                 'social',
@@ -811,7 +751,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Following Social Message');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'follow_' + streamId,
                 'social',
@@ -829,7 +769,7 @@ manywho.ajax = (function (manywho) {
 
             manywho.log.info('Following Social Message');
 
-            return getDeferred(
+            return this.getDeferred(
                 this,
                 'users_' + streamId,
                 'social',

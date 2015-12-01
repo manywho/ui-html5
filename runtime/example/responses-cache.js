@@ -17,12 +17,11 @@ manywho.responses = (function (manywho) {
         set: function (identifier, responseObject) {
 
             // Don't set as we're hard coding the cached responses
-            //cachedResponses[identifier] = responseObject;
+            this.cachedResponses[identifier] = responseObject;
 
         },
 
-        cachedResponses: {
-            "initialization_3ca32f1c-0278-477b-9ce1-ff88210be747": {
+        cachedResponses: { "initialization_3ca32f1c-0278-477b-9ce1-ff88210be747": {
                 "culture": {
                     "id": null,
                     "developerName": null,

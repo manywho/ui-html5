@@ -678,6 +678,70 @@ manywho.engine = (function (manywho) {
 
         },
 
+        play: function(requestsToCache, cachedRequests, mapElementId, flowKey) {
+
+            if (cachedRequests == null ||
+                cachedRequests.length == 0) {
+
+                manywho.log.info('Request to play back cached requests skipped as no requests provided.');
+                return;
+
+            }
+
+            // Generate the invoke request as per the entry point definition
+            var entryInvokeRequest = manywho.json.generateNavigateRequest(
+                manywho.state.getState(flowKey),
+                requestsToCache.entryNavigationItemId,
+                manywho.model.getDefaultNavigationId(flowKey),
+                requestsToCache.entryMapElementId,
+                manywho.state.getPageComponentInputResponseRequests(flowKey),
+                manywho.settings.flow('annotations', flowKey),
+                manywho.state.getLocation(flowKey)
+            );
+
+            // Move the flow state to the correct location as per the requests to cache definition
+            // We do this against the online deferred as we must be online for this to work
+            manywho.ajax.getOnlineDeferred(
+                this,
+                null,
+                'navigation',
+                manywho.settings.global('platform.uri') + '/api/run/1/state/' + entryInvokeRequest.stateId,
+                'POST',
+                manywho.utils.extractTenantId(flowKey),
+                entryInvokeRequest.stateId,
+                manywho.state.getAuthenticationToken(flowKey),
+                entryInvokeRequest).done(function (response) {
+
+                    // We capture the response as we need to use this to inform the requests (e.g. make sure the state
+                    // identifier is OK
+                    for (var i = 0; i < requestsToCache.sequence.length; i++) {
+
+                        // Get the cached requests out in order
+                        var cachedRequest = cachedRequests[requestsToCache.sequence[i].mapElementId];
+
+                        // Make sure the state identifier is correct
+                        cachedRequest.stateId = response.stateId;
+
+                        // Execute the request synchronously as they need to be done in order
+                        manywho.ajax.getOnlineDeferred(
+                            this,
+                            'invoke',
+                            manywho.settings.global('platform.uri') + '/api/run/1/state/' + entryInvokeRequest.stateId,
+                            'POST',
+                            manywho.utils.extractTenantId(flowKey),
+                            entryInvokeRequest.stateId,
+                            manywho.state.getAuthenticationToken(flowKey),
+                            entryInvokeRequest,
+                            true).done();
+
+                    }
+
+                });
+
+            return true;
+
+        },
+
         navigate: function(navigationId, navigationElementId, mapElementId, flowKey) {
 
             manywho.state.setComponentLoading('main', { message: manywho.settings.global('localization.navigating') }, flowKey);
