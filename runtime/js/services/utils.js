@@ -515,8 +515,14 @@ manywho.utils = (function (manywho, $) {
             manywho.settings.remove(flowKey);
             manywho.state.remove(flowKey);
             manywho.social.remove(flowKey);
-            manywho.collaboration.leave('Another user', flowKey);
-            manywho.collaboration.remove(flowKey);
+
+            if (manywho.settings.flow('collaboration.isEnabled', flowKey)) {
+
+                manywho.collaboration.leave('Another user', flowKey);
+                manywho.collaboration.remove(flowKey);
+
+            }
+
             manywho.callbacks.remove(flowKey);
             manywho.utils.removeFlowFromDOM(flowKey);
 
