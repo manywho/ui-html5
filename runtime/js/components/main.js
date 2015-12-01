@@ -73,6 +73,7 @@ permissions and limitations under the License.
                 var isMounted = React.findDOMNode(this.refs.container) != null;
 
                 outcomeElements = React.createElement(manywho.component.getByName('footer'), { flowKey: this.props.flowKey, container: this.refs.container, isMounted: isMounted }, outcomeElements);
+
             }
 
             var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
@@ -82,7 +83,7 @@ permissions and limitations under the License.
                 (isFullWidth) ? 'container-fluid full-width' : 'container',
                 (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : '',
                 (manywho.settings.global('history', this.props.flowKey)) ? 'main-history': '',
-                (manywho.settings.global('outcomes.isFixed', this.props.flowKey)) ? 'has-footer': ''
+                (attributes && manywho.utils.isEqual(attributes.outcomes, "fixed", true)) ? 'has-footer': ''
             ];
 
             return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [
