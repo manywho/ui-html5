@@ -66,7 +66,9 @@ permissions and limitations under the License.
             var componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
             var outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);
 
-            if (manywho.settings.global('outcomes.isFixed', this.props.flowKey)) {
+            var attributes = manywho.model.getAttributes(this.props.flowKey);
+
+            if (attributes && manywho.utils.isEqual(attributes.outcomes, "fixed", true)) {
 
                 var isMounted = React.findDOMNode(this.refs.container) != null;
 
