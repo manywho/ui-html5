@@ -152,6 +152,8 @@ permissions and limitations under the License.
 
             manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
 
+            this.forceUpdate();
+
         },
 
         onSearchEnter: function (e) {
