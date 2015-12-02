@@ -39,7 +39,7 @@ permissions and limitations under the License.
 
             return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                 this.getLabel(model.label),
-                React.DOM.div({ className: childClasses.join(' ') }, [
+                React.DOM.div({ className: childClasses.join(' '), style: { height: this.state.height} }, [
                     this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
                 ]),
                 outcomeButtons
