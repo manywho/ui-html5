@@ -5804,6 +5804,11 @@ button.close {
   height: 50px;
   overflow: scroll;
 }
+
+.footer-fixed-bottom {
+  background-color: #ffffff;
+}
+
 @media (min-width: 768px) {
   .modal-dialog {
     width: 600px;

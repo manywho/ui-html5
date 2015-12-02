@@ -124,7 +124,7 @@ permissions and limitations under the License.
 
                 wrapperClasses.push('input-group');
 
-                refreshButton = React.DOM.button({ className: 'btn btn-default', onClick: this.refresh },
+                refreshButton = React.DOM.button({ className: 'btn btn-default refresh-button', onClick: this.refresh },
                     React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
                 )
 

@@ -13,21 +13,47 @@ manywho.json = (function (manywho) {
 
     return {
 
-        generateFlowInputs: function (inputsData, objectData, typeElementDeveloperName) {
+        generateFlowInputs: function (inputsData) {
 
-            var inputs = [];
+            if (inputsData && !Array.isArray(inputsData)) {
 
-            for (var property in inputsData) {
-                inputs.push({
-                    'contentType': 'Content' + (typeof inputsData[property]).charAt(0).toUpperCase() + (typeof inputsData[property]).substring(1).toLowerCase() || 'ContentString',
-                    'contentValue': inputsData[property],
-                    'developerName': property,
-                    'objectData': objectData || null,
-                    'typeElementDeveloperName': typeElementDeveloperName || null
-                });
+                inputsData = [inputsData];
+
             }
 
-            return inputs;
+            return inputsData.map(function (input) {
+
+                for (var property in input) {
+
+                    if (input[property].objectData) {
+
+                        return {
+                            'contentType': input[property].objectData.length > 1 ? 'ContentList' : 'ContentObject',
+                            'contentValue': null,
+                            'developerName': property,
+                            'objectData': [input[property].objectData],
+                            'typeElementDeveloperName': input[property].typeElementDeveloperName || null
+                        }
+
+                    } else if (input[property].contentType && input[property].developerName) {
+
+                        return input[property];
+
+                    } else {
+
+                        return {
+                            'contentType': 'Content' + (typeof input[property]).charAt(0).toUpperCase() + (typeof input[property]).substring(1).toLowerCase() || 'ContentString',
+                            'contentValue': input[property],
+                            'developerName': property,
+                            'objectData': null,
+                            'typeElementDeveloperName': null
+                        }
+
+                    }
+
+                }
+
+            });
 
         },
 

@@ -162,6 +162,45 @@ manywho.utils = (function (manywho, $) {
 
         },
 
+        extendObjectData: function (mergedObjectData, objectData) {
+
+            if (objectData) {
+
+                if (!mergedObjectData) {
+                    mergedObjectData = [];
+                    mergedObjectData.push(objectData[0]);
+                    return;
+                }
+
+                objectData.forEach(function (objectProperty) {
+
+                    if (mergedObjectData && mergedObjectData.length > 0) {
+
+                        mergedObjectData.forEach(function (property) {
+
+                            if (manywho.utils.isEqual(property.developerName, objectProperty.developerName, true)) {
+
+                                if (objectProperty.contentValue != null) {
+                                    manywho.utils.extend(property, objectProperty, true);
+                                } else if (objectProperty.objectData != null) {
+                                    property.objectData = objectProperty.objectData;
+                                }
+
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
+            }
+
+            return mergedObjectData;
+
+        },
+
         isNullOrWhitespace: function (value) {
 
             if (typeof value === 'undefined' || value == null) {
@@ -354,7 +393,22 @@ manywho.utils = (function (manywho, $) {
             try {
 
                 for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
-                    obj = obj[path[i]];
+
+                    var foundKey = null;
+
+                    for (var key in obj) {
+                        if (key.toLowerCase() == path[i].toLowerCase()) {
+
+                            foundKey = key;
+
+                        }
+                    }
+
+                    if (foundKey) {
+                        obj = obj[foundKey];
+                    } else {
+                        obj = null;
+                    }
                 }
                 return obj;
 
@@ -458,13 +512,18 @@ manywho.utils = (function (manywho, $) {
         removeFlow: function (flowKey) {
 
             manywho.model.deleteFlowModel(flowKey);
+            manywho.utils.removeFlowFromDOM(flowKey);
             manywho.settings.remove(flowKey);
             manywho.state.remove(flowKey);
             manywho.social.remove(flowKey);
-            manywho.collaboration.leave('Another user', flowKey);
-            manywho.collaboration.remove(flowKey);
             manywho.callbacks.remove(flowKey);
-            manywho.utils.removeFlowFromDOM(flowKey);
+
+            if (manywho.settings.flow('collaboration.isEnabled', flowKey)) {
+
+                manywho.collaboration.leave('Another user', flowKey);
+                manywho.collaboration.remove(flowKey);
+
+            }
 
         }
 

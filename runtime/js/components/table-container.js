@@ -229,6 +229,8 @@ permissions and limitations under the License.
 
             var selectedRows = [];
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
             if (e.currentTarget.checked) {
 
                 objectData.forEach(function (item) {
@@ -240,12 +242,15 @@ permissions and limitations under the License.
             }
 
             this.setState({ selectedRows: selectedRows });
+            manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
 
         },
 
         clearSelection: function () {
 
             this.setState({ selectedRows: [] });
+            manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
+
         },
 
         onHeaderClick: function (e) {
@@ -504,6 +509,17 @@ permissions and limitations under the License.
 
             classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));
 
+            if (model.attributes && model.attributes.classes) {
+
+                classNames = classNames.join(' ') + ' ' + model.attributes.classes;
+
+            }
+            else {
+
+                classNames = classNames.join(' ');
+
+            }
+
             var validationElement = null;
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
 
@@ -511,7 +527,7 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classNames.join(' ') }, [
+            return React.DOM.div({ className: classNames }, [
                 (manywho.utils.isNullOrWhitespace(model.label)) ? null : React.DOM.label({}, model.label),
                 validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
