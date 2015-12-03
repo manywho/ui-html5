@@ -31,7 +31,7 @@ manywho.callbacks = (function (manywho) {
 
         },
 
-        execute: function (flowKey, type, name, args) {
+        execute: function (flowKey, type, name, mapElementId, args) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
@@ -46,6 +46,12 @@ manywho.callbacks = (function (manywho) {
                     }
 
                     if (name && !manywho.utils.isEqual(item.name, name, true)) {
+
+                        return false;
+
+                    }
+
+                    if (mapElementId && !manywho.utils.isEqual(item.mapElement, mapElementId, true)) {
 
                         return false;
 

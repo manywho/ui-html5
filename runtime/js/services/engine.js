@@ -493,7 +493,7 @@ manywho.engine = (function (manywho) {
 
                 if (moveResponse) {
 
-                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
+                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, moveResponse.currentMapElementId, [moveResponse]);
                     moveResponse = null;
                 }
 
