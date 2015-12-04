@@ -51,7 +51,7 @@ manywho.callbacks = (function (manywho) {
 
                     }
 
-                    if (mapElementId && !manywho.utils.isEqual(item.mapElement, mapElementId, true)) {
+                    if (!manywho.utils.isEqual(type, 'done', true) && mapElementId && !manywho.utils.isEqual(item.mapElement, mapElementId, true)) {
 
                         return false;
 
