@@ -56,6 +56,8 @@ permissions and limitations under the License.
 
         renderRows: function(objectData, outcomes, displayColumns) {
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
             var outcomeComponent = manywho.component.getByName('outcome');
 
             return objectData.map(function (item) {
@@ -110,9 +112,9 @@ permissions and limitations under the License.
                                             React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
                                             React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
 
-                                                return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick }, null);
+                                                return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: this.props.flowKey }, null);
 
-                                            }))
+                                            }, this))
                                         ]);
 
                                     }

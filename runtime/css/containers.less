@@ -135,15 +135,13 @@ body {
     }
 
     .collapsible-container {
-        transition: max-height 0.3s;
-        transition-timing-function: cubic-bezier(0,1,0,1);
-        max-height: 2000px;
+        transition: height 0.3s;
+        transition-timing-function: ease-in;
     }
 
     .collapsed-container {
-        transition: max-height 0.3s;
-        transition-timing-function: cubic-bezier(0,1,0,1);
-        max-height: 0;
+        transition: height 0.3s;
+        transition-timing-function: ease-in;
         overflow: hidden;
     }
 

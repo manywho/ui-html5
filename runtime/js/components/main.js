@@ -66,13 +66,24 @@ permissions and limitations under the License.
             var componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
             var outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);
 
+            var attributes = manywho.model.getAttributes(this.props.flowKey);
+
+            if (attributes && manywho.utils.isEqual(attributes.outcomes, "fixed", true)) {
+
+                var isMounted = React.findDOMNode(this.refs.container) != null;
+
+                outcomeElements = React.createElement(manywho.component.getByName('footer'), { flowKey: this.props.flowKey, container: this.refs.container, isMounted: isMounted }, outcomeElements);
+
+            }
+
             var isFullWidth = manywho.settings.global('isFullWidth', this.props.flowKey, false);
 
             var classNames = [
                 'main',
                 (isFullWidth) ? 'container-fluid full-width' : 'container',
                 (manywho.settings.isDebugEnabled(this.props.flowKey)) ? 'main-debug' : '',
-                (manywho.settings.global('history', this.props.flowKey)) ? 'main-history': ''
+                (manywho.settings.global('history', this.props.flowKey)) ? 'main-history': '',
+                (attributes && manywho.utils.isEqual(attributes.outcomes, "fixed", true)) ? 'has-footer': ''
             ];
 
             return React.DOM.div({ className: 'full-height clearfix', ref: 'container' }, [

@@ -297,7 +297,7 @@ permissions and limitations under the License.
                 else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
                     attributes.onBlur = this.parseNumberInput;
-                    attributes.style = { width: (15 * model.size) + "px !important" };
+                    attributes.style = { width: 30 + (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
                     attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
                     attributes.value = (null != this.state.value && this.state.value)

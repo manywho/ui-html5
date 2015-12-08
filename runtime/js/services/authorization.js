@@ -157,7 +157,7 @@ manywho.authorization = (function (manywho) {
                 .then(function (response) {
 
                     manywho.state.setAuthenticationToken(response, flowKey);
-                    manywho.callbacks.execute(flowKey, 'done', null, [response]);
+                    manywho.callbacks.execute(flowKey, 'done', null, null, [response]);
 
                 });
 

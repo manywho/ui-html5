@@ -89,12 +89,6 @@ permissions and limitations under the License.
 
                     item.parent = parent.id;
 
-                    if (!parent.childCount) {
-
-                        parent.childCount = 0;
-
-                    }
-
                     parent.childCount = containers.length;
                 }
 
@@ -164,6 +158,12 @@ permissions and limitations under the License.
                 if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse) {
 
                     flowModel[lookUpKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
+
+                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.attributes) {
+
+                        manywho.model.setAttributes(flowKey, engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.attributes);
+
+                    }
 
                     this.setContainers(flowKey,
                                         engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses,
@@ -726,6 +726,14 @@ permissions and limitations under the License.
 
         },
 
+        getAttributes: function (flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return flowModel[lookUpKey].attributes;
+
+        },
+
         getParentStateId: function(flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
@@ -813,6 +821,14 @@ permissions and limitations under the License.
                 }, this);
 
             }
+
+        },
+
+        setAttributes: function (flowKey, attributes) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey].attributes = attributes;
 
         }
 

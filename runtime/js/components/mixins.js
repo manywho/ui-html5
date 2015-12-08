@@ -51,6 +51,7 @@ permissions and limitations under the License.
 
             return {
                 isVisible: true,
+                height: null,
                 icon: 'toggle-icon glyphicon glyphicon-triangle-bottom'
             };
 
@@ -66,13 +67,21 @@ permissions and limitations under the License.
 
                     this.setState({
                         isVisible: false,
+                        height: React.findDOMNode(this).clientHeight,
                         icon: 'toggle-icon glyphicon glyphicon-triangle-right'
+                    });
+
+                    var self = this;
+
+                    requestAnimationFrame(function () {
+                        self.setState({ height: 0 });
                     });
 
                 } else {
 
                     this.setState({
                         isVisible: true,
+                        height: null,
                         icon: 'toggle-icon glyphicon glyphicon-triangle-bottom'
                     });
 

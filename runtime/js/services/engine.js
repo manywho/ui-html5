@@ -195,9 +195,9 @@ manywho.engine = (function (manywho) {
                 manywho.state.setState(response.stateId, response.stateToken, response.currentMapElementId, flowKey);
                 manywho.state.setAuthenticationToken(authenticationToken, flowKey);
 
-                if (options.authentication != null && options.authentication.sessionid != null) {
+                if (options.authentication != null && options.authentication.sessionId != null) {
 
-                    manywho.state.setSessionData(options.authentication.sessionid, options.authentication.sessionurl, flowKey);
+                    manywho.state.setSessionData(options.authentication.sessionId, options.authentication.sessionUrl, flowKey);
 
                 }
 
@@ -493,7 +493,7 @@ manywho.engine = (function (manywho) {
 
                 if (moveResponse) {
 
-                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
+                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, moveResponse.currentMapElementId, [moveResponse]);
                     moveResponse = null;
                 }
 

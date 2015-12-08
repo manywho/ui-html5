@@ -104,9 +104,9 @@ permissions and limitations under the License.
             path = value[name] + '.' + path;
 
             return React.DOM.li({ className: 'clearfix' }, [
-                React.DOM.div(null, [
-                    React.DOM.span({ className: 'glyphicon pull-left debug-value-toggle glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right'), 'data-value-id': value[idName], onClick: this.toggleValue }, null),
-                    React.DOM.ol({ className: 'breadcrumb debug-value-breadcrumb', 'data-value-id': value[idName], onClick: this.toggleValue }, path.split('.').map(function (part) {
+                    React.DOM.span({ className: 'glyphicon debug-value-toggle glyphicon-triangle-' + ((isExpanded) ? 'bottom' : 'right'), 'data-value-id': value[idName], onClick: this.toggleValue }, null),
+                    React.DOM.div({ className: 'debug-value' }, [
+                        React.DOM.ol({ className: 'breadcrumb debug-value-breadcrumb', 'data-value-id': value[idName], onClick: this.toggleValue }, path.split('.').map(function (part) {
 
                         if (!manywho.utils.isNullOrWhitespace(part)) {
 
@@ -119,26 +119,30 @@ permissions and limitations under the License.
 
                         }
 
-                    }, this))
-                ]),
-                React.DOM.table({ className: 'table table-striped debug-value-table ' + ((isExpanded) ? '' : 'hidden') },
-                    React.DOM.tbody(null, Object.keys(properties).map(function (propertyName) {
+                    }, this)),
+                    React.DOM.table({ className: 'table table-striped table-bordered debug-value-table ' + ((isExpanded) ? '' : 'hidden') },
+                        React.DOM.tbody(null, Object.keys(properties).map(function (propertyName) {
 
-                        var propertyValue = properties[propertyName];
+                            var propertyValue = properties[propertyName];
+                            var propertyCaption = propertyName;
 
-                        if (typeof propertyValue === 'object' && propertyValue) {
+                            if (typeof propertyValue === 'object' && propertyValue) {
 
-                            propertyValue = React.DOM.button({ className: 'btn btn-primary btn-sm', 'data-value-id': value[idName], 'data-path-part': propertyName, onClick: this.onValueViewClick }, 'View')
+                                if (propertyValue.developerName)
+                                    propertyCaption = propertyValue.developerName;
 
-                        }
+                                propertyValue = React.DOM.button({ className: 'btn btn-primary btn-sm', 'data-value-id': value[idName], 'data-path-part': propertyName, onClick: this.onValueViewClick }, 'View')
 
-                        return React.DOM.tr(null, [
-                            React.DOM.td(null, propertyName),
-                            React.DOM.td(null, propertyValue || 'null')
-                        ]);
+                            }
 
-                    }, this))
-                )
+                            return React.DOM.tr(null, [
+                                React.DOM.td(null, propertyCaption),
+                                React.DOM.td(null, propertyValue || 'null')
+                            ]);
+
+                        }, this))
+                    )
+                ])
             ]);
 
         },
