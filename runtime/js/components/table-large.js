@@ -133,8 +133,6 @@ permissions and limitations under the License.
                     (selectedRows.indexOf(item.externalId) != -1) ? 'info' : ''
                 ];
 
-                var onClick = !isTableEditable(displayColumns) && onRowClicked;
-
                 var columns = [];
 
                 if (this.props.model.isMultiSelect) {
@@ -221,18 +219,23 @@ permissions and limitations under the License.
                                         propertyId: column.typeElementPropertyId,
                                         value: selectedProperty.contentValue,
                                         onCommitted: this.onCellEditCommitted,
-                                        flowKey: this.props.flowKey
+                                        flowKey: this.props.flowKey,
+                                        isEditable: column.isEditable,
+                                        contentType: column.contentType,
+                                        contentFormat: column.contentFormat
                                     })
                                 );
 
                             }
                             else if (column.isEditable) {
 
-                                return React.DOM.td({ id: column.typeElementPropertyId },
+                                return React.DOM.td({ id: column.typeElementPropertyId, className: 'editable' },
                                     React.createElement(manywho.component.getByName('table-input'), {
                                         id: item.externalId,
                                         propertyId: column.typeElementPropertyId,
                                         value: selectedProperty.contentValue,
+                                        contentType: column.contentType,
+                                        contentFormat: column.contentFormat,
                                         onCommitted: this.onCellEditCommitted
                                     })
                                 );
@@ -256,7 +259,7 @@ permissions and limitations under the License.
 
                 }, this));
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, columns);
+                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, columns);
 
             }, this);
 
