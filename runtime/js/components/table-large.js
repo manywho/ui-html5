@@ -11,22 +11,6 @@ permissions and limitations under the License.
 
 (function (manywho) {
 
-    function getPropertyValue(objectData, id, propertyId) {
-
-        return objectData.filter(function (item) {
-
-            return manywho.utils.isEqual(item.externalId, id, true);
-
-        })
-        [0].properties.filter(function (item) {
-
-            return manywho.utils.isEqual(item.typeElementPropertyId, propertyId, true);
-
-        })
-        [0].contentValue;
-
-    }
-
     function setPropertyValue(objectData, id, propertyId, value) {
 
         return objectData.map(function (item) {
@@ -36,7 +20,7 @@ permissions and limitations under the License.
                 if (manywho.utils.isEqual(prop.typeElementPropertyId, propertyId, true)
                     && manywho.utils.isEqual(item.externalId, id, true)) {
 
-                    prop.contentValue = value;
+                    (Array.isArray(value)) ? prop.objectData = value : prop.contentValue = value;
 
                 }
 
@@ -132,74 +116,10 @@ permissions and limitations under the License.
 
         },
 
-        onCellClick: function(e) {
+        onCellEditCommitted(id, propertyId, value) {
 
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (this.props.isDesignTime)
-                return;
-
-            if (this.state.currentCellEdit) {
-
-                var id = this.state.currentCellEdit.split('|')[1];
-                var propertyId = this.state.currentCellEdit.split('|')[0];
-
-                var value = this.state.currentCellEditValue;
-                if (value) {
-
-                    value = value.trim();
-
-                }
-
-                var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
-                manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
-
-            }
-
-            this.setState({
-                currentCellEdit: e.currentTarget.id + '|' + e.currentTarget.parentElement.id,
-                currentCellEditValue: getPropertyValue(this.props.objectData, e.currentTarget.parentElement.id, e.currentTarget.id)
-            });
-
-        },
-
-        onCellChanged: function(e) {
-
-            this.setState({ currentCellEditValue: e.currentTarget.value })
-
-        },
-
-        onCellKeyUp: function(e) {
-
-            if (e.keyCode == 13 && !this.props.isDesignTime) {
-
-                e.preventDefault();
-                e.stopPropagation();
-
-                if (this.state.currentCellEdit) {
-
-                    var id = this.state.currentCellEdit.split('|')[1];
-                    var propertyId = this.state.currentCellEdit.split('|')[0];
-
-                    var value = this.state.currentCellEditValue;
-                    if (value) {
-
-                        value = value.trim();
-
-                    }
-
-                    var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
-                    manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
-
-                    this.setState({
-                        currentCellEdit: null,
-                        currentCellEditValue: null
-                    });
-
-                }
-
-            }
+            var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
+            manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
 
         },
 
@@ -212,8 +132,6 @@ permissions and limitations under the License.
                 var classes = [
                     (selectedRows.indexOf(item.externalId) != -1) ? 'info' : ''
                 ];
-
-                var onClick = !isTableEditable(displayColumns) && onRowClicked;
 
                 var columns = [];
 
@@ -293,10 +211,33 @@ permissions and limitations under the License.
                                 return React.DOM.td(null, React.DOM.a(attributes, 'Download'));
 
                             }
-                            else if (manywho.utils.isEqual(this.state.currentCellEdit, column.typeElementPropertyId + '|' + item.externalId, true)) {
+                            else if (!manywho.utils.isNullOrWhitespace(column.componentType)) {
 
                                 return React.DOM.td({ id: column.typeElementPropertyId },
-                                    React.DOM.input({ className: 'form-control input-sm', onChange: this.onCellChanged, onKeyUp: this.onCellKeyUp, ref: 'cellEditor', value: this.state.currentCellEditValue })
+                                    React.createElement(manywho.component.getByName(column.componentType), {
+                                        id: item.externalId,
+                                        propertyId: column.typeElementPropertyId,
+                                        value: selectedProperty.contentValue,
+                                        onCommitted: this.onCellEditCommitted,
+                                        flowKey: this.props.flowKey,
+                                        isEditable: column.isEditable,
+                                        contentType: column.contentType,
+                                        contentFormat: column.contentFormat
+                                    })
+                                );
+
+                            }
+                            else if (column.isEditable) {
+
+                                return React.DOM.td({ id: column.typeElementPropertyId, className: 'editable' },
+                                    React.createElement(manywho.component.getByName('table-input'), {
+                                        id: item.externalId,
+                                        propertyId: column.typeElementPropertyId,
+                                        value: selectedProperty.contentValue,
+                                        contentType: column.contentType,
+                                        contentFormat: column.contentFormat,
+                                        onCommitted: this.onCellEditCommitted
+                                    })
                                 );
 
                             }
@@ -318,7 +259,7 @@ permissions and limitations under the License.
 
                 }, this));
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onClick }, columns);
+                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, columns);
 
             }, this);
 
@@ -327,16 +268,6 @@ permissions and limitations under the License.
         getInitialState: function() {
 
             return {}
-
-        },
-
-        componentDidUpdate: function() {
-
-            if (this.refs.cellEditor) {
-
-                this.refs.cellEditor.getDOMNode().focus();
-
-            }
 
         },
 
