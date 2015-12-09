@@ -217,7 +217,8 @@ permissions and limitations under the License.
                                     React.createElement(manywho.component.getByName(column.componentType), {
                                         id: item.externalId,
                                         propertyId: column.typeElementPropertyId,
-                                        value: selectedProperty.contentValue,
+                                        contentValue: selectedProperty.contentValue,
+                                        objectData: selectedProperty.objectData,
                                         onCommitted: this.onCellEditCommitted,
                                         flowKey: this.props.flowKey,
                                         isEditable: column.isEditable,
