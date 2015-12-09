@@ -176,17 +176,35 @@ permissions and limitations under the License.
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
             var request = model.objectDataRequest || model.fileDataRequest;
+            this.clearSelection();
 
             if (request) {
-
-                this.clearSelection();
 
                 manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
 
             }
             else {
 
-                manywho.log.error('ObjectDataRequest and FileDataRequest are null for table: ' + model.developerName + '. A request object is required to search');
+                var displayColumns = (manywho.component.getDisplayColumns(model.columns) || []).map(function(column) {
+
+                    return column.typeElementPropertyId.toLowerCase();
+
+                });
+
+                this.setState({
+                    objectData: model.objectData.filter(function(objectData) {
+
+                        return objectData.properties.filter(function(property) {
+
+                            return displayColumns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1
+
+                        }).length > 0
+
+                    })
+                });
+
+                state.page = 1;
+                manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             }
 
@@ -323,6 +341,7 @@ permissions and limitations under the License.
 
         onNext: function() {
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
             if (!state.page) {
@@ -334,18 +353,27 @@ permissions and limitations under the License.
             state.page++;
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
-            this.search();
+            if (model.objectDataRequest || model.fileDataRequest)
+                this.search();
+            else if (model.attributes.paginate) {
+                this.forceUpdate();
+            }
 
         },
 
         onPrev: function() {
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             state.page--;
 
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
-            this.search();
+            if (model.objectDataRequest || model.fileDataRequest)
+                this.search();
+            else if (model.attributes.paginate) {
+                this.forceUpdate();
+            }
 
         },
 
@@ -376,7 +404,8 @@ permissions and limitations under the License.
                 selectedRows: [],
                 windowWidth: window.innerWidth,
                 sortByOrder: 'ASC',
-                lastOrderBy: ''
+                lastOrderBy: '',
+                objectData: null
             }
 
         },
@@ -394,6 +423,17 @@ permissions and limitations under the License.
 
         },
 
+        componentWillMount() {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            if (!model.objectDataRequest && !model.fileDataRequest) {
+
+                this.setState({ objectData: model.objectData });
+
+            }
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Table: ' + this.props.id);
@@ -407,7 +447,7 @@ permissions and limitations under the License.
 
             var objectData = this.props.isDesignTime ? [] : model.objectData;
 
-            if (model.objectData && state.objectData) {
+            if (model.objectData && state.objectData && !this.state.objectData) {
 
                 objectData = model.objectData.map(function (modelItem) {
 
@@ -440,6 +480,26 @@ permissions and limitations under the License.
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
+
+            if (this.state.objectData)
+            {
+
+                if (model.attributes.paginate) {
+
+                    var page = (state.page - 1) || 0;
+                    var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
+
+                    hasMoreResults = (page * limit) + limit + 1 <= this.state.objectData.length;
+                    objectData = this.state.objectData.slice(page * limit, (page * limit) + limit);
+
+                }
+                else {
+
+                    objectData = this.state.objectData;
+
+                }
+
+            }
 
             if (state.error) {
 
