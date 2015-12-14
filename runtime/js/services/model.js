@@ -652,7 +652,7 @@ permissions and limitations under the License.
 
         },
 
-        popOnceHistory: function (flowKey) {
+        popLastHistory: function (flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
