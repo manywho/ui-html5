@@ -116,7 +116,7 @@ permissions and limitations under the License.
 
         },
 
-        onCellEditCommitted(id, propertyId, value) {
+        onCellEditCommitted: function(id, propertyId, value) {
 
             var objectData = setPropertyValue(this.props.objectData, id, propertyId, value);
             manywho.state.setComponent(this.props.id, { objectData: objectData }, this.props.flowKey, false);
