@@ -423,7 +423,7 @@ permissions and limitations under the License.
 
         },
 
-        componentWillMount() {
+        componentWillMount: function() {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             if (!model.objectDataRequest && !model.fileDataRequest) {
