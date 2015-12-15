@@ -355,7 +355,7 @@ permissions and limitations under the License.
 
             if (model.objectDataRequest || model.fileDataRequest)
                 this.search();
-            else if (model.attribute.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
+            else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
                 this.forceUpdate();
             }
 
@@ -484,7 +484,7 @@ permissions and limitations under the License.
             if (this.state.objectData)
             {
 
-                if (model.attribute.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
+                if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
 
                     var page = (state.page - 1) || 0;
                     var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
