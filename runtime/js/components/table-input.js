@@ -88,7 +88,7 @@ permissions and limitations under the License.
 
         },
 
-        onCommit() {
+        onCommit: function() {
 
             if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.datetime, true) && !this.isEmptyDate(this.state.value)) {
 
