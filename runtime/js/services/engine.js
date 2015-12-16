@@ -404,7 +404,7 @@ manywho.engine = (function (manywho) {
 
         if (manywho.settings.global('history', flowKey)) {
 
-            manywho.model.setHistorySelectedOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
+            manywho.model.setHistorySelectedOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, invokeRequest.invokeType, flowKey);
 
         }
 
@@ -493,7 +493,7 @@ manywho.engine = (function (manywho) {
 
                 if (moveResponse) {
 
-                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, [moveResponse]);
+                    manywho.callbacks.execute(flowKey, moveResponse.invokeType, null, moveResponse.currentMapElementId, [moveResponse]);
                     moveResponse = null;
                 }
 

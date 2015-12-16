@@ -213,7 +213,7 @@ permissions and limitations under the License.
 
             var isValid = true;
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
-            var contentValue = (state && state.contentValue) || model.contentValue;
+            var contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
             var attributes = {
                 type: !this.props.isDesignTime ? getInputType(contentType) : 'text',

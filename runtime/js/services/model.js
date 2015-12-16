@@ -604,31 +604,39 @@ permissions and limitations under the License.
 
             if (!flowModel[lookUpKey].history) flowModel[lookUpKey].history = [];
 
-            if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
-
-                var outcomes = engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.map(function (outcome) {
-
-                    return { name: outcome.developerName, id: outcome.id, label: outcome.label, order: outcome.order };
-
-                });
-
-            }
+            if (!flowModel[lookUpKey].lastInvoke) flowModel[lookUpKey].lastInvoke = 'FORWARD';
 
             var length = flowModel[lookUpKey].history.length;
 
-            flowModel[lookUpKey].history[length] = manywho.utils.extend(flowModel[lookUpKey].history[length] || {}, [{
-                name: engineInvokeResponse.mapElementInvokeResponses[0].developerName,
-                id: engineInvokeResponse.mapElementInvokeResponses[0].mapElementId,
-                label: engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label,
-                content: engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses[0].content || '',
-                outcomes: outcomes
-            }]);
+            if (manywho.utils.isEqual(flowModel[lookUpKey].lastInvoke, 'FORWARD', true)) {
+
+                if (engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses) {
+
+                    var outcomes = engineInvokeResponse.mapElementInvokeResponses[0].outcomeResponses.map(function (outcome) {
+
+                        return { name: outcome.developerName, id: outcome.id, label: outcome.label, order: outcome.order };
+
+                    });
+
+                }
+
+                flowModel[lookUpKey].history[length] = manywho.utils.extend(flowModel[lookUpKey].history[length] || {}, [{
+                    name: engineInvokeResponse.mapElementInvokeResponses[0].developerName,
+                    id: engineInvokeResponse.mapElementInvokeResponses[0].mapElementId,
+                    label: engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label,
+                    content: engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses[0].content || '',
+                    outcomes: outcomes
+                }]);
+
+            }
 
         },
 
-        setHistorySelectedOutcome: function (selectedOutcome, flowKey) {
+        setHistorySelectedOutcome: function (selectedOutcome, invokeType, flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey].lastInvoke = invokeType;
 
             if (selectedOutcome) {
 
@@ -644,6 +652,14 @@ permissions and limitations under the License.
 
         },
 
+        popLastHistory: function (flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            flowModel[lookUpKey].history.pop();
+
+        },
+
         popHistory: function (mapElementId, flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
@@ -652,13 +668,15 @@ permissions and limitations under the License.
 
             for (var i = length; i > 0; i--) {
 
-                var mapElement = flowModel[lookUpKey].history.pop();
+                var mapElement = flowModel[lookUpKey].history[i-1];
 
                 if (mapElement.id == mapElementId) {
 
                     break;
 
                 }
+
+                flowModel[lookUpKey].history.pop();
 
             }
 
