@@ -111,15 +111,7 @@ permissions and limitations under the License.
 
             if (!this.props.isDesignTime) {
 
-                this.setState({ files: files });
                 this.onFileSelected(files);
-
-                var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
-                if (model && model.attributes && model.attributes.isAutoUpload) {
-
-                    this.onUpload();
-
-                }
 
             }
 
@@ -127,11 +119,22 @@ permissions and limitations under the License.
 
         onFileSelected: function (files) {
 
-            this.setState({
-                fileNames: Array.prototype.slice.call(files).map(function(file) { return file.name }),
-                files: files,
-                isFileSelected: true
-            });
+            if (!this.props.isDesignTime) {
+
+                this.setState({
+                    fileNames: Array.prototype.slice.call(files).map(function(file) { return file.name }),
+                    files: files,
+                    isFileSelected: true
+                });
+
+                var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+                if (model && model.attributes && model.attributes.isAutoUpload) {
+
+                    setTimeout(this.onUpload.bind(this));
+
+                }
+
+            }
 
         },
 

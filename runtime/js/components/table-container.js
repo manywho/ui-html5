@@ -434,6 +434,19 @@ permissions and limitations under the License.
 
         },
 
+        componentWillReceiveProps: function(nextProps) {
+
+            var model = manywho.model.getComponent(nextProps.id, nextProps.flowKey);
+            var state = manywho.state.getComponent(nextProps.id, nextProps.flowKey);
+
+            if (!model.objectDataRequest && !model.fileDataRequest && manywho.utils.isNullOrWhitespace(state.search) && (manywho.utils.isNullOrWhitespace(state.page) || state.page == 1)) {
+
+                this.setState({ objectData: model.objectData });
+
+            }
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Table: ' + this.props.id);
