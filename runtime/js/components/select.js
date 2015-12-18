@@ -64,7 +64,6 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
-            var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
             var options = null;
             var value = null;
             var refreshButton = null;
@@ -78,6 +77,8 @@ permissions and limitations under the License.
             var wrapperClasses = ['select-wrapper'];
 
             if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
+
+                var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
                 selectAttributes = manywho.utils.extend(selectAttributes, { onChange: this.onChange });
 

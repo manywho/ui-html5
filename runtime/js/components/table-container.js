@@ -437,7 +437,7 @@ permissions and limitations under the License.
         componentWillReceiveProps: function(nextProps) {
 
             var model = manywho.model.getComponent(nextProps.id, nextProps.flowKey);
-            var state = manywho.state.getComponent(nextProps.id, nextProps.flowKey);
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
 
             if (!model.objectDataRequest && !model.fileDataRequest && manywho.utils.isNullOrWhitespace(state.search) && (manywho.utils.isNullOrWhitespace(state.page) || state.page == 1)) {
 
