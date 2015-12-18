@@ -123,10 +123,17 @@ permissions and limitations under the License.
             if (model.objectDataRequest || model.fileDataRequest) {
 
                 wrapperClasses.push('input-group');
+                var iconClasses = ['glyphicon glyphicon-refresh'];
 
-                refreshButton = React.DOM.button({ className: 'btn btn-default refresh-button', onClick: this.refresh },
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
-                )
+                if (state.loading && !state.error) {
+
+                    iconClasses.push('spin');
+
+                }
+
+                refreshButton = React.DOM.button({ className: 'btn btn-default refresh-button', onClick: this.refresh, disabled: state.loading },
+                    React.DOM.span({ className: iconClasses.join(' ') }, null)
+                );
 
             }
 
@@ -146,14 +153,6 @@ permissions and limitations under the License.
 
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
 
-            var iconClassNames = ['select-loading-icon'];
-
-            if (!state.loading || state.error) {
-
-                iconClassNames.push('hidden');
-
-            }
-
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
                     model.label,
@@ -161,8 +160,7 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.div({ className: wrapperClasses.join(' ') }, [
                     React.createElement(Select, selectAttributes),
-                    refreshButton,
-                    React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
+                    refreshButton
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo)
