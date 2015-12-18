@@ -485,7 +485,7 @@ permissions and limitations under the License.
 
             }
 
-            var displayColumns = getDisplayColumns(model.columns, this.outcomes);
+            var displayColumns = !this.props.isDesignTime && getDisplayColumns(model.columns, this.outcomes);
             var isSelectionEnabled = this.props.selectionEnabled || areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
             var hasMoreResults = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
