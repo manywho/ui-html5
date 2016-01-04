@@ -41,7 +41,7 @@
                 return React.DOM.ol({ className: classes.join(' ') }, elements);
             }
 
-            return React.DOM.ul({ className: classes.join(' ') }, elements);
+            return React.DOM.ul({ className: classes.join(' ') }, elements || null);
 
         }
 
