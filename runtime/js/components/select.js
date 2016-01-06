@@ -64,6 +64,7 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var options = null;
             var value = null;
             var refreshButton = null;
@@ -152,7 +153,11 @@ permissions and limitations under the License.
 
             }
 
-            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
+            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey));
+
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                    return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+                }, this);
 
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
@@ -164,7 +169,8 @@ permissions and limitations under the License.
                     refreshButton
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
-                React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                React.DOM.span({ className: 'help-block' }, model.helpInfo),
+                outcomeButtons
             ]);
 
         }
