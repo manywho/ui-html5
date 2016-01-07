@@ -25,16 +25,23 @@
 
             }
 
-            var elements = model.objectData.map(function (element) {
-                var label = element.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0].contentValue;
-                return React.DOM.li({ id: element.externalId }, label);
-            });
+            if (model.objectData) {
+
+                var elements = model.objectData.map(function (element) {
+
+                    var label = element.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0].contentValue;
+                    return React.DOM.li({ id: element.externalId }, label);
+
+                });
+
+            }
+
 
             if (model.attributes.ordered && !manywho.utils.isEqual(model.attributes.ordered, 'false', true)) {
                 return React.DOM.ol({ className: classes.join(' ') }, elements);
             }
 
-            return React.DOM.ul({ className: classes.join(' ') }, elements);
+            return React.DOM.ul({ className: classes.join(' ') }, elements || null);
 
         }
 
