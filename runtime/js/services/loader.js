@@ -16,6 +16,7 @@ permissions and limitations under the License.
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.onload = onLoad;
+        script.onerror = onLoad;
         script.src = url;
         document.head.appendChild(script);
 
@@ -31,32 +32,79 @@ permissions and limitations under the License.
 
     }
 
-    function loadCustomResources(resources) {
+    function parseCustomResources(resources) {
+
+        var parsed = {
+            scripts: [],
+            stylesheets: []
+        }
 
         if (resources) {
-
-            var scripts = [];
 
             resources.forEach(function(url) {
 
                 if (url.match('\.css$')) {
 
-                    appendStylesheet(url);
+                    parsed.stylesheets.push(url);
 
                 }
                 else if (url.match('\.js$')) {
 
-                    scripts.push(url);
+                    parsed.scripts.push(url);
 
                 }
 
             });
 
-            return scripts;
+        }
+
+        return parsed;
+
+    }
+
+    function parseHashes(hashes, cdnUrl) {
+
+        var parsed = {
+            scripts: [],
+            stylesheets: []
+        }
+
+        for (hash in hashes) {
+
+            if (hashes[hash].match('\.css$')) {
+
+                parsed.stylesheets.push(cdnUrl + hashes[hash]);
+
+            }
+            else if (hashes[hash].match('\.js$')) {
+
+                parsed.scripts.push(cdnUrl + hashes[hash]);
+
+            }
 
         }
 
-        return [];
+        return parsed;
+
+    }
+
+    function loadScriptsSequentially(scripts, index, callback) {
+
+        if (scripts[index]) {
+
+            appendScript(scripts[index], function() {
+
+                index = index + 1;
+                loadScriptsSequentially(scripts, index, callback);
+
+            });
+
+        }
+        else {
+
+            callback();
+
+        }
 
     }
 
@@ -83,65 +131,72 @@ permissions and limitations under the License.
 
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, hashes, customResources, initialTheme) {
+        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme) {
 
-            var hashesCount = 0;
-            var scripts = [];
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
 
-            hashes.forEach(function(url) {
+                if (request.readyState == 4 && request.status == 200) {
 
-                var request = new XMLHttpRequest();
-                request.onreadystatechange = function() {
+                    var vendorHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                    vendorHashes.stylesheets.forEach(appendStylesheet);
 
-                    if (request.readyState == 4 && request.status == 200) {
+                    loadScriptsSequentially(vendorHashes.scripts, 0, function() {
 
-                        var data = JSON.parse(request.responseText);
+                        var hashesCount = 0;
+                        var scripts = [];
 
-                        for (hash in data) {
+                        hashes.forEach(function(url) {
 
-                            if (data[hash].match('\.css$')) {
+                            var request = new XMLHttpRequest();
+                            request.onreadystatechange = function() {
 
-                                appendStylesheet(cdnUrl + data[hash]);
+                                if (request.readyState == 4 && request.status == 200) {
+
+                                    var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                                    parsedHashes.stylesheets.forEach(appendStylesheet)
+                                    scripts = scripts.concat(parsedHashes.scripts);
+
+                                    hashesCount++;
+                                    if (hashesCount == hashes.length) {
+
+                                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+
+                                        var parsedCustomResources = parseCustomResources(customResources);
+                                        parsedCustomResources.stylesheets.forEach(appendStylesheet);
+
+                                        scripts = scripts.concat(parsedCustomResources.scripts);
+                                        loadScripts(scripts, callback);
+
+                                    }
+
+                                }
 
                             }
-                            else if (data[hash].match('\.js$')) {
 
-                                scripts.push(cdnUrl + data[hash]);
+                            request.open('GET', url, true);
+                            request.send(null);
 
-                            }
+                        });
 
-                        }
-
-                        // Load the default paper theme manually
-                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
-
-                        hashesCount++;
-                        if (hashesCount == hashes.length) {
-
-                            scripts = scripts.concat(loadCustomResources(customResources));
-                            loadScripts(scripts, callback);
-
-                        }
-
-                    }
+                    });
 
                 }
 
-                request.open('GET', url, true);
-                request.send(null);
-
-            });
+            }
+            request.open('GET', vendorHashesUrl, true);
+            request.send(null);
 
         }
 
     }
 
-    var hashes = [manywho.cdnUrl + '/hashes.json', manywho.cdnUrl + '/js/vendor/vendor.json']
+    var hashes = [manywho.cdnUrl + '/hashes.json']
                     .concat(manywho.customHashes)
                     .filter(function(hash) {
                         return hash != undefined && hash != null;
                     });
 
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, hashes, manywho.customResources, manywho.initialTheme);
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', hashes, manywho.customResources, manywho.initialTheme);
 
 }(manywho, window));
