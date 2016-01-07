@@ -136,7 +136,7 @@ permissions and limitations under the License.
 
     }
 
-    var hashes = [manywho.cdnUrl + '/hashes.json', manywho.cdnUrl + '/js/vendor/hashes.json']
+    var hashes = [manywho.cdnUrl + '/hashes.json', manywho.cdnUrl + '/js/vendor/vendor.json']
                     .concat(manywho.customHashes)
                     .filter(function(hash) {
                         return hash != undefined && hash != null;

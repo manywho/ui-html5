@@ -148,7 +148,7 @@ gulp.task('js-dist', function () {
 
 gulp.task('js-vendor-dist', function () {
 
-    return gulp.src(['js/vendor/*.js', 'js/vendor/hashes.json'])
+    return gulp.src(['js/vendor/*.js', 'js/vendor/vendor.json'])
                 .pipe(gulp.dest('./dist/js/vendor'));
 
 });
@@ -171,7 +171,7 @@ gulp.task('html-dist', function () {
 
 gulp.task('rev-dist', function () {
 
-    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js', '!dist/js/vendor/hashes.json', '!dist/js/loader.min.js'])
+    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js'])
                 .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
                 .pipe(gulp.dest('./dist/'))
                 .pipe(revall.manifest({ fileName: 'hashes.json' }))
@@ -205,7 +205,7 @@ gulp.task('deploy-cdn', function () {
         headers = null;
     }
 
-    return gulp.src(['dist/**/*.*', '!dist/hashes.json', '!dist/js/vendor/hashes.json', '!dist/js/loader.min.js', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
+    return gulp.src(['dist/**/*.*', '!dist/hashes.json', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
                 .pipe(awspublish.gzip())
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
@@ -229,10 +229,14 @@ gulp.task('deploy-short-cache', function () {
         headers = null;
     }
 
-    return gulp.src(['dist/hashes.json', 'dist/js/vendor/hashes.json', 'dist/js/loader.min.js'])
+    return gulp.src(['dist/hashes.json', 'dist/js/vendor/vendor.json', 'dist/js/loader.min.js'])
                 .pipe(rename(function(path) {
+                    console.log(path);
                     if (path.basename == "loader.min") {
                         path.dirname = "js"
+                    }
+                    if (path.basename == "vendor") {
+                        path.dirname= "js/vendor/"
                     }
                 }))
                 .pipe(awspublish.gzip())
@@ -251,7 +255,7 @@ gulp.task('invalidate', function (cb) {
             CallerReference: 'deploy-' + Math.random(),
             Paths: {
                 Quantity: 2,
-                Items: ['/hashes.json', '/js/loader.min.js']
+                Items: ['/hashes.json', '/js/vendor/vendor.json', '/js/loader.min.js']
             }
         }
     };
