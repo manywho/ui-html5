@@ -129,64 +129,79 @@ permissions and limitations under the License.
 
     }
 
-    manywho.loader = {
+    function loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback) {
 
-        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme) {
+        var hashesCount = 0;
+        var scripts = [];
+
+        hashes.forEach(function(url) {
 
             var request = new XMLHttpRequest();
             request.onreadystatechange = function() {
 
                 if (request.readyState == 4 && request.status == 200) {
 
-                    var vendorHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
-                    vendorHashes.stylesheets.forEach(appendStylesheet);
+                    var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                    parsedHashes.stylesheets.forEach(appendStylesheet)
+                    scripts = scripts.concat(parsedHashes.scripts);
 
-                    loadScriptsSequentially(vendorHashes.scripts, 0, function() {
+                    hashesCount++;
+                    if (hashesCount == hashes.length) {
 
-                        var hashesCount = 0;
-                        var scripts = [];
+                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
 
-                        hashes.forEach(function(url) {
+                        var parsedCustomResources = parseCustomResources(customResources);
+                        parsedCustomResources.stylesheets.forEach(appendStylesheet);
 
-                            var request = new XMLHttpRequest();
-                            request.onreadystatechange = function() {
+                        scripts = scripts.concat(parsedCustomResources.scripts);
+                        loadScripts(scripts, callback);
 
-                                if (request.readyState == 4 && request.status == 200) {
-
-                                    var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
-                                    parsedHashes.stylesheets.forEach(appendStylesheet)
-                                    scripts = scripts.concat(parsedHashes.scripts);
-
-                                    hashesCount++;
-                                    if (hashesCount == hashes.length) {
-
-                                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
-
-                                        var parsedCustomResources = parseCustomResources(customResources);
-                                        parsedCustomResources.stylesheets.forEach(appendStylesheet);
-
-                                        scripts = scripts.concat(parsedCustomResources.scripts);
-                                        loadScripts(scripts, callback);
-
-                                    }
-
-                                }
-
-                            }
-
-                            request.open('GET', url, true);
-                            request.send(null);
-
-                        });
-
-                    });
+                    }
 
                 }
 
             }
-            request.open('GET', vendorHashesUrl, true);
+
+            request.open('GET', url, true);
             request.send(null);
 
+        });
+
+    }
+
+    manywho.loader = {
+
+        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme) {
+
+            if (!window.React) {
+
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function() {
+
+                    if (request.readyState == 4 && request.status == 200) {
+
+                        var vendorHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                        vendorHashes.stylesheets.forEach(appendStylesheet);
+
+                        loadScriptsSequentially(vendorHashes.scripts, 0, function() {
+
+                            loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+
+                        });
+
+                    }
+
+                }
+                request.open('GET', vendorHashesUrl, true);
+                request.send(null);
+
+            }
+            else {
+
+                loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+
+            }
+            
         }
 
     }
