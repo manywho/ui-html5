@@ -90,34 +90,45 @@ permissions and limitations under the License.
 
             hashes.forEach(function(url) {
 
-                $.getJSON(url, function (data) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function() {
 
-                    for (hash in data) {
+                    if (request.readyState == 4 && request.status == 200) {
 
-                        if (data[hash].match('\.css$')) {
+                        var data = JSON.parse(request.responseText);
 
-                            appendStylesheet(cdnUrl + data[hash]);
+                        for (hash in data) {
+
+                            if (data[hash].match('\.css$')) {
+
+                                appendStylesheet(cdnUrl + data[hash]);
+
+                            }
+                            else if (data[hash].match('\.js$')) {
+
+                                scripts.push(cdnUrl + data[hash]);
+
+                            }
 
                         }
-                        else if (data[hash].match('\.js$')) {
 
-                            scripts.push(cdnUrl + data[hash]);
+                        // Load the default paper theme manually
+                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+
+                        hashesCount++;
+                        if (hashesCount == hashes.length) {
+
+                            scripts = scripts.concat(loadCustomResources(customResources));
+                            loadScripts(scripts, callback);
 
                         }
 
                     }
 
-                    // Load the default paper theme manually
-                    appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+                }
 
-                    hashesCount++;
-                    if (hashesCount == hashes.length) {
-
-                        scripts = scripts.concat(loadCustomResources(customResources));
-                        loadScripts(scripts, callback);
-
-                    }
-                });
+                request.open('GET', url, true);
+                request.send(null);
 
             });
 
@@ -133,4 +144,4 @@ permissions and limitations under the License.
 
     manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, hashes, manywho.customResources, manywho.initialTheme);
 
-}(manywho, window, jQuery));
+}(manywho, window));
