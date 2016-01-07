@@ -171,8 +171,8 @@ gulp.task('html-dist', function () {
 
 gulp.task('rev-dist', function () {
 
-    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js', '!dist/js/vendor/hashes.json'])
-                .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png', 'js/loader.min.js'] }))
+    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js', '!dist/js/vendor/hashes.json', '!dist/js/loader.min.js'])
+                .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
                 .pipe(gulp.dest('./dist/'))
                 .pipe(revall.manifest({ fileName: 'hashes.json' }))
                 .pipe(gulp.dest('./dist/'))
