@@ -206,6 +206,25 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        getStateData: function (stateId, tenantId, authenticationToken) {
+
+            return $.ajax({
+                    url: manywho.settings.global('platform.uri') + '/api/admin/1/states/' + stateId,
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
+
+                        beforeSend.call(this, xhr, tenantId, '', 'getStateData');
+
+                    }
+                })
+                .done(manywho.settings.event('getStateData.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('getStateData.fail'));
+
+        },
+
         getFlowByName: function (flowName, tenantId, authenticationToken) {
 
             return $.ajax({
