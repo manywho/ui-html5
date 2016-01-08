@@ -215,7 +215,7 @@ manywho.ajax = (function (manywho) {
                     contentType: 'application/json',
                     beforeSend: function (xhr) {
 
-                        beforeSend.call(this, xhr, tenantId, '', 'getStateData');
+                        beforeSend.call(this, xhr, tenantId, authenticationToken, 'getStateData');
 
                     }
                 })
