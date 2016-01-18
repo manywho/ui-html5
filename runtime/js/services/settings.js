@@ -46,9 +46,9 @@ manywho.settings = (function (manywho, $) {
             url: 'https://tinymce.cachefly.net/4.1/tinymce.min.js',
             fontSize: '14px',
             plugins: [
-                "autolink link lists charmap print hr anchor spellchecker",
-                "searchreplace wordcount code insertdatetime",
-                "table directionality emoticons paste textcolor"
+                "advlist autolink link lists link image charmap print hr anchor spellchecker",
+                "searchreplace visualblocks fullscreen wordcount code insertdatetime",
+                "media table directionality emoticons contextmenu paste textcolor"
             ]
         },
         outcomes: null,
