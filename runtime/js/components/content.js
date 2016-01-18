@@ -28,6 +28,7 @@ permissions and limitations under the License.
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
+                menubar: 'edit insert view format table tools',
                 toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage',
 
                 setup: function (editor) {
