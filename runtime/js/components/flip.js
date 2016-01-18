@@ -14,22 +14,17 @@ permissions and limitations under the License.
 
     var flip = React.createClass({
 
-        onTouchStart: function() {
+        toggleFlip: function () {
 
-            this.setState({ isFlipped: true });
-
-        },
-
-        onTouchEnd: function() {
-
-            this.setState({ isFlipped: false });
+            this.setState({ isFlipped: !this.state.isFlipped });
 
         },
 
         getInitialState: function() {
 
             return {
-                isFlipped: false
+                isFlipped: false,
+                animationStyle: 'rotateY'
             }
 
         },
@@ -43,20 +38,20 @@ permissions and limitations under the License.
 
             if (this.state.isFlipped) {
 
-                classes.push('hover')
+                classes.push(this.state.animationStyle);
 
             }
 
             classes = classes.join(' ');
 
-            var children = manywho.model.getChildren(this.props.id, this.props.flowKey)
+            var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
 
             var childComponents = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
 
-            return React.DOM.div({ className: classes, onTouchStart: this.onTouchStart, onTouchEnd: this.onTouchEnd, id: this.props.id }, [
+            return React.DOM.div({ className: classes, onTouchEnd: this.toggleFlip, onClick: this.toggleFlip, id: this.props.id }, [
                 React.DOM.div({ className: 'flipper '}, [
-                    React.DOM.div({ className: 'front' }, childComponents[0]),
-                    React.DOM.div({ className: 'back' }, childComponents[1])
+                    React.DOM.div({ className: 'front-' + this.state.animationStyle }, childComponents[0]),
+                    React.DOM.div({ className: 'back-' + this.state.animationStyle }, childComponents[1])
                 ])
             ]);
 
