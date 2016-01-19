@@ -161,7 +161,7 @@ permissions and limitations under the License.
 
             var content;
 
-            if (this.props.outcomeDisplay == 'icons' && model.pageActionType) {
+            if (manywho.utils.isEqual(this.props.outcomeDisplay, 'icons', true)  && model.pageActionType) {
 
                 var icon = 'glyphicon ' + getIconType(model.pageActionType || model.pageActionBindingType);
 
