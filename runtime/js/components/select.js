@@ -64,7 +64,7 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
-            var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var options = null;
             var value = null;
             var refreshButton = null;
@@ -78,6 +78,8 @@ permissions and limitations under the License.
             var wrapperClasses = ['select-wrapper'];
 
             if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
+
+                var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
                 selectAttributes = manywho.utils.extend(selectAttributes, { onChange: this.onChange });
 
@@ -123,10 +125,17 @@ permissions and limitations under the License.
             if (model.objectDataRequest || model.fileDataRequest) {
 
                 wrapperClasses.push('input-group');
+                var iconClasses = ['glyphicon glyphicon-refresh'];
 
-                refreshButton = React.DOM.button({ className: 'btn btn-default refresh-button', onClick: this.refresh },
-                    React.DOM.span({ className: 'glyphicon glyphicon-refresh'}, null)
-                )
+                if (state.loading && !state.error) {
+
+                    iconClasses.push('spin');
+
+                }
+
+                refreshButton = React.DOM.button({ className: 'btn btn-default refresh-button', onClick: this.refresh, disabled: state.loading },
+                    React.DOM.span({ className: iconClasses.join(' ') }, null)
+                );
 
             }
 
@@ -144,15 +153,11 @@ permissions and limitations under the License.
 
             }
 
-            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey))
+            containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey));
 
-            var iconClassNames = ['select-loading-icon'];
-
-            if (!state.loading || state.error) {
-
-                iconClassNames.push('hidden');
-
-            }
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                    return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+                }, this);
 
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
@@ -161,11 +166,11 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.div({ className: wrapperClasses.join(' ') }, [
                     React.createElement(Select, selectAttributes),
-                    refreshButton,
-                    React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null))
+                    refreshButton
                 ]),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
-                React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                React.DOM.span({ className: 'help-block' }, model.helpInfo),
+                outcomeButtons
             ]);
 
         }

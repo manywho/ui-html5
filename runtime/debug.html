@@ -134,13 +134,15 @@
     <link rel="stylesheet" href="css/returnToParent.css" />
     <link rel="stylesheet" href="css/history.css" />
     <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/list.css" />
 
-    <script src="js/vendor/jquery.min.js"></script>
-    <script src="js/vendor/bootstrap.min.js"></script>
-    <script src="js/vendor/react.min.js"></script>
-    <script src="js/vendor/socket.io-1.3.2.js"></script>
-    <script src="js/vendor/moment-with-locales.min.js"></script>
-    <script src="js/vendor/loglevel.min.js"></script>
+    <script src="js/vendor/jquery-2.1.4.min.js"></script>
+    <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
+    <script src="js/vendor/react-0.14.6.min.js"></script>
+    <script src="js/vendor/react-dom-0.14.6.min.js"></script>
+    <script src="js/vendor/socket.io-1.3.7.js"></script>
+    <script src="js/vendor/moment-with-locales-2.10.6.min.js"></script>
+    <script src="js/vendor/loglevel-1.4.0.min.js"></script>
 
     <script>
 
@@ -155,6 +157,7 @@
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
+                        //uri: 'http://localhost:22935'
                         uri: 'https://flow.manywho.com'
                     }
                 });
@@ -271,6 +274,7 @@
     <script src="js/components/history.js"></script>
     <script src="js/components/footer.js"></script>
     <script src="js/components/hidden.js"></script>
+    <script src="js/components/list.js"></script>
 
     <script src="https://flow.manywho.com/js/constants"></script>
 

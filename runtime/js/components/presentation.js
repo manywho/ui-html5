@@ -24,7 +24,7 @@ permissions and limitations under the License.
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&');
 
-            var node = this.getDOMNode();
+            var node = React.findDOMNode(this.refs.content);
             node.innerHTML = html;
 
             var imgs = node.querySelectorAll('img')
@@ -48,6 +48,7 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "presentation", this.props.flowKey).join(' ');
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             if (model.isVisible == false) {
 
@@ -55,7 +56,14 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classes, id: this.props.id }, null);
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
+            return React.DOM.div({ className: classes, id: this.props.id }, [
+                React.DOM.div({ ref: "content" }, null),
+                outcomeButtons
+            ]);
 
         }
 

@@ -16,6 +16,7 @@ permissions and limitations under the License.
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.onload = onLoad;
+        script.onerror = onLoad;
         script.src = url;
         document.head.appendChild(script);
 
@@ -31,32 +32,79 @@ permissions and limitations under the License.
 
     }
 
-    function loadCustomResources(resources) {
+    function parseCustomResources(resources) {
+
+        var parsed = {
+            scripts: [],
+            stylesheets: []
+        }
 
         if (resources) {
-
-            var scripts = [];
 
             resources.forEach(function(url) {
 
                 if (url.match('\.css$')) {
 
-                    appendStylesheet(url);
+                    parsed.stylesheets.push(url);
 
                 }
                 else if (url.match('\.js$')) {
 
-                    scripts.push(url);
+                    parsed.scripts.push(url);
 
                 }
 
             });
 
-            return scripts;
+        }
+
+        return parsed;
+
+    }
+
+    function parseHashes(hashes, cdnUrl) {
+
+        var parsed = {
+            scripts: [],
+            stylesheets: []
+        }
+
+        for (hash in hashes) {
+
+            if (hashes[hash].match('\.css$')) {
+
+                parsed.stylesheets.push(cdnUrl + hashes[hash]);
+
+            }
+            else if (hashes[hash].match('\.js$')) {
+
+                parsed.scripts.push(cdnUrl + hashes[hash]);
+
+            }
 
         }
 
-        return [];
+        return parsed;
+
+    }
+
+    function loadScriptsSequentially(scripts, index, callback) {
+
+        if (scripts[index]) {
+
+            appendScript(scripts[index], function() {
+
+                index = index + 1;
+                loadScriptsSequentially(scripts, index, callback);
+
+            });
+
+        }
+        else {
+
+            callback();
+
+        }
 
     }
 
@@ -81,46 +129,79 @@ permissions and limitations under the License.
 
     }
 
-    manywho.loader = {
+    function loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback) {
 
-        initialize: function(callback, cdnUrl, hashes, customResources, initialTheme) {
+        var hashesCount = 0;
+        var scripts = [];
 
-            var hashesCount = 0;
-            var scripts = [];
+        hashes.forEach(function(url) {
 
-            hashes.forEach(function(url) {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
 
-                $.getJSON(url, function (data) {
+                if (request.readyState == 4 && request.status == 200) {
 
-                    for (hash in data) {
-
-                        if (data[hash].match('\.css$')) {
-
-                            appendStylesheet(cdnUrl + data[hash]);
-
-                        }
-                        else if (data[hash].match('\.js$')) {
-
-                            scripts.push(cdnUrl + data[hash]);
-
-                        }
-
-                    }
-
-                    // Load the default paper theme manually
-                    appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+                    var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                    parsedHashes.stylesheets.forEach(appendStylesheet)
+                    scripts = scripts.concat(parsedHashes.scripts);
 
                     hashesCount++;
                     if (hashesCount == hashes.length) {
 
-                        scripts = scripts.concat(loadCustomResources(customResources));
+                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+
+                        var parsedCustomResources = parseCustomResources(customResources);
+                        parsedCustomResources.stylesheets.forEach(appendStylesheet);
+
+                        scripts = scripts.concat(parsedCustomResources.scripts);
                         loadScripts(scripts, callback);
 
                     }
-                });
 
-            });
+                }
 
+            }
+
+            request.open('GET', url, true);
+            request.send(null);
+
+        });
+
+    }
+
+    manywho.loader = {
+
+        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme) {
+
+            if (!window.React) {
+
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function() {
+
+                    if (request.readyState == 4 && request.status == 200) {
+
+                        var vendorHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                        vendorHashes.stylesheets.forEach(appendStylesheet);
+
+                        loadScriptsSequentially(vendorHashes.scripts, 0, function() {
+
+                            loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+
+                        });
+
+                    }
+
+                }
+                request.open('GET', vendorHashesUrl, true);
+                request.send(null);
+
+            }
+            else {
+
+                loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+
+            }
+            
         }
 
     }
@@ -131,6 +212,6 @@ permissions and limitations under the License.
                         return hash != undefined && hash != null;
                     });
 
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, hashes, manywho.customResources, manywho.initialTheme);
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', hashes, manywho.customResources, manywho.initialTheme);
 
-}(manywho, window, jQuery));
+}(manywho, window));
