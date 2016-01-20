@@ -255,6 +255,7 @@ manywho.component = (function (manywho) {
                 if (input) {
 
                     input.focus();
+                    input.setSelectionRange(input.value.length, input.value.length);
 
                 }
 
