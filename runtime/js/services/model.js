@@ -254,6 +254,12 @@ permissions and limitations under the License.
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
+            if (response.invokeType) {
+
+                flowModel[lookUpKey].invokeType = response.invokeType;
+
+            }
+
             if (response.mapElementInvokeResponses) {
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {

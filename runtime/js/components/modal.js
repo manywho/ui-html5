@@ -21,7 +21,7 @@ permissions and limitations under the License.
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var state = manywho.state.getComponent('modal', this.props.flowKey) || {};
 
-            if (state && state.loading == null) {
+            if (state && state.loading == null && !manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'sync', true)) {
 
                 manywho.component.focusInput(this.props.flowKey);
 

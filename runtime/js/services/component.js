@@ -132,7 +132,7 @@ manywho.component = (function (manywho) {
 
         },
 
-        handleEvent: function (component, model, flowKey) {
+        handleEvent: function (component, model, flowKey, callback) {
 
             if (model.hasEvents) {
 
@@ -141,7 +141,7 @@ manywho.component = (function (manywho) {
 
                     manywho.engine.render(flowKey);
 
-                });
+                }).then(callback);
 
                 manywho.collaboration.sync(flowKey);
 
