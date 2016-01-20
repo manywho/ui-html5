@@ -251,7 +251,7 @@ manywho.component = (function (manywho) {
             // on mobile devices when the flow first renders
             if (manywho.settings.flow('autofocusinput', flowKey) && window.innerWidth > 768) {
 
-                var input = document.querySelector('.main input, .main textarea, .modal-container input, .modal-container textarea');
+                var input = document.querySelector('.main .mw-input input, .main .mw-content input, .main .mw-textarea textarea, .modal-container .mw-input input, .modal-container .mw-content input, .modal-container .mw-textarea textarea');
                 if (input) {
 
                     input.focus();
