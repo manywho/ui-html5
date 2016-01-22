@@ -100,13 +100,7 @@ permissions and limitations under the License.
             var component = manywho.model.getComponent(bindingId, flowKey);
             if (component) {
 
-                switch (component.componentType.toUpperCase()) {
-                    case 'TABLE':
-                    case 'INPUT':
-                    case 'PRESENTATION':
-                    case 'SELECT':
-                        return 'btn-sm';
-                }
+                return 'btn-sm'
 
             }
 

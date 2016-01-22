@@ -37,10 +37,10 @@
 
             }
 
-            var list = React.DOM.ul(, elements || null);
+            var list = React.DOM.ul(null, elements || null);
 
             if (model.attributes.ordered && !manywho.utils.isEqual(model.attributes.ordered, 'false', true)) {
-                list = React.DOM.ol(, elements || null);
+                list = React.DOM.ol(null, elements || null);
             }
 
             var outcomeButtons = outcomes && outcomes.map(function (outcome) {
