@@ -189,7 +189,7 @@ permissions and limitations under the License.
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                this.handleEvent();
+                this.handleEvent(e);
 
             }
 
