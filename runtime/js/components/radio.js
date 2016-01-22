@@ -159,6 +159,7 @@
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var attributes = {
                 required: model.isRequired && 'required',
@@ -230,6 +231,10 @@
             if (!state.loading || state.error)
                 iconClassNames.push('hidden');
 
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
                     model.label,
@@ -240,7 +245,8 @@
                 ]),
                 React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null)),
                 React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
-                React.DOM.span({ className: 'help-block' }, model.helpInfo)
+                React.DOM.span({ className: 'help-block' }, model.helpInfo),
+                outcomeButtons
             ]);
 
         }

@@ -7,26 +7,23 @@
 
 .rotateY .flipper {
 	transform: rotateY(180deg);
-    transform-origin: 50% 100%; /* half of height */
+    transform-origin: 50% 100%;
 }
 
 .rotateX .flipper {
   	transform: rotateX(-180deg);
-    transform-origin: 100% 240px; /* half of height */
+    transform-origin: 100% 50%;
 }
 
 .flipper {
   	position: relative;
 	transition: 0.6s;
 	transform-style: preserve-3d;
+	width: 250px;
+	height: 250px;
 }
 
-.flip-container, .flipper div {
-	width: 320px;
-	height: 480px;
-}
-
-.flipper div {
+.front, .back {
 	backface-visibility: hidden;
 	position: absolute;
 	top: 0;

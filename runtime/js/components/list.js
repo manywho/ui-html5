@@ -17,6 +17,7 @@
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'list', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId
 
             if (model.isVisible == false) {
@@ -36,12 +37,20 @@
 
             }
 
+            var list = React.DOM.ul(, elements || null);
 
             if (model.attributes.ordered && !manywho.utils.isEqual(model.attributes.ordered, 'false', true)) {
-                return React.DOM.ol({ className: classes.join(' ') }, elements);
+                list = React.DOM.ol(, elements || null);
             }
 
-            return React.DOM.ul({ className: classes.join(' ') }, elements || null);
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
+            return React.DOM.div({ className: classes.join(' ') }, [
+                list,
+                outcomeButtons
+            ]);
 
         }
 

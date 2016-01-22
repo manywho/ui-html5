@@ -78,7 +78,7 @@ permissions and limitations under the License.
                 this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
 
                 this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
-                
+
             }
 
         },
@@ -104,6 +104,7 @@ permissions and limitations under the License.
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var tabs = children.map(function(child, index) {
 
@@ -121,9 +122,14 @@ permissions and limitations under the License.
 
             }, this);
 
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
             return React.DOM.div({ className: classes, ref: 'group' }, [
                 React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, tabs),
-                React.createElement('div', { className: classes + ' tab-content' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))
+                React.createElement('div', { className: classes + ' tab-content' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)),
+                outcomeButtons
             ]);
 
         }

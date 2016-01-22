@@ -31,8 +31,9 @@ permissions and limitations under the License.
 
         render: function () {
 
-            log.info('Rendering Flip: ' + this.props.id);
+            manywho.log.info('Rendering Flip: ' + this.props.id);
 
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "flip", this.props.flowKey);
             classes.push('flip-container');
 
@@ -48,11 +49,16 @@ permissions and limitations under the License.
 
             var childComponents = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
 
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
             return React.DOM.div({ className: classes, onTouchEnd: this.toggleFlip, onClick: this.toggleFlip, id: this.props.id }, [
                 React.DOM.div({ className: 'flipper '}, [
-                    React.DOM.div({ className: 'front-' + this.state.animationStyle }, childComponents[0]),
-                    React.DOM.div({ className: 'back-' + this.state.animationStyle }, childComponents[1])
-                ])
+                    React.DOM.div({ className: 'front front-' + this.state.animationStyle }, childComponents[0]),
+                    React.DOM.div({ className: 'back back-' + this.state.animationStyle }, childComponents[1])
+                ]),
+                outcomeButtons
             ]);
 
         }
