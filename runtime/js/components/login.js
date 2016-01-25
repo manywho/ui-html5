@@ -75,6 +75,12 @@
 
                             manywho.authorization.hideModal(self.props.flowKey);
 
+                            if (self.props.callback) {
+
+                                self.props.callback.call(this, response);
+
+                            }
+
                             self.setState(newState);
 
                         }).fail(function (error) {
@@ -103,9 +109,11 @@
 
                             newState.loading = null;
 
-                            manywho.authorization.setAuthenticationToken(response, self.props.flowKey);
+                            if (self.props.callback) {
 
-                            manywho.authorization.hideModal(self.props.flowKey);
+                                self.props.callback.call(this, response);
+
+                            }
 
                             self.setState(newState);
 
