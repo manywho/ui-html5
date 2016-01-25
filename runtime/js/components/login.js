@@ -88,6 +88,7 @@
                         var newState = self.state;
 
                         newState.loading = null;
+                        newState.password = '';
                         newState.faults = error.responseText;
 
                         self.setState(newState);
@@ -122,6 +123,8 @@
                         var newState = self.state;
 
                         newState.loading = null;
+                        newState.password = '';
+                        self.refs.password.value = '';
                         newState.faults = error.responseText;
 
                         self.setState(newState);
@@ -199,7 +202,7 @@
                                 React.DOM.span({}, 'Password'),
                                 React.DOM.span({ className: 'input-required'}, ' *')
                             ]),
-                            React.DOM.input({ type: 'password', id: 'mw-password', defaultValue: this.state.password, maxLength: '255', size: '25', className: 'form-control', onChange: this.handleChange.bind(null, 'password') }),
+                            React.DOM.input({ type: 'password', id: 'mw-password', defaultValue: this.state.password, maxLength: '255', size: '25', className: 'form-control', ref: 'password', onChange: this.handleChange.bind(null, 'password') }),
                             React.DOM.span({ className: 'help-block' }, this.state.passwordError)
                         ])
                     ])
