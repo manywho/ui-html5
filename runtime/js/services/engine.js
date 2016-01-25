@@ -125,7 +125,7 @@ manywho.engine = (function (manywho) {
 
     function onInitializeFailed(response) {
 
-        var container = document.querySelector(manywho.settings.global('containerSelector', null, '#manywho'))
+        var container = document.querySelector(manywho.settings.global('containerSelector', null, '#manywho'));
         container.classList.add('mw-bs');
 
         var alert = document.createElement('div');
@@ -155,6 +155,8 @@ manywho.engine = (function (manywho) {
             options.mode,
             options.reportingMode
         );
+
+        manywho.state.setOptions(options, flowKey);
 
         if (flowKey) {
 
@@ -729,6 +731,7 @@ manywho.engine = (function (manywho) {
 
             manywho.state.setAuthenticationToken(authenticationToken, flowKey);
             manywho.state.setState(stateId, null, null, flowKey);
+            manywho.state.setOptions(options, flowKey);
 
             manywho.component.appendFlowContainer(flowKey);
 
@@ -884,9 +887,15 @@ manywho.engine = (function (manywho) {
 
             }
 
-            if (container) {
+            var login = manywho.state.getLogin(flowKey);
 
-                React.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
+            if (login) {
+
+                ReactDOM.render(React.createElement(manywho.component.getByName('mw-login'), { flowKey: flowKey, api: 'run', stateId: login.stateId, directoryName: login.directoryName, loginUrl: login.loginUrl}), container);
+
+            } else {
+
+                ReactDOM.render(React.createElement(manywho.component.getByName(manywho.utils.extractElement(flowKey)), {flowKey: flowKey, container: container}), container);
 
             }
 
