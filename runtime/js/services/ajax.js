@@ -67,13 +67,13 @@ manywho.ajax = (function (manywho) {
 
     return {
 
-        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId, authenticationToken) {
+        login: function (loginUrl, username, password, sessionId, sessionUrl, stateId, tenantId) {
 
             manywho.log.info('Logging into Flow State: \n    Id: ' + stateId);
 
             var authenticationCredentials = {
-                username: null,
-                password: null,
+                username: username,
+                password: password,
                 token: null,
                 sessionToken: sessionId,
                 sessionUrl: sessionUrl,
@@ -89,7 +89,7 @@ manywho.ajax = (function (manywho) {
                 data: JSON.stringify(authenticationCredentials),
                 beforeSend: function (xhr) {
 
-                    beforeSend.call(this, xhr, tenantId, authenticationToken, 'login');
+                    beforeSend.call(this, xhr, tenantId, null, 'login');
 
                 }
             })
@@ -99,6 +99,29 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        builderLogin: function (authenticationCredentials) {
+
+            manywho.log.info('Logging into Draw API');
+
+            return $.ajax({
+                    url: manywho.settings.global('platform.uri') + '/api/draw/1/authentication',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    processData: true,
+                    data: JSON.stringify(authenticationCredentials),
+                    beforeSend: function (xhr) {
+
+                        beforeSend.call(this, xhr, manywho.settings.global('adminTenantId'), null, 'builderLogin');
+
+                    }
+                })
+                .done(manywho.settings.event('builderLogin.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('builderLogin.fail'));
+
+        }
+,
         initialize: function (engineInitializationRequest, tenantId, authenticationToken) {
 
             manywho.log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);

@@ -17,7 +17,9 @@ manywho.state = (function (manywho) {
     var authenticationToken = {};
     var sessionId = {};
     var location = {};
-    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    var login = {};
+    var options = {};
+    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     function assignGeoLocation(position) {
 
@@ -230,6 +232,38 @@ manywho.state = (function (manywho) {
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
             return state[lookUpKey];
+
+        },
+
+        setOptions: function (flowOptions, flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            options[lookUpKey] = flowOptions;
+
+        },
+
+        getOptions: function (flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return options[lookUpKey];
+
+        },
+
+        setLogin: function (loginData, flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            login[lookUpKey] = loginData;
+
+        },
+
+        getLogin: function (flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+
+            return login[lookUpKey];
 
         },
 
