@@ -167,7 +167,7 @@ permissions and limitations under the License.
 
             var navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
 
-            if (navigation) {
+            if (navigation && navigation.isVisible) {
 
                 manywho.log.info("Rendering Navigation");
 
