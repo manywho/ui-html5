@@ -117,7 +117,6 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
@@ -174,7 +173,6 @@
         };
     </script>
 
-    <script src="{{baseurl}}/js/constants"></script>
     <script src="{{cdnurl}}/js/loader.min.js"></script>
 
 </body>
