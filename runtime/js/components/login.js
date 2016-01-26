@@ -160,7 +160,7 @@
 
             if (this.refs.username) {
 
-                React.findDOMNode(this.refs.username).focus();
+                this.refs.username.focus();
 
             }
 
@@ -178,13 +178,13 @@
                 passwordFormClasses.push('has-error');
 
             return React.DOM.div({ className: 'mw-vertical_flow clearfix'}, [
-                React.DOM.div({ className: 'mw-inline_flow clearfix'}, [
-                    React.DOM.div({ className: 'pull-left mw-presentation'}, [
+                React.DOM.div({ className: 'mw-inline_flow clearfix'},
+                    React.DOM.div({ className: 'pull-left mw-presentation'},
                         React.DOM.span({}, ['Directory: ', React.DOM.strong({}, this.props.directoryName)])
-                    ])
-                ]),
-                React.DOM.div({ className: 'mw-inline_flow clearfix'}, [
-                    React.DOM.div({ className: 'clearfix' }, [
+                    )
+                ),
+                React.DOM.div({ className: 'mw-inline_flow clearfix'},
+                    React.DOM.div({ className: 'clearfix' },
                         React.DOM.div({ className: usernameFormClasses.join(' ') }, [
                             React.DOM.label({ htmlFor: 'mw-username' }, [
                                 React.DOM.span({}, 'Username'),
@@ -193,8 +193,8 @@
                             React.DOM.input({ type: 'text', id: 'mw-username', defaultValue: this.state.username, maxLength: '255', size: '60', className: 'form-control', ref: 'username', onChange: this.handleChange.bind(null, 'username') }),
                             React.DOM.span({ className: 'help-block' }, this.state.usernameError)
                         ])
-                    ])
-                ]),
+                    )
+                ),
                 React.DOM.div({ className: 'mw-inline_flow clearfix'}, [
                     React.DOM.div({ className: 'clearfix' }, [
                         React.DOM.div({ className: passwordFormClasses.join(' ')}, [
@@ -226,15 +226,15 @@
             return React.DOM.div({ className: 'modal show' }, [
                 React.DOM.div({ className: 'modal-dialog', onKeyUp: this.onEnter }, [
                     React.DOM.div({ className: 'modal-content' }, [
-                        React.DOM.div({ className: 'modal-header' }, [
+                        React.DOM.div({ className: 'modal-header' },
                             React.DOM.h4({ className: 'modal-title' }, 'Login')
-                        ]),
+                        ),
                         React.DOM.div({ className: 'modal-body' }, [
                             this.renderForm()
                         ]),
-                        React.DOM.div({ className: 'modal-footer' }, [
+                        React.DOM.div({ className: 'modal-footer' },
                             React.DOM.button({ className: 'btn btn-primary', onClick: this.onSubmit }, 'Login')
-                        ]),
+                        ),
                         React.createElement(manywho.component.getByName('wait'), { isVisible: this.state.loading, message: this.state.loading && this.state.loading.message }, null),
                         faults
                     ])
