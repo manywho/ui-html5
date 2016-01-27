@@ -370,12 +370,8 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                if (isAuthenticated) {
-
-                    self.render(flowKey);
-                    return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
-
-                }
+                self.render(flowKey);
+                return processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             })
             .always(function () {
