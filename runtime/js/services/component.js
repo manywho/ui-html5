@@ -157,7 +157,7 @@ manywho.component = (function (manywho) {
 
             if (selectedIds) {
 
-                for (selectedId in selectedIds) {
+                selectedIds.forEach(function(selectedId) {
 
                     if (!manywho.utils.isNullOrWhitespace(selectedIds[selectedId])) {
 
@@ -175,7 +175,7 @@ manywho.component = (function (manywho) {
 
                     }
 
-                }
+                });
 
             }
 
