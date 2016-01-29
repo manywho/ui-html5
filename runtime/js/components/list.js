@@ -17,8 +17,9 @@
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'list', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
-            var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId
+            var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
             if (model.isVisible == false) {
 
@@ -49,7 +50,8 @@
 
             return React.DOM.div({ className: classes.join(' ') }, [
                 list,
-                outcomeButtons
+                outcomeButtons,
+                React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
             ]);
 
         }
