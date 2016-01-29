@@ -157,13 +157,13 @@ manywho.component = (function (manywho) {
 
             if (selectedIds) {
 
-                for (selectedId in selectedIds) {
+                selectedIds.forEach(function(selectedId) {
 
-                    if (!manywho.utils.isNullOrWhitespace(selectedIds[selectedId])) {
+                    if (!manywho.utils.isNullOrWhitespace(selectedId)) {
 
                         selectedObjectData = selectedObjectData.concat(model.objectData.filter(function (item) {
 
-                            return manywho.utils.isEqual(item.externalId, selectedIds[selectedId], true);
+                            return manywho.utils.isEqual(item.externalId, selectedId, true);
 
                         })
                         .map(function (item) {
@@ -175,7 +175,7 @@ manywho.component = (function (manywho) {
 
                     }
 
-                }
+                });
 
             }
 
