@@ -17,7 +17,7 @@
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'list', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
