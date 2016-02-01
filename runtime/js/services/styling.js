@@ -12,6 +12,7 @@ permissions and limitations under the License.
 manywho.styling = (function (manywho) {
 
     var containers = {};
+    var components = {};
     
     return {
  
@@ -29,6 +30,12 @@ manywho.styling = (function (manywho) {
                 }                
             }
 
+            if (item) {
+
+                classes = classes.concat(components[type]);
+
+            }
+
             classes.push("mw-" + type.toLowerCase());
 
             if (manywho.model.isContainer(item)) {
@@ -44,6 +51,12 @@ manywho.styling = (function (manywho) {
         registerContainer: function (containerType, getClasses) {
 
             containers[containerType] = getClasses;
+
+        },
+
+        registerComponent: function (componentType, getClasses) {
+
+            components[componentType] = getClasses;
 
         }
 
