@@ -103,7 +103,10 @@ permissions and limitations under the License.
                     $(datepickerElement).data("DateTimePicker").date(stateDate);
                 }
 
+            }
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
 
+                this.setState({ value:  state && state.contentValue != null ?  state.contentValue : model.contentValue });
 
             }
 
@@ -136,6 +139,11 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
             }
+            else {
+
+                manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
+
+            }
 
             this.setState({ value: parsedValue });
 
@@ -150,12 +158,13 @@ permissions and limitations under the License.
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
 
             }
-            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)
-                    && e.target.validity && !e.target.validity.badInput) {
+            else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
 
                 var value = parseValue(e.target.value, model.maxSize);
 
-                manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
+                if (value !== "")
+                    manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
+
                 this.setState({ value: value });
 
             }
@@ -288,7 +297,7 @@ permissions and limitations under the License.
                             ])
                         ),
                         React.DOM.span({className: 'help-block'}, model.validationMessage),
-                        React.DOM.span({ className: 'help-block' }, model.helpInfo),                        
+                        React.DOM.span({ className: 'help-block' }, model.helpInfo),
                         outcomeButtons
                     ]);
 
@@ -313,9 +322,7 @@ permissions and limitations under the License.
                     attributes.style = { width: 30 + (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
                     attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
-                    attributes.value = (null != this.state.value && this.state.value)
-                                         || (null != contentValue && contentValue)
-                                         || null;
+                    attributes.value = this.state.value;
 
                 }
 
