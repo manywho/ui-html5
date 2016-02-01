@@ -595,7 +595,7 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
+            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.flowOut', flowKey) }, flowKey);
             this.render(flowKey);
 
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)

@@ -127,15 +127,15 @@ permissions and limitations under the License.
             }
             else {
 
-                manywho.engine.move(model, this.props.flowKey).then(function() {
+                if (model.isOut) {
 
-                    if (model.isOut) {
+                    manywho.engine.flowOut(model, self.props.flowKey);
 
-                        manywho.engine.flowOut(model, self.props.flowKey);
+                } else {
 
-                    }
+                    manywho.engine.move(model, this.props.flowKey);
 
-                });
+                }
 
             }
 
