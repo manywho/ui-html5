@@ -175,12 +175,16 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            var request = model.objectDataRequest || model.fileDataRequest;
             this.clearSelection();
 
-            if (request) {
+            if (model.objectDataRequest) {
 
-                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+                manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+
+            }
+            else if (model.fileDataRequest) {
+
+                manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
 
             }
             else {
