@@ -887,7 +887,7 @@ manywho.engine = (function (manywho) {
 
             if (login) {
 
-                ReactDOM.render(React.createElement(manywho.component.getByName('mw-login'), { flowKey: flowKey, api: 'run', stateId: login.stateId, directoryName: login.directoryName, loginUrl: login.loginUrl}), container);
+                ReactDOM.render(React.createElement(manywho.component.getByName('mw-login'), { flowKey: flowKey, api: 'run', callback: login.callback, stateId: login.stateId, directoryName: login.directoryName, loginUrl: login.loginUrl}), container);
 
             } else {
 
