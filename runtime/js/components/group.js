@@ -55,9 +55,11 @@ permissions and limitations under the License.
 
     var group = React.createClass({
 
+        mixins: [manywho.component.mixins.collapse],
+
         componentDidMount: function() {
 
-            if (this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
+            if (!this.props.isDesignTime && this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
 
                 clearActivePanes(this.refs.group.getDOMNode());
 
@@ -71,7 +73,7 @@ permissions and limitations under the License.
 
         componentDidUpdate: function() {
 
-            if (this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
+            if (!this.props.isDesignTime && this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
 
                 clearActivePanes(this.refs.group.getDOMNode());
 
@@ -105,6 +107,7 @@ permissions and limitations under the License.
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+            var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
 
             var tabs = children.map(function(child, index) {
 
@@ -125,6 +128,19 @@ permissions and limitations under the License.
             var outcomeButtons = outcomes && outcomes.map(function (outcome) {
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
+
+            if (this.props.isDesignTime) {
+
+                var childClasses = ['clearfix'];
+
+                return React.DOM.div({ className: classes, id: this.props.id }, [
+                    this.getLabel(model.label),
+                    React.DOM.div({ className: childClasses.join(' '), style: { height: this.state.height} }, [
+                        this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
+                    ])
+                ]);
+
+            }
 
             return React.DOM.div({ className: classes, ref: 'group' }, [
                 React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, tabs),
