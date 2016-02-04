@@ -400,6 +400,8 @@ manywho.engine = (function (manywho) {
         var moveResponse = null;
         var selectedOutcomeId = invokeRequest.mapElementInvokeRequest.selectedOutcomeId;
 
+        var outcome = manywho.model.getOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
+
         if (manywho.settings.global('history', flowKey)) {
 
             manywho.model.setHistorySelectedOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, invokeRequest.invokeType, flowKey);
@@ -470,7 +472,11 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                self.render(flowKey);
+                if (!outcome.isOut) {
+
+                    self.render(flowKey);
+
+                }
 
                 manywho.component.focusInput(flowKey);
                 manywho.component.scrollToTop(flowKey);
@@ -479,8 +485,12 @@ manywho.engine = (function (manywho) {
             .always(function() {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
-                self.render(flowKey);
+                
+                if (!outcome.isOut) {
 
+                    self.render(flowKey);
+
+                }
             })
             .always(function () {
 
@@ -561,8 +571,10 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);
-            this.render(flowKey);
+            if (outcome.isOut) {
+                manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);
+                this.render(flowKey);
+            }
 
             var invokeRequest = manywho.json.generateInvokeRequest(
                 manywho.state.getState(flowKey),
@@ -594,9 +606,6 @@ manywho.engine = (function (manywho) {
 
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
-
-            manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.flowOut', flowKey) }, flowKey);
-            this.render(flowKey);
 
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
