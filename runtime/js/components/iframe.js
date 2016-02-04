@@ -23,7 +23,7 @@
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            return React.DOM.div({ className: classes }, [
+            return React.DOM.div({ className: classes.join(' ') }, [
                 React.DOM.iframe({ src: model.imageUri, width: model.width, height: model.height, id: this.props.id }, null),
                 outcomeButtons
             ]);
