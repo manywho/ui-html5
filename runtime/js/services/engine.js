@@ -9,6 +9,10 @@ KIND, either express or implied. See the License for the specific language gover
  permissions and limitations under the License.
 */
 
+// Currently React 0.14.6 is back compat with 0.13.3. Some old players may have a reference to 0.13.3 and thus won't have ReactDOM.
+// Until the players are updated we can workaround this issue by referencing React instead.
+ReactDOM = window.ReactDOM || window.React;
+
 manywho.engine = (function (manywho) {
 
     function processObjectDataRequests(components, flowKey) {
@@ -887,7 +891,7 @@ manywho.engine = (function (manywho) {
 
             if (login) {
 
-                ReactDOM.render(React.createElement(manywho.component.getByName('mw-login'), { flowKey: flowKey, api: 'run', stateId: login.stateId, directoryName: login.directoryName, loginUrl: login.loginUrl}), container);
+                ReactDOM.render(React.createElement(manywho.component.getByName('mw-login'), { flowKey: flowKey, api: 'run', callback: login.callback, stateId: login.stateId, directoryName: login.directoryName, loginUrl: login.loginUrl}), container);
 
             } else {
 

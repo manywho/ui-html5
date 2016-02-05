@@ -71,13 +71,13 @@
 
                             newState.loading = null;
 
-                            manywho.authorization.setAuthenticationToken(response, self.props.flowKey);
+                            manywho.state.setLogin(null, self.props.flowKey);
 
-                            manywho.authorization.hideModal(self.props.flowKey);
+                            manywho.authorization.setAuthenticationToken(response, self.props.flowKey);
 
                             if (self.props.callback) {
 
-                                self.props.callback.call(this, response);
+                                self.props.callback.execute.apply(undefined, [self.props.callback].concat(self.props.callback.args))
 
                             }
 

@@ -19,25 +19,6 @@ manywho.authorization = (function (manywho) {
 
         },
 
-        hideModal: function(flowKey) {
-
-            manywho.state.setLogin(null, flowKey);
-
-            var options = manywho.state.getOptions(flowKey);
-
-            manywho.engine.initialize(
-                manywho.utils.extractTenantId(flowKey),
-                manywho.utils.extractFlowId(flowKey),
-                manywho.utils.extractFlowVersionId(flowKey),
-                manywho.utils.extractElement(flowKey),
-                manywho.utils.extractStateId(flowKey),
-                manywho.state.getAuthenticationToken(flowKey),
-                options,
-                null
-            );
-
-        },
-
         isAuthorized: function(response, flowKey) {
 
             return !(response.authorizationContext != null
@@ -58,14 +39,13 @@ manywho.authorization = (function (manywho) {
 
                 }
 
-                manywho.callbacks.register(flowKey, doneCallback);
-
                 manywho.state.setLogin({
                     isVisible: true,
                     directoryId: response.authorizationContext.directoryId,
                     directoryName: response.authorizationContext.directoryName,
                     loginUrl: response.authorizationContext.loginUrl,
-                    stateId: response.stateId
+                    stateId: response.stateId,
+                    callback: doneCallback
                 }, flowKey);
 
             }
