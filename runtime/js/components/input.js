@@ -198,7 +198,7 @@ permissions and limitations under the License.
 
             if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
 
-                this.handleEvent();
+                this.handleEvent(e);
 
             }
 
@@ -206,9 +206,22 @@ permissions and limitations under the License.
 
         },
 
-        handleEvent: function () {
+        handleEvent: function (e) {
 
-            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
+            var callback = null;
+
+            var relatedElement = e.relatedTarget;
+
+            if (relatedElement && relatedElement.classList.contains('outcome')) {
+
+                callback = function() {
+                    relatedElement.click();
+                }
+
+            }
+
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey, callback);
+
 
         },
 

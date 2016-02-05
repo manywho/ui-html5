@@ -18,7 +18,6 @@ permissions and limitations under the License.
         componentDidMount: function() {
 
             manywho.utils.removeLoadingIndicator('loader');
-            manywho.component.focusInput(this.props.flowKey);
 
             window.addEventListener("beforeunload", function (event) {
 
@@ -62,6 +61,12 @@ permissions and limitations under the License.
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
             var state = manywho.state.getComponent('main', this.props.flowKey) || {};
+
+            if (state && state.loading == null && !manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'sync', true)) {
+
+                manywho.component.focusInput(this.props.flowKey);
+
+            }
 
             var componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
             var outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);

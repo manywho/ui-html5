@@ -123,7 +123,7 @@ permissions and limitations under the License.
 
         },
 
-        renderRows: function (flowKey, objectData, outcomes, displayColumns, selectedRows, onRowClicked) {
+        renderRows: function (flowKey, objectData, outcomes, displayColumns, selectedRows, onRowClicked, outcomeDisplay) {
 
             var outcomeComponent = manywho.component.getByName('outcome');
 
@@ -159,7 +159,7 @@ permissions and limitations under the License.
 
                         return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId }, outcomes.map(function (outcome) {
 
-                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) }, null);
+                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) || outcomeDisplay.outcomes }, null);
 
                         }, this));
 
@@ -287,7 +287,7 @@ permissions and limitations under the License.
             ].join(' ');
 
             var rows = [this.renderHeaderRow(this.props.displayColumns)];
-            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked));
+            rows = rows.concat(this.renderRows(this.props.flowKey, this.props.objectData || [], this.props.outcomes, this.props.displayColumns, this.props.selectedRows, this.props.onRowClicked, this.props.model.attributes));
 
             return React.DOM.div({ className: 'table-responsive' },
                 React.DOM.table({ className: tableClassNames },

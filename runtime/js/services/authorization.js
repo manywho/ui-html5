@@ -13,31 +13,9 @@ manywho.authorization = (function (manywho) {
 
     return {
 
-        setAuthenticationToken: function (callback, parentFlowKey, response) {
+        setAuthenticationToken: function (authenticationToken, flowKey) {
 
-            var authenticationToken = response.outputs.filter(function (output) {
-
-                return manywho.utils.isEqual(output.developerName, 'AuthenticationToken', true);
-
-            }).map(function (output) {
-
-                return output.contentValue;
-
-            })[0];
-
-            manywho.state.setAuthenticationToken(authenticationToken, parentFlowKey);
-
-        },
-
-        hideModal: function(callback) {
-
-            manywho.model.deleteFlowModel(callback.flowKey);
-            manywho.utils.removeFlowFromDOM(callback.flowKey);
-            manywho.settings.remove(callback.flowKey);
-            manywho.state.remove(callback.flowKey);
-            manywho.social.remove(callback.flowKey);
-            manywho.collaboration.remove(callback.flowKey);
-            manywho.callbacks.remove(callback.flowKey);
+            manywho.state.setAuthenticationToken(authenticationToken, flowKey);
 
         },
 
@@ -61,86 +39,14 @@ manywho.authorization = (function (manywho) {
 
                 }
 
-                var authenticationFlow = {
-                    key: null,
-                    id: null,
-                    versionId: null
-                };
-
-                var self = this;
-
-                manywho.ajax.getFlowByName('MANYWHO__AUTHENTICATION__DEFAULT__FLOW', manywho.settings.global('adminTenantId'))
-                    .then(function (data) {
-
-                        authenticationFlow.id = data.id.id;
-                        authenticationFlow.versionId = data.id.versionId;
-
-                        var inputObject = [
-                            { loginUrl: response.authorizationContext.loginUrl },
-                            { ManyWhoTenantId: manywho.utils.extractTenantId(flowKey) },
-                            { DirectoryName: response.authorizationContext.directoryName },
-                            { StateId: manywho.utils.extractStateId(flowKey) }
-                        ];
-
-                        var inputData = manywho.json.generateFlowInputs(inputObject);
-                        var requestData = manywho.json.generateInitializationRequest(data.id, null, null, inputData, manywho.settings.global('playerUrl'), manywho.settings.global('joinUrl'));
-
-                        return manywho.ajax.initialize(requestData, manywho.settings.global('adminTenantId'));
-
-                    })
-                    .then(function(response) {
-
-                        authenticationFlow.key = manywho.utils.getFlowKey(manywho.settings.global('adminTenantId'), authenticationFlow.id, authenticationFlow.versionId, response.stateId, 'modal');
-
-                        manywho.model.initializeModel(authenticationFlow.key);
-                        manywho.settings.initializeFlow({ autoFocusInput: true }, authenticationFlow.key);
-
-                        // When the authentication flow is "DONE" call setAuthenticationToken
-                        manywho.callbacks.register(authenticationFlow.key, {
-                            execute: self.setAuthenticationToken,
-                            type: 'done',
-                            args: [flowKey]
-                        });
-
-                        // Then execute the callback that we were given
-                        manywho.callbacks.register(authenticationFlow.key, doneCallback);
-
-                        manywho.callbacks.register(authenticationFlow.key, {
-                            execute: self.hideModal,
-                            type: 'done'
-                        });
-
-                        manywho.component.appendFlowContainer(authenticationFlow.key);
-                        manywho.state.setComponentLoading(manywho.utils.extractElement(authenticationFlow.key), { message: manywho.settings.global('localization.initializing') }, authenticationFlow.key);
-                        manywho.engine.render(authenticationFlow.key);
-
-                        var invokeRequest = manywho.json.generateInvokeRequest({
-                            id: response.stateId,
-                            token: response.stateToken,
-                            currentMapElementId: response.currentMapElementId
-                        }, 'FORWARD');
-
-                        return manywho.ajax.invoke(invokeRequest, manywho.settings.global('adminTenantId'));
-
-                    })
-                    .then(function (response) {
-
-                        manywho.engine.parseResponse(response, manywho.model.parseEngineResponse, authenticationFlow.key);
-
-                    })
-                    .then(function () {
-
-                        manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
-
-                        manywho.engine.render(flowKey);
-                        manywho.engine.render(authenticationFlow.key);
-
-                    })
-                    .then(function() {
-
-                        manywho.component.focusInput(authenticationFlow.key);
-
-                    });
+                manywho.state.setLogin({
+                    isVisible: true,
+                    directoryId: response.authorizationContext.directoryId,
+                    directoryName: response.authorizationContext.directoryName,
+                    loginUrl: response.authorizationContext.loginUrl,
+                    stateId: response.stateId,
+                    callback: doneCallback
+                }, flowKey);
 
             }
 

@@ -135,6 +135,7 @@
     <link rel="stylesheet" href="css/history.css" />
     <link rel="stylesheet" href="css/footer.css" />
     <link rel="stylesheet" href="css/list.css" />
+    <link rel="stylesheet" href="css/flip.css" />
 
     <script src="js/vendor/jquery-2.1.4.min.js"></script>
     <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
@@ -153,11 +154,9 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
-                        //uri: 'http://localhost:22935'
                         uri: 'https://flow.manywho.com'
                     }
                 });
@@ -175,7 +174,6 @@
                     collaboration: {
                         isEnabled: false
                     },
-                    autoFocusInput: true,
                     inputs: null,
                     annotations: null,
                     navigation: {
@@ -275,8 +273,9 @@
     <script src="js/components/footer.js"></script>
     <script src="js/components/hidden.js"></script>
     <script src="js/components/list.js"></script>
-
-    <script src="https://flow.manywho.com/js/constants"></script>
+    <script src="js/components/iframe.js"></script>
+    <script src="js/components/flip.js"></script>
+    <script src="js/components/login.js"></script>
 
     <script>
         manywho.initialize();

@@ -33,6 +33,7 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var isValid = true;
 
             var attributes = {
@@ -75,13 +76,18 @@ permissions and limitations under the License.
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'textarea', this.props.flowKey))
             .join(' ');
 
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
             return React.DOM.div({ className: classNames }, [
                 React.DOM.label({ htmlFor: this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.validationMessage)
+                React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                outcomeButtons
             ]);
 
         }

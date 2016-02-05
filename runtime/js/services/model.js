@@ -254,6 +254,12 @@ permissions and limitations under the License.
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
+            if (response.invokeType) {
+
+                flowModel[lookUpKey].invokeType = response.invokeType;
+
+            }
+
             if (response.mapElementInvokeResponses) {
 
                 response.mapElementInvokeResponses[0].pageResponse.pageContainerDataResponses.forEach(function (item) {
@@ -286,6 +292,8 @@ permissions and limitations under the License.
             };
 
             flowModel[lookUpKey].navigation[id].items = getNavigationItems(response.navigationItemResponses, response.navigationItemDataResponses);
+            flowModel[lookUpKey].navigation[id].isVisible = response.isVisible;
+            flowModel[lookUpKey].navigation[id].isEnabled = response.isEnabled;
 
             var selectedItem = null;
             for (itemId in flowModel[lookUpKey].navigation[id].items) {

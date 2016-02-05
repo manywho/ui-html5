@@ -29,7 +29,7 @@ permissions and limitations under the License.
 
             if (this.refs.wait) {
 
-                var element = this.refs.wait.getDOMNode();
+                var element = this.refs.wait;
                 if (element.clientHeight > window.innerHeight) {
 
                     element.children[0].style.top = 'calc(40% + ' + window.scrollY + ')';

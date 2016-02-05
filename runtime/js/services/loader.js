@@ -112,61 +112,79 @@ permissions and limitations under the License.
 
         var loadedScriptCount = 0;
 
-        scripts.forEach(function(url, index, scripts) {
+        if (scripts && scripts.length > 0) {
 
-            appendScript(url, function() {
+            scripts.forEach(function(url, index, scripts) {
 
-                loadedScriptCount++;
-                if (loadedScriptCount == scripts.length) {
+                appendScript(url, function() {
 
-                    callback();
+                    loadedScriptCount++;
+                    if (loadedScriptCount == scripts.length) {
 
-                }
+                        callback();
+
+                    }
+
+                });
 
             });
 
-        });
+        }
+        else {
+            callback();
+        }
 
     }
 
-    function loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback) {
+    function loadFromHashes(hashes, cdnUrl, initialTheme, callback) {
 
         var hashesCount = 0;
         var scripts = [];
 
-        hashes.forEach(function(url) {
+        if (hashes && hashes.length > 0)
+        {
 
-            var request = new XMLHttpRequest();
-            request.onreadystatechange = function() {
+            hashes.forEach(function(url) {
 
-                if (request.readyState == 4 && request.status == 200) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function() {
 
-                    var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
-                    parsedHashes.stylesheets.forEach(appendStylesheet)
-                    scripts = scripts.concat(parsedHashes.scripts);
+                    if (request.readyState == 4 && request.status == 200) {
 
-                    hashesCount++;
-                    if (hashesCount == hashes.length) {
+                        var parsedHashes = parseHashes(JSON.parse(request.responseText), cdnUrl);
+                        parsedHashes.stylesheets.forEach(appendStylesheet)
+                        scripts = scripts.concat(parsedHashes.scripts);
 
-                        appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
+                        hashesCount++;
+                        if (hashesCount == hashes.length) {
 
-                        var parsedCustomResources = parseCustomResources(customResources);
-                        parsedCustomResources.stylesheets.forEach(appendStylesheet);
+                            if (!document.getElementById('theme'))
+                                appendStylesheet(initialTheme || (cdnUrl + '/css/themes/mw-paper.css'), 'theme');
 
-                        scripts = scripts.concat(parsedCustomResources.scripts);
-                        loadScripts(scripts, callback);
+                            loadScripts(scripts, callback);
+
+                        }
 
                     }
 
                 }
 
-            }
+                request.open('GET', url, true);
+                request.send(null);
 
-            request.open('GET', url, true);
-            request.send(null);
+            });
 
-        });
+        }
+        else {
+            callback();
+        }
 
+    }
+
+    function loadCustomResources(customResources, callback) {
+        var parsed = parseCustomResources(customResources);
+        parsed.stylesheets.forEach(appendStylesheet);
+        loadScripts(parsed.scripts, callback);
     }
 
     manywho.loader = {
@@ -185,7 +203,12 @@ permissions and limitations under the License.
 
                         loadScriptsSequentially(vendorHashes.scripts, 0, function() {
 
-                            loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+                            loadFromHashes([hashes[0]], cdnUrl, initialTheme, function() {
+                                hashes.splice(0, 1);
+                                loadFromHashes(hashes, cdnUrl, initialTheme, function() {
+                                    loadCustomResources(customResources, callback);
+                                });
+                            });
 
                         });
 
@@ -198,10 +221,15 @@ permissions and limitations under the License.
             }
             else {
 
-                loadFromHashes(hashes, customResources, cdnUrl, initialTheme, callback);
+                loadFromHashes([hashes[0]], cdnUrl, initialTheme, function() {
+                    hashes.splice(0, 1);
+                    loadFromHashes(hashes, cdnUrl, initialTheme, function() {
+                        loadCustomResources(customResources, callback);
+                    });
+                });
 
             }
-            
+
         }
 
     }

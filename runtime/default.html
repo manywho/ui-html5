@@ -117,7 +117,7 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    adminTenantId: ManyWhoConstants.MANYWHO_ADMIN_TENANT_ID,
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
@@ -135,7 +135,6 @@
                     collaboration: {
                         isEnabled: false
                     },
-                    autoFocusInput: true,
                     inputs: null,
                     annotations: null,
                     collapsible: true,
@@ -175,7 +174,6 @@
         };
     </script>
 
-    <script src="{{baseurl}}/js/constants"></script>
     <script src="{{cdnurl}}/js/loader.min.js"></script>
 
 </body>

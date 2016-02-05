@@ -11,11 +11,11 @@
 
 (function (manywho) {
 
-    var image = React.createClass({
+    var iframe = React.createClass({
 
         render: function () {
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'image', this.props.flowKey);
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'iframe', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
@@ -23,14 +23,8 @@
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            if (model.isVisible == false) {
-
-                classes.push('hidden');
-
-            }
-
             return React.DOM.div({ className: classes.join(' ') }, [
-                React.DOM.img({ className: 'img-responsive' , src: model.imageUri, alt: model.developerName, id: this.props.id }, null),
+                React.DOM.iframe({ src: model.imageUri, width: model.width, height: model.height, id: this.props.id }, null),
                 outcomeButtons
             ]);
 
@@ -38,6 +32,6 @@
 
     });
 
-    manywho.component.register("image", image);
+    manywho.component.register("iframe", iframe);
 
 }(manywho));

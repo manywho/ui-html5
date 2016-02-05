@@ -28,6 +28,7 @@ permissions and limitations under the License.
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
+                menubar: 'edit insert view format table tools',
                 toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage',
 
                 setup: function (editor) {
@@ -270,6 +271,7 @@ permissions and limitations under the License.
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var isValid = true;
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -314,7 +316,10 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.validationMessage)];
+                React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                outcomes && outcomes.map(function (outcome) {
+                    return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+                }, this)];
 
             if (this.state.isImageUploadOpen) {
 

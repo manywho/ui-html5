@@ -156,6 +156,7 @@ permissions and limitations under the License.
             manywho.log.info('Rendering File Upload ' + this.props.id);
 
             var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var progress = (this.state.progress || 0) + '%';
             var isAutoUpload = false;
@@ -200,6 +201,10 @@ permissions and limitations under the License.
                 buttonAttributes = manywho.utils.extend(buttonAttributes, { onClick: this.onUpload });
             }
 
+            var outcomeButtons = outcomes && outcomes.map(function (outcome) {
+                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
+            }, this);
+
             return React.DOM.div({ className: componentClasses.join(' ') }, [
                 React.DOM.div({ className: 'clearfix' }, [
                     React.createElement(Dropzone, dropzoneAttributes, [
@@ -214,7 +219,8 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.div({ className: 'progress files-progress ' + ((this.state.isProgressVisible) ? '' : 'hidden') },
                     React.DOM.div({ className: progressClasses.join(' '), style: { width: progress } })
-                )
+                ),
+                outcomeButtons
             ]);
 
         }

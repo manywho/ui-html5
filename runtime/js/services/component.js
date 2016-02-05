@@ -132,7 +132,7 @@ manywho.component = (function (manywho) {
 
         },
 
-        handleEvent: function (component, model, flowKey) {
+        handleEvent: function (component, model, flowKey, callback) {
 
             if (model.hasEvents) {
 
@@ -141,7 +141,7 @@ manywho.component = (function (manywho) {
 
                     manywho.engine.render(flowKey);
 
-                });
+                }).then(callback);
 
                 manywho.collaboration.sync(flowKey);
 
@@ -251,10 +251,11 @@ manywho.component = (function (manywho) {
             // on mobile devices when the flow first renders
             if (manywho.settings.flow('autofocusinput', flowKey) && window.innerWidth > 768) {
 
-                var input = document.querySelector('.main input, .main textarea, .modal-container input, .modal-container textarea');
+                var input = document.querySelector('.main .mw-input input, .main .mw-content input, .main .mw-textarea textarea, .modal-container .mw-input input, .modal-container .mw-content input, .modal-container .mw-textarea textarea');
                 if (input) {
 
                     input.focus();
+                    input.setSelectionRange(input.value.length, input.value.length);
 
                 }
 
