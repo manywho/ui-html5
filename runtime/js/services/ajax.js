@@ -34,7 +34,7 @@ manywho.ajax = (function (manywho) {
     function dispatchDataRequest(url, eventPrefix, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
         request.listFilter = request.listFilter || {};
-        request.listFilter.limit = limit;
+        request.listFilter.limit = limit || manywho.settings.global('paging.files');
         request.listFilter.search = search || null;
 
         if (orderBy) {
