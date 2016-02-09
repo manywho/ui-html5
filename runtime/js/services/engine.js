@@ -478,7 +478,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                if ((outcome && !outcome.isOut) || (outcome === null)) {
+                if ((outcome && !outcome.isOut) || !outcome) {
 
                     self.render(flowKey);
 
@@ -492,7 +492,7 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 
-                if ((outcome && !outcome.isOut) || (outcome === null)) {
+                if ((outcome && !outcome.isOut) || !outcome) {
 
                     self.render(flowKey);
 
@@ -577,7 +577,7 @@ manywho.engine = (function (manywho) {
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
 
-            if (outcome.isOut) {
+            if (outcome && !outcome.isOut) {
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);
                 this.render(flowKey);
             }
