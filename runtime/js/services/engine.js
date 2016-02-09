@@ -402,9 +402,11 @@ manywho.engine = (function (manywho) {
         var flowKey = callback.flowKey || flowKey;
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
         var moveResponse = null;
+        var outcome = null;
         var selectedOutcomeId = invokeRequest.mapElementInvokeRequest.selectedOutcomeId;
 
-        var outcome = manywho.model.getOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
+        if (selectedOutcomeId)
+            outcome = manywho.model.getOutcome(invokeRequest.mapElementInvokeRequest.selectedOutcomeId, flowKey);
 
         if (manywho.settings.global('history', flowKey)) {
 
@@ -433,7 +435,7 @@ manywho.engine = (function (manywho) {
 
                 if (response.mapElementInvokeResponses[0].outcomeResponses) {
 
-                    var outcome = response.mapElementInvokeResponses[0].outcomeResponses.filter(function (outcome) {
+                    outcome = response.mapElementInvokeResponses[0].outcomeResponses.filter(function (outcome) {
 
                         return outcome.id == selectedOutcomeId;
 
@@ -476,7 +478,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                if (!outcome.isOut) {
+                if (outcome && !outcome.isOut) {
 
                     self.render(flowKey);
 
@@ -490,7 +492,7 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 
-                if (!outcome.isOut) {
+                if (outcome && !outcome.isOut) {
 
                     self.render(flowKey);
 
