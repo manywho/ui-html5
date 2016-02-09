@@ -55,10 +55,10 @@ manywho.collaboration = (function (manywho) {
 
         if (rooms[data.stateId]) {
 
-            manywho.log.info(data.user + ' has joined ' + data.stateId);
+            manywho.log.info(data.user + ' has joined ' + data.stateId + '. Users in Flow: ' + data.users);
 
             manywho.model.addNotification(rooms[data.stateId].flowKey, {
-                message: data.user + ' has joined',
+                message: data.user + ' has joined. Users currently in Flow: ' + data.users,
                 position: 'right',
                 type: 'success',
                 timeout: '2000',
@@ -73,10 +73,10 @@ manywho.collaboration = (function (manywho) {
 
         if (rooms[data.stateId]) {
 
-            manywho.log.info(data.user + ' has left ' + data.flowKey);
+            manywho.log.info(data.user + ' has left ' + data.stateId + '. Users in Flow: ' + data.users);
 
             manywho.model.addNotification(rooms[data.stateId].flowKey, {
-                message: data.user + ' has left',
+                message: data.user + ' has left. Users in Flow: ' + data.users,
                 position: 'right',
                 type: 'danger',
                 timeout: '2000',

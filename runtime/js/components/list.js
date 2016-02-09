@@ -49,6 +49,7 @@
             }, this);
 
             return React.DOM.div({ className: classes.join(' ') }, [
+                React.DOM.label(null, model.label ),
                 list,
                 outcomeButtons,
                 React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
