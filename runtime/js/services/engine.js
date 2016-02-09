@@ -478,7 +478,7 @@ manywho.engine = (function (manywho) {
             })
             .always(function () {
 
-                if (outcome && !outcome.isOut) {
+                if ((outcome && !outcome.isOut) || (outcome === null)) {
 
                     self.render(flowKey);
 
@@ -492,7 +492,7 @@ manywho.engine = (function (manywho) {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 
-                if (outcome && !outcome.isOut) {
+                if ((outcome && !outcome.isOut) || (outcome === null)) {
 
                     self.render(flowKey);
 
