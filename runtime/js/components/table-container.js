@@ -569,9 +569,11 @@ permissions and limitations under the License.
 
                 fileUpload = React.createElement(manywho.component.getByName('file-upload'), {
                     flowKey: this.props.flowKey,
+                    id: this.props.id,
                     fileDataRequest: model.fileDataRequest,
                     uploadComplete: this.uploadComplete,
-                    upload: this.uploadFile
+                    upload: this.uploadFile,
+                    isChildComponent: true
                 }, null);
 
             }

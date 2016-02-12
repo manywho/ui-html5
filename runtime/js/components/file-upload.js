@@ -156,7 +156,13 @@ permissions and limitations under the License.
             manywho.log.info('Rendering File Upload ' + this.props.id);
 
             var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+            var outcomes = null;
+
+            if (!this.props.isChildComponent) {
+
+                outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+
+            }
 
             var progress = (this.state.progress || 0) + '%';
             var isAutoUpload = false;
