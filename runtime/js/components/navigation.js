@@ -77,6 +77,8 @@ permissions and limitations under the License.
 
         onClick: function(e) {
 
+            e.preventDefault();
+
             if (!manywho.utils.isEqual(window.getComputedStyle(this.refs.toggle.getDOMNode()).display, 'none', true)) {
 
                 this.refs.toggle.getDOMNode().click();
