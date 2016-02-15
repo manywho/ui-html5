@@ -101,7 +101,7 @@ permissions and limitations under the License.
             var fileUpload = null;
             if (this.props.isAttachmentsEnabled) {
 
-                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, multiple: true, upload: manywho.social.attachFiles, smallInputs: true, isUploadVisible: false, browseCaption: 'Attach Files', ref: 'files' });
+                fileUpload = React.createElement(manywho.component.getByName('file-upload'), { flowKey: this.props.flowKey, multiple: true, upload: manywho.social.attachFiles, smallInputs: true, isChildComponent: true, isUploadVisible: false, id: this.props.id, browseCaption: 'Attach Files', ref: 'files' });
 
             }
 
