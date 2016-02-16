@@ -281,6 +281,12 @@ manywho.engine = (function (manywho) {
 
                 }
 
+                if (manywho.utils.isEqual(response.invokeType, 'DONE', true)) {
+
+                    manywho.callbacks.execute(flowKey, response.invokeType, null, response.currentMapElementId, [response]);
+
+                }
+
                 return $.whenAll(deferreds);
 
             }, function(response) {

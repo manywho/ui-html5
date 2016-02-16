@@ -158,7 +158,7 @@ permissions and limitations under the License.
             var model = !manywho.utils.isNullOrWhitespace(this.props.id) && manywho.model.getComponent(this.props.id, this.props.flowKey);
             var outcomes = null;
 
-            if (!this.props.isChildComponent) {
+            if (!this.props.isChildComponent && this.props.id) {
 
                 outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
