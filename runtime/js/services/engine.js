@@ -27,16 +27,20 @@ manywho.engine = (function (manywho) {
 
             return $.when.apply($, requestComponents.map(function (component) {
 
-                var limit = manywho.settings.global('paging.' + component.componentType);
+                if (component.isVisible) {
 
-                if (component.fileDataRequest) {
+                    var limit = manywho.settings.global('paging.' + component.componentType);
 
-                    return manywho.engine.fileDataRequest(component.id, component.fileDataRequest, flowKey, limit);
+                    if (component.fileDataRequest) {
 
-                }
-                else {
+                        return manywho.engine.fileDataRequest(component.id, component.fileDataRequest, flowKey, limit);
 
-                    return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey, limit);
+                    }
+                    else {
+
+                        return manywho.engine.objectDataRequest(component.id, component.objectDataRequest, flowKey, limit);
+
+                    }
 
                 }
 
