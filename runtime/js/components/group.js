@@ -142,7 +142,7 @@ permissions and limitations under the License.
 
             }
 
-            if (!model.isVisible)
+            if (!this.props.isDesignTime && !model.isVisible)
                 classes.push('hidden');
 
             return React.DOM.div({ className: classes.join(' '), ref: 'group' }, [

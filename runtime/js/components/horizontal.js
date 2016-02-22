@@ -24,7 +24,7 @@ permissions and limitations under the License.
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey);
 
-            if (!model.isVisible)
+            if (!this.props.isDesignTime && !model.isVisible)
                 classes.push('hidden');
 
             var childClasses = ['clearfix'];
