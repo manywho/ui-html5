@@ -104,7 +104,7 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Group: ' + this.props.id);
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey).join(' ');
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "group", this.props.flowKey);
             var children = manywho.model.getChildren(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
@@ -133,7 +133,7 @@ permissions and limitations under the License.
 
                 var childClasses = ['clearfix'];
 
-                return React.DOM.div({ className: classes, id: this.props.id }, [
+                return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                     this.getLabel(model.label),
                     React.DOM.div({ className: childClasses.join(' '), style: { height: this.state.height} }, [
                         this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)
@@ -142,7 +142,10 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classes, ref: 'group' }, [
+            if (!model.isVisible)
+                classes.push('hidden');
+
+            return React.DOM.div({ className: classes.join(' '), ref: 'group' }, [
                 React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, tabs),
                 React.createElement('div', { className: classes + ' tab-content' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)),
                 outcomeButtons

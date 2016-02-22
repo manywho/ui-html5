@@ -22,7 +22,11 @@ permissions and limitations under the License.
             var model = manywho.model.getContainer(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey).join(' ');
+            var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "horizontal_flow", this.props.flowKey);
+
+            if (!model.isVisible)
+                classes.push('hidden');
+
             var childClasses = ['clearfix'];
 
             if (manywho.settings.flow('collapsible', this.props.flowKey)) {
@@ -37,7 +41,7 @@ permissions and limitations under the License.
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            return React.DOM.div({ className: classes, id: this.props.id }, [
+            return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                 this.getLabel(model.label),
                 React.DOM.div({ className: childClasses.join(' ')}, [
                     React.DOM.div({ className: 'row' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey))

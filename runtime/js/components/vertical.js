@@ -23,6 +23,10 @@ permissions and limitations under the License.
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, "vertical_flow", this.props.flowKey);
+
+            if (!model.isVisible)
+                classes.push('hidden');
+
             var childClasses = ['clearfix'];
 
             if (manywho.settings.flow('collapsible', this.props.flowKey)) {
