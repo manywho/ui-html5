@@ -237,18 +237,27 @@ permissions and limitations under the License.
 
         selectAll: function (e) {
 
-            var selectedItems = this.state.objectData.map(function(item) {
-                item.isSelected = true;
-                return item;
-            });
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
+            if (state.objectData && state.objectData.length > 0)
+                this.clearSelection();
+            else {
+                var selectedItems = model.objectData.map(function(item) {
+                    item.isSelected = true;
+                    return item;
+                });
+
+                manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
+                this.forceUpdate();
+            }
 
         },
 
         clearSelection: function () {
 
             manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
+            this.forceUpdate();
 
         },
 
@@ -471,6 +480,7 @@ permissions and limitations under the License.
                     id: this.props.id,
                     model: model,
                     objectData: objectData,
+                    totalObjectData: (model.objectDataRequest) ? null : model.objectData.length,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
                     selectedRows: state.objectData || [],

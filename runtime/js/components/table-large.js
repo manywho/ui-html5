@@ -54,9 +54,9 @@ permissions and limitations under the License.
 
             if (self.props.model.isMultiSelect && this.props.objectData) {
 
-                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll };
+                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll, ref: 'selectAll' };
 
-                checkboxAttributes.checked = this.props.selectedRows.length == this.props.objectData.length ? 'checked' : '';
+                checkboxAttributes.checked = this.props.selectedRows.length == this.props.totalObjectData ? 'checked' : '';
 
                 columns.push(React.DOM.th({ className: 'checkbox-cell' }, [
                     React.DOM.input(checkboxAttributes)
@@ -272,6 +272,13 @@ permissions and limitations under the License.
 
             return {}
 
+        },
+
+        componentDidUpdate() {
+            var selectAll = React.findDOMNode(this.refs.selectAll);
+            if (selectAll)
+                (this.props.selectedRows.length > 0 && this.props.selectedRows.length !== this.props.totalObjectData)
+                    ? selectAll.indeterminate = true : selectAll.indeterminate = false;
         },
 
         render: function () {
