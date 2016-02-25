@@ -197,7 +197,7 @@
                 invoke: {
                     beforeSend: function (xhr, request) {
 
-						if (manywho.ajax.isOnline() == true) {
+						if (manywho.connection.isOnline() == true) {
 
 							var selectedOutcomeId = null;
 
@@ -217,7 +217,7 @@
                     },
                     done: function (response) {
 
-						if (manywho.ajax.isOnline() == true) {
+						if (manywho.connection.isOnline() == true) {
 
 							// Now the request has completed, append the rest of the request info
 							$('#requestsToCache').append(
@@ -228,12 +228,12 @@
 									'    ]\r' +
 									'}\r');
 
-							$('#responsesCache').val(JSON.stringify(manywho.ajax.cachedResponses.getAll(), null, 4));
+							$('#responsesCache').val(JSON.stringify(manywho.offline.cachedResponses.getAll(), null, 4));
 
 						}
 
                     }
-                }
+                },
             });
 
 			var options = {
@@ -295,6 +295,8 @@
 <script src="js/lib/react-select.js"></script>
 
 <script src="js/services/ajax.js"></script>
+<script src="js/services/connection.js"></script>
+<script src="js/services/offline.js"></script>
 <script src="js/services/model.js"></script>
 <script src="js/services/component.js"></script>
 <script src="js/services/styling.js"></script>
