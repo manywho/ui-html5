@@ -7076,9 +7076,17 @@ input[type="checkbox"]:checked:before,
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+input[type="checkbox"]:indeterminate:before,
+.checkbox input[type="checkbox"]:indeterminate:before,
+.checkbox-inline input[type="checkbox"]:indeterminate:before {
+    content: none;
+}
 input[type="checkbox"]:checked:after,
 .checkbox input[type="checkbox"]:checked:after,
-.checkbox-inline input[type="checkbox"]:checked:after {
+.checkbox-inline input[type="checkbox"]:checked:after,
+input[type="checkbox"]:indeterminate:after,
+.checkbox input[type="checkbox"]:indeterminate:after,
+.checkbox-inline input[type="checkbox"]:indeterminate:after {
   background-color: #2196f3;
   border-color: #2196f3;
 }
