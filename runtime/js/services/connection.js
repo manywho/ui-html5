@@ -33,6 +33,8 @@ manywho.connection = (function (manywho) {
 
     function getOfflineDeferred(resolveContext, event, urlPart, request) {
 
+        manywho.offline.setRequest(event, urlPart, request);
+
         var deferred = new jQuery.Deferred();
         var resolveArguments = manywho.offline.getResponse(event, urlPart, request);
 

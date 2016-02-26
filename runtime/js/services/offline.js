@@ -121,6 +121,27 @@ manywho.offline = (function (manywho) {
 
         }
 
+        // This is a request sequence to cache
+        if (request.entryOutcomeId) {
+
+            if (manywho.utils.isNullOrWhitespace(request.entryOutcomeId) == false) {
+
+                identifier += request.entryOutcomeId;
+
+            } else if (manywho.utils.isNullOrWhitespace(request.entryNavigationItemId) == false) {
+
+                identifier += request.entryNavigationItemId;
+
+            } else if (manywho.utils.isNullOrWhitespace(request.entryMapElementId) == false) {
+
+                identifier += request.entryMapElementId;
+
+            }
+
+            return identifier;
+
+        }
+
         alert('A unique identifier could not be generated for the request.');
 
     }
@@ -130,6 +151,8 @@ manywho.offline = (function (manywho) {
         cachedResponses: null,
 
         cachedRequests: null,
+
+        requestsToCache: null,
 
         setRequest: function (event, urlPart, requestObject) {
 
@@ -141,10 +164,15 @@ manywho.offline = (function (manywho) {
 
                 }
 
-                var requestsToCache = manywho.settings.global('offline.requestsToCache');
+                if (this.requestsToCache == null) {
+
+                    // TODO Needed as the settings doesn't survive past initialization
+                    this.requestsToCache = manywho.settings.global('offline.requestsToCache');
+
+                }
 
                 // Check to make sure we have entries in the array of cache requests
-                if (requestsToCache.length > 0) {
+                if (this.requestsToCache.length >= 0) {
 
                     // Get out the relevant information from this request
                     var selectedIdentifier = generateIdentifierForRequest(event, urlPart, requestObject);
@@ -153,25 +181,26 @@ manywho.offline = (function (manywho) {
                     // TODO: Currently this does mean the first page in the app is ignored
                     if (selectedIdentifier != null) {
 
-                        for (var i = 0; i < requestsToCache.length; i++) {
+                        for (var i = 0; i < this.requestsToCache.length; i++) {
 
                             // We only do something with the requests to cache if we have a valid entry point and
                             // we have a sequence of map elements to monitor.
-                            var cachedIdentifier = generateIdentifierForRequest(event, urlPart, requestsToCache[i]);
+                            var cachedIdentifier = generateIdentifierForRequest(event, urlPart, this.requestsToCache[i]);
 
                             // Check to see if the selected identifier matches the cached identifier and we also have a
                             // sequence to cache
                             if (manywho.utils.isNullOrWhitespace(cachedIdentifier) == false &&
-                                manywho.utils.isEqual(selectedIdentifier, cachedIdentifier, true) == true &&
-                                requestsToCache[i].sequence != null &&
-                                requestsToCache[i].sequence.length > 0) {
+                                (manywho.utils.isEqual(selectedIdentifier, cachedIdentifier, true) == true ||
+                                 this.cachedRequests.isRecording()) &&
+                                this.requestsToCache[i].sequence != null &&
+                                this.requestsToCache[i].sequence.length > 0) {
 
-                                for (var j = 0; j < requestsToCache[i].sequence.length; j++) {
+                                for (var j = 0; j < this.requestsToCache[i].sequence.length; j++) {
 
-                                    if (manywho.utils.isEqual(requestObject.currentMapElementId, requestsToCache[i].sequence[j].mapElementId, true) == true) {
+                                    if (manywho.utils.isEqual(requestObject.currentMapElementId, this.requestsToCache[i].sequence[j].mapElementId, true) == true) {
 
                                         // This request is for a map element in the sequence
-                                        this.cachedRequests.apply(cachedIdentifier, requestsToCache[i].sequence[j].mapElementId, requestObject);
+                                        this.cachedRequests.apply(cachedIdentifier, this.requestsToCache[i].sequence[j].mapElementId, requestObject);
                                         break;
 
                                     }
@@ -200,7 +229,12 @@ manywho.offline = (function (manywho) {
 
                 }
 
+            }
+
+            if (this.cachedResponses != null) {
+
                 this.cachedResponses.set(generateIdentifierForRequest(event, urlPart, request), response);
+
             }
 
         },
