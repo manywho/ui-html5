@@ -480,7 +480,7 @@ permissions and limitations under the License.
                     id: this.props.id,
                     model: model,
                     objectData: objectData,
-                    totalObjectData: (model.objectDataRequest) ? null : model.objectData.length,
+                    totalObjectData: (!model.objectDataRequest && model.objectData) ? model.objectData.length : null,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
                     selectedRows: state.objectData || [],
