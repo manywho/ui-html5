@@ -39,9 +39,7 @@ manywho.connection = (function (manywho) {
         var resolveArguments = manywho.offline.getResponse(event, urlPart, request);
 
         if (resolveArguments == null) {
-
-            alert('A response could not be found for request.');
-
+            manywho.log.error('A response could not be found for request.');
         }
 
         // Set a timeout to resolve of 100 milliseconds to give the UI time to render
@@ -120,7 +118,7 @@ manywho.connection = (function (manywho) {
         getDeferred: function(resolveContext, event, urlPart, methodType, tenantId, stateId, authenticationToken, requestObject) {
 
             // Check to see if the engine is running offline
-            if (manywho.settings.global('offline.isEnabled') &&
+            if (manywho.settings.global('offline') &&
                 this.isOnline() == false) {
 
                 // Send back the offline deferred as we don't have a connection

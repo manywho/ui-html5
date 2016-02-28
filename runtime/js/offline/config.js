@@ -1,187 +1,19 @@
-manywho.cache = (function (manywho) {
+offline.config = (function (offline) {
 
     return {
 
-        getPageComponentInfo: function(mapElementId, pageComponentId) {
-
-            var pageComponentInfo = {};
-
-            pageComponentInfo.mapElement = null;
-
-            // Find the map element associated with this request
-            if (manywho.cache.snapshot.mapElements &&
-                manywho.cache.snapshot.mapElements != null &&
-                manywho.cache.snapshot.mapElements.length > 0) {
-
-                for (var j = 0; j < manywho.cache.snapshot.mapElements.length; j++) {
-
-                    if (manywho.cache.snapshot.mapElements[j].id == mapElementId) {
-
-                        pageComponentInfo.mapElement = manywho.cache.snapshot.mapElements[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.mapElement == null) {
-
-                alert('A MapElement could not be found for current request.');
-
-            }
-
-            if (manywho.utils.isNullOrWhitespace(pageComponentInfo.mapElement.pageElementId)) {
-
-                alert('The State is trying to store data for a PageComponent that does not have a Page.');
-
-            }
-
-            pageComponentInfo.pageElement = null;
-
-            // Find the page element associated with this request, based on the map element
-            if (manywho.cache.snapshot.pageElements &&
-                manywho.cache.snapshot.pageElements != null &&
-                manywho.cache.snapshot.pageElements.length > 0) {
-
-                for (var j = 0; j < manywho.cache.snapshot.pageElements.length; j++) {
-
-                    if (manywho.cache.snapshot.pageElements[j].id == pageComponentInfo.mapElement.pageElementId) {
-
-                        pageComponentInfo.pageElement = manywho.cache.snapshot.pageElements[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.pageElement == null) {
-
-                alert('A PageElement could not be found for current request.');
-
-            }
-
-            pageComponentInfo.pageComponent = null;
-
-            if (pageComponentInfo.pageElement.pageComponents != null &&
-                pageComponentInfo.pageElement.pageComponents.length > 0) {
-
-                // Find the page element associated with this request, based on the map element
-                for (var j = 0; j < pageComponentInfo.pageElement.pageComponents.length; j++) {
-
-                    if (pageComponentInfo.pageElement.pageComponents[j].id == pageComponentId) {
-
-                        pageComponentInfo.pageComponent = pageComponentInfo.pageElement.pageComponents[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.pageComponent == null) {
-
-                alert('The PageComponent could not be found for the request.');
-
-            }
-
-            if (pageComponentInfo.pageComponent.valueElementValueBindingReferenceId == null ||
-                (pageComponentInfo.pageComponent.valueElementValueBindingReferenceId != null &&
-                manywho.utils.isNullOrWhitespace(pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.id))) {
-
-                // As the field is unbound, we can't grab any more info on this component
-                return pageComponentInfo;
-
-            }
-
-            pageComponentInfo.valueElement = null;
-
-            // Find the value element associated with this request, based on the page component
-            if (manywho.cache.snapshot.valueElements &&
-                manywho.cache.snapshot.valueElements != null &&
-                manywho.cache.snapshot.valueElements.length > 0) {
-
-                for (var j = 0; j < manywho.cache.snapshot.valueElements.length; j++) {
-
-                    if (manywho.cache.snapshot.valueElements[j].id == pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.id) {
-
-                        pageComponentInfo.valueElement = manywho.cache.snapshot.valueElements[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.valueElement == null) {
-
-                alert('A ValueElement could not be found for current request.');
-
-            }
-
-            if (manywho.utils.isNullOrWhitespace(pageComponentInfo.valueElement.typeElementId)) {
-
-                alert('The State is trying to store data for a PageComponent that does not have a Typed Value. This is not yet supported.');
-
-            }
-
-            pageComponentInfo.typeElement = null;
-
-            // Find the type element associated with this request, based on the value element
-            if (manywho.cache.snapshot.typeElements &&
-                manywho.cache.snapshot.typeElements != null &&
-                manywho.cache.snapshot.typeElements.length > 0) {
-
-                for (var j = 0; j < manywho.cache.snapshot.typeElements.length; j++) {
-
-                    if (manywho.cache.snapshot.typeElements[j].id == pageComponentInfo.valueElement.typeElementId) {
-
-                        pageComponentInfo.typeElement = manywho.cache.snapshot.typeElements[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.typeElement == null) {
-
-                alert('A TypeElement could not be found for current request.');
-
-            }
-
-            pageComponentInfo.typeElementProperty = null;
-
-            // Find the type element associated with this request, based on the value element
-            if (pageComponentInfo.typeElement.properties != null &&
-                pageComponentInfo.typeElement.properties.length > 0) {
-
-                for (var j = 0; j < pageComponentInfo.typeElement.properties.length; j++) {
-
-                    if (pageComponentInfo.typeElement.properties[j].id == pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.typeElementPropertyId) {
-
-                        pageComponentInfo.typeElementProperty = pageComponentInfo.typeElement.properties[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            return pageComponentInfo;
+        components: {
+
+            "tables": [
+                "table",
+                "radio",
+                "select",
+                "files"
+            ]
 
         },
 
-        tables: [],
-
-        requestsToCache: [
+        sequences: [
             {
                 "entryOutcomeId": "975416c8-8c90-40d5-aaf9-5a92e982e687",
                 "entryNavigationItemId": null,
@@ -197,7 +29,7 @@ manywho.cache = (function (manywho) {
             }
         ],
 
-        cachedResponses: {
+        responses: {
             "initialization_3ca32f1c-0278-477b-9ce1-ff88210be747": {
                 "culture": {
                     "id": null,
@@ -394,7 +226,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -405,7 +237,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -563,7 +395,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -574,7 +406,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -732,7 +564,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -743,7 +575,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -901,7 +733,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -912,7 +744,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -1338,7 +1170,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -1545,7 +1377,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -1752,7 +1584,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -1959,7 +1791,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -2336,7 +2168,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2347,7 +2179,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2505,7 +2337,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2516,7 +2348,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2674,7 +2506,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2685,7 +2517,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2843,7 +2675,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -2854,7 +2686,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -3280,7 +3112,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -3487,7 +3319,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -3694,7 +3526,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -3901,7 +3733,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -4278,7 +4110,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4289,7 +4121,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4447,7 +4279,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4458,7 +4290,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4616,7 +4448,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4627,7 +4459,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4785,7 +4617,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -4796,7 +4628,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5337,7 +5169,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5348,7 +5180,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5506,7 +5338,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5517,7 +5349,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5675,7 +5507,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5686,7 +5518,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5844,7 +5676,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "NEW",
                                 "isBulkAction": true,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -5855,7 +5687,7 @@ manywho.cache = (function (manywho) {
                             },
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "EDIT",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
                                 "isOut": false,
@@ -6281,7 +6113,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -6488,7 +6320,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -6695,7 +6527,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -6902,7 +6734,7 @@ manywho.cache = (function (manywho) {
                         "outcomeResponses": [
                             {
                                 "pageActionBindingType": "SAVE",
-                                "pageActionType": "",
+                                "pageActionType": "SAVE",
                                 "isBulkAction": false,
                                 "pageObjectBindingId": null,
                                 "isOut": false,
@@ -7239,7 +7071,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "Delete",
                             "nextMapElementId": "9936ddb2-b0ba-4628-8a22-84b0684f60af",
-                            "pageActionType": "",
+                            "pageActionType": "DELETE",
                             "isBulkAction": false,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": null,
@@ -7324,7 +7156,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "New",
                             "nextMapElementId": "77181fd7-04bf-4404-9da5-9f6ec00a6631",
-                            "pageActionType": "",
+                            "pageActionType": "NEW",
                             "isBulkAction": true,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
@@ -7340,7 +7172,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "Edit",
                             "nextMapElementId": "d32f34e7-dc99-47fa-ae37-df93da7042fe",
-                            "pageActionType": "",
+                            "pageActionType": "EDIT",
                             "isBulkAction": false,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": "18139285-c4da-4a0e-a2ae-22e3806c8ffe",
@@ -7447,7 +7279,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "Done",
                             "nextMapElementId": "d32f34e7-dc99-47fa-ae37-df93da7042fe",
-                            "pageActionType": "",
+                            "pageActionType": "DONE",
                             "isBulkAction": false,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": null,
@@ -7632,7 +7464,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "Done",
                             "nextMapElementId": "5a78b9da-70fc-4889-b4a7-6d7ad9a47f6f",
-                            "pageActionType": "",
+                            "pageActionType": "DONE",
                             "isBulkAction": false,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": null,
@@ -7717,7 +7549,7 @@ manywho.cache = (function (manywho) {
                             "developerSummary": null,
                             "label": "Save",
                             "nextMapElementId": "f144d167-9419-4a6c-bad3-afb18f12aa67",
-                            "pageActionType": "",
+                            "pageActionType": "SAVE",
                             "isBulkAction": false,
                             "pageActionBindingType": "SAVE",
                             "pageObjectBindingId": null,
@@ -8401,4 +8233,4 @@ manywho.cache = (function (manywho) {
 
     }
 
-})(manywho);
+})(offline);

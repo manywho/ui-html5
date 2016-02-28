@@ -168,6 +168,8 @@
         }
     }
 
+	var offline = {};
+
     var manywho = {
 		cdnUrl: '',
 		initialize: function () {
@@ -185,12 +187,6 @@
 				joinUrl: backendUri + '/' + tenantId + 'play/default',
 				platform: {
 					uri: backendUri
-				},
-				offline: {
-					responsesCache: manywho.responses,
-					requestsCache: manywho.requests,
-					requestsToCache: manywho.cache.requestsToCache,
-					isEnabled: true
 				}
             },
             {
@@ -206,11 +202,11 @@
 							}
 
 							// Append the first part of the entry
-							$('#requestsToCache').append(
+							/*$('#requestsToCache').append(
 									'{\r' +
 									'    "entryOutcomeId": ' + handleString(selectedOutcomeId) + ',\r' +
 									'    "entryNavigationItemId": ' + handleString(request.selectedNavigationItemId) + ',\r' +
-									'    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');
+									'    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');*/
 
 						}
 
@@ -220,7 +216,7 @@
 						if (manywho.connection.isOnline() == true) {
 
 							// Now the request has completed, append the rest of the request info
-							$('#requestsToCache').append(
+							/*$('#requestsToCache').append(
 									'    "sequence": [\r' +
 									'        {\r' +
 									'            "mapElementId": ' + handleString(response.currentMapElementId) + '\r' +
@@ -228,7 +224,7 @@
 									'    ]\r' +
 									'}\r');
 
-							$('#responsesCache').val(JSON.stringify(manywho.offline.cachedResponses.getAll(), null, 4));
+							$('#responsesCache').val(JSON.stringify(manywho.offline.cachedResponses.getAll(), null, 4));*/
 
 						}
 
@@ -256,12 +252,7 @@
 					isFixed: true,
 					isWizard: false
 				},
-                offline: {
-                    responsesCache: manywho.responses,
-                    requestsCache: manywho.requests,
-                    requestsToCache: manywho.cache.responsesToCache,
-                    isEnabled: true
-                },
+                offline: true,
 				callbacks: [],
 				collapsible: false,
 				history: null,
@@ -293,10 +284,8 @@
 <script src="js/lib/classNames.js"></script>
 <script src="js/lib/react-input-autosize.js"></script>
 <script src="js/lib/react-select.js"></script>
-
 <script src="js/services/ajax.js"></script>
 <script src="js/services/connection.js"></script>
-<script src="js/services/offline.js"></script>
 <script src="js/services/model.js"></script>
 <script src="js/services/component.js"></script>
 <script src="js/services/styling.js"></script>
@@ -311,6 +300,12 @@
 <script src="js/services/callbacks.js"></script>
 <script src="js/services/social.js"></script>
 <script src="js/services/log.js"></script>
+
+<script src="js/offline/graph.js"></script>
+<script src="js/offline/offline.js"></script>
+<script src="js/offline/recording.js"></script>
+<script src="js/offline/responses.js"></script>
+<script src="js/offline/simulation.js"></script>
 
 <script src="js/components/mixins.js"></script>
 <script src="js/components/main.js"></script>
@@ -350,9 +345,7 @@
 <script src="js/components/login.js"></script>
 
 <!-- Extensions -->
-<script src="js/cache/config.js"></script>
-<script src="js/cache/responses-cache.js"></script>
-<script src="js/cache/requests-cache.js"></script>
+<script src="js/offline/config.js"></script>
 <!-- Extensions -->
 
 <script>
