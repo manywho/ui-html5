@@ -202,11 +202,11 @@
 							}
 
 							// Append the first part of the entry
-							/*$('#requestsToCache').append(
+							$('#requestsToCache').append(
 									'{\r' +
 									'    "entryOutcomeId": ' + handleString(selectedOutcomeId) + ',\r' +
 									'    "entryNavigationItemId": ' + handleString(request.selectedNavigationItemId) + ',\r' +
-									'    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');*/
+									'    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');
 
 						}
 
@@ -216,7 +216,7 @@
 						if (manywho.connection.isOnline() == true) {
 
 							// Now the request has completed, append the rest of the request info
-							/*$('#requestsToCache').append(
+							$('#requestsToCache').append(
 									'    "sequence": [\r' +
 									'        {\r' +
 									'            "mapElementId": ' + handleString(response.currentMapElementId) + '\r' +
@@ -224,7 +224,7 @@
 									'    ]\r' +
 									'}\r');
 
-							$('#responsesCache').val(JSON.stringify(manywho.offline.cachedResponses.getAll(), null, 4));*/
+							$('#responsesCache').val(JSON.stringify(offline.config.responses, null, 4));
 
 						}
 
@@ -343,6 +343,7 @@
 <script src="js/components/iframe.js"></script>
 <script src="js/components/flip.js"></script>
 <script src="js/components/login.js"></script>
+<script src="js/components/recordings.js"></script>
 
 <!-- Extensions -->
 <script src="js/offline/config.js"></script>

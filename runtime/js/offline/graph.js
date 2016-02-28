@@ -64,8 +64,8 @@ manywho.graph = (function (manywho) {
             }
 
             if (manywho.utils.isNullOrWhitespace(pageComponentInfo.mapElement.pageElementId)) {
-                manywho.log.error('The State is trying to store data for a PageComponent that does not have a Page.');
-                return;
+                // We're dealing with a step
+                return pageComponentInfo;
             }
 
             pageComponentInfo.pageElement = null;

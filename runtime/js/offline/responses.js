@@ -167,7 +167,7 @@ manywho.responses = (function (manywho) {
         set: function (identifier, responseObject) {
 
             // Don't set as we're hard coding the cached responses
-            //this.cachedResponses[identifier] = responseObject;
+            offline.config.responses[identifier] = responseObject;
 
         }
 

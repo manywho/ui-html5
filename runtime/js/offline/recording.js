@@ -16,6 +16,14 @@ manywho.recording = (function (manywho) {
 
     return {
 
+        // Returns all of the recordings that have been completed so far.
+        //
+        getAll: function() {
+
+            return recordings;
+
+        },
+
         // This function determines if an active recording should be started. This is based on the incoming identifier
         // matching one of the entry identifiers for a sequence. If an entry identifier matches the incoming identifier
         // an active recording should be started - or reset - if one is already going.
@@ -93,7 +101,10 @@ manywho.recording = (function (manywho) {
         //
         set: function (request) {
 
-            if (activeRecording != null) {
+            // Check to see if there's an active recording and that this is an invoke request coming in
+            if (activeRecording != null &&
+                request.mapElementInvokeRequest &&
+                request.mapElementInvokeRequest != null) {
 
                 var found = false;
 
