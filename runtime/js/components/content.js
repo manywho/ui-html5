@@ -22,6 +22,47 @@ permissions and limitations under the License.
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
+            tinymce.PluginManager.add('manywho_elements', function (editor, url) {
+
+                editor.addButton('manywho_elements', {
+                    text: 'Insert Reference',
+                    icon: false,
+                    onclick: function () {
+
+                        var tenantId = manywho.utils.getObjectDataProperty(model.tags, 'ManyWhoTenantId').contentValue;
+                        var authenticationToken = manywho.utils.getObjectDataProperty(model.tags, 'AuthenticationToken').contentValue;
+
+                        manywho.ajax.getValueReferences(tenantId, authenticationToken).then(function(response) {
+                            var items = response.map(function(item) {
+                                if (item.typeElementPropertyDeveloperName) {
+                                    return { text: item.developerName + ' • ' + item.typeElementPropertyDeveloperName, value: '{![' + item.developerName + '].[' + item.typeElementPropertyDeveloperName + ']}'};
+                                } else {
+                                    return { text: item.developerName, value: '{![' + item.developerName + ']}'};
+                                }
+                            });
+
+                            items.unshift({ text: '-- Please select reference value --', value: '' });
+
+                            editor.windowManager.open({
+                                title: 'Add Reference To Value',
+                                body: [
+                                    {
+                                        type: 'listbox',
+                                        name: 'reference',
+                                        label: 'Reference',
+                                        values: items
+                                    }
+                                ],
+                                onsubmit: function (e) {
+                                    // Insert content when the window form is submitted
+                                    editor.insertContent(e.data.reference);
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+
             tinymce.init({
                 selector: 'textarea#' + this.props.id,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
@@ -29,7 +70,7 @@ permissions and limitations under the License.
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
                 menubar: 'edit insert view format table tools',
-                toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage',
+                toolbar: manywho.settings.global('richtext.toolbar', this.props.flowKey, []),
 
                 setup: function (editor) {
 
@@ -62,7 +103,6 @@ permissions and limitations under the License.
                          this.getDoc().body.style.fontSize = manywho.settings.global('richtext.fontsize', self.props.flowKey, '13px');
 
                      });
-
                  }
             });
 
