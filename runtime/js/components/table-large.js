@@ -277,8 +277,7 @@ permissions and limitations under the License.
         componentDidUpdate: function() {
             var selectAll = React.findDOMNode(this.refs.selectAll);
             if (selectAll)
-                (this.props.selectedRows.length > 0 && this.props.selectedRows.length !== this.props.totalObjectData)
-                    ? selectAll.indeterminate = true : selectAll.indeterminate = false;
+                selectAll.indeterminate = (this.props.selectedRows.length > 0 && this.props.selectedRows.length !== this.props.totalObjectData);
         },
 
         render: function () {
