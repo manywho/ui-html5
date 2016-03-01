@@ -90,6 +90,12 @@ permissions and limitations under the License.
                         self.props.uploadComplete(response);
 
                     }
+                    else if (!self.props.uploadComplete && response && !manywho.utils.isNullOrWhitespace(self.props.id))
+                    {
+
+                        manywho.state.setComponent(self.props.id, { objectData: response.objectData }, self.props.flowKey, true);
+
+                    }
 
                 })
                 .fail(function (response) {
