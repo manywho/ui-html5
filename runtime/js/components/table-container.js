@@ -63,7 +63,7 @@ permissions and limitations under the License.
 
         if (isSearchEnabled) {
 
-            var buttonAttributes = { className: 'btn btn-default', onClick: search };
+            var buttonAttributes = { className: 'btn btn-default', onClick: search.bind(this, true) };
 
             if (isDesignTime)
                 buttonAttributes.disabled = 'disabled';
@@ -163,13 +163,13 @@ permissions and limitations under the License.
             if (e.keyCode == 13 && !this.props.isDesignTime) {
 
                 e.stopPropagation();
-                this.search();
+                this.search(true);
 
             }
 
         },
 
-        search: function () {
+        search: function (clearSelection) {
 
             if (this.props.isDesignTime)
                 return;
@@ -177,7 +177,8 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            this.clearSelection();
+            if (clearSelection)
+                this.clearSelection();
 
             if (model.objectDataRequest) {
 
@@ -205,7 +206,7 @@ permissions and limitations under the License.
 
             manywho.state.setComponent(this.props.id, { search: '' }, this.props.flowKey, true);
 
-            this.search();
+            this.search(true);
 
         },
 
@@ -220,14 +221,20 @@ permissions and limitations under the License.
                 return manywho.utils.isEqual(item.externalId, e.currentTarget.id, true);
             })[0];
 
-            var isSelected = selectedItem.isSelected;
             selectedItem.isSelected = !selectedItem.isSelected;
 
             if (model.isMultiSelect) {
-                isSelected ? selectedItems = selectedItems.filter(function(item) { return !manywho.utils.isEqual(item.externalId, selectedItem.externalId, true) }) : selectedItems.push(selectedItem);
+                selectedItem.isSelected ? selectedItems.push(selectedItem) : selectedItems = selectedItems.filter(function(item) { return !manywho.utils.isEqual(item.externalId, selectedItem.externalId, true) });
             }
             else {
-                isSelected ? selectedItems = [] : selectedItems = [selectedItem];
+                model.objectData.filter(function(item) {
+                    return !manywho.utils.isEqual(item.externalId, e.currentTarget.id, true);
+                })
+                .forEach(function(item) {
+                    item.isSelected = false;
+                });
+
+                selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
             }
 
             manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
@@ -344,7 +351,7 @@ permissions and limitations under the License.
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             if (model.objectDataRequest || model.fileDataRequest)
-                this.search();
+                this.search(false);
             else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
                 this.forceUpdate();
             }
@@ -360,7 +367,7 @@ permissions and limitations under the License.
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             if (model.objectDataRequest || model.fileDataRequest)
-                this.search();
+                this.search(false);
             else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
                 this.forceUpdate();
             }
