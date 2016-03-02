@@ -109,6 +109,13 @@ manywho.responses = (function (manywho) {
             // Get values out of the "state" matched to the page component identifiers
             var response =  offline.config.responses[identifier];
 
+            // Check to see if the response is associated with a State. If not, this means the response should be
+            // associated with the current state
+            if (manywho.utils.isNullOrWhitespace(response.stateId) == true) {
+                response.stateId = offline.config.emptyStateId;
+                response.stateToken = offline.config.emptyStateId;
+            }
+
             if (response != null &&
                 response.mapElementInvokeResponses &&
                 response.mapElementInvokeResponses != null &&

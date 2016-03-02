@@ -79,8 +79,8 @@ manywho.ajax = (function (manywho) {
                 null,
                 authenticationCredentials);
 
-        }
-        ,
+        },
+
         initialize: function (engineInitializationRequest, tenantId, authenticationToken) {
 
             manywho.log.info('Initializing Flow: \n    Id: ' + engineInitializationRequest.flowId.id + '\n    Version Id: ' + engineInitializationRequest.flowId.versionId);

@@ -2,6 +2,8 @@ offline.config = (function (offline) {
 
     return {
 
+        emptyStateId: "00000000-0000-0000-0000-000000000000",
+
         components: {
 
             "tables": [
@@ -15,15 +17,17 @@ offline.config = (function (offline) {
 
         sequences: [
             {
-                "entryOutcomeId": "975416c8-8c90-40d5-aaf9-5a92e982e687",
-                "entryNavigationItemId": null,
-                "entryMapElementId": null,
-                "sequence": [
+                name: null,
+                entryMapElementId: "5a78b9da-70fc-4889-b4a7-6d7ad9a47f6f",
+                entryOutcomeId: "975416c8-8c90-40d5-aaf9-5a92e982e687",
+                sequence: [
                     {
-                        "mapElementId": "d32f34e7-dc99-47fa-ae37-df93da7042fe"
+                        mapElementId: "d32f34e7-dc99-47fa-ae37-df93da7042fe",
+                        selectedOutcomeId: "25f3a682-f8d5-46cf-9159-4f2c030697f3"
                     },
                     {
-                        "mapElementId": "5a78b9da-70fc-4889-b4a7-6d7ad9a47f6f"
+                        mapElementId: "5a78b9da-70fc-4889-b4a7-6d7ad9a47f6f",
+                        selectedOutcomeId: null
                     }
                 ]
             }
@@ -40,8 +44,8 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
-                "stateToken": "76304e59-60e1-4a3f-a08e-78dfe61a1011",
+                "stateId": null,
+                "stateToken": null,
                 "currentMapElementId": "9467970b-6f7e-48e3-9f8b-ced3a24c93c5",
                 "currentStreamId": null,
                 "statusCode": "200",
@@ -58,7 +62,7 @@ offline.config = (function (offline) {
                     }
                 ]
             },
-            "invoke_bd3f6e71-d819-4665-913c-ac679dfd9b17": {
+            "invoke_9467970b-6f7e-48e3-9f8b-ced3a24c93c5": {
                 "culture": {
                     "id": null,
                     "developerName": null,
@@ -68,9 +72,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "bd3f6e71-d819-4665-913c-ac679dfd9b17",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "a68e757d-1828-4102-acf1-d4f93f20dd3f",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -963,9 +967,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "f589e7db-cd93-4a6a-ba20-eb5d3bf2f207",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -1377,9 +1381,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "1c04edba-34c8-47f0-b4db-0feeb4884c70",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -1789,9 +1793,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "51121415-c358-40ae-9d85-d74c412321d2",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -2203,9 +2207,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "79f2ded9-b2eb-41d9-96c6-fa12fac4dd23",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -2779,9 +2783,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "bd3f6e71-d819-4665-913c-ac679dfd9b17",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "7f627b0e-2cb7-43cf-9ded-ce09ccae30ca",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -3674,9 +3678,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "3326a715-2e83-4a87-8c0a-61526f222b3f",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -3998,9 +4002,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "a25c40d7-c82a-4dd4-93a2-7be1e69157bd",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -4210,9 +4214,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "c5c1313a-3044-45db-9593-906f163a078d",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -4363,9 +4367,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "b5006f3a-2bdd-428c-bc6b-6905f55d0b2f",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -4611,9 +4615,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "10b5f0d4-3290-4803-aee6-248afe1ae81d",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -4750,9 +4754,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "3838ce26-c7e9-417b-b633-3500f14ff427",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,
@@ -4998,9 +5002,9 @@ offline.config = (function (offline) {
                     "country": "USA",
                     "variant": null
                 },
-                "stateId": "36001b12-b352-4a75-9617-6452e31378d4",
+                "stateId": null,
                 "parentStateId": null,
-                "stateToken": "6d3b4670-8afd-4965-ae86-174b9a1e0c8e",
+                "stateToken": null,
                 "alertEmail": "steve.wood@manywho.com",
                 "waitMessage": null,
                 "notAuthorizedMessage": null,

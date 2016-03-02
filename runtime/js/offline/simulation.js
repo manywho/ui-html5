@@ -397,9 +397,11 @@ manywho.simulation = (function (manywho) {
 
         set: function (request) {
 
-            // Now we want to handle local state changes, but only if this request is an invoke request
+            // Now we want to handle local state changes, but only if this request is an invoke request and it includes
+            // a selected outcome (meaning navigation changes will not appear in simulation)
             if (request != null &&
                 request.mapElementInvokeRequest &&
+                manywho.utils.isNullOrWhitespace(request.mapElementInvokeRequest.selectedOutcomeId) == false &&
                 request.mapElementInvokeRequest.pageRequest != null &&
                 request.mapElementInvokeRequest.pageRequest.pageComponentInputResponses != null &&
                 request.mapElementInvokeRequest.pageRequest.pageComponentInputResponses.length > 0) {

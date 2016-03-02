@@ -18,7 +18,7 @@ manywho.offline = (function (manywho) {
             if (manywho.settings.global('offline')) {
 
                 // If there isn't an active recording, one will be created, otherwise, this does nothing
-                manywho.recording.start(this.generateIdentifierForRequest(event, urlPart, request));
+                manywho.recording.start(this.generateIdentifierForRequest(event, urlPart, request), request);
 
                 // For the active recording set the request, if there's no active recording, this does nothing
                 manywho.recording.set(request);
@@ -86,9 +86,9 @@ manywho.offline = (function (manywho) {
 
                     identifier += request.selectedNavigationItemId;
 
-                } else if (manywho.utils.isNullOrWhitespace(request.selectedMapElementId) == false) {
+                } else if (manywho.utils.isNullOrWhitespace(request.currentMapElementId) == false) {
 
-                    identifier += request.selectedMapElementId;
+                    identifier += request.currentMapElementId;
 
                 } else {
 
@@ -156,15 +156,11 @@ manywho.offline = (function (manywho) {
             }
 
             // This is a request sequence to cache
-            if (request.entryOutcomeId) {
+            if (request.entryMapElementId) {
 
                 if (manywho.utils.isNullOrWhitespace(request.entryOutcomeId) == false) {
 
                     identifier += request.entryOutcomeId;
-
-                } else if (manywho.utils.isNullOrWhitespace(request.entryNavigationItemId) == false) {
-
-                    identifier += request.entryNavigationItemId;
 
                 } else if (manywho.utils.isNullOrWhitespace(request.entryMapElementId) == false) {
 
