@@ -63,7 +63,9 @@ permissions and limitations under the License.
             return objectData.map(function (item) {
 
                 var classNames = ['list-group-item', 'clearfix'];
-                if (this.props.selectedRows.indexOf(item.externalId) != -1) {
+                var isSelected = selectedRows.filter(function(row) { return manywho.utils.isEqual(item.externalId, row.externalId, true) }).length > 0;
+
+                if (isSelected) {
 
                     classNames.push('active');
 

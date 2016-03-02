@@ -130,6 +130,28 @@ permissions and limitations under the License.
 
     }
 
+    function hideContainers(lookUpKey) {
+        var containers = Object.keys(flowModel[lookUpKey].containers).map(function(key) { return flowModel[lookUpKey].containers[key] });
+        var components = Object.keys(flowModel[lookUpKey].components).map(function(key) { return flowModel[lookUpKey].components[key] });
+        var outcomes = Object.keys(flowModel[lookUpKey].outcomes).map(function(key) { return flowModel[lookUpKey].outcomes[key] });
+
+        containers
+            .filter(function(container) { return !container.parent })
+            .forEach(function(container) { hideContainer(container, containers, components, outcomes) });
+    }
+
+    function hideContainer(container, containers, components, outcomes) {
+        var childContainers = containers.filter(function(child) { return child.parent == container.id });
+        childContainers.forEach(function(child) { hideContainer(child, containers, components, outcomes) });
+
+        var childComponents = components.filter(function(component) { return component.pageContainerId == container.id && component.isVisible });
+        var childOutcomes = outcomes.filter(function(outcome) { return outcome.pageContainerId == container.id });
+        childContainers = childContainers.filter(function(child) { return child.isVisible });
+
+        if (childComponents.length === 0 && childOutcomes.length === 0 && childContainers.length === 0 && manywho.utils.isNullOrWhitespace(container.label))
+            container.isVisible = false;
+    }
+
     manywho.model = {
 
         parseEngineResponse: function (engineInvokeResponse, flowKey) {
@@ -184,6 +206,8 @@ permissions and limitations under the License.
                     }, this);
 
                 }
+
+                hideContainers(lookUpKey);
 
                 if (engineInvokeResponse.mapElementInvokeResponses[0].rootFaults) {
 
@@ -273,6 +297,8 @@ permissions and limitations under the License.
                     flowModel[lookUpKey].components[item.pageComponentId] = manywho.utils.extend(flowModel[lookUpKey].components[item.pageComponentId], item);
 
                 }, this);
+
+                hideContainers(lookUpKey);
 
             }
 

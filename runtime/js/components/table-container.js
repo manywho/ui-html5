@@ -63,7 +63,7 @@ permissions and limitations under the License.
 
         if (isSearchEnabled) {
 
-            var buttonAttributes = { className: 'btn btn-default', onClick: search };
+            var buttonAttributes = { className: 'btn btn-default', onClick: search.bind(this, true) };
 
             if (isDesignTime)
                 buttonAttributes.disabled = 'disabled';
@@ -150,7 +150,9 @@ permissions and limitations under the License.
             if (this.props.isDesignTime)
                 return;
 
-            manywho.state.setComponent(this.props.id, { search: e.target.value }, this.props.flowKey, true);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            state.search = e.target.value;
+            manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             this.forceUpdate();
 
@@ -161,13 +163,13 @@ permissions and limitations under the License.
             if (e.keyCode == 13 && !this.props.isDesignTime) {
 
                 e.stopPropagation();
-                this.search();
+                this.search(true);
 
             }
 
         },
 
-        search: function () {
+        search: function (clearSelection) {
 
             if (this.props.isDesignTime)
                 return;
@@ -175,7 +177,8 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            this.clearSelection();
+            if (clearSelection)
+                this.clearSelection();
 
             if (model.objectDataRequest) {
 
@@ -188,24 +191,6 @@ permissions and limitations under the License.
 
             }
             else {
-
-                var displayColumns = (manywho.component.getDisplayColumns(model.columns) || []).map(function(column) {
-
-                    return column.typeElementPropertyId.toLowerCase();
-
-                });
-
-                this.setState({
-                    objectData: model.objectData.filter(function(objectData) {
-
-                        return objectData.properties.filter(function(property) {
-
-                            return displayColumns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1
-
-                        }).length > 0
-
-                    })
-                });
 
                 state.page = 1;
                 manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
@@ -221,57 +206,65 @@ permissions and limitations under the License.
 
             manywho.state.setComponent(this.props.id, { search: '' }, this.props.flowKey, true);
 
-            this.search();
+            this.search(true);
 
         },
 
         onRowClicked: function (e) {
 
-            var selectedRows = this.state.selectedRows;
-
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            if (selectedRows.indexOf(e.currentTarget.id) == -1) {
+            var selectedItems = (state.objectData || []).map(function(item) { return item });
 
-                model.isMultiSelect ? selectedRows.push(e.currentTarget.id) : selectedRows = [e.currentTarget.id];
+            var selectedItem = model.objectData.filter(function(item) {
+                return manywho.utils.isEqual(item.externalId, e.currentTarget.id, true);
+            })[0];
 
+            selectedItem.isSelected = !selectedItem.isSelected;
+
+            if (model.isMultiSelect) {
+                selectedItem.isSelected ? selectedItems.push(selectedItem) : selectedItems = selectedItems.filter(function(item) { return !manywho.utils.isEqual(item.externalId, selectedItem.externalId, true) });
             }
             else {
+                model.objectData.filter(function(item) {
+                    return !manywho.utils.isEqual(item.externalId, e.currentTarget.id, true);
+                })
+                .forEach(function(item) {
+                    item.isSelected = false;
+                });
 
-                selectedRows.splice(selectedRows.indexOf(e.currentTarget.id), 1);
-
+                selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
             }
 
-            this.setState({ selectedRows: selectedRows });
-            manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
+            manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
+            this.forceUpdate();
 
         },
 
-        selectAll: function (objectData, e) {
-
-            var selectedRows = [];
+        selectAll: function (e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-            if (e.currentTarget.checked) {
-
-                objectData.forEach(function (item) {
-
-                    selectedRows.push(item.externalId);
-
+            if (state.objectData && state.objectData.length > 0)
+                this.clearSelection();
+            else {
+                var selectedItems = model.objectData.map(function(item) {
+                    item.isSelected = true;
+                    return item;
                 });
 
+                manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
+                this.forceUpdate();
             }
-
-            this.setState({ selectedRows: selectedRows });
-            manywho.state.setComponent(this.props.id, { objectData: manywho.component.getSelectedRows(model, selectedRows) }, this.props.flowKey, true);
 
         },
 
         clearSelection: function () {
 
-            this.setState({ selectedRows: [] });
             manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
+            this.forceUpdate();
 
         },
 
@@ -358,7 +351,7 @@ permissions and limitations under the License.
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             if (model.objectDataRequest || model.fileDataRequest)
-                this.search();
+                this.search(false);
             else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
                 this.forceUpdate();
             }
@@ -374,7 +367,7 @@ permissions and limitations under the License.
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
             if (model.objectDataRequest || model.fileDataRequest)
-                this.search();
+                this.search(false);
             else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
                 this.forceUpdate();
             }
@@ -427,30 +420,6 @@ permissions and limitations under the License.
 
         },
 
-        componentWillMount: function() {
-
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            if (!model.objectDataRequest && !model.fileDataRequest) {
-
-                this.setState({ objectData: model.objectData });
-
-            }
-
-        },
-
-        componentWillReceiveProps: function(nextProps) {
-
-            var model = manywho.model.getComponent(nextProps.id, nextProps.flowKey);
-            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-
-            if (!model.objectDataRequest && !model.fileDataRequest && manywho.utils.isNullOrWhitespace(state.search) && (manywho.utils.isNullOrWhitespace(state.page) || state.page == 1)) {
-
-                this.setState({ objectData: model.objectData });
-
-            }
-
-        },
-
         render: function () {
 
             manywho.log.info('Rendering Table: ' + this.props.id);
@@ -462,33 +431,6 @@ permissions and limitations under the License.
 
             this.outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-            var objectData = this.props.isDesignTime ? [] : model.objectData;
-
-            if (model.objectData && state.objectData && !this.state.objectData) {
-
-                objectData = model.objectData.map(function (modelItem) {
-
-                    var stateObjectData = state.objectData.filter(function (stateItem) {
-
-                        return manywho.utils.isEqual(modelItem.externalId, stateItem.externalId) && manywho.utils.isEqual(modelItem.internalId, stateItem.internalId);
-
-                    })[0];
-
-                    if (stateObjectData) {
-
-                        return manywho.utils.extend({}, [modelItem, stateObjectData]);
-
-                    }
-                    else {
-
-                        return modelItem;
-
-                    }
-
-                });
-
-            }
-
             var displayColumns = (this.props.isDesignTime) ? [] : getDisplayColumns(model.columns, this.outcomes);
             var isSelectionEnabled = this.props.selectionEnabled || areBulkActionsDefined(this.outcomes) || model.isMultiSelect;
             var isSmall = this.state.windowWidth <= 768;
@@ -497,25 +439,31 @@ permissions and limitations under the License.
             var tableComponent = (isSmall) ? manywho.component.getByName('table-small') : manywho.component.getByName('table-large');
             var rowOutcomes = this.outcomes.filter(function (outcome) { return !outcome.isBulkAction });
             var headerOutcomes = this.outcomes.filter(function (outcome) { return outcome.isBulkAction });
+            var objectData = [];
 
-            if (this.state.objectData)
-            {
+            if (!model.objectDataRequest && !model.fileDataRequest) {
+
+                if (!manywho.utils.isNullOrWhitespace(state.search)) {
+                    objectData = model.objectData.filter(function(item) {
+                        return item.properties.filter(function(prop) {
+                            return displayColumns.indexOf(prop.typeElementPropertyId) != -1 && prop.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1;
+                        }).length > 0;
+                    });
+                }
+                else {
+                    objectData = model.objectData;
+                }
 
                 if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
-
                     var page = (state.page - 1) || 0;
                     var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
 
-                    hasMoreResults = (page * limit) + limit + 1 <= this.state.objectData.length;
-                    objectData = this.state.objectData.slice(page * limit, (page * limit) + limit);
-
+                    hasMoreResults = (page * limit) + limit + 1 <= objectData.length;
+                    objectData = objectData.slice(page * limit, (page * limit) + limit);
                 }
-                else {
-
-                    objectData = this.state.objectData;
-
-                }
-
+            }
+            else if (model.objectDataRequest || model.fileDataRequest) {
+                objectData = model.objectData;
             }
 
             if (state.error) {
@@ -539,9 +487,10 @@ permissions and limitations under the License.
                     id: this.props.id,
                     model: model,
                     objectData: objectData,
+                    totalObjectData: (!model.objectDataRequest && model.objectData) ? model.objectData.length : null,
                     outcomes: rowOutcomes,
                     displayColumns: displayColumns,
-                    selectedRows: this.state.selectedRows,
+                    selectedRows: state.objectData || [],
                     isSelectionEnabled: isSelectionEnabled,
                     flowKey: this.props.flowKey,
                     lastSortedBy: this.state.lastSortedBy,
@@ -555,7 +504,7 @@ permissions and limitations under the License.
                     contentAttributes = manywho.utils.extend(contentAttributes, {
                         onOutcome: this.onOutcome,
                         onRowClicked: (this.props.onRowClicked || this.onRowClicked),
-                        selectAll: this.selectAll.bind(this, objectData),
+                        selectAll: this.selectAll,
                         onHeaderClick: this.onHeaderClick
                     })
                 }
