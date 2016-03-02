@@ -227,6 +227,13 @@ permissions and limitations under the License.
                 selectedItem.isSelected ? selectedItems.push(selectedItem) : selectedItems = selectedItems.filter(function(item) { return !manywho.utils.isEqual(item.externalId, selectedItem.externalId, true) });
             }
             else {
+                model.objectData.filter(function(item) {
+                    return !manywho.utils.isEqual(item.externalId, e.currentTarget.id, true);
+                })
+                .forEach(function(item) {
+                    item.isSelected = false;
+                });
+
                 selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
             }
 
