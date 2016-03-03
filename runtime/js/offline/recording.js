@@ -13,6 +13,109 @@ manywho.recording = (function (manywho) {
 
     var activeRecording = null;
 
+    function joinFlow(flowKey, tenantId, stateId, authenticationToken) {
+
+        // This is taken from the FlowOut logic in engine.js
+        var options = manywho.settings.getGlobals(flowKey);
+
+        manywho.utils.removeFlow(flowKey);
+
+        manywho.engine.join(
+            tenantId,
+            null,
+            null,
+            'main',
+            stateId,
+            authenticationToken,
+            options);
+
+    }
+
+    function deleteRecording(recording) {
+
+        // Delete this recording from the list
+        offline.config.deleteRecording(recording);
+
+    }
+
+    function executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion, recording, progressFunction) {
+
+        if (requests.length == pointer) {
+
+            if (joinOnCompletion) {
+
+                deleteRecording(recording);
+                joinFlow(flowKey, tenantId, response.stateId, authenticationToken);
+
+            }
+
+            return;
+
+        }
+
+        if (response != null) {
+            // Make sure we re-assign the state token so the engine doesn't get confused with parallel requests
+            requests[pointer].stateId = response.stateId;
+            requests[pointer].stateToken = response.stateToken;
+        }
+
+        manywho.ajax.invoke(requests[pointer], tenantId, authenticationToken).done(function (response) {
+
+            // Move the progress bar first so we capture the 100%
+            progressFunction.call(this, recording, ((pointer + 1) / requests.length) * 100);
+
+            // Increment the pointer as the call was successful
+            pointer++;
+
+            executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion, recording, progressFunction);
+
+        });
+
+    }
+
+    function executeRequestSequence(currentMapElementId, state, flowKey, recording, joinOnCompletion, progressFunction) {
+
+        var requests = [];
+        var tenantId = manywho.utils.extractTenantId(flowKey);
+        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+        // We need to move the flow to the correct location first
+        requests.push(manywho.json.generateNavigateRequest(
+            state,
+            null,
+            null,
+            recording.startMapElementId,
+            null,
+            manywho.settings.flow('annotations', flowKey),
+            manywho.state.getLocation(flowKey)
+        ));
+
+        // Now go through each of the requests in turn that need to be executed
+        for (var i = (recording.sequence.length - 1); i >= 0; i--) {
+            requests.push(recording.sequence[i].request);
+        }
+
+        if (joinOnCompletion) {
+
+            // We need to move the flow back to this page so the user doesn't get moved to another part of the app
+            // after the user has joined an active state
+            requests.push(manywho.json.generateNavigateRequest(
+                state,
+                null,
+                null,
+                currentMapElementId,
+                null,
+                manywho.settings.flow('annotations', flowKey),
+                manywho.state.getLocation(flowKey)
+            ));
+
+        }
+
+        // Kick off the requests / responses loop
+        executeSequence(requests, 0, null, tenantId, authenticationToken, flowKey, joinOnCompletion, recording, progressFunction);
+
+    }
+
     return {
 
         // This function determines if an active recording should be started. This is based on the incoming identifier
@@ -143,25 +246,56 @@ manywho.recording = (function (manywho) {
 
         },
 
-        replay: function(flowKey, recording) {
+        replay: function (flowKey, recording, progressFunction) {
 
-            if (recording != null &&
-                recording.sequence != null &&
-                recording.sequence.length > 0) {
+            var tenantId = manywho.utils.extractTenantId(flowKey);
+            var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-                // Move the state to the start element for this recording
-                manywho.engine.navigate(null, null, recording.startMapElementId, flowKey);
+            // Check to see if the UI code has an active state, if not, we need to get one going as the user started
+            // the app offline and is now online again
+            if (manywho.utils.isEqual(offline.config.emptyStateId, manywho.utils.extractStateId(flowKey), true) == true) {
 
-                for (var i = 0; i < recording.sequence.length; i++) {
+                var currentMapElementId = manywho.state.getState(flowKey).currentMapElementId;
 
-                    manywho.ajax.invoke(recording.sequence[i], recording.sequence[i].tenantId, null);
+                manywho.ajax.initialize({flowId: {id: manywho.utils.extractFlowId(flowKey)}}, tenantId, authenticationToken).done(function (data) {
 
-                }
+                    // Push the engine forward to the first step
+                    data.invokeType = 'FORWARD';
+                    data.mapElementInvokeRequest = {};
+
+                    manywho.ajax.invoke(data, tenantId, authenticationToken).done(function (data) {
+
+                        // Generate a state data object for all invoke requests going forward
+                        var stateData = {
+                            id: data.stateId,
+                            token: data.stateToken,
+                            currentMapElementId: data.currentMapElementId
+                        };
+
+                        // Now execute the sequence
+                        executeRequestSequence(currentMapElementId, stateData, flowKey, recording, true, progressFunction);
+
+                    });
+
+                });
+
+            } else {
+
+                var state = manywho.state.getState(flowKey);
+
+                // Now execute the sequence
+                executeRequestSequence(state, state.currentMapElementId, flowKey, recording, false, progressFunction);
 
             }
 
-        }
+        },
 
+        delete: function (recording) {
+
+            // Delete this recording from the list
+            deleteRecording(recording);
+
+        }
     }
 
 })(manywho);

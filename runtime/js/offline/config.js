@@ -43,9 +43,8 @@ offline.config = (function (offline) {
 
                     if (manywho.utils.isEqual(recording.id, recordings[i].id, true)) {
 
-                        alert('deleting');
                         // Delete the recording
-                        recordings = recordings.splice(i, 1);
+                        recordings.splice(i, 1);
                         break;
 
                     }
