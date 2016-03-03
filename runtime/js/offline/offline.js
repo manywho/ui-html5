@@ -17,14 +17,21 @@ manywho.offline = (function (manywho) {
 
             if (manywho.settings.global('offline')) {
 
-                // If there isn't an active recording, one will be created, otherwise, this does nothing
-                manywho.recording.start(this.generateIdentifierForRequest(event, urlPart, request), request);
+                // Check to make sure we are in fact offline. This means sequences will only be recorded if they start
+                // while offline. Mid execution sequences will not be recorded properly if you start offline and end
+                // online or start online and end offline
+                if (manywho.connection.isOnline() == false) {
 
-                // For the active recording set the request, if there's no active recording, this does nothing
-                manywho.recording.set(request);
+                    // If there isn't an active recording, one will be created, otherwise, this does nothing
+                    manywho.recording.start(this.generateIdentifierForRequest(event, urlPart, request), request);
 
-                // Commit any changes
-                manywho.recording.finish();
+                    // For the active recording set the request, if there's no active recording, this does nothing
+                    manywho.recording.set(request);
+
+                    // Commit any changes
+                    manywho.recording.finish();
+
+                }
 
                 // Update the simulation data also
                 manywho.simulation.set(request);

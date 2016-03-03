@@ -18,13 +18,15 @@ manywho.simulation = (function (manywho) {
     // properly tracked in the UI code.
     //
     function guid() {
+
         function s4() {
+
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
                 .substring(1);
         }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
+
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
     // Utility function to determine if the object data has an external identifier provided.
@@ -382,6 +384,15 @@ manywho.simulation = (function (manywho) {
     }
 
     return {
+
+        // Utility function for assigning identifiers to the object data. This is needed so generated objects can be
+        // properly tracked in the UI code.
+        //
+        getGuid: function() {
+
+            return guid();
+
+        },
 
         get: function(tableName, typeElementId) {
 

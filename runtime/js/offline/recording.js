@@ -12,29 +12,8 @@
 manywho.recording = (function (manywho) {
 
     var activeRecording = null;
-    var recordings = [];
-
-    // Utility function for assigning identifiers to recordings.
-    //
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }
 
     return {
-
-        // Returns all of the recordings that have been completed so far.
-        //
-        getAll: function() {
-
-            return recordings;
-
-        },
 
         // This function determines if an active recording should be started. This is based on the incoming identifier
         // matching one of the entry identifiers for a sequence. If an entry identifier matches the incoming identifier
@@ -55,19 +34,9 @@ manywho.recording = (function (manywho) {
                             manywho.offline.generateIdentifierForRequest("invoke", null, offline.config.sequences[i]),
                             true)) {
 
-                        var defaultName = "Recording on " + Date.now();
-
                         // Create an active recording or reset the current one and clone the sequence entries
                         // so we know what's been completed
-                        activeRecording = {
-                            id: guid(),
-                            name: defaultName,
-                            stateId: request.stateId,
-                            nameReference: offline.config.sequences[i].name,
-                            startMapElementId: request.currentMapElementId,
-                            sequence: offline.config.sequences[i].sequence.slice(0)
-                        };
-
+                        activeRecording = offline.config.createRecording(offline.config.sequences[i], request);
                         break;
 
                     }
@@ -103,7 +72,7 @@ manywho.recording = (function (manywho) {
                 if (isComplete) {
 
                     // Push the recording a reset
-                    recordings.push(activeRecording);
+                    offline.config.saveRecording(activeRecording);
                     activeRecording = null;
 
                 }

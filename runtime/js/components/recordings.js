@@ -11,23 +11,17 @@
 
 (function (manywho) {
 
-    // Utility function for assigning identifiers to recordings.
-    //
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }
-
-    function executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion) {
+    function executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion, recording) {
 
         if (requests.length == pointer) {
 
             if (joinOnCompletion) {
+
+                // Delete this recording from the list
+                offline.config.deleteRecording(recording);
+
+                // Remove the recording from the UI
+                $('#' + recording.id).remove();
 
                 // This is taken from the FlowOut logic in engine.js
                 var options = manywho.settings.getGlobals(flowKey);
@@ -60,20 +54,20 @@
             // Increment the pointer as the call was successful
             pointer++;
 
-            executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion);
+            executeSequence(requests, pointer, response, tenantId, authenticationToken, flowKey, joinOnCompletion, recording);
 
         });
 
     }
 
-    function executeRequestSequence(state, flowKey, recording, joinOnCompletion) {
+    function executeRequestSequence(currentMapElementId, state, flowKey, recording, joinOnCompletion) {
 
         var requests = [];
         var tenantId = manywho.utils.extractTenantId(flowKey);
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
         // We need to move the flow to the correct location first
-        var moveRequest = manywho.json.generateNavigateRequest(
+        requests.push(manywho.json.generateNavigateRequest(
             state,
             null,
             null,
@@ -81,17 +75,31 @@
             null,
             manywho.settings.flow('annotations', flowKey),
             manywho.state.getLocation(flowKey)
-        );
-
-        requests.push(moveRequest);
+        ));
 
         // Now go through each of the requests in turn that need to be executed
         for (var i = (recording.sequence.length - 1); i >= 0; i--) {
             requests.push(recording.sequence[i].request);
         }
 
+        if (joinOnCompletion) {
+
+            // We need to move the flow back to this page so the user doesn't get moved to another part of the app
+            // after the user has joined an active state
+            requests.push(manywho.json.generateNavigateRequest(
+                state,
+                null,
+                null,
+                currentMapElementId,
+                null,
+                manywho.settings.flow('annotations', flowKey),
+                manywho.state.getLocation(flowKey)
+            ));
+
+        }
+
         // Kick off the requests / responses loop
-        executeSequence(requests, 0, null, tenantId, authenticationToken, flowKey, joinOnCompletion);
+        executeSequence(requests, 0, null, tenantId, authenticationToken, flowKey, joinOnCompletion, recording);
 
     }
 
@@ -100,8 +108,11 @@
         var tenantId = manywho.utils.extractTenantId(flowKey);
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-        // Check to see if this recording has an active state, if not, we need to create one
-        if (manywho.utils.isEqual(offline.config.emptyStateId, recording.stateId, true) == true) {
+        // Check to see if the UI code has an active state, if not, we need to get one going as the user started
+        // the app offline and is now online again
+        if (manywho.utils.isEqual(offline.config.emptyStateId, manywho.utils.extractStateId(flowKey), true) == true) {
+
+            var currentMapElementId = manywho.state.getState(flowKey).currentMapElementId;
 
             manywho.ajax.initialize({ flowId: { id: manywho.utils.extractFlowId(flowKey) } }, tenantId, authenticationToken).done(function (data) {
 
@@ -119,7 +130,7 @@
                     };
 
                     // Now execute the sequence
-                    executeRequestSequence(stateData, flowKey, recording, true);
+                    executeRequestSequence(currentMapElementId, stateData, flowKey, recording, true);
 
                 });
 
@@ -127,8 +138,10 @@
 
         } else {
 
+            var state = manywho.state.getState(flowKey);
+
             // Now execute the sequence
-            executeRequestSequence(manywho.state.getState(flowKey), flowKey, recording, false);
+            executeRequestSequence(state, state.currentMapElementId, flowKey, recording, false);
 
         }
 
@@ -155,20 +168,7 @@
 
             var recordingId = e.currentTarget.getAttribute('data-id');
             var recordingAction = e.currentTarget.getAttribute('data-action');
-            var recordings = manywho.recording.getAll();
-            var recording = null;
-
-            // Get the recording associated with this identifier
-            for (var i = 0; i < recordings.length; i++) {
-
-                if (manywho.utils.isEqual(recordings[i].id, recordingId, true) == true) {
-
-                    recording = recordings[i];
-                    break;
-
-                }
-
-            }
+            var recording = offline.config.getRecording(recordingId);
 
             if (manywho.utils.isEqual('sync', recordingAction, true)) {
                 syncRecording(this.props.flowKey, recording);
@@ -179,13 +179,14 @@
             } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
                 deleteRecording(this.props.flowKey, recording);
             }
+
         },
 
         render: function () {
 
             manywho.log.info('Rendering Recordings: ' + this.props.id);
 
-            var recordings = manywho.recording.getAll();
+            var recordings = offline.config.getRecordings();
             var entries = null;
 
             if (recordings != null &&
@@ -195,7 +196,7 @@
 
                 for (var i = 0; i < recordings.length; i++) {
 
-                    entries.push(React.DOM.div({ className: 'panel panel-default' }, [
+                    entries.push(React.DOM.div({ className: 'panel panel-default', id: recordings[i].id }, [
                         React.DOM.div({ className: 'panel-heading' }, recordings[i].name),
                         React.DOM.div({ className: 'panel-body' }, [
                             React.DOM.button(

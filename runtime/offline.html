@@ -107,17 +107,38 @@
 		</div>
 	</div>
 </div>
-<div class="mw-bs container">
+
+<div class="mw-bs">
+	<div class="container">
     <div class="row">
-        <div class="col-md-6">
-            <label for="responsesCache">Responses Cache</label>
-            <textarea class="form-control small" rows="5" id="responsesCache"></textarea>
-        </div>
-        <div class="col-md-6">
-            <label for="requestsToCache">Requests To Cache (Recording)</label>
-            <textarea class="form-control small" rows="5" id="requestsToCache"></textarea>
-        </div>
+		<div class="panel panel-primary">
+			<div class="panel-heading">Offline Recording</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" id="offline-status"> Set UI to offline
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<label for="responses-cache">Responses Cache</label>
+						<textarea class="form-control small" rows="5" id="responses-cache"></textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<label for="requests-to-cache">Requests To Cache (Recording)</label>
+						<textarea class="form-control small" rows="5" id="requests-to-cache"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
     </div>
+	</div>
 </div>
 
 <link rel="stylesheet" href="css/mw-bootstrap.css" />
@@ -175,6 +196,39 @@
 		cdnUrl: '',
 		initialize: function () {
 
+			var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+			if (queryParameters['offline'] == 'true') {
+
+				$('#offline-status').attr('checked', true);
+
+				manywho.connection.setOnlineOverride({
+					isOnline: false,
+					override: true
+				});
+
+			}
+
+			$('#offline-status').change(function() {
+
+				if ($(this).is(":checked")) {
+
+					manywho.connection.setOnlineOverride({
+						isOnline: false,
+						override: true
+					});
+
+				} else {
+
+					manywho.connection.setOnlineOverride({
+						isOnline: false,
+						override: false
+					});
+
+				}
+
+			});
+
             var backendUri = 'https://flow.manywho.com';
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
@@ -203,7 +257,7 @@
 							}
 
 							// Append the first part of the entry
-							$('#requestsToCache').append(
+							$('#requests-to-cache').append(
 									'{\r' +
 									'    "entryOutcomeId": ' + handleString(selectedOutcomeId) + ',\r' +
 									'    "entryNavigationItemId": ' + handleString(request.selectedNavigationItemId) + ',\r' +
@@ -217,7 +271,7 @@
 						if (manywho.connection.isOnline() == true) {
 
 							// Now the request has completed, append the rest of the request info
-							$('#requestsToCache').append(
+							$('#requests-to-cache').append(
 									'    "sequence": [\r' +
 									'        {\r' +
 									'            "mapElementId": ' + handleString(response.currentMapElementId) + '\r' +
@@ -225,12 +279,13 @@
 									'    ]\r' +
 									'}\r');
 
-							// Set the state identifier and token to null as this is for stored responses
-							// TODO - this sets the actual running object properties to null!!!!
-							//response.stateId = null;
-							//response.stateToken = null;
+							// Set the state identifier and token to null as this is for stored responses on the cloned
+							// object so we don't interfere with the executing flow
+							var responseToCache = JSON.parse(JSON.stringify(response));
+							responseToCache.stateId = null;
+							responseToCache.stateToken = null;
 
-							$('#responsesCache').val($('#responsesCache').val() + JSON.stringify(response, null, 4));
+							$('#responses-cache').val($('#responsesCache').val() + JSON.stringify(response, null, 4));
 
 						}
 

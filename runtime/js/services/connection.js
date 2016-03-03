@@ -11,6 +11,11 @@
 
 manywho.connection = (function (manywho) {
 
+    var onlineOverride = {
+        isOnline: false,
+        override: false
+    }
+
     function logError(error) {
 
         manywho.log.error(error);
@@ -101,11 +106,29 @@ manywho.connection = (function (manywho) {
 
     }
 
+    function getOnlineStatus() {
+
+        if (onlineOverride.override == false) {
+
+            return navigator.onLine;
+
+        }
+
+        return onlineOverride.isOnline;
+
+    }
+
     return {
+
+        setOnlineOverride: function(override) {
+
+            onlineOverride = override;
+
+        },
 
         isOnline: function() {
 
-            return navigator.onLine;
+            return getOnlineStatus();
 
         },
 
