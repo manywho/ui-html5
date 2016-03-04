@@ -48,6 +48,20 @@ permissions and limitations under the License.
             manywho.component.handleEvent(this, model, this.props.flowKey);
         },
 
+        onInputChange: function(value) {
+
+            manywho.state.setComponent(this.props.id, { objectData: selectedObjectData }, this.props.flowKey, true);
+
+        },
+
+        onBlur: function(e) {
+
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+            manywho.component.handleEvent(this, model, this.props.flowKey);
+
+        },
+
         refresh: function (e) {
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
@@ -81,7 +95,13 @@ permissions and limitations under the License.
 
                 var columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
 
-                selectAttributes = manywho.utils.extend(selectAttributes, { onChange: this.onChange });
+                selectAttributes = manywho.utils.extend(selectAttributes, { onChange: this.onChange }, true);
+
+                if (model.attributes.newRecords && manywho.utils.isEqual(model.attributes.newRecords, 'true', true)) {
+
+                    selectAttributes = manywho.utils.extend(selectAttributes, { inputChange: this.inputChange, onBlur: this.onBlur }, true);
+
+                }
 
                 if (state && state.objectData) {
 
