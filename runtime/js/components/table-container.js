@@ -39,7 +39,7 @@ permissions and limitations under the License.
 
     }
 
-    function renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
+    function renderHeader(componentId, searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
 
         var lookUpKey = manywho.utils.getLookUpKey(flowKey);
         var headerElements = [];
@@ -69,7 +69,7 @@ permissions and limitations under the License.
                 buttonAttributes.disabled = 'disabled';
 
             searchElement = React.DOM.div({ className: 'input-group table-search' }, [
-                    React.DOM.input({ type: 'text', className: 'form-control', value: searchValue, placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
+                    React.DOM.input({ type: 'text', className: 'form-control', id: componentId + '-search', value: searchValue, placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
                     React.DOM.span({ className: 'input-group-btn' },
                         React.DOM.button(buttonAttributes,
                             React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
@@ -412,6 +412,15 @@ permissions and limitations under the License.
             this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 200);
             window.addEventListener('resize', this.handleResizeDebounced);
 
+            // Add a typing listener so the user doesn't need to actually hit the search button
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            if (model.isSearchable &&
+                manywho.settings.global('search.isActive', this.props.flowKey)) {
+
+                $('#' + this.props.id + '-search').donetyping(this.search.bind(null, true), null);
+
+            }
+
         },
 
         componentWillUnmount: function () {
@@ -560,7 +569,7 @@ permissions and limitations under the License.
                 validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     fileUpload,
-                    renderHeader(state.search, headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search, (model.objectDataRequest || model.fileDataRequest), this.refresh, this.props.isDesignTime),
+                    renderHeader(this.props.id, state.search, headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search, (model.objectDataRequest || model.fileDataRequest), this.refresh, this.props.isDesignTime),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev, this.props.isDesignTime),
                     React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
