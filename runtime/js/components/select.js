@@ -75,6 +75,12 @@ permissions and limitations under the License.
                 placeholder: model.hintValue || 'Please select an option'
             };
 
+            var matchPosition = manywho.settings.global('search.matchPosition', this.props.flowKey);
+
+            if (manywho.utils.isNullOrWhitespace(matchPosition) == false) {
+                selectAttributes.matchPos = matchPosition;
+            }
+
             var wrapperClasses = ['select-wrapper'];
 
             if (!manywho.utils.isEmptyObjectData(model) && !this.props.isDesignTime) {
