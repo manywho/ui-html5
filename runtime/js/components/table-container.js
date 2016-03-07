@@ -150,9 +150,25 @@ permissions and limitations under the License.
             if (this.props.isDesignTime)
                 return;
 
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
             state.search = e.target.value;
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
+
+            if ((model.attributes.activeSearch && !manywho.utils.isEqual(model.attributes.activeSearch, 'false', true)) || manywho.settings.global('search.isActive', this.props.flowKey)) {
+
+                var self = this;
+
+                if (this.searchTimeout)
+                    clearTimeout(this.searchTimeout);
+
+                this.searchTimeout = setTimeout(function() {
+
+                    self.search(false);
+
+                }, 600);
+            }
 
             this.forceUpdate();
 
