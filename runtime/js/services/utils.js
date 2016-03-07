@@ -525,6 +525,37 @@ manywho.utils = (function (manywho, $) {
 
             }
 
+        },
+
+        getAttributeValue: function (attributes, attributeName, defaultValue) {
+
+            if (attributes != null &&
+                attributes[attributeName] != null &&
+                attributes[attributeName].trim().length > 0) {
+                return attributes[attributeName];
+            }
+
+            return defaultValue;
+
+        },
+
+        getBooleanAttributeValue: function (attributes, attributeName, defaultValue) {
+
+            var value = this.getAttributeValue(attributes, attributeName, defaultValue);
+
+            if (value != null &&
+                typeof value === 'string' &&
+                value.trim().length > 0) {
+
+                if (value.toLowerCase() == 'true') {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return defaultValue;
+
         }
 
     }
