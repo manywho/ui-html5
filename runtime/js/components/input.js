@@ -134,7 +134,7 @@ permissions and limitations under the License.
 
             var parsedValue = parseFloat(e.target.value);
 
-            if (parsedValue) {
+            if (!manywho.utils.isNullOrWhitespace(parsedValue)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
