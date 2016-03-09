@@ -13,9 +13,9 @@ manywho.styling = (function (manywho) {
 
     var containers = {};
     var components = {};
-    
+
     return {
- 
+
         getClasses: function (parentId, id, type, flowKey) {
 
             var container = manywho.model.getContainer(parentId, flowKey);
@@ -27,12 +27,19 @@ manywho.styling = (function (manywho) {
 
                 if (containers.hasOwnProperty(containerType)) {
                     classes = classes.concat(containers[containerType].call(this, item, container));
-                }                
+                }
             }
 
             if (item) {
 
-                classes = classes.concat(components[type]);
+                if (components.hasOwnProperty(type)) {
+                    if (typeof components[type] === 'string' || components[type] instanceof String)
+                        classes.push(components[type]);
+                    else if ({}.toString.call(components[type]) == '[object Function]')
+                        classes = classes.concat(components[type].call(this, item, container));
+                    else if (Array.isArray(components[type]))
+                        classes = classes.concat(components[type]);
+                }
 
             }
 
@@ -48,15 +55,15 @@ manywho.styling = (function (manywho) {
 
         },
 
-        registerContainer: function (containerType, getClasses) {
+        registerContainer: function (containerType, classes) {
 
-            containers[containerType] = getClasses;
+            containers[containerType] = classes;
 
         },
 
-        registerComponent: function (componentType, getClasses) {
+        registerComponent: function (componentType, classes) {
 
-            components[componentType] = getClasses;
+            components[componentType] = classes;
 
         }
 
