@@ -42,12 +42,8 @@ manywho.recording = (function (manywho) {
 
         if (requests.length == pointer) {
 
-            if (joinOnCompletion) {
-
-                deleteRecording(recording);
-                joinFlow(flowKey, tenantId, response.stateId, authenticationToken);
-
-            }
+            deleteRecording(recording);
+            joinFlow(flowKey, tenantId, response.stateId, authenticationToken);
 
             return;
 
@@ -281,10 +277,10 @@ manywho.recording = (function (manywho) {
 
             } else {
 
-                var state = manywho.state.getState(flowKey);
+                var stateData = manywho.state.getState(flowKey);
 
                 // Now execute the sequence
-                executeRequestSequence(state, state.currentMapElementId, flowKey, recording, false, progressFunction);
+                executeRequestSequence(stateData.currentMapElementId, stateData, flowKey, recording, false, progressFunction);
 
             }
 

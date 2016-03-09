@@ -69,7 +69,7 @@ offline.config = (function (offline) {
                 stateId: request.stateId,
                 nameReference: sequence.name,
                 startMapElementId: request.currentMapElementId,
-                sequence: sequence.sequence.slice(0)
+                sequence: JSON.parse(JSON.stringify(sequence.sequence))
             };
 
         },
