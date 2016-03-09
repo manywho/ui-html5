@@ -217,9 +217,9 @@ manywho.engine = (function (manywho) {
 
                 }
 
-                if (!manywho.utils.isNullOrWhitespace(options['navigationelementid'])) {
+                if (!manywho.utils.isNullOrWhitespace(options.navigationElementId)) {
 
-                    manywho.model.setSelectedNavigation(options['navigationelementid'], flowKey);
+                    manywho.model.setSelectedNavigation(options.navigationElementId, flowKey);
 
                 }
 
@@ -501,7 +501,7 @@ manywho.engine = (function (manywho) {
             .always(function() {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
-                
+
                 if ((outcome && !outcome.isOut) || !outcome) {
 
                     self.render(flowKey);
