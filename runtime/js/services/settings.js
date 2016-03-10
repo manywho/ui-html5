@@ -28,6 +28,9 @@ manywho.settings = (function (manywho, $) {
             files: 10,
             select: 250
         },
+        search: {
+            isActive: false
+        },
         collaboration: {
             uri: 'https://realtime.manywho.com'
         },
