@@ -22,9 +22,11 @@ permissions and limitations under the License.
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
+            var plugins = this.props.isDesignTime ? manywho.settings.global('richText.plugins') : manywho.settings.global('richText.plugins', this.props.flowKey);
+
             tinymce.init({
                 selector: 'textarea#' + this.props.id,
-                plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
+                plugins: plugins,
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
@@ -281,11 +283,13 @@ permissions and limitations under the License.
             var attributes = {
                 id: this.props.id,
                 placeholder: model.hintValue,
-                defaultValue: state.contentValue,
                 maxLength: model.maxSize,
                 cols: model.width,
                 rows: model.height
             };
+
+            if (!this.props.isDesignTime && state)
+                attributes.defaultValue = state.contentValue;
 
             if (!model.isEnabled)
                 attributes.disabled = 'disabled';
@@ -304,7 +308,7 @@ permissions and limitations under the License.
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))
             .join(' ');
 
-            if (this.state.isInitialized && state.contentValue && state.contentValue.length > 0 && !this.skipSetContent) {
+            if (!this.props.isDesignTime && this.state.isInitialized && state.contentValue && state.contentValue.length > 0 && !this.skipSetContent) {
 
                 tinymce.get(this.props.id).setContent(state.contentValue);
                 this.skipSetContent = false;
