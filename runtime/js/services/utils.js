@@ -209,7 +209,7 @@ manywho.utils = (function (manywho, $) {
 
             }
 
-            return value.toString().replace(/\s/g, '').length < 1;
+            return value.replace(/\s/g, '').length < 1;
 
         },
 
