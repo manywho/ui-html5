@@ -35,16 +35,16 @@ permissions and limitations under the License.
                         manywho.ajax.getValueReferences(tenantId, authenticationToken).then(function(response) {
                             var items = response.map(function(item) {
                                 if (item.typeElementPropertyDeveloperName) {
-                                    return { text: item.developerName + ' • ' + item.typeElementPropertyDeveloperName, value: '{![' + item.developerName + '].[' + item.typeElementPropertyDeveloperName + ']}'};
+                                    return { text: item.developerName + ' / ' + item.typeElementPropertyDeveloperName, value: '{![' + item.developerName + '].[' + item.typeElementPropertyDeveloperName + ']}'};
                                 } else {
                                     return { text: item.developerName, value: '{![' + item.developerName + ']}'};
                                 }
                             });
 
-                            items.unshift({ text: '-- Please select reference value --', value: '' });
+                            items.unshift({ text: 'Please select reference value', value: '' });
 
                             editor.windowManager.open({
-                                title: 'Add Reference To Value',
+                                title: 'Add Reference to a Value',
                                 body: [
                                     {
                                         type: 'listbox',
