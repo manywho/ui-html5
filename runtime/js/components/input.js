@@ -134,7 +134,7 @@ permissions and limitations under the License.
 
             var parsedValue = parseFloat(e.target.value);
 
-            if (parsedValue) {
+            if (!isNaN(parsedValue)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 

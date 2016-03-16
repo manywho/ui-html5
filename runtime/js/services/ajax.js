@@ -229,6 +229,25 @@ manywho.ajax = (function (manywho) {
 
         },
 
+        getValueReferences: function (tenantId, authenticationToken) {
+
+            return $.ajax({
+                    url: manywho.settings.global('platform.uri') + '/api/draw/1/element/value/reference/',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
+
+                        beforeSend.call(this, xhr, tenantId, authenticationToken, 'getStateData');
+
+                    }
+                })
+                .done(manywho.settings.event('getValueReferences.done'))
+                .fail(onError)
+                .fail(manywho.settings.event('getValueReferences.fail'));
+
+        },
+
         getStateData: function (stateId, tenantId, authenticationToken) {
 
             return $.ajax({
