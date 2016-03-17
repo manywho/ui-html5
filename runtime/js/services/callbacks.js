@@ -64,7 +64,7 @@ manywho.callbacks = (function (manywho) {
 
                     item.execute.apply(undefined, [item].concat(item.args || [], args));
 
-                    if (callbacks[lookUpKey]) {
+                    if (callbacks[lookUpKey] && !item.repeat) {
 
                         callbacks[lookUpKey].splice(callbacks[lookUpKey].indexOf(item), 1);
 
