@@ -454,7 +454,7 @@ permissions and limitations under the License.
                     objectData = model.objectData;
                 }
 
-                if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true)) {
+                if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true) && objectData) {
                     var page = (state.page - 1) || 0;
                     var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
 
