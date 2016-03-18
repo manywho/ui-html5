@@ -11,6 +11,33 @@ permissions and limitations under the License.
 
 (function (manywho) {
 
+    function getPattern(model) {
+
+        if (model != null &&
+            model.attributes &&
+            model.attributes.pattern && !manywho.utils.isNullOrWhitespace(model.attributes.pattern)) {
+
+            return model.attributes.pattern;
+
+        }
+
+        if (model.tags != null &&
+            model.tags.length > 0) {
+
+            for (var i = 0; i < model.tags.length; i++) {
+
+                if (model.tags[i].developerName.toLowerCase() == 'pattern') {
+
+                    return model.tags[i].contentValue;
+
+                }
+
+            }
+
+        }
+
+    }
+
     function getInputType(attributes, contentType) {
 
         if (attributes &&
@@ -217,11 +244,11 @@ permissions and limitations under the License.
 
             }
 
-            if (model.attributes &&
-                model.attributes.pattern &&
-                !manywho.utils.isNullOrWhitespace(model.attributes.pattern)) {
+            var patternToApply = getPattern(model);
 
-                var regExp = new RegExp(model.attributes.pattern);
+            if (!manywho.utils.isNullOrWhitespace(patternToApply)) {
+
+                var regExp = new RegExp(patternToApply);
                 var contentValue = manywho.state.getComponent(this.props.id, this.props.flowKey).contentValue;
 
                 if (regExp.test(contentValue) == true) {
@@ -269,13 +296,7 @@ permissions and limitations under the License.
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
             var contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
-            var patternToApply = null;
-
-            if (model.attributes &&
-                model.attributes.pattern &&
-                !manywho.utils.isNullOrWhitespace(model.attributes.pattern)) {
-                patternToApply = model.attributes.pattern;
-            }
+            var patternToApply = getPattern(model);
 
             var attributes = {
                 type: !this.props.isDesignTime ? getInputType(model.attributes, contentType) : 'text',
