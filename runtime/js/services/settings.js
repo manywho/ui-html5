@@ -59,7 +59,8 @@ manywho.settings = (function (manywho, $) {
         isFullWidth: false,
         collapsible: false,
         history: false,
-        containerSelector: '#manywho'
+        containerSelector: '#manywho',
+        syncOnUnload: true
     };
 
     var flows = {};

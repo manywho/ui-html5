@@ -407,7 +407,7 @@ manywho.utils = (function (manywho, $) {
                     if (foundKey) {
                         obj = obj[foundKey];
                     } else {
-                        obj = null;
+                        obj = undefined;
                     }
                 }
                 return obj;
