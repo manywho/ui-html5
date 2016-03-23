@@ -212,7 +212,7 @@ permissions and limitations under the License.
 
             var relatedElement = e.relatedTarget;
 
-            if (relatedElement && relatedElement.classList.contains('outcome')) {
+            if (relatedElement && (relatedElement.classList.contains('outcome') || relatedElement.classList.contains('control-label'))) {
 
                 callback = function() {
                     relatedElement.click();
