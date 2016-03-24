@@ -121,7 +121,8 @@ manywho.recording = (function (manywho) {
         start: function (identifier, request) {
 
             // Check to make sure we have sequences to record at all and we have an incoming identifier
-            if (offline.config.sequences.length >= 0 &&
+            if (offline.config.sequences != null &&
+                offline.config.sequences.length >= 0 &&
                 manywho.utils.isNullOrWhitespace(identifier) == false) {
 
                 for (var i = 0; i < offline.config.sequences.length; i++) {

@@ -11,7 +11,6 @@
 
 manywho.responses = (function (manywho) {
 
-    // TODO: this can be determined from the Value binding and the Type, but the rules are a little complicated
     function isTableComponent(pageComponent) {
 
         if (pageComponent == null) {
@@ -24,19 +23,11 @@ manywho.responses = (function (manywho) {
             return null;
         }
 
-        if (offline.config.components != null &&
-            offline.config.components.tables != null &&
-            offline.config.components.tables.length > 0) {
+        if (pageComponent.valueElementDataBindingReferenceId != null ||
+            pageComponent.objectDataRequest != null ||
+            pageComponent.fileDataRequest != null) {
 
-            for (var i = 0; i < offline.config.components.tables.length; i++) {
-
-                if (manywho.utils.isEqual(pageComponent.componentType, offline.config.components.tables[i], true)) {
-
-                    return true;
-
-                }
-
-            }
+            return true;
 
         }
 
@@ -108,6 +99,11 @@ manywho.responses = (function (manywho) {
 
             // Get values out of the "state" matched to the page component identifiers
             var response =  offline.config.responses[identifier];
+
+            if (response == null) {
+                manywho.log.error('A response could not be found for identifier: ' + identifier);
+                return null;
+            }
 
             // Check to see if the response is associated with a State. If not, this means the response should be
             // associated with the current state

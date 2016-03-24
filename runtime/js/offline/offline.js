@@ -179,6 +179,16 @@ manywho.offline = (function (manywho) {
 
             }
 
+            // Check to see if we simply have the state info
+            if (request.stateId &&
+                manywho.utils.isNullOrWhitespace(request.stateId) == false) {
+
+                identifier += request.stateId;
+
+                return identifier;
+
+            }
+
             manywho.log.error('A unique identifier could not be generated for the request.');
 
         }

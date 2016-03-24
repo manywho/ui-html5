@@ -99,6 +99,7 @@
     </style>
 </head>
 <body style="height: 100%">
+
     <div id="manywho">
         <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
             <div class="wait-container">
@@ -147,6 +148,8 @@
 
     <script>
 
+        var offline = {};
+
         var manywho = {
             cdnUrl: '',
             initialize: function () {
@@ -186,24 +189,13 @@
                     theme: queryParameters['theme']
                 };
 
-                var tenantId = queryParameters['tenant-id'];
-                if (!tenantId) {
-
-                    tenantId = window.location.pathname
-                                .split('/')
-                                .filter(function (path) {
-
-                                    return path && path.length > 0;
-
-                                })[0];
-
-                }
-
                 manywho.log.enableAll();
 
+                //https://flow.manywho.com/4dc56bec-b68c-47ac-8998-7ba961734c18/play/default?flow-id=fae5b62a-589c-4618-bdb5-682f1f0dd3b0&navigation-element-id=950a2fe6-1eb1-45fc-a719-ee63e8cd8d59
+
                 manywho.engine.initialize(
-                    tenantId,
-                    queryParameters['flow-id'],
+                    '4dc56bec-b68c-47ac-8998-7ba961734c18',
+                    'fae5b62a-589c-4618-bdb5-682f1f0dd3b0',
                     queryParameters['flow-version-id'],
                     'main',
                     queryParameters['join'],
@@ -223,8 +215,11 @@
     <script src="js/lib/classNames.js"></script>
     <script src="js/lib/react-input-autosize.js"></script>
     <script src="js/lib/react-select.js"></script>
+    <script src="js/lib/done-typing.js"></script>
 
     <script src="js/services/ajax.js"></script>
+    <script src="js/services/connection.js"></script>
+    <script src="js/offline/offline.js"></script>
     <script src="js/services/model.js"></script>
     <script src="js/services/component.js"></script>
     <script src="js/services/styling.js"></script>
@@ -239,6 +234,12 @@
     <script src="js/services/callbacks.js"></script>
     <script src="js/services/social.js"></script>
     <script src="js/services/log.js"></script>
+
+    <script src="js/offline/graph.js"></script>
+    <script src="js/offline/offline.js"></script>
+    <script src="js/offline/recording.js"></script>
+    <script src="js/offline/responses.js"></script>
+    <script src="js/offline/simulation.js"></script>
 
     <script src="js/components/mixins.js"></script>
     <script src="js/components/main.js"></script>
@@ -276,6 +277,11 @@
     <script src="js/components/iframe.js"></script>
     <script src="js/components/flip.js"></script>
     <script src="js/components/login.js"></script>
+    <script src="js/components/google-chart.js"></script>
+
+    <!-- Extensions -->
+    <script src="js/offline/config.js"></script>
+    <!-- Extensions -->
 
     <script>
         manywho.initialize();

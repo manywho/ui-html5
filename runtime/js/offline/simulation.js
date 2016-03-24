@@ -496,6 +496,42 @@ manywho.simulation = (function (manywho) {
 
             }
 
+        },
+
+        // A lightweight search function for finding matches in the provided object data.
+        //
+        search: function(search, columns, objectData) {
+
+            // If we have no object data, we don't need to search anything
+            if (objectData == null ||
+                objectData.length == 0) {
+                manywho.log.info("No ObjectData has been provided to search.");
+                return null;
+            }
+
+            // Return all of the object data if no search has been provided
+            if (manywho.utils.isNullOrWhitespace(search)) {
+                return objectData;
+            }
+
+            // If the columns have not been provided, set the columns to all properties in the object data
+            if (columns == null ||
+                columns.length == 0) {
+                // Grab the first entry
+                columns = objectData[0].properties;
+            }
+
+            // Perform the object filter
+            return objectData.filter(function(objectDataEntry) {
+
+                return objectDataEntry.properties.filter(function(property) {
+
+                        return columns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1
+
+                    }).length > 0
+
+            })
+
         }
 
     }

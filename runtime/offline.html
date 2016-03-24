@@ -233,8 +233,10 @@
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
 			// Values specific to the flow
-			var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // ADD YOUR TENANT ID HERE
-			var flowId = '3ca32f1c-0278-477b-9ce1-ff88210be747'; // ADD YOUR FLOW ID HERE
+			//var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Taskify
+			//var flowId = '3ca32f1c-0278-477b-9ce1-ff88210be747';
+			var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Accounts Flow
+			var flowId = '9a563d47-fa58-4a27-b633-f1fd6898ed07';
 
 			manywho.settings.initialize({
 				adminTenantId: manywhoAdminTenantId,
@@ -245,7 +247,97 @@
 				}
             },
             {
-                invoke: {
+				initialization: {
+                    beforeSend: function (xhr, response) {
+
+                        if (manywho.connection.isOnline() == true) {
+
+                            // Set the state identifier and token to null as this is for stored responses on the cloned
+                            // object so we don't interfere with the executing flow
+                            var responseToCache = JSON.parse(JSON.stringify(response));
+
+                            // Null out the state information
+                            responseToCache.stateId = offline.config.emptyStateId;
+                            responseToCache.stateToken = offline.config.emptyStateId;
+
+                            // Get the unique identifier for this request
+                            var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
+
+                            // Get any existing responses from the value
+                            var existingResponsesJson = $('#responses-cache').val();
+                            var existingResponses = {};
+
+                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
+                                existingResponses = JSON.parse(existingResponsesJson);
+                            }
+
+                            existingResponses[identifier] = responseToCache;
+
+                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
+
+                        }
+
+                    },
+                    done: function (response) {
+
+						if (manywho.connection.isOnline() == true) {
+
+							// Set the state identifier and token to null as this is for stored responses on the cloned
+							// object so we don't interfere with the executing flow
+							var responseToCache = JSON.parse(JSON.stringify(response));
+
+                            // Null out the state information
+                            responseToCache.stateId = offline.config.emptyStateId;
+                            responseToCache.stateToken = offline.config.emptyStateId;
+
+                            // Get the unique identifier for this request
+							var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
+
+                            // Get any existing responses from the value
+                            var existingResponsesJson = $('#responses-cache').val();
+                            var existingResponses = {};
+
+                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
+                                existingResponses = JSON.parse(existingResponsesJson);
+                            }
+
+                            existingResponses[identifier] = responseToCache;
+
+                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
+
+						}
+
+					}
+				},
+				objectData: {
+					beforeSend: function (xhr, response) {
+
+						if (manywho.connection.isOnline() == true) {
+
+							// Set the state identifier and token to null as this is for stored responses on the cloned
+							// object so we don't interfere with the executing flow
+							var responseToCache = JSON.parse(JSON.stringify(response));
+
+							// Get the unique identifier for this request
+							var identifier = manywho.offline.generateIdentifierForRequest('objectData', null, responseToCache);
+
+                            // Get any existing responses from the value
+							var existingResponsesJson = $('#responses-cache').val();
+                            var existingResponses = {};
+
+							if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
+                                existingResponses = JSON.parse(existingResponsesJson);
+							}
+
+                            existingResponses[identifier] = responseToCache;
+
+							$('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
+
+						}
+
+					}
+				},
+				invoke: {
                     beforeSend: function (xhr, request) {
 
 						if (manywho.connection.isOnline() == true) {
@@ -282,10 +374,25 @@
 							// Set the state identifier and token to null as this is for stored responses on the cloned
 							// object so we don't interfere with the executing flow
 							var responseToCache = JSON.parse(JSON.stringify(response));
+
+							// Get the unique identifier for this request
+							var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
+
+							// Null out the state information
 							responseToCache.stateId = null;
 							responseToCache.stateToken = null;
 
-							$('#responses-cache').val($('#responses-cache').val() + JSON.stringify(responseToCache, null, 4));
+                            // Get any existing responses from the value
+                            var existingResponsesJson = $('#responses-cache').val();
+                            var existingResponses = {};
+
+                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
+                                existingResponses = JSON.parse(existingResponsesJson);
+                            }
+
+                            existingResponses[identifier] = responseToCache;
+
+                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
 
 						}
 
@@ -332,6 +439,8 @@
 					options,
 					null
 			);
+
+			manywho.theming.apply('sf1');
 
 		}
 	};
@@ -407,7 +516,7 @@
 <script src="js/components/recordings.js"></script>
 
 <!-- Extensions -->
-<script src="js/offline/config.js"></script>
+<script src="js/offline/config-accounts.js"></script>
 <!-- Extensions -->
 
 <script>
