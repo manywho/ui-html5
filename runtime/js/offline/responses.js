@@ -163,14 +163,22 @@ manywho.responses = (function (manywho) {
 
             }
 
-            return response;
+            // Clone the object so we don't change anything in the data store by accident
+            return JSON.parse(JSON.stringify(response));
+
+        },
+
+        getAll: function() {
+
+            // Clone the list so we don't have any remote manipulation of the data store
+            return JSON.parse(JSON.stringify(offline.config.responses));
 
         },
 
         set: function (identifier, responseObject) {
 
-            // Don't set as we're hard coding the cached responses
-            offline.config.responses[identifier] = responseObject;
+            // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
+            offline.config.responses[identifier] = JSON.parse(JSON.stringify(responseObject));
 
         }
 

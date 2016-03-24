@@ -125,7 +125,7 @@
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="responses-cache">Responses Cache</label>
+						<label for="responses-cache">Responses Cache (<a href="#" id="update-responses">Update</a>)</label>
 						<textarea class="form-control small" rows="5" id="responses-cache"></textarea>
 					</div>
 				</div>
@@ -247,96 +247,6 @@
 				}
             },
             {
-				initialization: {
-                    beforeSend: function (xhr, response) {
-
-                        if (manywho.connection.isOnline() == true) {
-
-                            // Set the state identifier and token to null as this is for stored responses on the cloned
-                            // object so we don't interfere with the executing flow
-                            var responseToCache = JSON.parse(JSON.stringify(response));
-
-                            // Null out the state information
-                            responseToCache.stateId = offline.config.emptyStateId;
-                            responseToCache.stateToken = offline.config.emptyStateId;
-
-                            // Get the unique identifier for this request
-                            var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
-
-                            // Get any existing responses from the value
-                            var existingResponsesJson = $('#responses-cache').val();
-                            var existingResponses = {};
-
-                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
-                                existingResponses = JSON.parse(existingResponsesJson);
-                            }
-
-                            existingResponses[identifier] = responseToCache;
-
-                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
-
-                        }
-
-                    },
-                    done: function (response) {
-
-						if (manywho.connection.isOnline() == true) {
-
-							// Set the state identifier and token to null as this is for stored responses on the cloned
-							// object so we don't interfere with the executing flow
-							var responseToCache = JSON.parse(JSON.stringify(response));
-
-                            // Null out the state information
-                            responseToCache.stateId = offline.config.emptyStateId;
-                            responseToCache.stateToken = offline.config.emptyStateId;
-
-                            // Get the unique identifier for this request
-							var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
-
-                            // Get any existing responses from the value
-                            var existingResponsesJson = $('#responses-cache').val();
-                            var existingResponses = {};
-
-                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
-                                existingResponses = JSON.parse(existingResponsesJson);
-                            }
-
-                            existingResponses[identifier] = responseToCache;
-
-                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
-
-						}
-
-					}
-				},
-				objectData: {
-					beforeSend: function (xhr, response) {
-
-						if (manywho.connection.isOnline() == true) {
-
-							// Set the state identifier and token to null as this is for stored responses on the cloned
-							// object so we don't interfere with the executing flow
-							var responseToCache = JSON.parse(JSON.stringify(response));
-
-							// Get the unique identifier for this request
-							var identifier = manywho.offline.generateIdentifierForRequest('objectData', null, responseToCache);
-
-                            // Get any existing responses from the value
-							var existingResponsesJson = $('#responses-cache').val();
-                            var existingResponses = {};
-
-							if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
-                                existingResponses = JSON.parse(existingResponsesJson);
-							}
-
-                            existingResponses[identifier] = responseToCache;
-
-							$('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
-
-						}
-
-					}
-				},
 				invoke: {
                     beforeSend: function (xhr, request) {
 
@@ -371,33 +281,10 @@
 									'    ]\r' +
 									'}\r');
 
-							// Set the state identifier and token to null as this is for stored responses on the cloned
-							// object so we don't interfere with the executing flow
-							var responseToCache = JSON.parse(JSON.stringify(response));
-
-							// Get the unique identifier for this request
-							var identifier = manywho.offline.generateIdentifierForRequest('initialization', null, responseToCache);
-
-							// Null out the state information
-							responseToCache.stateId = null;
-							responseToCache.stateToken = null;
-
-                            // Get any existing responses from the value
-                            var existingResponsesJson = $('#responses-cache').val();
-                            var existingResponses = {};
-
-                            if (manywho.utils.isNullOrWhitespace(existingResponsesJson) == false) {
-                                existingResponses = JSON.parse(existingResponsesJson);
-                            }
-
-                            existingResponses[identifier] = responseToCache;
-
-                            $('#responses-cache').val(JSON.stringify(existingResponses, null, 4));
-
 						}
 
                     }
-                },
+                }
             });
 
 			var options = {
@@ -444,6 +331,33 @@
 
 		}
 	};
+
+	$('#update-responses').on('click', function() {
+
+		var responses = manywho.responses.getAll();
+
+		for (var property in responses) {
+
+			if (responses.hasOwnProperty(property)) {
+
+				var response = responses[property];
+
+				if (response.stateId) {
+
+					// If we have a state id, we want to blank it out for the offline cache
+					response.stateId = offline.config.emptyStateId;
+					response.stateToken = offline.config.emptyStateId;
+
+				}
+
+			}
+
+		}
+
+		$('#responses-cache').val(JSON.stringify(responses, null, 4));
+
+	})
+
 </script>
 
 
