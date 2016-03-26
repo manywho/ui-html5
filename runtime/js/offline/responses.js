@@ -42,7 +42,7 @@ manywho.responses = (function (manywho) {
             // Get the object data from the cached value - that's where we source all individual value references
             // This will also make sure the type matches the value, though there's no reliable way of telling if the value
             // being stored in the cache is in fact the value in the binding
-            var objectData = manywho.simulation.get(pageComponentInfo.tableName, pageComponentInfo.typeElement.id);
+            var objectData = manywho.simulation.get(pageComponentInfo.tableName, pageComponentInfo.typeElement.id, pageComponentInfo.valueElement);
 
             if (objectData != null) {
 
@@ -95,7 +95,7 @@ manywho.responses = (function (manywho) {
 
     return {
 
-        get: function (identifier) {
+        get: function (identifier, request) {
 
             // Get values out of the "state" matched to the page component identifiers
             var response =  offline.config.responses[identifier];
@@ -112,6 +112,7 @@ manywho.responses = (function (manywho) {
                 response.stateToken = offline.config.emptyStateId;
             }
 
+            // Check to see if we're dealing with a core engine response
             if (response != null &&
                 response.mapElementInvokeResponses &&
                 response.mapElementInvokeResponses != null &&
@@ -163,6 +164,37 @@ manywho.responses = (function (manywho) {
 
             }
 
+            // Check to see if we're dealing with an object data response
+            if (response != null &&
+                response.hasOwnProperty("objectData")) {
+
+                // This is a list, so get all the data from the offline table and override
+                response.objectData = manywho.simulation.getAll(
+                    response.tableName,
+                    response.typeElementId
+                );
+
+                // Filter the object data based on search
+                response.objectData = manywho.simulation.search(request.listFilter.search, null, response.objectData);
+
+                if (response.objectData != null) {
+
+                    // We don't always have an offset
+                    if (!request.listFilter.hasOwnProperty("offset")) {
+                        request.listFilter.offset = 0;
+                    }
+
+                    // Apply pagination to the results
+                    var page = request.listFilter.offset / request.listFilter.limit;
+                    var limit = request.listFilter.limit;
+
+                    response.hasMoreResults = (page * limit) + limit + 1 <= response.objectData.length;
+                    response.objectData = response.objectData.slice(page * limit, (page * limit) + limit);
+
+                }
+
+            }
+
             // Clone the object so we don't change anything in the data store by accident
             return JSON.parse(JSON.stringify(response));
 
@@ -178,7 +210,32 @@ manywho.responses = (function (manywho) {
         set: function (identifier, responseObject) {
 
             // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
-            offline.config.responses[identifier] = JSON.parse(JSON.stringify(responseObject));
+            var responseToCache = JSON.parse(JSON.stringify(responseObject));
+
+            // Here we are assuming the identifier structure, which can be breakable
+            if (identifier.indexOf('objectData_') == 0) {
+
+                if (responseToCache.objectData == null ||
+                    responseToCache.objectData.length == 0) {
+                    manywho.log.info("We cannot cache object data responses that contain no data.");
+                    return;
+                }
+
+                // We have an object data response to cache, we handle that a little differently as we strip the data
+                responseToCache.typeElementId = responseToCache.objectData[0].typeElementId;
+                responseToCache.tableName = null;
+
+                // Put the object data into the simulation database
+                manywho.simulation.setAll(responseToCache.tableName, responseToCache.objectData);
+
+                // Null out the object data as we don't want to keep it in the cached response, we keep it in the simulation
+                // database piece
+                responseToCache.objectData = null;
+
+            }
+
+            // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
+            offline.config.responses[identifier] = responseToCache;
 
         }
 

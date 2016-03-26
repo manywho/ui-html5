@@ -27,6 +27,15 @@ manywho.simulation = (function (manywho) {
         }
 
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+
+    }
+
+    // Utility function for cleaning ids to make them javascript safe.
+    //
+    function cleanId(id) {
+
+        return id.split('-').join('');
+
     }
 
     // Utility function to determine if the object data has an external identifier provided.
@@ -54,7 +63,7 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        typeElementId = typeElementId.split('-').join('');
+        typeElementId = cleanId(typeElementId);
 
         if (manywho.utils.isNullOrWhitespace(tableName)) {
 
@@ -220,10 +229,15 @@ manywho.simulation = (function (manywho) {
 
     // This function is used to set the object data into the local State Cache.
     //
-    function setStateCache(table, objectData) {
+    function setStateCache(table, valueElementId, objectData) {
 
         if (table == null) {
             manywho.log.error("No Table has been provided to set against in the offline State Cache.");
+            return null;
+        }
+
+        if (valueElementId == null) {
+            manywho.log.error("No ValueElementId has been provided to set against in the offline State Cache.");
             return null;
         }
 
@@ -232,33 +246,71 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        stateCache[table] = objectData;
+        var modifier = cleanId(valueElementId.id);
+
+        // If we also have a property, we add that to the id also
+        if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId) == false) {
+
+            modifier += cleanId(valueElementId.typeElementPropertyId);
+
+        }
+
+        // Set in the cache as a compound of the table name and the value binding
+        stateCache[table + modifier] = objectData;
 
     }
 
     // This function is used to set the object data into the local State Cache.
     //
-    function removeStateCache(table) {
+    function removeStateCache(table, valueElementId) {
 
         if (table == null) {
             manywho.log.error("No Table has been provided to set against in the offline State Cache.");
             return null;
         }
 
-        stateCache[table] = null;
+        if (valueElementId == null) {
+            manywho.log.error("No ValueElementId has been provided to set against in the offline State Cache.");
+            return null;
+        }
+
+        var modifier = cleanId(valueElementId.id);
+
+        // If we also have a property, we add that to the id also
+        if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId) == false) {
+
+            modifier += cleanId(valueElementId.typeElementPropertyId);
+
+        }
+
+        stateCache[table + modifier] = null;
 
     }
 
     // This function is used to get the object data from the local State Cache.
     //
-    function getStateCache(table) {
+    function getStateCache(table, valueElementId) {
 
         if (table == null) {
             manywho.log.error("No Table has been provided to get from in the offline State Cache.");
             return null;
         }
 
-        return stateCache[table];
+        if (valueElementId == null) {
+            manywho.log.error("No ValueElementId has been provided to get from in the offline State Cache.");
+            return null;
+        }
+
+        var modifier = cleanId(valueElementId.id);
+
+        // If we also have a property, we add that to the id also
+        if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId) == false) {
+
+            modifier += cleanId(valueElementId.typeElementPropertyId);
+
+        }
+
+        return stateCache[table + modifier];
 
     }
 
@@ -340,7 +392,7 @@ manywho.simulation = (function (manywho) {
 
     }
 
-    function applyToState(tableName, typeElementId, objectData, actionType) {
+    function applyToState(tableName, typeElementId, valueElementId, objectData, actionType) {
 
         if (objectData == null) {
             manywho.log.error("No ObjectData has been provided to apply to the offline State.");
@@ -372,14 +424,90 @@ manywho.simulation = (function (manywho) {
 
         if (actionPlan.cache) {
 
-            setStateCache(table, objectData);
+            setStateCache(table, valueElementId, objectData);
 
         } else if (!actionPlan.cache && actionPlan.cacheDestructive) {
 
             // Only clear the object if it should not be cached and it's a destructive operation
-            removeStateCache(table);
+            removeStateCache(table, valueElementId);
 
         }
+
+    }
+
+    function executeSequence(requests, pointer, tenantId, authenticationToken, flowKey, progressFunction) {
+
+        if (requests.length == pointer) {
+
+            return;
+
+        }
+
+        manywho.ajax.dispatchObjectDataRequest(
+            requests[pointer],
+            tenantId,
+            authenticationToken,
+            requests[pointer].limit,
+            null,
+            null,
+            null,
+            0)
+            .then(function (response) {
+
+                // Set the data into the simulation database
+                manywho.simulation.setAll(requests[pointer].tableName, response.objectData);
+
+                // Move the progress bar first so we capture the 100%
+                progressFunction.call(this, requests[pointer], ((pointer + 1) / requests.length) * 100);
+
+                // Increment the pointer as the call was successful
+                pointer++;
+
+                // If the database doesn't have any more results, finish
+                if (response.hasMoreResults == false) {
+
+                    // Move the progress bar to 100%
+                    progressFunction.call(this, requests[pointer], 100);
+
+                    return;
+
+                }
+
+                // Execute the sequence until we're done
+                executeSequence(requests, pointer, tenantId, authenticationToken, flowKey, progressFunction);
+
+            });
+
+    }
+
+    function executeRequestSequence(flowKey, objectDataRequest, progressFunction) {
+
+        var requests = [];
+        var tenantId = manywho.utils.extractTenantId(flowKey);
+        var stateId = manywho.state.getState(flowKey).id;
+        var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
+
+        // Get the number of chunks that need to be sent
+        var chunks = Math.ceil(objectDataRequest.listFilter.limit / objectDataRequest.chunkSize);
+
+        // Create an object data request for each chunk
+        for (var i = 0; i < chunks; i++) {
+
+            var request = JSON.parse(JSON.stringify(objectDataRequest));
+
+            // Set the limit to the chunk size
+            request.listFilter.limit = objectDataRequest.chunkSize;
+            request.listFilter.offset = (i * objectDataRequest.chunkSize);
+
+            // Set the state id to the current live state
+            request.stateId = stateId;
+
+            requests.push(request);
+
+        }
+
+        // Kick off the requests / responses loop
+        executeSequence(requests, 0, tenantId, authenticationToken, flowKey, progressFunction);
 
     }
 
@@ -394,9 +522,9 @@ manywho.simulation = (function (manywho) {
 
         },
 
-        get: function(tableName, typeElementId) {
+        get: function(tableName, typeElementId, valueElementId) {
 
-            return getStateCache(getTable(getTableName(tableName, typeElementId)));
+            return getStateCache(getTable(getTableName(tableName, typeElementId)), valueElementId);
 
         },
 
@@ -486,6 +614,7 @@ manywho.simulation = (function (manywho) {
                         applyToState(
                             pageObjectData[property].tableName,
                             pageObjectData[property].typeElementId,
+                            pageComponentInfo.valueElement,
                             pageObjectData[property],
                             pageComponentInfo.actionType
                         );
@@ -495,6 +624,40 @@ manywho.simulation = (function (manywho) {
                 }
 
             }
+
+        },
+
+        // Applies the provided object data to the simulation state regardless of request/response. This is used to
+        // pre-sync data with the offline simulation engine so users can view all synced data offline.
+        //
+        setAll: function(tableName, objectData) {
+
+            // If we have no object data, we don't need to store anything
+            if (objectData == null ||
+                objectData.length == 0) {
+                manywho.log.info("No ObjectData has been provided to search.");
+                return null;
+            }
+
+            // Go through all of the collected object data and apply it to the state as appropriate
+            for (var i = 0; i < objectData.length; i++) {
+
+                // Apply the object back using a constructive 'save'
+                applyToState(
+                    tableName,
+                    objectData[i].typeElementId,
+                    null,
+                    objectData[i],
+                    'save'
+                );
+
+            }
+
+        },
+
+        syncObjectData: function(flowKey, objectDataRequest, progressFunction) {
+
+            executeRequestSequence(flowKey, objectDataRequest, progressFunction);
 
         },
 
@@ -526,9 +689,9 @@ manywho.simulation = (function (manywho) {
 
                 return objectDataEntry.properties.filter(function(property) {
 
-                        return columns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1
+                    return columns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1
 
-                    }).length > 0
+                }).length > 0
 
             })
 

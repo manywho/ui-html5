@@ -47,18 +47,8 @@ manywho.connection = (function (manywho) {
             manywho.log.error('A response could not be found for request.');
         }
 
-        // Set a timeout to resolve of 100 milliseconds to give the UI time to render
-        setTimeout(function () {
-
-                // Once the timer is done, we resolve
-                deferred.resolveWith(
-                    resolveContext,
-                    [resolveArguments]
-                );
-
-            },
-            100
-        );
+        // Resolve the deferred
+        deferred.resolveWith(resolveContext, [resolveArguments]);
 
         // Send the deferred object back ready to be resolved
         return deferred

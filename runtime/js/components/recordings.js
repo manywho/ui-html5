@@ -69,6 +69,17 @@
 
         },
 
+        componentDidMount: function() {
+
+            // Check to see if the user is in fact online
+            if (manywho.connection.isOnline() == false) {
+
+                $(".recordings").prop("disabled", true);
+
+            }
+
+        },
+
         render: function () {
 
             manywho.log.info('Rendering Recordings: ' + this.props.id);
@@ -89,22 +100,22 @@
                         React.DOM.div({ className: 'panel-heading' }, recordings[i].name),
                         React.DOM.div({ className: 'panel-body' }, [
                             React.DOM.button(
-                                { className: 'btn btn-success', 'data-action': 'sync', 'data-id': recordings[i].id, onClick: this.onClick },
+                                { className: 'btn btn-success recordings', 'data-action': 'sync', 'data-id': recordings[i].id, onClick: this.onClick },
                                 'Sync'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-info', 'data-action': 'retry', 'data-id': recordings[i].id, onClick: this.onClick },
+                                { className: 'btn btn-info recordings', 'data-action': 'retry', 'data-id': recordings[i].id, onClick: this.onClick },
                                 'Retry'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-warning', 'data-action': 'fix', 'data-id': recordings[i].id, onClick: this.onClick },
+                                { className: 'btn btn-warning recordings', 'data-action': 'fix', 'data-id': recordings[i].id, onClick: this.onClick },
                                 'Fix'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-danger', 'data-action': 'delete', 'data-id': recordings[i].id, onClick: this.onClick },
+                                { className: 'btn btn-danger recordings', 'data-action': 'delete', 'data-id': recordings[i].id, onClick: this.onClick },
                                 'Delete'
                             )
                         ]),

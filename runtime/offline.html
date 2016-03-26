@@ -135,6 +135,12 @@
 						<textarea class="form-control small" rows="5" id="requests-to-cache"></textarea>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<label for="data-sync">Data Sync (<a href="#" id="update-data-sync">Update</a>)</label>
+						<textarea class="form-control small" rows="5" id="data-sync"></textarea>
+					</div>
+				</div>
 			</div>
 		</div>
     </div>
@@ -192,7 +198,10 @@
 
 	var offline = {};
 
-    var manywho = {
+	var objectDataRequests = [];
+	var fileDataRequests = [];
+
+	var manywho = {
 		cdnUrl: '',
 		initialize: function () {
 
@@ -284,7 +293,39 @@
 						}
 
                     }
-                }
+                },
+				objectData: {
+					beforeSend: function(xhr, request) {
+
+						// Clone the object so we don't interfere with execution
+						var objectDataRequest = JSON.parse(JSON.stringify(request));
+
+						// Null out the state identifier
+						objectDataRequest.stateId = offline.config.emptyStateId;
+
+						// Put in a placeholder for table name
+						objectDataRequest.tableName = null;
+
+						objectDataRequests.push(objectDataRequest);
+
+					}
+				},
+				fileData: {
+					beforeSend: function(xhr, request) {
+
+						// Clone the object so we don't interfere with execution
+						var fileDataRequest = JSON.parse(JSON.stringify(request));
+
+						// Null out the state identifier
+						fileDataRequest.stateId = offline.config.emptyStateId;
+
+						// Put in a placeholder for table name
+						fileDataRequest.tableName = null;
+
+						fileDataRequests.push(request);
+
+					}
+				}
             });
 
 			var options = {
@@ -327,7 +368,7 @@
 					null
 			);
 
-			manywho.theming.apply('sf1');
+			manywho.theming.apply('cosmo');
 
 		}
 	};
@@ -356,7 +397,17 @@
 
 		$('#responses-cache').val(JSON.stringify(responses, null, 4));
 
-	})
+	});
+
+	$('#update-data-sync').on('click', function() {
+
+		var dataSync = {};
+		dataSync.objectDataRequests = objectDataRequests;
+		dataSync.fileDataRequests = fileDataRequests;
+
+		$('#data-sync').val(JSON.stringify(dataSync, null, 4));
+
+	});
 
 </script>
 
@@ -428,6 +479,7 @@
 <script src="js/components/flip.js"></script>
 <script src="js/components/login.js"></script>
 <script src="js/components/recordings.js"></script>
+<script src="js/components/data-sync.js"></script>
 
 <!-- Extensions -->
 <script src="js/offline/config-accounts.js"></script>

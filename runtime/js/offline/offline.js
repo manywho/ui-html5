@@ -48,7 +48,7 @@ manywho.offline = (function (manywho) {
 
         getResponse: function (event, urlPart, request) {
 
-            return manywho.responses.get(this.generateIdentifierForRequest(event, urlPart, request));
+            return manywho.responses.get(this.generateIdentifierForRequest(event, urlPart, request), request);
 
         },
 
@@ -112,14 +112,7 @@ manywho.offline = (function (manywho) {
             if (request.listFilter &&
                 request.listFilter != null) {
 
-                // These properties are defined in the dispatch request always
-                identifier += request.listFilter.limit;
-                identifier += request.listFilter.search || '';
-                identifier += request.listFilter.orderByPropertyDeveloperName || '';
-                identifier += request.listFilter.orderByDirectionType || '';
-                identifier += request.listFilter.offset;
-
-                // Also check the where filter
+                // Check the where filter, we ignore paging and search stuff
                 if (request.listFilter.where &&
                     request.listFilter.where != null &&
                     request.listFilter.where.length > 0) {
