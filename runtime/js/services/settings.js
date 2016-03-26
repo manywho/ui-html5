@@ -50,7 +50,8 @@ manywho.settings = (function (manywho, $) {
                 "advlist autolink link lists link image charmap print hr anchor spellchecker",
                 "searchreplace visualblocks fullscreen wordcount code insertdatetime",
                 "media table directionality emoticons contextmenu paste textcolor"
-            ]
+            ],
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage'
         },
         outcomes: null,
         shortcuts: {
@@ -59,7 +60,8 @@ manywho.settings = (function (manywho, $) {
         isFullWidth: false,
         collapsible: false,
         history: false,
-        containerSelector: '#manywho'
+        containerSelector: '#manywho',
+        syncOnUnload: true
     };
 
     var flows = {};

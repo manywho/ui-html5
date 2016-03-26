@@ -134,7 +134,7 @@ permissions and limitations under the License.
 
             var parsedValue = parseFloat(e.target.value);
 
-            if (parsedValue) {
+            if (!isNaN(parsedValue)) {
 
                 manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
 
@@ -212,7 +212,7 @@ permissions and limitations under the License.
 
             var relatedElement = e.relatedTarget;
 
-            if (relatedElement && relatedElement.classList.contains('outcome')) {
+            if (relatedElement && (relatedElement.classList.contains('outcome') || relatedElement.classList.contains('control-label'))) {
 
                 callback = function() {
                     relatedElement.click();

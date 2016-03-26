@@ -54,9 +54,9 @@ permissions and limitations under the License.
 
             if (self.props.model.isMultiSelect && this.props.objectData) {
 
-                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll };
+                var checkboxAttributes = { type: 'checkbox', onChange: self.props.selectAll, ref: 'selectAll' };
 
-                checkboxAttributes.checked = this.props.selectedRows.length == this.props.objectData.length ? 'checked' : '';
+                checkboxAttributes.checked = this.props.selectedRows.length == this.props.totalObjectData ? 'checked' : '';
 
                 columns.push(React.DOM.th({ className: 'checkbox-cell' }, [
                     React.DOM.input(checkboxAttributes)
@@ -129,15 +129,17 @@ permissions and limitations under the License.
 
             return objectData.map(function (item) {
 
+                var isSelected = selectedRows.filter(function(row) { return manywho.utils.isEqual(item.externalId, row.externalId, true) }).length > 0;
+
                 var classes = [
-                    (selectedRows.indexOf(item.externalId) != -1) ? 'info' : ''
+                    (isSelected) ? 'info' : ''
                 ];
 
                 var columns = [];
 
                 if (this.props.model.isMultiSelect) {
 
-                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+                    var checked = isSelected ? 'checked': '';
 
                     columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
                         React.DOM.input({ id: item.externalId ,type: 'checkbox', checked: checked })
@@ -145,7 +147,7 @@ permissions and limitations under the License.
 
                 } else if (manywho.utils.isEqual(this.props.model.attributes.radio, "true", true)) {
 
-                    var checked = selectedRows.indexOf(item.externalId) != -1 ? 'checked': '';
+                    var checked = isSelected ? 'checked': '';
 
                     columns.push(React.DOM.td({ className: 'checkbox-cell' }, [
                         React.DOM.input({ id: item.externalId, value: item.externalId, type: 'radio', checked: checked })
@@ -270,6 +272,12 @@ permissions and limitations under the License.
 
             return {}
 
+        },
+
+        componentDidUpdate: function() {
+            var selectAll = React.findDOMNode(this.refs.selectAll);
+            if (selectAll)
+                selectAll.indeterminate = (this.props.selectedRows.length > 0 && this.props.selectedRows.length !== this.props.totalObjectData);
         },
 
         render: function () {

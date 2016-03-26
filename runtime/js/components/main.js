@@ -19,12 +19,13 @@ permissions and limitations under the License.
 
             manywho.utils.removeLoadingIndicator('loader');
 
-            window.addEventListener("beforeunload", function (event) {
+            if (manywho.settings.global('syncOnUnload', this.props.flowKey, true)) {
+                window.addEventListener("beforeunload", function (event) {
 
-                manywho.engine.sync(this.props.flowKey);
+                    manywho.engine.sync(this.props.flowKey);
 
-            }.bind(this));
-
+                }.bind(this));
+            }
 
         },
 
