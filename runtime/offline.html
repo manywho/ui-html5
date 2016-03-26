@@ -306,6 +306,13 @@
 						// Put in a placeholder for table name
 						objectDataRequest.tableName = null;
 
+						// Set a default chunk size and limit
+						objectDataRequest.chunkSize = 10;
+						objectDataRequest.listFilter.limit = 250;
+
+						// Add a default name
+						objectDataRequest.name = "Sync " + objectDataRequest.objectDataType.developerName + "s";
+
 						objectDataRequests.push(objectDataRequest);
 
 					}
