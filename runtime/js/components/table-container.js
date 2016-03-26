@@ -444,11 +444,7 @@ permissions and limitations under the License.
             if (!model.objectDataRequest && !model.fileDataRequest) {
 
                 if (!manywho.utils.isNullOrWhitespace(state.search)) {
-                    objectData = model.objectData.filter(function(item) {
-                        return item.properties.filter(function(prop) {
-                            return displayColumns.indexOf(prop.typeElementPropertyId) != -1 && prop.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1;
-                        }).length > 0;
-                    });
+                    objectData = manywho.simulation.search(state.search, displayColumns, model.objectData);
                 }
                 else {
                     objectData = model.objectData;

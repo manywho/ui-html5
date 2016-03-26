@@ -689,7 +689,21 @@ manywho.simulation = (function (manywho) {
 
                 return objectDataEntry.properties.filter(function(property) {
 
-                    return columns.indexOf(property.typeElementPropertyId) != -1 && property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1
+                    // Check to see if this property is a search column
+                    for (var i = 0; i < columns.length; i++) {
+
+                        if (manywho.utils.isEqual(property.typeElementPropertyId, columns[i].typeElementPropertyId, false)) {
+
+                            if (property.contentValue != null &&
+                                property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1) {
+
+                                return property;
+
+                            }
+
+                        }
+
+                    }
 
                 }).length > 0
 
