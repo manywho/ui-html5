@@ -28,6 +28,9 @@
     "gulp-watch": "^3.0.0",
     "jshint-stylish": "^1.0.0",
     "run-sequence": "^1.0.2",
+    "gulp-prompt": "^0.1.2",
+    "request-promise": "^2.0.1",
+    "fs": "^0.0.2",
     "yargs": "^2.3.0"
   }
 }

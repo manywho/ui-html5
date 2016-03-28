@@ -47,23 +47,42 @@
 
             var recordingId = e.currentTarget.getAttribute('data-id');
             var recordingAction = e.currentTarget.getAttribute('data-action');
-            var recording = offline.config.getRecording(recordingId);
+            var recording = manywho.storage.getRecording(recordingId);
 
-            if (manywho.utils.isEqual('sync', recordingAction, true)) {
+            var onlineStatus = manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id);
 
-                manywho.recording.replay(this.props.flowKey, recording, progressFunction);
+            if (onlineStatus.online == true) {
 
-            } else if (manywho.utils.isEqual('retry', recordingAction, true)) {
+                // Set the connection to ensure the connection does connect
+                manywho.connection.setOnlineOverride({
+                    override: true,
+                    dataSyncRequired: false
+                });
 
-                retryRecording(this.props.flowKey, recording);
+                if (manywho.utils.isEqual('sync', recordingAction, true)) {
 
-            } else if (manywho.utils.isEqual('fix', recordingAction, true)) {
+                    manywho.recording.replay(this.props.flowKey, recording, progressFunction);
 
-                fixRecording(this.props.flowKey, recording);
+                } else if (manywho.utils.isEqual('retry', recordingAction, true)) {
 
-            } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
+                    retryRecording(this.props.flowKey, recording);
 
-                deleteRecording(recording);
+                } else if (manywho.utils.isEqual('fix', recordingAction, true)) {
+
+                    fixRecording(this.props.flowKey, recording);
+
+                } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
+
+                    deleteRecording(recording);
+
+                }
+
+                // Set the connection back to default settings (which is needed to allow the recording playback to function)
+                manywho.connection.setOnlineOverride({
+                    override: false,
+                    dataSyncRequired: false,
+                    online: true
+                });
 
             }
 
@@ -72,7 +91,7 @@
         componentDidMount: function() {
 
             // Check to see if the user is in fact online
-            if (manywho.connection.isOnline() == false) {
+            if (manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id).online == false) {
 
                 $(".recordings").prop("disabled", true);
 
@@ -84,7 +103,7 @@
 
             manywho.log.info('Rendering Recordings: ' + this.props.id);
 
-            var recordings = offline.config.getRecordings();
+            var recordings = manywho.storage.getRecordings();
             var entries = null;
 
             if (recordings != null &&

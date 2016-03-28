@@ -20,15 +20,15 @@ manywho.graph = (function (manywho) {
             pageComponentInfo.mapElement = null;
 
             // Find the map element associated with this request
-            if (offline.config.snapshot.mapElements &&
-                offline.config.snapshot.mapElements != null &&
-                offline.config.snapshot.mapElements.length > 0) {
+            if (offline.snapshot.mapElements &&
+                offline.snapshot.mapElements != null &&
+                offline.snapshot.mapElements.length > 0) {
 
-                for (var j = 0; j < offline.config.snapshot.mapElements.length; j++) {
+                for (var j = 0; j < offline.snapshot.mapElements.length; j++) {
 
-                    if (manywho.utils.isEqual(offline.config.snapshot.mapElements[j].id, mapElementId, true)) {
+                    if (manywho.utils.isEqual(offline.snapshot.mapElements[j].id, mapElementId, true)) {
 
-                        pageComponentInfo.mapElement = offline.config.snapshot.mapElements[j];
+                        pageComponentInfo.mapElement = offline.snapshot.mapElements[j];
                         break;
 
                     }
@@ -71,18 +71,18 @@ manywho.graph = (function (manywho) {
             pageComponentInfo.pageElement = null;
 
             // Find the page element associated with this request, based on the map element
-            if (offline.config.snapshot.pageElements &&
-                offline.config.snapshot.pageElements != null &&
-                offline.config.snapshot.pageElements.length > 0) {
+            if (offline.snapshot.pageElements &&
+                offline.snapshot.pageElements != null &&
+                offline.snapshot.pageElements.length > 0) {
 
-                for (var j = 0; j < offline.config.snapshot.pageElements.length; j++) {
+                for (var j = 0; j < offline.snapshot.pageElements.length; j++) {
 
                     if (manywho.utils.isEqual(
-                            offline.config.snapshot.pageElements[j].id,
+                            offline.snapshot.pageElements[j].id,
                             pageComponentInfo.mapElement.pageElementId,
                             true)) {
 
-                        pageComponentInfo.pageElement = offline.config.snapshot.pageElements[j];
+                        pageComponentInfo.pageElement = offline.snapshot.pageElements[j];
                         break;
 
                     }
@@ -147,18 +147,18 @@ manywho.graph = (function (manywho) {
             pageComponentInfo.valueElement = null;
 
             // Find the value element associated with this request, based on the page component
-            if (offline.config.snapshot.valueElements &&
-                offline.config.snapshot.valueElements != null &&
-                offline.config.snapshot.valueElements.length > 0) {
+            if (offline.snapshot.valueElements &&
+                offline.snapshot.valueElements != null &&
+                offline.snapshot.valueElements.length > 0) {
 
-                for (var j = 0; j < offline.config.snapshot.valueElements.length; j++) {
+                for (var j = 0; j < offline.snapshot.valueElements.length; j++) {
 
                     if (manywho.utils.isEqual(
-                            offline.config.snapshot.valueElements[j].id,
+                            offline.snapshot.valueElements[j].id,
                             pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.id,
                             true)) {
 
-                        pageComponentInfo.valueElement = offline.config.snapshot.valueElements[j];
+                        pageComponentInfo.valueElement = offline.snapshot.valueElements[j];
                         break;
 
                     }
@@ -181,18 +181,18 @@ manywho.graph = (function (manywho) {
             pageComponentInfo.typeElement = null;
 
             // Find the type element associated with this request, based on the value element
-            if (offline.config.snapshot.typeElements &&
-                offline.config.snapshot.typeElements != null &&
-                offline.config.snapshot.typeElements.length > 0) {
+            if (offline.snapshot.typeElements &&
+                offline.snapshot.typeElements != null &&
+                offline.snapshot.typeElements.length > 0) {
 
-                for (var j = 0; j < offline.config.snapshot.typeElements.length; j++) {
+                for (var j = 0; j < offline.snapshot.typeElements.length; j++) {
 
                     if (manywho.utils.isEqual(
-                            offline.config.snapshot.typeElements[j].id,
+                            offline.snapshot.typeElements[j].id,
                             pageComponentInfo.valueElement.typeElementId,
                             true)) {
 
-                        pageComponentInfo.typeElement = offline.config.snapshot.typeElements[j];
+                        pageComponentInfo.typeElement = offline.snapshot.typeElements[j];
                         break;
 
                     }

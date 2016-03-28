@@ -98,7 +98,7 @@ manywho.responses = (function (manywho) {
         get: function (identifier, request) {
 
             // Get values out of the "state" matched to the page component identifiers
-            var response =  offline.config.responses[identifier];
+            var response =  offline.responses[identifier];
 
             if (response == null) {
                 manywho.log.error('A response could not be found for identifier: ' + identifier);
@@ -108,8 +108,8 @@ manywho.responses = (function (manywho) {
             // Check to see if the response is associated with a State. If not, this means the response should be
             // associated with the current state
             if (manywho.utils.isNullOrWhitespace(response.stateId) == true) {
-                response.stateId = offline.config.emptyStateId;
-                response.stateToken = offline.config.emptyStateId;
+                response.stateId = manywho.recording.emptyStateId;
+                response.stateToken = manywho.recording.emptyStateId;
             }
 
             // Check to see if we're dealing with a core engine response
@@ -203,7 +203,7 @@ manywho.responses = (function (manywho) {
         getAll: function() {
 
             // Clone the list so we don't have any remote manipulation of the data store
-            return JSON.parse(JSON.stringify(offline.config.responses));
+            return JSON.parse(JSON.stringify(offline.responses));
 
         },
 
@@ -235,7 +235,7 @@ manywho.responses = (function (manywho) {
             }
 
             // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
-            offline.config.responses[identifier] = responseToCache;
+            offline.responses[identifier] = responseToCache;
 
         }
 

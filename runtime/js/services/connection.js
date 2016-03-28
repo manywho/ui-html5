@@ -13,7 +13,8 @@ manywho.connection = (function (manywho) {
 
     var onlineOverride = {
         isOnline: false,
-        override: false
+        override: false,
+        dataSyncRequired: false
     }
 
     function logError(error) {
@@ -96,15 +97,29 @@ manywho.connection = (function (manywho) {
 
     }
 
-    function getOnlineStatus() {
+    function getOnlineStatus(stateId) {
+
+        var onlineStatus = {};
+
+        onlineStatus.online = onlineOverride.isOnline;
+        onlineStatus.dataSyncRequired = onlineOverride.dataSyncRequired;
+        onlineStatus.override = onlineOverride.override;
 
         if (onlineOverride.override == false) {
 
-            return navigator.onLine;
+            if (manywho.utils.isEqual(stateId, manywho.recording.emptyStateId, true) == true) {
+
+                onlineStatus.dataSyncRequired = true;
+
+            }
+
+            onlineStatus.online = navigator.onLine;
+
+            return onlineStatus;
 
         }
 
-        return onlineOverride.isOnline;
+        return onlineStatus;
 
     }
 
@@ -116,9 +131,9 @@ manywho.connection = (function (manywho) {
 
         },
 
-        isOnline: function() {
+        isOnline: function(stateId) {
 
-            return getOnlineStatus();
+            return getOnlineStatus(stateId);
 
         },
 
@@ -132,7 +147,8 @@ manywho.connection = (function (manywho) {
 
             // Check to see if the engine is running offline
             if (manywho.settings.global('offline') &&
-                this.isOnline() == false) {
+                this.isOnline(stateId).online == false ||
+                this.isOnline(stateId).dataSyncRequired == true) {
 
                 // Send back the offline deferred as we don't have a connection
                 return getOfflineDeferred(resolveContext, event, urlPart, requestObject);

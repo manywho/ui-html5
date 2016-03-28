@@ -259,7 +259,7 @@
 				invoke: {
                     beforeSend: function (xhr, request) {
 
-						if (manywho.connection.isOnline() == true) {
+						if (manywho.connection.isOnline(request.stateId).online == true) {
 
 							var selectedOutcomeId = null;
 
@@ -279,7 +279,7 @@
                     },
                     done: function (response) {
 
-						if (manywho.connection.isOnline() == true) {
+						if (manywho.connection.isOnline(response.stateId).online == true) {
 
 							// Now the request has completed, append the rest of the request info
 							$('#requests-to-cache').append(
@@ -301,7 +301,7 @@
 						var objectDataRequest = JSON.parse(JSON.stringify(request));
 
 						// Null out the state identifier
-						objectDataRequest.stateId = offline.config.emptyStateId;
+						objectDataRequest.stateId = manywho.recording.emptyStateId;
 
 						// Put in a placeholder for table name
 						objectDataRequest.tableName = null;
@@ -324,7 +324,7 @@
 						var fileDataRequest = JSON.parse(JSON.stringify(request));
 
 						// Null out the state identifier
-						fileDataRequest.stateId = offline.config.emptyStateId;
+						fileDataRequest.stateId = manywho.recording.emptyStateId;
 
 						// Put in a placeholder for table name
 						fileDataRequest.tableName = null;
@@ -393,8 +393,8 @@
 				if (response.stateId) {
 
 					// If we have a state id, we want to blank it out for the offline cache
-					response.stateId = offline.config.emptyStateId;
-					response.stateToken = offline.config.emptyStateId;
+					response.stateId = manywho.recording.emptyStateId;
+					response.stateToken = manywho.recording.emptyStateId;
 
 				}
 
@@ -417,7 +417,6 @@
 	});
 
 </script>
-
 
 <script src="js/lib/react-dropzone.js"></script>
 <script src="js/lib/datetimepicker.js"></script>
@@ -442,12 +441,12 @@
 <script src="js/services/callbacks.js"></script>
 <script src="js/services/social.js"></script>
 <script src="js/services/log.js"></script>
-
-<script src="js/offline/graph.js"></script>
-<script src="js/offline/offline.js"></script>
-<script src="js/offline/recording.js"></script>
-<script src="js/offline/responses.js"></script>
-<script src="js/offline/simulation.js"></script>
+<script src="js/services/graph.js"></script>
+<script src="js/services/offline.js"></script>
+<script src="js/services/recording.js"></script>
+<script src="js/services/responses.js"></script>
+<script src="js/services/simulation.js"></script>
+<script src="js/services/storage.js"></script>
 
 <script src="js/components/mixins.js"></script>
 <script src="js/components/main.js"></script>
@@ -489,7 +488,10 @@
 <script src="js/components/data-sync.js"></script>
 
 <!-- Extensions -->
-<script src="js/offline/config-taskify.js"></script>
+<script src="js/config/data-sync-taskify.js"></script>
+<script src="js/config/responses-taskify.js"></script>
+<script src="js/config/sequences-taskify.js"></script>
+<script src="js/config/snapshot-taskify.js"></script>
 <!-- Extensions -->
 
 <script>

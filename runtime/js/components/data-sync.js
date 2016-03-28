@@ -28,14 +28,14 @@
             var objectDataRequest = null;
 
             // Find the object data request with the matching binding
-            if (offline.config.dataSync.objectDataRequests != null &&
-                offline.config.dataSync.objectDataRequests.length > 0) {
+            if (offline.dataSync.objectDataRequests != null &&
+                offline.dataSync.objectDataRequests.length > 0) {
 
-                for (var i = 0; i < offline.config.dataSync.objectDataRequests.length; i++) {
+                for (var i = 0; i < offline.dataSync.objectDataRequests.length; i++) {
 
-                    if (manywho.utils.isEqual(typeElementBindingId, offline.config.dataSync.objectDataRequests[i].typeElementBindingId, true)) {
+                    if (manywho.utils.isEqual(typeElementBindingId, offline.dataSync.objectDataRequests[i].typeElementBindingId, true)) {
 
-                        objectDataRequest = offline.config.dataSync.objectDataRequests[i];
+                        objectDataRequest = offline.dataSync.objectDataRequests[i];
                         break;
 
                     }
@@ -53,7 +53,7 @@
         componentDidMount: function() {
 
             // Check to see if the user is in fact online
-            if (manywho.connection.isOnline() == false) {
+            if (manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id).online == false) {
 
                 $(".data-sync").prop("disabled", true);
 
@@ -67,20 +67,20 @@
 
             var entries = null;
 
-            if (offline.config.dataSync.objectDataRequests != null &&
-                offline.config.dataSync.objectDataRequests.length > 0) {
+            if (offline.dataSync.objectDataRequests != null &&
+                offline.dataSync.objectDataRequests.length > 0) {
 
                 entries = [];
 
-                for (var i = 0; i < offline.config.dataSync.objectDataRequests.length; i++) {
+                for (var i = 0; i < offline.dataSync.objectDataRequests.length; i++) {
 
-                    var progressId = offline.config.dataSync.objectDataRequests[i].typeElementBindingId + '-progress';
+                    var progressId = offline.dataSync.objectDataRequests[i].typeElementBindingId + '-progress';
 
-                    entries.push(React.DOM.div({ className: 'panel panel-default', id: offline.config.dataSync.objectDataRequests[i].typeElementBindingId }, [
-                        React.DOM.div({ className: 'panel-heading' }, offline.config.dataSync.objectDataRequests[i].name),
+                    entries.push(React.DOM.div({ className: 'panel panel-default', id: offline.dataSync.objectDataRequests[i].typeElementBindingId }, [
+                        React.DOM.div({ className: 'panel-heading' }, offline.dataSync.objectDataRequests[i].name),
                         React.DOM.div({ className: 'panel-body' }, [
                             React.DOM.button(
-                                { className: 'btn btn-success data-sync', 'data-action': 'sync', 'data-id': offline.config.dataSync.objectDataRequests[i].typeElementBindingId, onClick: this.onClick },
+                                { className: 'btn btn-success data-sync', 'data-action': 'sync', 'data-id': offline.dataSync.objectDataRequests[i].typeElementBindingId, onClick: this.onClick },
                                 'Sync'
                             )
                         ]),

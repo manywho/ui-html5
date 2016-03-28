@@ -34,7 +34,7 @@ manywho.recording = (function (manywho) {
     function deleteRecording(recording) {
 
         // Delete this recording from the list
-        offline.config.deleteRecording(recording);
+        manywho.storage.deleteRecording(recording);
 
     }
 
@@ -114,6 +114,11 @@ manywho.recording = (function (manywho) {
 
     return {
 
+        // The unique identifier to be used when the Flow has been started entirely offline and therefore does not
+        // have an assigned state identifier.
+        //
+        emptyStateId: "00000000-0000-0000-0000-000000000000",
+
         // This function determines if an active recording should be started. This is based on the incoming identifier
         // matching one of the entry identifiers for a sequence. If an entry identifier matches the incoming identifier
         // an active recording should be started - or reset - if one is already going.
@@ -121,22 +126,22 @@ manywho.recording = (function (manywho) {
         start: function (identifier, request) {
 
             // Check to make sure we have sequences to record at all and we have an incoming identifier
-            if (offline.config.sequences != null &&
-                offline.config.sequences.length >= 0 &&
+            if (offline.sequences != null &&
+                offline.sequences.length >= 0 &&
                 manywho.utils.isNullOrWhitespace(identifier) == false) {
 
-                for (var i = 0; i < offline.config.sequences.length; i++) {
+                for (var i = 0; i < offline.sequences.length; i++) {
 
                     // Check the entry identifiers for the sequence to see if one matches
                     // TODO: this assumes the event is an invoke, so we'll only record outcome starts
                     if (manywho.utils.isEqual(
                             identifier,
-                            manywho.offline.generateIdentifierForRequest("invoke", null, offline.config.sequences[i]),
+                            manywho.offline.generateIdentifierForRequest("invoke", null, offline.sequences[i]),
                             true)) {
 
                         // Create an active recording or reset the current one and clone the sequence entries
                         // so we know what's been completed
-                        activeRecording = offline.config.createRecording(offline.config.sequences[i], request);
+                        activeRecording = manywho.storage.createRecording(offline.sequences[i], request);
                         break;
 
                     }
@@ -172,7 +177,7 @@ manywho.recording = (function (manywho) {
                 if (isComplete) {
 
                     // Push the recording a reset
-                    offline.config.saveRecording(activeRecording);
+                    manywho.storage.saveRecording(activeRecording);
                     activeRecording = null;
 
                 }
@@ -250,7 +255,7 @@ manywho.recording = (function (manywho) {
 
             // Check to see if the UI code has an active state, if not, we need to get one going as the user started
             // the app offline and is now online again
-            if (manywho.utils.isEqual(offline.config.emptyStateId, manywho.utils.extractStateId(flowKey), true) == true) {
+            if (manywho.utils.isEqual(manywho.recording.emptyStateId, manywho.utils.extractStateId(flowKey), true) == true) {
 
                 var currentMapElementId = manywho.state.getState(flowKey).currentMapElementId;
 

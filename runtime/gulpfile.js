@@ -18,6 +18,9 @@ var gulp = require('gulp'),
     aws = require('aws-sdk'),
     gutil = require('gulp-util'),
     sourcemaps = require('gulp-sourcemaps'),
+    requestPromise = require('request-promise'),
+    gulpPrompt = require('gulp-prompt'),
+    fs = require('fs'),
     argv = require('yargs').argv;
 
 
@@ -299,5 +302,90 @@ gulp.task('deploy-player', function () {
                 .pipe(rename(tenantId + '.' + argv.player))
                 .pipe(publisher.publish(headers))
                 .pipe(awspublish.reporter())
+
+});
+
+gulp.task('offline', function() {
+
+    gulp.src('test.js')
+        .pipe(gulpPrompt.prompt([{
+                type: 'input',
+                name: 'username',
+                message: 'What is your ManyWho username?'
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'And your password?'
+            },
+            {
+                type: 'input',
+                name: 'flow',
+                message: 'What is the exact name of the Flow you want to make offline?'
+            },
+            {
+                type: 'input',
+                name: 'build',
+                message: 'What is the name of this build?'
+            }], function(res) {
+
+                // Authenticate the user to the draw API
+                requestPromise({
+                    method: "POST",
+                    uri: "https://flow.manywho.com/api/draw/1/authentication",
+                    body: {
+                        "loginUrl": "https://flow.manywho.com/plugins/manywho/api/draw/1/authentication",
+                        "username": res.username,
+                        "password": res.password
+                    },
+                    headers: {
+                        'ManyWhoTenant': 'da497693-4d02-45db-bc08-8ea16d2ccbdf'
+                    },
+                    json: true
+                })
+                    .then(function (body) {
+
+                        // Grab the tenant identifier from the response token
+                        var token = decodeURIComponent(body);
+                        var tokens = token.split('&');
+                        var tenantId = null;
+
+                        // Find the tenant token
+                        for (var i = 0; i < tokens.length; i++) {
+
+                            if (tokens[i].indexOf('ManyWhoTenantId') >= 0) {
+
+                                tenantId = tokens[i].split('=')[1];
+                                break;
+
+                            }
+
+                        }
+
+                        console.log(tenantId);
+
+                        // Authenticate the user to the draw API
+                        requestPromise({
+                            method: "GET",
+                            uri: "https://flow.manywho.com/api/run/1/flow?filter=substringof(developername, '" + res.flow + "')",
+                            headers: {
+                                'ManyWhoTenant': tenantId
+                            },
+                            json: true
+                        })
+                            .then(function (body) {
+                                console.log(body);
+                                fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(body, null, 4) + ";");
+                            })
+                            .catch(function (err) {
+                                console.log(err);
+                            });
+
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+
+            }));
 
 });

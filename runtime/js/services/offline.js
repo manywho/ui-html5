@@ -17,10 +17,18 @@ manywho.offline = (function (manywho) {
 
             if (manywho.settings.global('offline')) {
 
+                var stateId = null;
+
+                // Not all requests will have a state identifier
+                if (request != null &&
+                    request.stateId) {
+                    stateId = request.stateId;
+                }
+
                 // Check to make sure we are in fact offline. This means sequences will only be recorded if they start
                 // while offline. Mid execution sequences will not be recorded properly if you start offline and end
                 // online or start online and end offline
-                if (manywho.connection.isOnline() == false) {
+                if (manywho.connection.isOnline(stateId).online == false) {
 
                     // If there isn't an active recording, one will be created, otherwise, this does nothing
                     manywho.recording.start(this.generateIdentifierForRequest(event, urlPart, request), request);
