@@ -47,7 +47,7 @@
 
             var recordingId = e.currentTarget.getAttribute('data-id');
             var recordingAction = e.currentTarget.getAttribute('data-action');
-            var recording = manywho.storage.getRecording(recordingId);
+            var recording = manywho.recording.getRecording(recordingId);
 
             var onlineStatus = manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id);
 
@@ -103,7 +103,7 @@
 
             manywho.log.info('Rendering Recordings: ' + this.props.id);
 
-            var recordings = manywho.storage.getRecordings();
+            var recordings = manywho.recording.getRecordings();
             var entries = null;
 
             if (recordings != null &&

@@ -6,6 +6,7 @@ offline.dataSync = {
     "objectDataRequests": [
         {
             "name": "Accounts to Sync",
+            "chunkSize": "10",
             "stateId": "00000000-0000-0000-0000-000000000000",
             "token": null,
             "typeElementBindingId": "9a6d9427-5452-4f3b-9c20-e167a8438ee7",
@@ -22,7 +23,7 @@ offline.dataSync = {
                 "variant": null
             },
             "listFilter": {
-                "limit": 10,
+                "limit": 250,
                 "search": null
             },
             "objectDataType": {

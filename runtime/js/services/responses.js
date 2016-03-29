@@ -95,10 +95,19 @@ manywho.responses = (function (manywho) {
 
     return {
 
+        cacheName: "responsesCache",
+
         get: function (identifier, request) {
 
-            // Get values out of the "state" matched to the page component identifiers
-            var response =  offline.responses[identifier];
+            var response = null;
+
+            if (offline.responses == null) {
+                // Get the response out of the cached responses based on user activity
+                response = manywho.storage.getData(manywho.responses.cacheName + identifier);
+            } else {
+                // Get the response out of the pre-configured list
+                response =  offline.responses[identifier];
+            }
 
             if (response == null) {
                 manywho.log.error('A response could not be found for identifier: ' + identifier);
@@ -202,8 +211,13 @@ manywho.responses = (function (manywho) {
 
         getAll: function() {
 
-            // Clone the list so we don't have any remote manipulation of the data store
-            return JSON.parse(JSON.stringify(offline.responses));
+            if (offline.responses == null) {
+                // Get the responses out of the cached responses based on user activity
+                return manywho.storage.getData(manywho.responses.cacheName + identifier);
+            } else {
+                // Get the responses out of the pre-configured list
+                return JSON.parse(JSON.stringify(offline.responses));
+            }
 
         },
 
@@ -235,7 +249,13 @@ manywho.responses = (function (manywho) {
             }
 
             // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
-            offline.responses[identifier] = responseToCache;
+            if (offline.responses == null) {
+                // Put the response into the cached responses based on user activity
+                manywho.storage.setData(manywho.responses.cacheName + identifier, responseToCache);
+            } else {
+                // Put the response into the pre-configured list
+                offline.responses[identifier] = responseToCache;
+            }
 
         }
 

@@ -11,7 +11,6 @@
 
 manywho.simulation = (function (manywho) {
 
-    var stateDb = {};
     var stateCache = {};
 
     // Utility function for assigning identifiers to the object data. This is needed so generated objects can be
@@ -119,6 +118,13 @@ manywho.simulation = (function (manywho) {
 
         }
 
+        if (manywho.utils.isEqual(actionType, 'sync', true)) {
+
+            // Only save the data in the database
+            actionPlan.save = true;
+
+        }
+
         return actionPlan;
 
     }
@@ -132,22 +138,29 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        if (stateDb[tableName] == null) {
+        return manywho.storage.getData(manywho.simulation.tableName + tableName);
 
-            stateDb[tableName] = [];
+    }
 
+    // Store the table back into the data store
+    //
+    function setTable(tableName, table) {
+
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("The TableName must be provided to identify the correct offline Table.");
+            return null;
         }
 
-        return stateDb[tableName];
+        manywho.storage.setData(manywho.simulation.tableName + tableName, table);
 
     }
 
     // This function is used to insert or update the object data into the local State Db.
     //
-    function upsertStateDb(table, objectData) {
+    function upsertStateDb(tableName, objectData) {
 
-        if (table == null) {
-            manywho.log.error("No Table has been provided to upsert against in the offline State Db.");
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to upsert against in the offline State Db.");
             return null;
         }
 
@@ -157,6 +170,11 @@ manywho.simulation = (function (manywho) {
         }
 
         var updatePerformed = false;
+        var table = getTable(tableName);
+
+        if (table == null) {
+            table = [];
+        }
 
         // If the object data doesn't have an external identifier, or the table is empty, we don't need to bother
         // searching for it as it won't be in the table
@@ -192,14 +210,16 @@ manywho.simulation = (function (manywho) {
 
         }
 
+        setTable(tableName, table);
+
     }
 
     // This function is used to remove the object data into the local State Db.
     //
-    function removeFromStateDb(table, objectData) {
+    function removeFromStateDb(tableName, objectData) {
 
-        if (table == null) {
-            manywho.log.error("No Table has been provided to remove from the offline State Db.");
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to remove from the offline State Db.");
             return null;
         }
 
@@ -213,6 +233,8 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
+        var table = getTable(tableName);
+
         // If the object data doesn't have an external identifier, or the table is empty, we don't need to bother
         // searching for it as it won't be in the table
         if (table.length > 0) {
@@ -225,14 +247,16 @@ manywho.simulation = (function (manywho) {
 
         }
 
+        setTable(tableName, table);
+
     }
 
     // This function is used to set the object data into the local State Cache.
     //
-    function setStateCache(table, valueElementId, objectData) {
+    function setStateCache(tableName, valueElementId, objectData) {
 
-        if (table == null) {
-            manywho.log.error("No Table has been provided to set against in the offline State Cache.");
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to set against in the offline State Cache.");
             return null;
         }
 
@@ -256,16 +280,16 @@ manywho.simulation = (function (manywho) {
         }
 
         // Set in the cache as a compound of the table name and the value binding
-        stateCache[table + modifier] = objectData;
+        manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, objectData);
 
     }
 
     // This function is used to set the object data into the local State Cache.
     //
-    function removeStateCache(table, valueElementId) {
+    function removeStateCache(tableName, valueElementId) {
 
-        if (table == null) {
-            manywho.log.error("No Table has been provided to set against in the offline State Cache.");
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to set against in the offline State Cache.");
             return null;
         }
 
@@ -283,16 +307,17 @@ manywho.simulation = (function (manywho) {
 
         }
 
-        stateCache[table + modifier] = null;
+        // Null out any data in the cache table
+        manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, null);
 
     }
 
     // This function is used to get the object data from the local State Cache.
     //
-    function getStateCache(table, valueElementId) {
+    function getStateCache(tableName, valueElementId) {
 
-        if (table == null) {
-            manywho.log.error("No Table has been provided to get from in the offline State Cache.");
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to get from in the offline State Cache.");
             return null;
         }
 
@@ -310,7 +335,7 @@ manywho.simulation = (function (manywho) {
 
         }
 
-        return stateCache[table + modifier];
+        return manywho.storage.getData(manywho.simulation.cacheName + tableName + modifier);
 
     }
 
@@ -405,7 +430,8 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        var table = getTable(getTableName(tableName, typeElementId));
+        // Reset the table name to the full table name
+        tableName = getTableName(tableName, typeElementId);
 
         // The action plan determines what operations are performed on the database/cache
         var actionPlan = getActionPlanForActionType(actionType);
@@ -413,23 +439,23 @@ manywho.simulation = (function (manywho) {
         // Only update the database if this is an appropriate 'save' action
         if (actionPlan.save) {
 
-            upsertStateDb(table, objectData);
+            upsertStateDb(tableName, objectData);
 
         } else if (!actionPlan.save && actionPlan.saveDestructive) {
 
             // Only delete the object if it should not be saved and it's a destructive operation
-            removeFromStateDb(table, objectData);
+            removeFromStateDb(tableName, objectData);
 
         }
 
         if (actionPlan.cache) {
 
-            setStateCache(table, valueElementId, objectData);
+            setStateCache(tableName, valueElementId, objectData);
 
         } else if (!actionPlan.cache && actionPlan.cacheDestructive) {
 
             // Only clear the object if it should not be cached and it's a destructive operation
-            removeStateCache(table, valueElementId);
+            removeStateCache(tableName, valueElementId);
 
         }
 
@@ -513,6 +539,12 @@ manywho.simulation = (function (manywho) {
 
     return {
 
+        // The table name for the states
+        tableName: 'statesDb',
+
+        // The cache name for the states
+        cacheName: 'statesCache',
+
         // Utility function for assigning identifiers to the object data. This is needed so generated objects can be
         // properly tracked in the UI code.
         //
@@ -524,7 +556,7 @@ manywho.simulation = (function (manywho) {
 
         get: function(tableName, typeElementId, valueElementId) {
 
-            return getStateCache(getTable(getTableName(tableName, typeElementId)), valueElementId);
+            return getStateCache(getTableName(tableName, typeElementId), valueElementId);
 
         },
 
@@ -648,7 +680,7 @@ manywho.simulation = (function (manywho) {
                     objectData[i].typeElementId,
                     null,
                     objectData[i],
-                    'save'
+                    'sync'
                 );
 
             }

@@ -141,6 +141,11 @@
 						<textarea class="form-control small" rows="5" id="data-sync"></textarea>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<button id="clear-storage" class="btn btn-danger">Clear Storage</button>
+					</div>
+				</div>
 			</div>
 		</div>
     </div>
@@ -288,10 +293,10 @@
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
 			// Values specific to the flow
-			var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Taskify
-			var flowId = '3ca32f1c-0278-477b-9ce1-ff88210be747';
-			//var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Accounts Flow
-			//var flowId = '9a563d47-fa58-4a27-b633-f1fd6898ed07';
+			//var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Taskify
+			//var flowId = '3ca32f1c-0278-477b-9ce1-ff88210be747';
+			var tenantId = '1ae14654-0699-401f-aaf6-f0adbb5418c8'; // Accounts Flow
+			var flowId = '9a563d47-fa58-4a27-b633-f1fd6898ed07';
 
 			manywho.settings.initialize({
 				adminTenantId: manywhoAdminTenantId,
@@ -467,6 +472,10 @@
 
 	});
 
+	$('#clear-storage').on('click', function() {
+		localStorage.clear();
+	})
+
 </script>
 
 <script src="js/lib/react-dropzone.js"></script>
@@ -539,10 +548,10 @@
 <script src="js/components/data-sync.js"></script>
 
 <!-- Extensions -->
-<script src="js/config/data-sync-taskify.js"></script>
-<script src="js/config/responses-taskify.js"></script>
-<script src="js/config/sequences-taskify.js"></script>
-<script src="js/config/snapshot-taskify.js"></script>
+<script src="js/config/data-sync-accounts.js"></script>
+<script src="js/config/responses-accounts.js"></script>
+<script src="js/config/sequences-accounts.js"></script>
+<script src="js/config/snapshot-accounts.js"></script>
 <!-- Extensions -->
 
 <script>

@@ -33,8 +33,28 @@ manywho.recording = (function (manywho) {
 
     function deleteRecording(recording) {
 
-        // Delete this recording from the list
-        manywho.storage.deleteRecording(recording);
+        var recordings = manywho.storage.getData(manywho.recording.tableName);
+
+        if (recordings != null &&
+            recordings.length > 0 &&
+            recording != null &&
+            recording.id && !manywho.utils.isNullOrWhitespace(recording.id)) {
+
+            for (var i = 0; i < recordings.length; i++) {
+
+                if (manywho.utils.isEqual(recording.id, recordings[i].id, true)) {
+
+                    // Delete the recording
+                    recordings.splice(i, 1);
+                    break;
+
+                }
+
+            }
+
+            manywho.storage.setData(manywho.recording.tableName, recordings);
+
+        }
 
     }
 
@@ -112,7 +132,45 @@ manywho.recording = (function (manywho) {
 
     }
 
+    // In memory implementation of a create recording function
+    //
+    function createRecording(sequence, request) {
+
+        var defaultName = "Recording on " + Date.now();
+
+        // Create an active recording or reset the current one and clone the sequence entries
+        // so we know what's been completed
+        return {
+            id: manywho.simulation.getGuid(),
+            name: defaultName,
+            stateId: request.stateId,
+            nameReference: sequence.name,
+            startMapElementId: request.currentMapElementId,
+            sequence: JSON.parse(JSON.stringify(sequence.sequence))
+        };
+
+    }
+
+    // Save recording function
+    //
+    function saveRecording(recording) {
+
+        var recordings = manywho.storage.getData(manywho.recording.tableName);
+
+        if (recordings == null) {
+            recordings = [];
+        }
+
+        recordings.push(recording);
+
+        manywho.storage.setData(manywho.recording.tableName, recordings);
+
+    }
+
     return {
+
+        // The name of the table for storage of records
+        tableName: "recordingDb",
 
         // The unique identifier to be used when the Flow has been started entirely offline and therefore does not
         // have an assigned state identifier.
@@ -141,7 +199,7 @@ manywho.recording = (function (manywho) {
 
                         // Create an active recording or reset the current one and clone the sequence entries
                         // so we know what's been completed
-                        activeRecording = manywho.storage.createRecording(offline.sequences[i], request);
+                        activeRecording = createRecording(offline.sequences[i], request);
                         break;
 
                     }
@@ -177,7 +235,7 @@ manywho.recording = (function (manywho) {
                 if (isComplete) {
 
                     // Push the recording a reset
-                    manywho.storage.saveRecording(activeRecording);
+                    saveRecording(activeRecording);
                     activeRecording = null;
 
                 }
@@ -297,7 +355,38 @@ manywho.recording = (function (manywho) {
             // Delete this recording from the list
             deleteRecording(recording);
 
+        },
+
+        getRecording: function (id) {
+
+            var recordings = manywho.storage.getData(manywho.recording.tableName);
+
+            if (recordings != null &&
+                recordings.length > 0) {
+
+                // Get the recording associated with this identifier
+                for (var i = 0; i < recordings.length; i++) {
+
+                    if (manywho.utils.isEqual(recordings[i].id, id, true) == true) {
+
+                        return recordings[i];
+
+                    }
+
+                }
+
+            }
+
+            return null;
+
+        },
+
+        getRecordings: function () {
+
+            return manywho.storage.getData(manywho.recording.tableName);
+
         }
+
     }
 
 })(manywho);
