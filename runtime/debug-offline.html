@@ -125,19 +125,19 @@
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="responses-cache">Responses Cache (<a href="#" id="update-responses">Update</a>)</label>
+						<label for="responses-cache">js/config/responses-{build}.js (<a href="#" id="update-responses">Update</a>)</label>
 						<textarea class="form-control small" rows="5" id="responses-cache"></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="requests-to-cache">Requests To Cache (Recording)</label>
+						<label for="requests-to-cache">js/config/sequences-{build}.js (<a href="#" id="update-recording">Start Recording</a>)</label>
 						<textarea class="form-control small" rows="5" id="requests-to-cache"></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="data-sync">Data Sync (<a href="#" id="update-data-sync">Update</a>)</label>
+						<label for="data-sync">js/config/data-sync-{build}.js (<a href="#" id="update-data-sync">Update</a>)</label>
 						<textarea class="form-control small" rows="5" id="data-sync"></textarea>
 					</div>
 				</div>
@@ -190,9 +190,9 @@
 
     function handleString(string) {
         if (manywho.utils.isNullOrWhitespace(string) == false) {
-            return '"' + string + '"';
+            return string;
         } else {
-            return 'null';
+            return null;
         }
     }
 
@@ -200,6 +200,10 @@
 
 	var objectDataRequests = [];
 	var fileDataRequests = [];
+    var isRecordingSequence = false;
+    var recordingSequence = null;
+    var recordedSequences = [];
+    var currentMapElementId = null;
 
 	var manywho = {
 		cdnUrl: '',
@@ -238,6 +242,48 @@
 
 			});
 
+            $('#update-recording').click(function() {
+
+                if ($(this).attr('data-recording') == 'true') {
+
+                    isRecordingSequence = false;
+
+                    // If we have a recording with something in it, save it to the list of sequences
+                    if (recordingSequence != null &&
+                        recordingSequence.sequence != null &&
+                        recordingSequence.sequence.length > 0) {
+
+                        // Push a current entry to the sequence before finishing
+                        recordingSequence.sequence.push({
+                            mapElementId: currentMapElementId,
+                            selectedOutcomeId: null
+                        });
+
+                        recordedSequences.push(JSON.parse(JSON.stringify(recordingSequence)));
+
+                    }
+
+                    // Null the current object
+                    recordingSequence = null;
+
+                    // Show the user the latest list of sequences
+                    $('#requests-to-cache').val(JSON.stringify(recordedSequences, null, 4));
+
+                    $(this).html('Start Recording');
+                    $(this).attr('data-recording', 'false');
+
+                } else {
+
+                    isRecordingSequence = true;
+                    recordingSequence = {};
+
+                    $(this).html('Stop Recording');
+                    $(this).attr('data-recording', 'true');
+
+                }
+
+            });
+
             var backendUri = 'https://flow.manywho.com';
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
@@ -267,30 +313,35 @@
 								selectedOutcomeId = request.mapElementInvokeRequest.selectedOutcomeId;
 							}
 
-							// Append the first part of the entry
-							$('#requests-to-cache').append(
-									'{\r' +
-									'    "entryOutcomeId": ' + handleString(selectedOutcomeId) + ',\r' +
-									'    "entryNavigationItemId": ' + handleString(request.selectedNavigationItemId) + ',\r' +
-									'    "entryMapElementId": ' + handleString(request.selectedMapElementId) + ',\r');
+                            if (isRecordingSequence) {
+
+                                if (recordingSequence.hasOwnProperty('name') == false) {
+
+                                    // Create the root recording info
+                                    recordingSequence.name = 'My Sequence';
+                                    recordingSequence.entryOutcomeId = handleString(selectedOutcomeId);
+                                    recordingSequence.entryMapElementId = handleString(request.currentMapElementId);
+                                    recordingSequence.sequence = [];
+
+                                } else {
+
+                                    // Push a new entry to the sequence
+                                    recordingSequence.sequence.push({
+                                        mapElementId: handleString(request.currentMapElementId),
+                                        selectedOutcomeId: handleString(selectedOutcomeId)
+                                    });
+
+                                }
+
+                            }
 
 						}
 
                     },
-                    done: function (response) {
+                    done: function(response) {
 
-						if (manywho.connection.isOnline(response.stateId).online == true) {
-
-							// Now the request has completed, append the rest of the request info
-							$('#requests-to-cache').append(
-									'    "sequence": [\r' +
-									'        {\r' +
-									'            "mapElementId": ' + handleString(response.currentMapElementId) + '\r' +
-									'        }\r' +
-									'    ]\r' +
-									'}\r');
-
-						}
+                        // We need the current map element id to finish any recording
+                        currentMapElementId = handleString(response.currentMapElementId);
 
                     }
                 },
@@ -406,7 +457,7 @@
 
 	});
 
-	$('#update-data-sync').on('click', function() {
+    $('#update-data-sync').on('click', function() {
 
 		var dataSync = {};
 		dataSync.objectDataRequests = objectDataRequests;

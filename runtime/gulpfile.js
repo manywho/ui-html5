@@ -307,7 +307,7 @@ gulp.task('deploy-player', function () {
 
 gulp.task('offline', function() {
 
-    gulp.src('test.js')
+    gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
                 type: 'input',
                 name: 'username',
@@ -343,10 +343,10 @@ gulp.task('offline', function() {
                     },
                     json: true
                 })
-                    .then(function (body) {
+                    .then(function (authenticationToken) {
 
                         // Grab the tenant identifier from the response token
-                        var token = decodeURIComponent(body);
+                        var token = decodeURIComponent(authenticationToken);
                         var tokens = token.split('&');
                         var tenantId = null;
 
@@ -362,9 +362,7 @@ gulp.task('offline', function() {
 
                         }
 
-                        console.log(tenantId);
-
-                        // Authenticate the user to the draw API
+                        // Get Flows for the matching name
                         requestPromise({
                             method: "GET",
                             uri: "https://flow.manywho.com/api/run/1/flow?filter=substringof(developername, '" + res.flow + "')",
@@ -373,17 +371,48 @@ gulp.task('offline', function() {
                             },
                             json: true
                         })
-                            .then(function (body) {
-                                console.log(body);
-                                fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(body, null, 4) + ";");
+                            .then(function (flows) {
+
+                                if (flows != null &&
+                                    flows.length > 0) {
+
+                                    if (flows.length > 1) {
+                                        console.log('More than Flow found for the provided name.');
+                                        return;
+                                    }
+
+                                } else {
+                                    console.log('No Flows found with that name.');
+                                    return;
+                                }
+
+                                // Get the snapshot for this name
+                                requestPromise({
+                                    method: "GET",
+                                    uri: "https://flow.manywho.com/api/draw/1/flow/snap/" + flows[0].id.id + "/" + flows[0].id.versionId,
+                                    headers: {
+                                        'Authorization': authenticationToken,
+                                        'ManyWhoTenant': tenantId
+                                    },
+                                    json: true
+                                })
+                                    .then(function (body) {
+
+                                        fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(body, null, 4) + ";");
+
+                                    })
+                                    .catch(function (err) {
+                                        console.log('SnapShot Error: ' + err);
+                                    });
+
                             })
                             .catch(function (err) {
-                                console.log(err);
+                                console.log('Flow Query: ' + err);
                             });
 
                     })
                     .catch(function (err) {
-                        console.log(err);
+                        console.log('Login Error: ' + err);
                     });
 
             }));

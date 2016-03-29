@@ -3,7 +3,7 @@
 //
 offline.sequences = [
     {
-        name: null,
+        name: "New Task",
         entryMapElementId: "5a78b9da-70fc-4889-b4a7-6d7ad9a47f6f",
         entryOutcomeId: "975416c8-8c90-40d5-aaf9-5a92e982e687",
         sequence: [
