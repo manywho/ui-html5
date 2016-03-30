@@ -307,6 +307,19 @@ gulp.task('deploy-player', function () {
 
 gulp.task('offline', function() {
 
+    // Print our logo for a bit of fun
+    console.log("                                                                    @@@@");
+    console.log("                                                                    @@@@");
+    console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
+    console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@  @@@@ @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@@@@ @@@@ @@@@  @@@@ @@@@@@@@@@  @@@@@@@@@@@@@@@ @@@@  @@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@   @@@@@ @@@@ @@@@  @@@@  @@@@@@@@@   @@@@@@ @@@@@@  @@@@  @@@@    @@@@@@");
+    console.log("                                             @@@@@");
+    console.log("                                           @@@@@@@");
+    console.log("                                           @@@@@");
+
     gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
                 type: 'input',
@@ -501,7 +514,6 @@ gulp.task('offline', function() {
 
                                                             // Assign the empty state
                                                             pageComponents[j].objectDataRequest.stateId = "00000000-0000-0000-0000-000000000000";
-
                                                             pageComponents[j].objectDataRequest.token = null;
 
                                                             // Add it to the list of requests to sync
