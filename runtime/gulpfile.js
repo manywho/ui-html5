@@ -345,6 +345,8 @@ gulp.task('offline', function() {
                 })
                     .then(function (authenticationToken) {
 
+                        console.log("Successfully authenticated");
+
                         // Grab the tenant identifier from the response token
                         var token = decodeURIComponent(authenticationToken);
                         var tokens = token.split('&');
@@ -373,6 +375,8 @@ gulp.task('offline', function() {
                         })
                             .then(function (flows) {
 
+                                console.log("Successfully queried Flows");
+
                                 if (flows != null &&
                                     flows.length > 0) {
 
@@ -396,9 +400,127 @@ gulp.task('offline', function() {
                                     },
                                     json: true
                                 })
-                                    .then(function (body) {
+                                    .then(function (snapshot) {
 
-                                        fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(body, null, 4) + ";");
+                                        console.log("Generating offline.html");
+
+                                        // Create a new offline.html file with the appropriate settings
+                                        gulp.src(["default-offline.html"])
+                                            .pipe(replace("{{tenantId}}", tenantId))
+                                            .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{build}}", res.build))
+                                            .pipe(rename("offline.html"))
+                                            .pipe(gulp.dest('.'));
+
+
+                                        // Write the snapshot file
+                                        console.log("Generating js/config/snapshot-" + res.build + ".js");
+                                        fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
+
+
+                                        // Write the responses file
+                                        console.log("Generating js/config/responses-" + res.build + ".js");
+                                        fs.writeFileSync("js/config/responses-" + res.build + ".js", "offline.responses = null;");
+
+
+                                        // Write the sequences file
+                                        console.log("Generating js/config/sequences-" + res.build + ".js");
+                                        fs.writeFileSync("js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
+
+
+                                        var dataSync = {
+                                            objectDataRequests: [],
+                                            fileDataRequests: []
+                                        };
+
+                                        // Find object data requests
+                                        if (snapshot.pageElements != null &&
+                                            snapshot.pageElements.length > 0) {
+
+                                            for (var i = 0; i < snapshot.pageElements.length; i++) {
+
+                                                var pageComponents = snapshot.pageElements[i].pageComponents;
+
+                                                if (pageComponents != null &&
+                                                    pageComponents.length > 0) {
+
+                                                    for (var j = 0; j < pageComponents.length; j++) {
+
+                                                        if (pageComponents[j].objectDataRequest != null) {
+
+                                                            for (var k = 0; k < snapshot.typeElements.length; k++) {
+
+                                                                if (snapshot.typeElements[k].id == pageComponents[j].objectDataRequest.typeElementId) {
+
+                                                                    pageComponents[j].objectDataRequest.name = "Sync " + snapshot.typeElements[k].developerName + "s";
+                                                                    pageComponents[j].objectDataRequest.typeElementBindingId = snapshot.typeElements[k].bindings[0].id;
+
+                                                                    // Create the additional properties based on the Type
+                                                                    pageComponents[j].objectDataRequest.objectDataType = {};
+                                                                    pageComponents[j].objectDataRequest.objectDataType.typeElementId = snapshot.typeElements[k].id;
+                                                                    pageComponents[j].objectDataRequest.objectDataType.developerName = snapshot.typeElements[k].developerName;
+
+                                                                    pageComponents[j].objectDataRequest.objectDataType.properties = [];
+
+                                                                    for (var l = 0; l < snapshot.typeElements[k].properties.length; l++) {
+
+                                                                        pageComponents[j].objectDataRequest.objectDataType.properties.push({
+                                                                            "developerName": snapshot.typeElements[k].properties[l].developerName,
+                                                                            "list": null
+                                                                        });
+
+                                                                    }
+
+                                                                    break;
+
+                                                                }
+
+                                                            }
+
+                                                            // Assign default properties
+                                                            pageComponents[j].objectDataRequest.authorization = null;
+                                                            pageComponents[j].objectDataRequest.configurationValues = null;
+                                                            pageComponents[j].objectDataRequest.command = null;
+                                                            pageComponents[j].objectDataRequest.culture = {
+                                                                "id": null,
+                                                                "developerName": null,
+                                                                "developerSummary": null,
+                                                                "brand": null,
+                                                                "language": "EN",
+                                                                "country": "USA",
+                                                                "variant": null
+                                                            };
+
+                                                            if (pageComponents[j].objectDataRequest.listFilter == null) {
+                                                                pageComponents[j].objectDataRequest.listFilter = {};
+                                                            }
+
+                                                            // Assign a default data batch size and chunk size
+                                                            pageComponents[j].objectDataRequest.listFilter.limit = 250;
+                                                            pageComponents[j].objectDataRequest.chunkSize = 10;
+
+                                                            // Assign the empty state
+                                                            pageComponents[j].objectDataRequest.stateId = "00000000-0000-0000-0000-000000000000";
+
+                                                            pageComponents[j].objectDataRequest.token = null;
+
+                                                            // Add it to the list of requests to sync
+                                                            dataSync.objectDataRequests.push(pageComponents[j].objectDataRequest);
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                        }
+
+
+                                        // Write the data sync file
+                                        console.log("Generating js/config/data-sync-" + res.build + ".js");
+                                        fs.writeFileSync("js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
 
                                     })
                                     .catch(function (err) {
