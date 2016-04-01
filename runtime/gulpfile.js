@@ -320,6 +320,12 @@ gulp.task('offline', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
+    runSequence('offline-build', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+
+});
+
+gulp.task('offline-build', function() {
+
     gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
             type: 'input',
