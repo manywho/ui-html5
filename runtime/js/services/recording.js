@@ -33,7 +33,7 @@ manywho.recording = (function (manywho) {
 
     function deleteRecording(recording) {
 
-        return manywho.storage.getData(manywho.recording.tableName)
+        return manywho.storage.getRecordingData()
             .then(
                 function(response) {
 
@@ -54,7 +54,7 @@ manywho.recording = (function (manywho) {
 
                         }
 
-                        return manywho.storage.setData(manywho.recording.tableName, response.data);
+                        return manywho.storage.setRecordingData(response.data);
 
                     }
 
@@ -186,7 +186,7 @@ manywho.recording = (function (manywho) {
     //
     function saveRecording(recording) {
 
-        return manywho.storage.getData(manywho.recording.tableName)
+        return manywho.storage.getRecordingData()
             .then(
                 function(response) {
 
@@ -196,7 +196,7 @@ manywho.recording = (function (manywho) {
 
                     response.data.push(recording);
 
-                    return manywho.storage.setData(manywho.recording.tableName, response.data);
+                    return manywho.storage.setRecordingData(response.data);
 
                 },
                 function(error) {
@@ -206,9 +206,6 @@ manywho.recording = (function (manywho) {
     }
 
     return {
-
-        // The name of the table for storage of records
-        tableName: "recordingDb",
 
         // The unique identifier to be used when the Flow has been started entirely offline and therefore does not
         // have an assigned state identifier.
@@ -408,7 +405,7 @@ manywho.recording = (function (manywho) {
 
         getRecording: function (id) {
 
-            return manywho.storage.getData(manywho.recording.tableName)
+            return manywho.storage.getRecordingData()
                 .then(
                     function(response) {
 
@@ -439,7 +436,7 @@ manywho.recording = (function (manywho) {
 
         getRecordings: function () {
 
-            return manywho.storage.getData(manywho.recording.tableName);
+            return manywho.storage.getRecordingData();
 
         }
 

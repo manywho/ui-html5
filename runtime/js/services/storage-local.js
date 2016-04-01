@@ -1,65 +1,182 @@
 manywho.storage = (function (manywho) {
 
-    return {
+    var RECORDING_TABLE = "recording";
+    var RESPONSE_CACHE_NAMESPACE = "response_";
+    var STATE_DATABASE = "state_database_";
+    var STATE_CACHE = "state_cache_";
+    var SYNC_DATABASE = "sync_database_";
 
-        getData: function(table, objectData) {
+    // Shared function for getting data from local storage.
+    //
+    function get(identifierName, identifierModifier, identifier, data) {
 
-            return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
-                if (manywho.utils.isNullOrWhitespace(table)) {
-                    var error = "No Table has been provided for storage.";
-                    manywho.log.error(error);
-                    if (reject != null) {
-                        reject(new Error(error));
-                    }
+            if (manywho.utils.isNullOrWhitespace(identifier)) {
+                var error = "No " + identifierName + " has been provided for storage.";
+                manywho.log.error(error);
+                if (reject != null) {
+                    reject(new Error(error));
                 }
+            }
 
-                var json = localStorage.getItem(table);
-                var response = {};
-                response.data = null;
+            var json = localStorage.getItem(identifierModifier + identifier);
+            var response = {};
+            response.data = null;
 
-                if (manywho.utils.isNullOrWhitespace(json) == false) {
-                    response.data = JSON.parse(json);
+            if (manywho.utils.isNullOrWhitespace(json) == false) {
+                response.data = JSON.parse(json);
+            }
+
+            response.additionalObjectData = data;
+
+            if (resolve != null) {
+                resolve(response);
+            }
+
+        });
+
+    }
+
+    // Shared function for setting data into local storage.
+    //
+    function set(identifierName, identifierModifier, identifier, data) {
+
+        return new Promise(function(resolve, reject) {
+
+            if (manywho.utils.isNullOrWhitespace(identifier)) {
+                var error = "No " + identifierName + " has been provided for storage.";
+                manywho.log.error(error);
+                if (reject != null) {
+                    reject(new Error(error));
                 }
+            }
 
-                response.additionalObjectData = objectData;
+            var json = null;
 
-                if (resolve != null) {
-                    resolve(response);
-                }
+            if (data != null) {
+                json = JSON.stringify(data);
+            }
 
-            });
+            localStorage.setItem(identifierModifier + identifier, json);
 
-        },
+            if (resolve != null) {
+                resolve();
+            }
 
-        setData: function(table, data) {
+        });
 
-            return new Promise(function(resolve, reject) {
+    }
 
-                if (manywho.utils.isNullOrWhitespace(table)) {
-                    var error = "No Table has been provided for storage.";
-                    manywho.log.error(error);
-                    if (reject != null) {
-                        reject(new Error(error));
-                    }
-                }
+    // Clear data from the provided namespace
+    //
+    function clear(namespace) {
 
-                var json = null;
+        for (var i = 0; i <= localStorage.length - 1; i++) {
 
-                if (data != null) {
-                    json = JSON.stringify(data);
-                }
+            // Check to see if the key starts with the provided namespace
+            if (localStorage.key(i).indexOf(namespace) == 0) {
 
-                localStorage.setItem(table, json);
+                // If so, null it out so we remove any remnants of data
+                localStorage.setItem(localStorage.key(i), null);
 
-                if (resolve != null) {
-                    resolve();
-                }
-
-            });
+            }
 
         }
 
+    }
+
+    return {
+
+        // Get data that has been populated via data sync and is therefore more "real".
+        //
+        getSyncData: function(table, objectData) {
+
+            return get("Table", SYNC_DATABASE, table, objectData);
+
+        },
+
+        // Set data that has been populated via data sync and is therefore more "real".
+        //
+        setSyncData: function(table, objectData) {
+
+            return set("Table", SYNC_DATABASE, table, objectData);
+
+        },
+
+        // Get arbitrary data that's needed for offline to simulate functions from a database.
+        //
+        getData: function(table, objectData) {
+
+            return get("Table", STATE_DATABASE, table, objectData);
+
+        },
+
+        // Set arbitrary data that's needed for offline to simulate functions from a database.
+        //
+        setData: function(table, objectData) {
+
+            return set("Table", STATE_DATABASE, table, objectData);
+
+        },
+
+        // Set arbitrary data that's needed for offline to simulate functions from a database.
+        //
+        clearData: function() {
+
+            return clear(STATE_DATABASE);
+
+        },
+
+        // Get arbitrary data that's needed for offline to simulate functions from a cache.
+        //
+        getCache: function(identifier, objectData) {
+
+            return get("Identifier", STATE_CACHE, identifier, objectData);
+
+        },
+
+        // Set arbitrary data that's needed for offline to simulate functions from a cache.
+        //
+        setCache: function(identifier, objectData) {
+
+            return set("Identifier", STATE_CACHE, identifier, objectData);
+
+        },
+
+        // Get recording data - this is perhaps the most data to be stored as it represents the information the user
+        // wants to store back into the platform.
+        //
+        getRecordingData: function(recordingData) {
+
+            return get("Recording", "", RECORDING_TABLE, recordingData);
+
+        },
+
+        // Set recording data - this is perhaps the most data to be stored as it represents the information the user
+        // wants to store back into the platform.
+        //
+        setRecordingData: function(recording) {
+
+            return set("Recording", "", RECORDING_TABLE, recording);
+
+        },
+
+        // Get response data that's needed for offline to simulate functions.
+        //
+        getResponseCache: function(identifier, responseData) {
+
+            return get("Identifier", RESPONSE_CACHE_NAMESPACE, identifier, responseData);
+
+        },
+
+        // Set response data that's needed for offline to simulate functions.
+        //
+        setResponseCache: function(identifier, response) {
+
+            return set("Identifier", RESPONSE_CACHE_NAMESPACE, identifier, response);
+
+        }
     }
 
 })(manywho);

@@ -87,6 +87,11 @@
 
                     }
 
+                    // Clear the application state so the user doesn't get confused between real and not real data
+                    // This is an async method so does run the risk of showing inconsistencies of the clear query
+                    // takes a while.
+                    manywho.simulation.clearData();
+
                     // Set the connection back to default settings (which is needed to allow the recording playback to function)
                     manywho.connection.setOnlineOverride({
                         override: false,
