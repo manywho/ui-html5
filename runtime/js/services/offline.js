@@ -15,6 +15,8 @@ manywho.offline = (function (manywho) {
 
         setRequest: function (event, urlPart, request) {
 
+            var promises = [];
+
             if (manywho.settings.global('offline')) {
 
                 var stateId = null;
@@ -36,15 +38,17 @@ manywho.offline = (function (manywho) {
                     // For the active recording set the request, if there's no active recording, this does nothing
                     manywho.recording.set(request);
 
-                    // Commit any changes
-                    manywho.recording.finish();
+                    // Commit any changes in an async call
+                    promises.push(manywho.recording.finish());
 
                 }
 
                 // Update the simulation data also
-                manywho.simulation.set(request);
+                promises.push(manywho.simulation.set(request));
 
             }
+
+            return Promise.all(promises);
 
         },
 

@@ -33,28 +33,35 @@ manywho.recording = (function (manywho) {
 
     function deleteRecording(recording) {
 
-        var recordings = manywho.storage.getData(manywho.recording.tableName);
+        return manywho.storage.getData(manywho.recording.tableName)
+            .then(
+                function(response) {
 
-        if (recordings != null &&
-            recordings.length > 0 &&
-            recording != null &&
-            recording.id && !manywho.utils.isNullOrWhitespace(recording.id)) {
+                    if (response.data != null &&
+                        response.data.length > 0 &&
+                        recording != null &&
+                        recording.id && !manywho.utils.isNullOrWhitespace(recording.id)) {
 
-            for (var i = 0; i < recordings.length; i++) {
+                        for (var i = 0; i < response.data.length; i++) {
 
-                if (manywho.utils.isEqual(recording.id, recordings[i].id, true)) {
+                            if (manywho.utils.isEqual(recording.id, response.data[i].id, true)) {
 
-                    // Delete the recording
-                    recordings.splice(i, 1);
-                    break;
+                                // Delete the recording
+                                response.data.splice(i, 1);
+                                break;
 
-                }
+                            }
 
-            }
+                        }
 
-            manywho.storage.setData(manywho.recording.tableName, recordings);
+                        return manywho.storage.setData(manywho.recording.tableName, response.data);
 
-        }
+                    }
+
+                },
+                function(error) {
+                    manywho.log.error(error);
+                });
 
     }
 
@@ -62,7 +69,10 @@ manywho.recording = (function (manywho) {
 
         if (requests.length == pointer) {
 
+            // Don't bother waiting for the delete
             deleteRecording(recording);
+
+            // Join the user back into the workflow
             joinFlow(flowKey, tenantId, response.stateId, authenticationToken);
 
             return;
@@ -132,11 +142,32 @@ manywho.recording = (function (manywho) {
 
     }
 
+    // Format the recording time accordingly without using a 3rd party library
+    //
+    function getRecordingDateTime() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1;
+
+        var yyyy = today.getFullYear();
+
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        return dd + '/' + mm + '/' + yyyy;
+    }
+
     // In memory implementation of a create recording function
     //
     function createRecording(sequence, request) {
 
-        var defaultName = "Recording on " + Date.now();
+        var defaultName = "Recording on " + getRecordingDateTime();
 
         // Create an active recording or reset the current one and clone the sequence entries
         // so we know what's been completed
@@ -155,15 +186,22 @@ manywho.recording = (function (manywho) {
     //
     function saveRecording(recording) {
 
-        var recordings = manywho.storage.getData(manywho.recording.tableName);
+        return manywho.storage.getData(manywho.recording.tableName)
+            .then(
+                function(response) {
 
-        if (recordings == null) {
-            recordings = [];
-        }
+                    if (response.data == null) {
+                        response.data = [];
+                    }
 
-        recordings.push(recording);
+                    response.data.push(recording);
 
-        manywho.storage.setData(manywho.recording.tableName, recordings);
+                    return manywho.storage.setData(manywho.recording.tableName, response.data);
+
+                },
+                function(error) {
+                    manywho.log.error(error);
+                });
 
     }
 
@@ -210,6 +248,10 @@ manywho.recording = (function (manywho) {
 
         },
 
+        reset: function() {
+            activeRecording = null;
+        },
+
         // This function completes the active recording. The role being to check if the sequence is complete, and if
         // so, commit the active recording into the recordings array. Basically - the active recording is finished and
         // we should reset system.
@@ -235,12 +277,19 @@ manywho.recording = (function (manywho) {
                 if (isComplete) {
 
                     // Push the recording a reset
-                    saveRecording(activeRecording);
-                    activeRecording = null;
+                    return saveRecording(activeRecording).then(function() {
+                        // Make sure we reset the active recording after it's saved
+                        manywho.recording.reset();
+                    });
 
                 }
 
             }
+
+            return new Promise(function(resolve) {
+                // Return an empty promise :)
+                resolve();
+            });
 
         },
 
@@ -353,31 +402,38 @@ manywho.recording = (function (manywho) {
         delete: function (recording) {
 
             // Delete this recording from the list
-            deleteRecording(recording);
+            return deleteRecording(recording);
 
         },
 
         getRecording: function (id) {
 
-            var recordings = manywho.storage.getData(manywho.recording.tableName);
+            return manywho.storage.getData(manywho.recording.tableName)
+                .then(
+                    function(response) {
 
-            if (recordings != null &&
-                recordings.length > 0) {
+                        if (response.data != null &&
+                            response.data.length > 0) {
 
-                // Get the recording associated with this identifier
-                for (var i = 0; i < recordings.length; i++) {
+                            // Get the recording associated with this identifier
+                            for (var i = 0; i < response.data.length; i++) {
 
-                    if (manywho.utils.isEqual(recordings[i].id, id, true) == true) {
+                                if (manywho.utils.isEqual(response.data[i].id, id, true) == true) {
 
-                        return recordings[i];
+                                    return response.data[i];
 
-                    }
+                                }
 
-                }
+                            }
 
-            }
+                        }
 
-            return null;
+                        return null;
+
+                    },
+                    function(error) {
+                        manywho.log.error(error);
+                    });
 
         },
 

@@ -131,14 +131,14 @@ manywho.simulation = (function (manywho) {
 
     // Using the adjusted internal table name, this function gets the current table from the local state database.
     //
-    function getTable(tableName) {
+    function getTable(tableName, objectData) {
 
         if (manywho.utils.isNullOrWhitespace(tableName)) {
             manywho.log.error("The TableName must be provided to identify the correct offline Table.");
             return null;
         }
 
-        return manywho.storage.getData(manywho.simulation.tableName + tableName);
+        return manywho.storage.getData(manywho.simulation.tableName + tableName, objectData);
 
     }
 
@@ -151,30 +151,13 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        manywho.storage.setData(manywho.simulation.tableName + tableName, table);
+        return manywho.storage.setData(manywho.simulation.tableName + tableName, table);
 
     }
 
-    // This function is used to insert or update the object data into the local State Db.
-    //
-    function upsertStateDb(tableName, objectData) {
-
-        if (manywho.utils.isNullOrWhitespace(tableName)) {
-            manywho.log.error("No Table Name has been provided to upsert against in the offline State Db.");
-            return null;
-        }
-
-        if (objectData == null) {
-            manywho.log.error("No ObjectData has been provided to upsert in the offline State Db.");
-            return null;
-        }
+    function updateTableData(table, objectData) {
 
         var updatePerformed = false;
-        var table = getTable(tableName);
-
-        if (table == null) {
-            table = [];
-        }
 
         // If the object data doesn't have an external identifier, or the table is empty, we don't need to bother
         // searching for it as it won't be in the table
@@ -210,7 +193,37 @@ manywho.simulation = (function (manywho) {
 
         }
 
-        setTable(tableName, table);
+    }
+
+    // This function is used to insert or update the object data into the local State Db.
+    //
+    function upsertStateDb(tableName, objectData) {
+
+        if (manywho.utils.isNullOrWhitespace(tableName)) {
+            manywho.log.error("No Table Name has been provided to upsert against in the offline State Db.");
+            return null;
+        }
+
+        if (objectData == null) {
+            manywho.log.error("No ObjectData has been provided to upsert in the offline State Db.");
+            return null;
+        }
+
+        // Execute the async request to store the data
+        return getTable(tableName, objectData).then(function(response) {
+
+            var table = response.table;
+
+            if (table == null) {
+                table = [];
+            }
+
+            // Update the able as appropriate
+            updateTableData(table, response.additionalObjectData);
+
+            return setTable(tableName, table);
+
+        });
 
     }
 
@@ -233,21 +246,26 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        var table = getTable(tableName);
+        return getTable(tableName, objectData).then(function(response) {
 
-        // If the object data doesn't have an external identifier, or the table is empty, we don't need to bother
-        // searching for it as it won't be in the table
-        if (table.length > 0) {
+            var table = response.table;
 
-            var i = table.indexOf(objectData);
+            // If the object data doesn't have an external identifier, or the table is empty, we don't need to bother
+            // searching for it as it won't be in the table
+            if (table != null &&
+                table.length > 0) {
 
-            if (i != -1) {
-                table.splice(i, 1);
+                var i = table.indexOf(response.additionalObjectData);
+
+                if (i != -1) {
+                    table.splice(i, 1);
+                }
+
             }
 
-        }
+            return setTable(tableName, table);
 
-        setTable(tableName, table);
+        });
 
     }
 
@@ -280,7 +298,7 @@ manywho.simulation = (function (manywho) {
         }
 
         // Set in the cache as a compound of the table name and the value binding
-        manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, objectData);
+        return manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, objectData);
 
     }
 
@@ -308,7 +326,7 @@ manywho.simulation = (function (manywho) {
         }
 
         // Null out any data in the cache table
-        manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, null);
+        return manywho.storage.setData(manywho.simulation.cacheName + tableName + modifier, null);
 
     }
 
@@ -417,7 +435,78 @@ manywho.simulation = (function (manywho) {
 
     }
 
-    function applyToState(tableName, typeElementId, valueElementId, objectData, actionType) {
+    // This method bulk inserts data into the State Db. It therefore assumes that all provided records are new. So for
+    // data sync operations, the current Table should be cleared or there will be duplicates.
+    //
+    function bulkInsertStateDb(tableName, typeElementId, objectData) {
+
+        if (objectData == null ||
+            objectData.length == 0) {
+            manywho.log.info("No ObjectData has been provided to apply to the offline State.");
+            return null;
+        }
+
+        // Reset the table name to the full table name
+        tableName = getTableName(tableName, typeElementId);
+
+        // Execute the async request to store the data
+        return getTable(tableName, objectData).then(function(response) {
+
+            if (response.data == null) {
+
+                response.data = [];
+
+            }
+
+            response.data = response.data.concat(response.additionalObjectData);
+
+            return setTable(tableName, response.data);
+
+        });
+
+    }
+
+    // This method bulk inserts data into the State Db. It therefore assumes that all provided records are new. So for
+    // data sync operations, the current Table should be cleared or there will be duplicates.
+    //
+    function bulkUpsertStateDb(tableName, typeElementId, objectData) {
+
+        if (objectData == null ||
+            objectData.length == 0) {
+            manywho.log.info("No ObjectData has been provided to apply to the offline State.");
+            return null;
+        }
+
+        // Reset the table name to the full table name
+        tableName = getTableName(tableName, typeElementId);
+
+        // Execute the async request to store the data
+        return getTable(tableName, objectData).then(function(response) {
+
+            if (response.data == null) {
+
+                response.data = [];
+
+            }
+
+            if (response.additionalObjectData != null &&
+                response.additionalObjectData.length > 0) {
+
+                for (var i = 0; i < response.additionalObjectData.length; i++) {
+
+                    updateTableData(response.data, response.additionalObjectData[i]);
+
+                }
+
+            }
+
+            return setTable(tableName, response.data);
+
+        });
+
+    }
+
+    function applyToStateCache(tableName, typeElementId, valueElementId, objectData, actionType) {
 
         if (objectData == null) {
             manywho.log.error("No ObjectData has been provided to apply to the offline State.");
@@ -436,28 +525,32 @@ manywho.simulation = (function (manywho) {
         // The action plan determines what operations are performed on the database/cache
         var actionPlan = getActionPlanForActionType(actionType);
 
-        // Only update the database if this is an appropriate 'save' action
-        if (actionPlan.save) {
+        var promises = [];
 
-            upsertStateDb(tableName, objectData);
+        // Only update the database if this is an appropriate 'save' action
+        /*if (actionPlan.save) {
+
+            promises.push(upsertStateDb(tableName, objectData));
 
         } else if (!actionPlan.save && actionPlan.saveDestructive) {
 
             // Only delete the object if it should not be saved and it's a destructive operation
-            removeFromStateDb(tableName, objectData);
+            promises.push(removeFromStateDb(tableName, objectData));
 
-        }
+        }*/
 
         if (actionPlan.cache) {
 
-            setStateCache(tableName, valueElementId, objectData);
+            promises.push(setStateCache(tableName, valueElementId, objectData));
 
         } else if (!actionPlan.cache && actionPlan.cacheDestructive) {
 
             // Only clear the object if it should not be cached and it's a destructive operation
-            removeStateCache(tableName, valueElementId);
+            promises.push(removeStateCache(tableName, valueElementId));
 
         }
+
+        return Promise.all(promises);
 
     }
 
@@ -481,26 +574,28 @@ manywho.simulation = (function (manywho) {
             .then(function (response) {
 
                 // Set the data into the simulation database
-                manywho.simulation.setAll(requests[pointer].tableName, response.objectData);
+                manywho.simulation.setAll(requests[pointer].tableName, response.objectData).then(function () {
 
-                // Move the progress bar first so we capture the 100%
-                progressFunction.call(this, requests[pointer], ((pointer + 1) / requests.length) * 100);
+                    // Move the progress bar first so we capture the 100%
+                    progressFunction.call(this, requests[pointer], ((pointer + 1) / requests.length) * 100);
 
-                // Increment the pointer as the call was successful
-                pointer++;
+                    // Increment the pointer as the call was successful
+                    pointer++;
 
-                // If the database doesn't have any more results, finish
-                if (response.hasMoreResults == false) {
+                    // If the database doesn't have any more results, finish
+                    if (response.hasMoreResults == false) {
 
-                    // Move the progress bar to 100%
-                    progressFunction.call(this, requests[pointer], 100);
+                        // Move the progress bar to 100%
+                        progressFunction.call(this, requests[pointer], 100);
 
-                    return;
+                        return;
 
-                }
+                    }
 
-                // Execute the sequence until we're done
-                executeSequence(requests, pointer, tenantId, authenticationToken, flowKey, progressFunction);
+                    // Execute the sequence until we're done
+                    executeSequence(requests, pointer, tenantId, authenticationToken, flowKey, progressFunction);
+
+                });
 
             });
 
@@ -532,8 +627,14 @@ manywho.simulation = (function (manywho) {
 
         }
 
-        // Kick off the requests / responses loop
-        executeSequence(requests, 0, tenantId, authenticationToken, flowKey, progressFunction);
+        // Before starting, we need to clear the database of all records as we don't check for changes when
+        // doing a data sync, we simply insert to minimize pattern matching performance issues.
+        manywho.simulation.clear(requests[0].tableName, requests[0].objectDataType.typeElementId).then(function () {
+
+            // Kick off the requests / responses loop
+            executeSequence(requests, 0, tenantId, authenticationToken, flowKey, progressFunction);
+
+        });
 
     }
 
@@ -567,6 +668,8 @@ manywho.simulation = (function (manywho) {
         },
 
         set: function (request) {
+
+            var promises = [];
 
             // Now we want to handle local state changes, but only if this request is an invoke request and it includes
             // a selected outcome (meaning navigation changes will not appear in simulation)
@@ -637,19 +740,50 @@ manywho.simulation = (function (manywho) {
 
                 }
 
-                // Go through all of the collected object data and apply it to the state as appropriate
+                var objectDataToUpdate = {};
+
+                // Go through all of the object data and bucket it into types and also apply to the cache first
                 for (var property in pageObjectData) {
 
                     if (pageObjectData.hasOwnProperty(property)) {
 
-                        // Apply the page data to the simulation state
-                        applyToState(
+                        if (objectDataToUpdate[pageObjectData[property].typeElementId] == null) {
+                            objectDataToUpdate[pageObjectData[property].typeElementId] = [];
+                        }
+
+                        // Bucket the data for the database
+                        objectDataToUpdate[pageObjectData[property].typeElementId].push(pageObjectData[property]);
+
+                        // Apply to the cache so we adhere to the action simulation stuff
+                        promises.push(applyToStateCache(
                             pageObjectData[property].tableName,
                             pageObjectData[property].typeElementId,
                             pageComponentInfo.valueElement,
                             pageObjectData[property],
                             pageComponentInfo.actionType
-                        );
+                        ));
+
+                    }
+
+                }
+
+                if (getActionPlanForActionType(pageComponentInfo.actionType).save) {
+
+                    // Go through all of the collected object data bucketed by type and update in the data store in bulk
+                    for (var property in objectDataToUpdate) {
+
+                        if (objectDataToUpdate.hasOwnProperty(property) &&
+                            objectDataToUpdate[property] != null &&
+                            objectDataToUpdate[property].length > 0) {
+
+                            // Apply the page data to the simulation state
+                            promises.push(bulkUpsertStateDb(
+                                objectDataToUpdate[property][0].tableName,
+                                objectDataToUpdate[property][0].typeElementId,
+                                objectDataToUpdate[property]
+                            ));
+
+                        }
 
                     }
 
@@ -657,10 +791,42 @@ manywho.simulation = (function (manywho) {
 
             }
 
+            return Promise.all(promises);
+
         },
 
-        // Applies the provided object data to the simulation state regardless of request/response. This is used to
-        // pre-sync data with the offline simulation engine so users can view all synced data offline.
+        // Clears the current table of any cached data so we can cleanly do an insert of all records into the database.
+        //
+        clear: function(tableName, typeElementId) {
+
+            // Reset the table name to the full table name
+            tableName = getTableName(tableName, typeElementId);
+
+            return setTable(tableName, null);
+
+        },
+
+        // Applies the provided object data to the simulation state regardless of request/response.
+        //
+        updateAll: function(tableName, objectData) {
+
+            // If we have no object data, we don't need to store anything
+            if (objectData == null ||
+                objectData.length == 0) {
+                manywho.log.info("No ObjectData has been provided to search.");
+                return null;
+            }
+
+            // Insert the data into the db
+            return bulkUpsertStateDb(
+                tableName,
+                objectData[0].typeElementId,
+                objectData
+            );
+
+        },
+
+        // Applies the provided object data to the simulation state regardless of request/response.
         //
         setAll: function(tableName, objectData) {
 
@@ -671,19 +837,12 @@ manywho.simulation = (function (manywho) {
                 return null;
             }
 
-            // Go through all of the collected object data and apply it to the state as appropriate
-            for (var i = 0; i < objectData.length; i++) {
-
-                // Apply the object back using a constructive 'save'
-                applyToState(
-                    tableName,
-                    objectData[i].typeElementId,
-                    null,
-                    objectData[i],
-                    'sync'
-                );
-
-            }
+            // Insert the data into the db
+            return bulkInsertStateDb(
+                tableName,
+                objectData[0].typeElementId,
+                objectData
+            );
 
         },
 

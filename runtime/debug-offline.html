@@ -438,27 +438,29 @@
 
 	$('#update-responses').on('click', function() {
 
-		var responses = manywho.responses.getAll();
+		manywho.responses.getAll().done(function(response) {
 
-		for (var property in responses) {
+			for (var property in response.data) {
 
-			if (responses.hasOwnProperty(property)) {
+				if (response.data.hasOwnProperty(property)) {
 
-				var response = responses[property];
+					var response = response.data[property];
 
-				if (response.stateId) {
+					if (response.stateId) {
 
-					// If we have a state id, we want to blank it out for the offline cache
-					response.stateId = manywho.recording.emptyStateId;
-					response.stateToken = manywho.recording.emptyStateId;
+						// If we have a state id, we want to blank it out for the offline cache
+						response.stateId = manywho.recording.emptyStateId;
+						response.stateToken = manywho.recording.emptyStateId;
+
+					}
 
 				}
 
 			}
 
-		}
+			$('#responses-cache').val(JSON.stringify(response.data, null, 4));
 
-		$('#responses-cache').val(JSON.stringify(responses, null, 4));
+		});
 
 	});
 
@@ -506,7 +508,7 @@
 <script src="js/services/recording.js"></script>
 <script src="js/services/responses.js"></script>
 <script src="js/services/simulation.js"></script>
-<script src="js/services/storage.js"></script>
+<script src="js/services/storage-local.js"></script>
 
 <script src="js/components/mixins.js"></script>
 <script src="js/components/main.js"></script>

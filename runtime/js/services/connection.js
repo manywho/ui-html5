@@ -39,24 +39,28 @@ manywho.connection = (function (manywho) {
 
     function getOfflineDeferred(resolveContext, event, urlPart, request) {
 
-        manywho.offline.setRequest(event, urlPart, request);
-
         var deferred = new jQuery.Deferred();
-        var resolveArguments = manywho.offline.getResponse(event, urlPart, request);
 
-        if (resolveArguments == null) {
-            manywho.log.error('A response could not be found for request.');
-        }
+        manywho.offline.setRequest(event, urlPart, request).then(function () {
 
-        // Resolve the deferred
-        deferred.resolveWith(resolveContext, [resolveArguments]);
+            manywho.offline.getResponse(event, urlPart, request).then(function(response) {
+
+                if (response == null) {
+                    manywho.log.error('A response could not be found for request.');
+                }
+
+                // Resolve the deferred
+                deferred.resolveWith(resolveContext, [response]);
+
+            });
+
+        });
 
         // Send the deferred object back ready to be resolved
         return deferred
             .done(manywho.settings.event(event + '.done'))
             .fail(logError)
             .fail(manywho.settings.event(event + '.fail'));
-
     }
 
     function getOnlineDeferred(event, urlPart, methodType, tenantId, stateId, authenticationToken, request) {

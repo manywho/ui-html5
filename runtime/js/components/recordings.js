@@ -31,14 +31,22 @@
 
     function deleteRecording(recording) {
 
-        manywho.recording.delete(recording);
+        manywho.recording.delete(recording).then(function() {
+            // Remove the recording from the UI
+            $('#' + recording.id).remove();
 
-        // Remove the recording from the UI
-        $('#' + recording.id).remove();
+        });
 
     }
 
     var recordings = React.createClass({
+
+        getInitialState: function() {
+            return {
+                recordings: [],
+                isOnline: true
+            };
+        },
 
         onClick: function(e) {
 
@@ -47,41 +55,45 @@
 
             var recordingId = e.currentTarget.getAttribute('data-id');
             var recordingAction = e.currentTarget.getAttribute('data-action');
-            var recording = manywho.recording.getRecording(recordingId);
+            var flowKey = this.props.flowKey;
 
-            var onlineStatus = manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id);
+            var onlineStatus = manywho.connection.isOnline(manywho.state.getState(flowKey).id);
 
             if (onlineStatus.online == true) {
 
-                // Set the connection to ensure the connection does connect
-                manywho.connection.setOnlineOverride({
-                    override: true,
-                    dataSyncRequired: false
-                });
+                manywho.recording.getRecording(recordingId).then(function (recording) {
 
-                if (manywho.utils.isEqual('sync', recordingAction, true)) {
+                    // Set the connection to ensure the connection does connect
+                    manywho.connection.setOnlineOverride({
+                        override: true,
+                        dataSyncRequired: false
+                    });
 
-                    manywho.recording.replay(this.props.flowKey, recording, progressFunction);
+                    if (manywho.utils.isEqual('sync', recordingAction, true)) {
 
-                } else if (manywho.utils.isEqual('retry', recordingAction, true)) {
+                        manywho.recording.replay(flowKey, recording, progressFunction);
 
-                    retryRecording(this.props.flowKey, recording);
+                    } else if (manywho.utils.isEqual('retry', recordingAction, true)) {
 
-                } else if (manywho.utils.isEqual('fix', recordingAction, true)) {
+                        retryRecording(flowKey, recording);
 
-                    fixRecording(this.props.flowKey, recording);
+                    } else if (manywho.utils.isEqual('fix', recordingAction, true)) {
 
-                } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
+                        fixRecording(flowKey, recording);
 
-                    deleteRecording(recording);
+                    } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
 
-                }
+                        deleteRecording(recording);
 
-                // Set the connection back to default settings (which is needed to allow the recording playback to function)
-                manywho.connection.setOnlineOverride({
-                    override: false,
-                    dataSyncRequired: false,
-                    online: true
+                    }
+
+                    // Set the connection back to default settings (which is needed to allow the recording playback to function)
+                    manywho.connection.setOnlineOverride({
+                        override: false,
+                        dataSyncRequired: false,
+                        online: true
+                    });
+
                 });
 
             }
@@ -90,58 +102,83 @@
 
         componentDidMount: function() {
 
-            // Check to see if the user is in fact online
-            if (manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id).online == false) {
+            var flowKey = this.props.flowKey;
 
-                $(".recordings").prop("disabled", true);
+            manywho.recording.getRecordings().then(function(response) {
 
-            }
+                // Check to see if the user is online
+                var isOnline = manywho.connection.isOnline(manywho.state.getState(flowKey).id).online;
+
+                // Set the recordings so they're rendered to the user as expected
+                this.setState({
+                    'recordings': response.data,
+                    'isOnline': isOnline
+                });
+
+            }.bind(this));
 
         },
 
-        render: function () {
+        renderRows: function() {
 
-            manywho.log.info('Rendering Recordings: ' + this.props.id);
-
-            var recordings = manywho.recording.getRecordings();
             var entries = null;
 
-            if (recordings != null &&
-                recordings.length > 0) {
+            if (this.state.recordings != null &&
+                this.state.recordings.length > 0) {
 
                 entries = [];
 
-                for (var i = 0; i < recordings.length; i++) {
+                for (var i = 0; i < this.state.recordings.length; i++) {
 
-                    var progressId = recordings[i].id + '-progress';
+                    var progressId = this.state.recordings[i].id + '-progress';
 
-                    entries.push(React.DOM.div({ className: 'panel panel-default', id: recordings[i].id }, [
-                        React.DOM.div({ className: 'panel-heading' }, recordings[i].name),
-                        React.DOM.div({ className: 'panel-body' }, [
+                    entries.push(React.DOM.div({className: 'panel panel-default', id: this.state.recordings[i].id}, [
+                        React.DOM.div({className: 'panel-heading'}, this.state.recordings[i].name),
+                        React.DOM.div({className: 'panel-body'}, [
                             React.DOM.button(
-                                { className: 'btn btn-success recordings', 'data-action': 'sync', 'data-id': recordings[i].id, onClick: this.onClick },
+                                {
+                                    className: 'btn btn-success recordings',
+                                    'data-action': 'sync',
+                                    'data-id': this.state.recordings[i].id,
+                                    onClick: this.onClick
+                                },
                                 'Sync'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-info recordings', 'data-action': 'retry', 'data-id': recordings[i].id, onClick: this.onClick },
+                                {
+                                    className: 'btn btn-info recordings',
+                                    'data-action': 'retry',
+                                    'data-id': this.state.recordings[i].id,
+                                    onClick: this.onClick
+                                },
                                 'Retry'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-warning recordings', 'data-action': 'fix', 'data-id': recordings[i].id, onClick: this.onClick },
+                                {
+                                    className: 'btn btn-warning recordings',
+                                    'data-action': 'fix',
+                                    'data-id': this.state.recordings[i].id,
+                                    onClick: this.onClick
+                                },
                                 'Fix'
                             ),
                             React.DOM.span(null, ' '),
                             React.DOM.button(
-                                { className: 'btn btn-danger recordings', 'data-action': 'delete', 'data-id': recordings[i].id, onClick: this.onClick },
+                                {
+                                    className: 'btn btn-danger recordings',
+                                    'data-action': 'delete',
+                                    'data-id': this.state.recordings[i].id,
+                                    onClick: this.onClick
+                                },
                                 'Delete'
                             )
                         ]),
-                        React.DOM.div({ className: 'panel-footer' }, [
-                            React.DOM.div({ className: 'progress' }, [
-                                React.DOM.div({ className: 'progress-bar', id: progressId }, [
-                                    React.DOM.span({ className: 'sr-only' }, 'Playing')
+                        React.DOM.div({className: 'panel-footer'}, [
+                            React.DOM.div({className: 'progress'}, [
+                                React.DOM.div({className: 'progress-bar', id: progressId}, [
+                                    React.DOM.span({className: 'sr-only'}, 'Playing')
                                 ])
                             ])
                         ])
@@ -151,7 +188,22 @@
 
             }
 
-            return React.DOM.div({ className: 'form-group' }, entries);
+            return entries;
+
+        },
+
+        render: function () {
+
+            manywho.log.info('Rendering Recordings: ' + this.props.id);
+
+            var contentAttributes = {
+                id: this.props.id,
+                flowKey: this.props.flowKey,
+                isDesignTime: this.props.isDesignTime,
+                className: 'form-group'
+            };
+
+            return React.DOM.div(contentAttributes, this.renderRows());
 
         }
 

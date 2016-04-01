@@ -35,45 +35,163 @@ manywho.responses = (function (manywho) {
 
     }
 
-    function getValueForComponent(pageComponentInfo) {
+    function getValueForComponent(pageComponentInfo, pageComponentDataResponse) {
 
         if (pageComponentInfo.pageComponent.valueElementValueBindingReferenceId != null) {
 
             // Get the object data from the cached value - that's where we source all individual value references
             // This will also make sure the type matches the value, though there's no reliable way of telling if the value
             // being stored in the cache is in fact the value in the binding
-            var objectData = manywho.simulation.get(pageComponentInfo.tableName, pageComponentInfo.typeElement.id, pageComponentInfo.valueElement);
+            return manywho.simulation.get(pageComponentInfo.tableName, pageComponentInfo.typeElement.id, pageComponentInfo.valueElement)
+                .then(function(response) {
 
-            if (objectData != null) {
+                    pageComponentDataResponse.objectData = null;
+                    pageComponentDataResponse.contentValue = null;
 
-                var value = {};
+                    if (response.data != null) {
 
-                value.objectData = null;
-                value.contentValue = null;
+                        // We have some object data stored, so we need to get that out
+                        if (manywho.utils.isNullOrWhitespace(pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.typeElementPropertyId)) {
 
-                // We have some object data stored, so we need to get that out
-                if (manywho.utils.isNullOrWhitespace(pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.typeElementPropertyId)) {
+                            pageComponentDataResponse.objectData = [response.data];
 
-                    value.objectData = [objectData];
+                        } else {
 
-                } else {
+                            // Find the property in this object and return that
+                            if (response.data.properties != null &&
+                                response.data.properties.length > 0) {
 
-                    // Find the property in this object and return that
-                    if (objectData.properties != null &&
-                        objectData.properties.length > 0) {
+                                for (var i = 0; i < response.data.properties.length; i++) {
 
-                        for (var i = 0; i < objectData.properties.length; i++) {
+                                    if (manywho.utils.isEqual(
+                                            response.data.properties[i].typeElementPropertyId,
+                                            pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.typeElementPropertyId,
+                                            true)) {
+
+                                        // We have a match, return the value information from the object
+                                        pageComponentDataResponse.contentValue = response.data.properties[i].contentValue;
+                                        pageComponentDataResponse.objectData = response.data.properties[i].objectData;
+
+                                        break;
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    return pageComponentDataResponse;
+
+                });
+
+        }
+
+        return new Promise(function(resolve) {
+            // Return an empty promise if we don't need to wait on a value
+            resolve();
+        });
+
+    }
+
+    function hasPageComponentDataResponses(response) {
+
+        if (response != null &&
+            response.mapElementInvokeResponses &&
+            response.mapElementInvokeResponses != null &&
+            response.mapElementInvokeResponses.length > 0 &&
+            response.mapElementInvokeResponses[0].pageResponse != null &&
+            response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses != null &&
+            response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.length) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    function generateResponse(response, request) {
+
+        if (response == null) {
+            manywho.log.error('A response could not be found for request.');
+            return null;
+        }
+
+        var promises = [];
+
+        // Check to see if the response is associated with a State. If not, this means the response should be
+        // associated with the current state
+        if (manywho.utils.isNullOrWhitespace(response.stateId) == true) {
+            response.stateId = manywho.recording.emptyStateId;
+            response.stateToken = manywho.recording.emptyStateId;
+        }
+
+        // Check to see if we're dealing with a core engine response
+        if (hasPageComponentDataResponses(response)) {
+
+            var pageComponentDataResponses = response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses;
+
+            for (var i = 0; i < pageComponentDataResponses.length; i++) {
+
+                var pageComponentInfo = manywho.graph.getPageComponentInfo(
+                    response.currentMapElementId,
+                    null,
+                    pageComponentDataResponses[i].pageComponentId
+                );
+
+                if (pageComponentInfo.typeElement &&
+                    pageComponentInfo.typeElement != null &&
+                    pageComponentInfo.valueElement &&
+                    pageComponentInfo.valueElement != null) {
+
+                    var pageComponentDataResponse = pageComponentDataResponses[i];
+
+                    if (isTableComponent(pageComponentInfo.pageComponent)) {
+
+                        // This is a list, so get all the data from the offline table and override
+                        promises.push(manywho.simulation.getAll(pageComponentInfo.tableName, pageComponentInfo.typeElement.id)
+                            .then(function(response) {
+
+                                pageComponentDataResponse.objectData = response.data;
+
+                                return pageComponentDataResponse;
+
+                            })
+                        );
+
+                    } else {
+
+                        // Push into the list of promises
+                        promises.push(getValueForComponent(pageComponentInfo, pageComponentDataResponse));
+
+                    }
+
+                }
+
+            }
+
+            return Promise.all(promises).then(function(values) {
+
+                // Apply the async data back to the response - promises that return nothing will return an undefined
+                // in the array so we check for that
+                if (hasPageComponentDataResponses(response) &&
+                    values != null &&
+                    values.length > 0 &&
+                    values[0] != null) {
+
+                    for (var i = 0; i < response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.length; i++) {
+
+                        for (var j = 0; j < values.length; j++) {
 
                             if (manywho.utils.isEqual(
-                                    objectData.properties[i].typeElementPropertyId,
-                                    pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.typeElementPropertyId,
+                                    response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses[i].pageComponentId,
+                                    values[j].pageComponentId,
                                     true)) {
 
-                                // We have a match, return the value information from the object
-                                value.contentValue = objectData.properties[i].contentValue;
-                                value.objectData = objectData.properties[i].objectData;
-
-                                break;
+                                response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses[i] = values[j];
 
                             }
 
@@ -82,14 +200,55 @@ manywho.responses = (function (manywho) {
                     }
 
                 }
+                        // Clone the object so we don't change anything in the data store by accident
+                return JSON.parse(JSON.stringify(response));
 
-                return value;
-
-            }
+            });
 
         }
 
-        return null;
+        // Check to see if we're dealing with an object data response
+        if (response != null &&
+            response.hasOwnProperty("objectData")) {
+
+            // This is a list, so get all the data from the offline table and override
+            return manywho.simulation.getAll(response.tableName, response.typeElementId)
+                .then(
+                    function(result) {
+
+                        response.objectData = result.data;
+
+                        // Filter the object data based on search
+                        response.objectData = manywho.simulation.search(request.listFilter.search, null, response.objectData);
+
+                        if (response.objectData != null) {
+
+                            // We don't always have an offset
+                            if (!request.listFilter.hasOwnProperty("offset")) {
+                                request.listFilter.offset = 0;
+                            }
+
+                            // Apply pagination to the results
+                            var page = request.listFilter.offset / request.listFilter.limit;
+                            var limit = request.listFilter.limit;
+
+                            response.hasMoreResults = (page * limit) + limit + 1 <= response.objectData.length;
+                            response.objectData = response.objectData.slice(page * limit, (page * limit) + limit);
+
+                        }
+
+                        // Clone the object so we don't change anything in the data store by accident
+                        return JSON.parse(JSON.stringify(response));
+
+                    }
+                );
+
+        }
+
+        return new Promise(function(resolve) {
+            // The response unmodified
+            resolve(JSON.parse(JSON.stringify(response)));
+        })
 
     }
 
@@ -99,113 +258,20 @@ manywho.responses = (function (manywho) {
 
         get: function (identifier, request) {
 
-            var response = null;
+            if (offline.responses != null) {
 
-            if (offline.responses == null) {
-                // Get the response out of the cached responses based on user activity
-                response = manywho.storage.getData(manywho.responses.cacheName + identifier);
+                return generateResponse(offline.responses[identifier], request);
+
             } else {
-                // Get the response out of the pre-configured list
-                response =  offline.responses[identifier];
-            }
 
-            if (response == null) {
-                manywho.log.error('A response could not be found for identifier: ' + identifier);
-                return null;
-            }
+                // Get the response out of the cached responses based on user activity
+                return manywho.storage.getData(manywho.responses.cacheName + identifier).then(function(response) {
 
-            // Check to see if the response is associated with a State. If not, this means the response should be
-            // associated with the current state
-            if (manywho.utils.isNullOrWhitespace(response.stateId) == true) {
-                response.stateId = manywho.recording.emptyStateId;
-                response.stateToken = manywho.recording.emptyStateId;
-            }
+                    return generateResponse(response.data, request);
 
-            // Check to see if we're dealing with a core engine response
-            if (response != null &&
-                response.mapElementInvokeResponses &&
-                response.mapElementInvokeResponses != null &&
-                response.mapElementInvokeResponses.length > 0 &&
-                response.mapElementInvokeResponses[0].pageResponse != null &&
-                response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses != null &&
-                response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses.length) {
-
-                var pageComponentDataResponses = response.mapElementInvokeResponses[0].pageResponse.pageComponentDataResponses;
-
-                for (var i = 0; i < pageComponentDataResponses.length; i++) {
-
-                    var pageComponentInfo = manywho.graph.getPageComponentInfo(
-                        response.currentMapElementId,
-                        null,
-                        pageComponentDataResponses[i].pageComponentId
-                    );
-
-                    if (pageComponentInfo.typeElement &&
-                        pageComponentInfo.typeElement != null &&
-                        pageComponentInfo.valueElement &&
-                        pageComponentInfo.valueElement != null) {
-
-                        if (isTableComponent(pageComponentInfo.pageComponent)) {
-
-                            // This is a list, so get all the data from the offline table and override
-                            pageComponentDataResponses[i].objectData = manywho.simulation.getAll(
-                                pageComponentInfo.tableName,
-                                pageComponentInfo.typeElement.id
-                            );
-
-                        } else {
-
-                            var value = getValueForComponent(pageComponentInfo);
-
-                            // If the page component has a value, apply it
-                            if (value != null) {
-
-                                pageComponentDataResponses[i].objectData = value.objectData;
-                                pageComponentDataResponses[i].contentValue = value.contentValue;
-
-                            }
-
-                        }
-
-                    }
-
-                }
+                });
 
             }
-
-            // Check to see if we're dealing with an object data response
-            if (response != null &&
-                response.hasOwnProperty("objectData")) {
-
-                // This is a list, so get all the data from the offline table and override
-                response.objectData = manywho.simulation.getAll(
-                    response.tableName,
-                    response.typeElementId
-                );
-
-                // Filter the object data based on search
-                response.objectData = manywho.simulation.search(request.listFilter.search, null, response.objectData);
-
-                if (response.objectData != null) {
-
-                    // We don't always have an offset
-                    if (!request.listFilter.hasOwnProperty("offset")) {
-                        request.listFilter.offset = 0;
-                    }
-
-                    // Apply pagination to the results
-                    var page = request.listFilter.offset / request.listFilter.limit;
-                    var limit = request.listFilter.limit;
-
-                    response.hasMoreResults = (page * limit) + limit + 1 <= response.objectData.length;
-                    response.objectData = response.objectData.slice(page * limit, (page * limit) + limit);
-
-                }
-
-            }
-
-            // Clone the object so we don't change anything in the data store by accident
-            return JSON.parse(JSON.stringify(response));
 
         },
 
@@ -213,10 +279,14 @@ manywho.responses = (function (manywho) {
 
             if (offline.responses == null) {
                 // Get the responses out of the cached responses based on user activity
-                return manywho.storage.getData(manywho.responses.cacheName + identifier);
+                return manywho.storage.getData(manywho.responses.cacheName);
             } else {
                 // Get the responses out of the pre-configured list
-                return JSON.parse(JSON.stringify(offline.responses));
+                return new Promise(function(resolve) {
+                    if (resolve != null) {
+                        resolve(JSON.parse(JSON.stringify(offline.responses)));
+                    }
+                });
             }
 
         },
@@ -240,7 +310,7 @@ manywho.responses = (function (manywho) {
                 responseToCache.tableName = null;
 
                 // Put the object data into the simulation database
-                manywho.simulation.setAll(responseToCache.tableName, responseToCache.objectData);
+                manywho.simulation.updateAll(responseToCache.tableName, responseToCache.objectData);
 
                 // Null out the object data as we don't want to keep it in the cached response, we keep it in the simulation
                 // database piece
