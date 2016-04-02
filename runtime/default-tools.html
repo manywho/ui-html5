@@ -108,8 +108,52 @@
 	</div>
 </div>
 
+<div class="mw-bs">
+	<div class="container">
+		<div class="row">
+			<div class="panel panel-primary">
+				<div class="panel-heading">Offline Recording</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="offline-status"> Set UI to offline
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label for="responses-cache">js/config/responses-{build}.js (<a href="#" id="update-responses">Update</a>)</label>
+							<textarea class="form-control small" rows="5" id="responses-cache"></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label for="requests-to-cache">js/config/sequences-{build}.js (<a href="#" id="update-recording">Start Recording</a>)</label>
+							<textarea class="form-control small" rows="5" id="requests-to-cache"></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label for="data-sync">js/config/data-sync-{build}.js (<a href="#" id="update-data-sync">Update</a>)</label>
+							<textarea class="form-control small" rows="5" id="data-sync"></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<button id="clear-storage" class="btn btn-danger">Clear Storage</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <link rel="stylesheet" href="{{directory}}css/mw-bootstrap.css" />
-<link rel="stylesheet" href="{{directory}}css/themes/mw-sf1.css" id="theme" />
+<link rel="stylesheet" href="{{directory}}css/themes/mw-paper.css" id="theme" />
 
 <link rel="stylesheet" href="{{directory}}css/lib/react-select.css" />
 <link rel="stylesheet" href="{{directory}}css/lib/bootstrap-datetimepicker.css" />
@@ -138,8 +182,6 @@
 <link rel="stylesheet" href="{{directory}}css/list.css" />
 <link rel="stylesheet" href="{{directory}}css/flip.css" />
 
-{{phonegap}}
-
 <script src="{{directory}}js/vendor/jquery-2.1.4.min.js"></script>
 <script src="{{directory}}js/vendor/bootstrap-3.3.6.min.js"></script>
 <script src="{{directory}}js/vendor/react-0.14.6.min.js"></script>
@@ -153,9 +195,9 @@
 
 	function handleString(string) {
 		if (manywho.utils.isNullOrWhitespace(string) == false) {
-			return '"' + string + '"';
+			return string;
 		} else {
-			return 'null';
+			return null;
 		}
 	}
 
@@ -163,6 +205,10 @@
 
 	var objectDataRequests = [];
 	var fileDataRequests = [];
+	var isRecordingSequence = false;
+	var recordingSequence = null;
+	var recordedSequences = [];
+	var currentMapElementId = null;
 
 	var manywho = {
 		cdnUrl: '',
@@ -172,12 +218,76 @@
 
 			if (queryParameters['offline'] == 'true') {
 
+				$('#offline-status').attr('checked', true);
+
 				manywho.connection.setOnlineOverride({
 					isOnline: false,
 					override: true
 				});
 
 			}
+
+			$('#offline-status').change(function() {
+
+				if ($(this).is(":checked")) {
+
+					manywho.connection.setOnlineOverride({
+						isOnline: false,
+						override: true
+					});
+
+				} else {
+
+					manywho.connection.setOnlineOverride({
+						isOnline: false,
+						override: false
+					});
+
+				}
+
+			});
+
+			$('#update-recording').click(function() {
+
+				if ($(this).attr('data-recording') == 'true') {
+
+					isRecordingSequence = false;
+
+					// If we have a recording with something in it, save it to the list of sequences
+					if (recordingSequence != null &&
+							recordingSequence.sequence != null &&
+							recordingSequence.sequence.length > 0) {
+
+						// Push a current entry to the sequence before finishing
+						recordingSequence.sequence.push({
+							mapElementId: currentMapElementId,
+							selectedOutcomeId: null
+						});
+
+						recordedSequences.push(JSON.parse(JSON.stringify(recordingSequence)));
+
+					}
+
+					// Null the current object
+					recordingSequence = null;
+
+					// Show the user the latest list of sequences
+					$('#requests-to-cache').val(JSON.stringify(recordedSequences, null, 4));
+
+					$(this).html('Start Recording');
+					$(this).attr('data-recording', 'false');
+
+				} else {
+
+					isRecordingSequence = true;
+					recordingSequence = {};
+
+					$(this).html('Stop Recording');
+					$(this).attr('data-recording', 'true');
+
+				}
+
+			});
 
 			var backendUri = 'https://flow.manywho.com';
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
@@ -187,13 +297,97 @@
 			var flowId = '{{flowId}}';
 
 			manywho.settings.initialize({
-				adminTenantId: manywhoAdminTenantId,
-				playerUrl: backendUri + '/' + tenantId + 'play/default',
-				joinUrl: backendUri + '/' + tenantId + 'play/default',
-				platform: {
-					uri: backendUri
-				}
-			});
+						adminTenantId: manywhoAdminTenantId,
+						playerUrl: backendUri + '/' + tenantId + 'play/default',
+						joinUrl: backendUri + '/' + tenantId + 'play/default',
+						platform: {
+							uri: backendUri
+						}
+					},
+					{
+						invoke: {
+							beforeSend: function (xhr, request) {
+
+								if (manywho.connection.isOnline(request.stateId).online == true) {
+
+									var selectedOutcomeId = null;
+
+									if (request.mapElementInvokeRequest != null) {
+										selectedOutcomeId = request.mapElementInvokeRequest.selectedOutcomeId;
+									}
+
+									if (isRecordingSequence) {
+
+										if (recordingSequence.hasOwnProperty('name') == false) {
+
+											// Create the root recording info
+											recordingSequence.name = 'My Sequence';
+											recordingSequence.entryOutcomeId = handleString(selectedOutcomeId);
+											recordingSequence.entryMapElementId = handleString(request.currentMapElementId);
+											recordingSequence.sequence = [];
+
+										} else {
+
+											// Push a new entry to the sequence
+											recordingSequence.sequence.push({
+												mapElementId: handleString(request.currentMapElementId),
+												selectedOutcomeId: handleString(selectedOutcomeId)
+											});
+
+										}
+
+									}
+
+								}
+
+							},
+							done: function(response) {
+
+								// We need the current map element id to finish any recording
+								currentMapElementId = handleString(response.currentMapElementId);
+
+							}
+						},
+						objectData: {
+							beforeSend: function(xhr, request) {
+
+								// Clone the object so we don't interfere with execution
+								var objectDataRequest = JSON.parse(JSON.stringify(request));
+
+								// Null out the state identifier
+								objectDataRequest.stateId = manywho.recording.emptyStateId;
+
+								// Put in a placeholder for table name
+								objectDataRequest.tableName = null;
+
+								// Set a default chunk size and limit
+								objectDataRequest.chunkSize = 10;
+								objectDataRequest.listFilter.limit = 250;
+
+								// Add a default name
+								objectDataRequest.name = "Sync " + objectDataRequest.objectDataType.developerName + "s";
+
+								objectDataRequests.push(objectDataRequest);
+
+							}
+						},
+						fileData: {
+							beforeSend: function(xhr, request) {
+
+								// Clone the object so we don't interfere with execution
+								var fileDataRequest = JSON.parse(JSON.stringify(request));
+
+								// Null out the state identifier
+								fileDataRequest.stateId = manywho.recording.emptyStateId;
+
+								// Put in a placeholder for table name
+								fileDataRequest.tableName = null;
+
+								fileDataRequests.push(request);
+
+							}
+						}
+					});
 
 			var options = {
 				authentication: {
@@ -235,8 +429,52 @@
 					null
 			);
 
+			manywho.theming.apply('cosmo');
+
 		}
 	};
+
+	$('#update-responses').on('click', function() {
+
+		manywho.responses.getAll().done(function(response) {
+
+			for (var property in response.data) {
+
+				if (response.data.hasOwnProperty(property)) {
+
+					var response = response.data[property];
+
+					if (response.stateId) {
+
+						// If we have a state id, we want to blank it out for the offline cache
+						response.stateId = manywho.recording.emptyStateId;
+						response.stateToken = manywho.recording.emptyStateId;
+
+					}
+
+				}
+
+			}
+
+			$('#responses-cache').val(JSON.stringify(response.data, null, 4));
+
+		});
+
+	});
+
+	$('#update-data-sync').on('click', function() {
+
+		var dataSync = {};
+		dataSync.objectDataRequests = objectDataRequests;
+		dataSync.fileDataRequests = fileDataRequests;
+
+		$('#data-sync').val(JSON.stringify(dataSync, null, 4));
+
+	});
+
+	$('#clear-storage').on('click', function() {
+		localStorage.clear();
+	})
 
 </script>
 
@@ -268,7 +506,7 @@
 <script src="{{directory}}js/services/recording.js"></script>
 <script src="{{directory}}js/services/responses.js"></script>
 <script src="{{directory}}js/services/simulation.js"></script>
-<script src="{{directory}}js/services/storage-{{storage}}.js"></script>
+<script src="{{directory}}js/services/storage-local.js"></script>
 
 <script src="{{directory}}js/components/mixins.js"></script>
 <script src="{{directory}}js/components/main.js"></script>
@@ -310,10 +548,10 @@
 <script src="{{directory}}js/components/data-sync.js"></script>
 
 <!-- Extensions -->
-<script src="{{directory}}js/config/data-sync-{{build}}.js"></script>
-<script src="{{directory}}js/config/responses-{{build}}.js"></script>
-<script src="{{directory}}js/config/sequences-{{build}}.js"></script>
-<script src="{{directory}}js/config/snapshot-{{build}}.js"></script>
+<script src="js/config/data-sync-{{build}}.js"></script>
+<script src="js/config/responses-{{build}}.js"></script>
+<script src="js/config/sequences-{{build}}.js"></script>
+<script src="js/config/snapshot-{{build}}.js"></script>
 <!-- Extensions -->
 
 <script>

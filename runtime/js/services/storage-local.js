@@ -177,6 +177,7 @@ manywho.storage = (function (manywho) {
             return set("Identifier", RESPONSE_CACHE_NAMESPACE, identifier, response);
 
         }
+
     }
 
 })(manywho);

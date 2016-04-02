@@ -310,12 +310,12 @@ gulp.task('offline', function() {
     // Print our logo for a bit of fun
     console.log("                                                                    @@@@");
     console.log("                                                                    @@@@");
-    console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
-    console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
-    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
-    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@  @@@@ @@@@  @@@@  @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
-    console.log("@@@@ @@@@@ @@@@ @@@@@@@ @@@@ @@@@  @@@@ @@@@@@@@@@  @@@@@@@@@@@@@@@ @@@@  @@@@  @@@@@@@@@@");
-    console.log("@@@@ @@@@@ @@@@   @@@@@ @@@@ @@@@  @@@@  @@@@@@@@@   @@@@@@ @@@@@@  @@@@  @@@@    @@@@@@");
+    console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
+    console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@  @@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@@@@ @@@@ @@@@  @@@@ @@@@@@@@@@ @@@@@@@@@@@@@@@ @@@@  @@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@   @@@@@ @@@@ @@@@  @@@@  @@@@@@@@@  @@@@@@ @@@@@@  @@@@  @@@@    @@@@@@");
     console.log("                                             @@@@@");
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
@@ -439,6 +439,18 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("index.html"))
                                             .pipe(gulp.dest('../../'));
+
+                                        console.log("Generating PhoneGap tools.html");
+
+                                        // Create a new tools.html file with the appropriate settings
+                                        gulp.src(["default-tools.html"])
+                                            .pipe(replace("{{tenantId}}", tenantId))
+                                            .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{directory}}", 'manywho/runtime/'))
+                                            .pipe(replace("{{storage}}", 'local'))
+                                            .pipe(replace("{{build}}", res.build))
+                                            .pipe(rename("tools.html"))
+                                            .pipe(gulp.dest('../../'));
                                     } else {
                                         console.log("Generating offline.html");
 
@@ -451,6 +463,18 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{phonegap}}", ''))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("offline.html"))
+                                            .pipe(gulp.dest('.'));
+
+                                        console.log("Generating tools.html");
+
+                                        // Create a new tools.html file with the appropriate settings
+                                        gulp.src(["default-tools.html"])
+                                            .pipe(replace("{{tenantId}}", tenantId))
+                                            .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{directory}}", ''))
+                                            .pipe(replace("{{storage}}", 'local'))
+                                            .pipe(replace("{{build}}", res.build))
+                                            .pipe(rename("tools.html"))
                                             .pipe(gulp.dest('.'));
                                     }
 
