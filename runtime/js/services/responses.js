@@ -280,10 +280,10 @@ manywho.responses = (function (manywho) {
 
             if (offline.responses == null) {
                 // Get the responses out of the cached responses based on user activity
-                return manywho.storage.getResponseCache(manywho.responses.cacheName);
+                return manywho.storage.getAllResponseCache();
             } else {
                 // Get the responses out of the pre-configured list
-                return new Promise(function(resolve) {
+                return new Promise(function(resolve, reject) {
                     if (resolve != null) {
                         resolve(JSON.parse(JSON.stringify(offline.responses)));
                     }

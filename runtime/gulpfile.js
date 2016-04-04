@@ -586,6 +586,9 @@ gulp.task('offline-build', function() {
                                     console.log("Generating js/config/data-sync-" + res.build + ".js");
                                     fs.writeFileSync("js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
 
+                                    console.log("Done!");
+                                    return;
+
                                 })
                                 .catch(function (err) {
                                     console.log('SnapShot Error: ' + err);

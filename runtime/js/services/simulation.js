@@ -359,14 +359,6 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        if (pageComponentInputResponse.contentValue == null &&
-            pageComponentInputResponse.objectData == null) {
-
-            // Ignore this data as it's null, we do include if the contentValue is blank
-            return null;
-
-        }
-
         // If we have a property, we need to construct the object
         if (pageComponentInfo.typeElementProperty != null) {
 
@@ -415,6 +407,7 @@ manywho.simulation = (function (manywho) {
             // an object from various properties on the page
             // TODO: this about more complex data collection
             //objectData = pageComponentInputResponse.objectData;
+            manywho.log.error('The scenario of mapping a whole object has not yet been implemented.');
 
         }
 

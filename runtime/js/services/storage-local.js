@@ -68,21 +68,59 @@ manywho.storage = (function (manywho) {
 
     }
 
+    // Get all data for the provided namespace
+    //
+    function getAll(namespace) {
+
+        return new Promise(function(resolve, reject) {
+
+            var responses = {};
+
+            for (var i = 0; i <= localStorage.length - 1; i++) {
+
+                // Check to see if the key starts with the provided namespace
+                if (localStorage.key(i).indexOf(namespace) == 0) {
+
+                    var key = localStorage.key(i).substring(namespace.length);
+
+                    // If so, null it out so we remove any remnants of data
+                    responses[key] = JSON.parse(localStorage.getItem(localStorage.key(i)));
+
+                }
+
+            }
+
+            if (resolve != null) {
+                resolve(responses);
+            }
+
+        });
+
+    }
+
     // Clear data from the provided namespace
     //
     function clear(namespace) {
 
-        for (var i = 0; i <= localStorage.length - 1; i++) {
+        return new Promise(function(resolve, reject) {
 
-            // Check to see if the key starts with the provided namespace
-            if (localStorage.key(i).indexOf(namespace) == 0) {
+            for (var i = 0; i <= localStorage.length - 1; i++) {
 
-                // If so, null it out so we remove any remnants of data
-                localStorage.setItem(localStorage.key(i), null);
+                // Check to see if the key starts with the provided namespace
+                if (localStorage.key(i).indexOf(namespace) == 0) {
+
+                    // If so, null it out so we remove any remnants of data
+                    localStorage.setItem(localStorage.key(i), null);
+
+                }
 
             }
 
-        }
+            if (resolve != null) {
+                resolve();
+            }
+
+        });
 
     }
 
@@ -167,6 +205,14 @@ manywho.storage = (function (manywho) {
         getResponseCache: function(identifier, responseData) {
 
             return get("Identifier", RESPONSE_CACHE_NAMESPACE, identifier, responseData);
+
+        },
+
+        // Get response data that's needed for offline to simulate functions.
+        //
+        getAllResponseCache: function() {
+
+            return getAll(RESPONSE_CACHE_NAMESPACE);
 
         },
 
