@@ -426,8 +426,12 @@ gulp.task('offline-build', function() {
                             })
                                 .then(function (snapshot) {
 
+                                    var path = '';
+
                                     if (res.phonegap == 'y') {
                                         console.log("Generating PhoneGap index.html");
+
+                                        path = '../../';
 
                                         // Create a new index.html file with the appropriate settings
                                         gulp.src(["default-offline.html"])
@@ -438,7 +442,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{phonegap}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("index.html"))
-                                            .pipe(gulp.dest('../../'));
+                                            .pipe(gulp.dest(path));
 
                                         console.log("Generating PhoneGap tools.html");
 
@@ -450,7 +454,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("tools.html"))
-                                            .pipe(gulp.dest('../../'));
+                                            .pipe(gulp.dest(path));
                                     } else {
                                         console.log("Generating offline.html");
 
@@ -480,17 +484,17 @@ gulp.task('offline-build', function() {
 
                                     // Write the snapshot file
                                     console.log("Generating js/config/snapshot-" + res.build + ".js");
-                                    fs.writeFileSync("js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
+                                    fs.writeFileSync(path + "js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
 
 
                                     // Write the responses file
                                     console.log("Generating js/config/responses-" + res.build + ".js");
-                                    fs.writeFileSync("js/config/responses-" + res.build + ".js", "offline.responses = null;");
+                                    fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
 
 
                                     // Write the sequences file
                                     console.log("Generating js/config/sequences-" + res.build + ".js");
-                                    fs.writeFileSync("js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
+                                    fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
 
 
                                     var dataSync = {
@@ -584,7 +588,7 @@ gulp.task('offline-build', function() {
 
                                     // Write the data sync file
                                     console.log("Generating js/config/data-sync-" + res.build + ".js");
-                                    fs.writeFileSync("js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
+                                    fs.writeFileSync(path + "js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
 
                                     console.log("Done!");
                                     return;

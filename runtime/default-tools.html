@@ -434,13 +434,13 @@
 
 	$('#update-responses').on('click', function() {
 
-		manywho.responses.getAll().then(function(response) {
+		manywho.responses.getAll().then(function(responses) {
 
-			for (var property in response.data) {
+			for (var property in responses) {
 
-				if (response.data.hasOwnProperty(property)) {
+				if (responses.hasOwnProperty(property)) {
 
-					var response = response.data[property];
+					var response = responses[property];
 
 					if (response.stateId) {
 
@@ -454,7 +454,7 @@
 
 			}
 
-			$('#responses-cache').val(JSON.stringify(response.data, null, 4));
+			$('#responses-cache').val(JSON.stringify(responses, null, 4));
 
 		});
 
