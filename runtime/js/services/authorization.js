@@ -39,6 +39,11 @@ manywho.authorization = (function (manywho) {
 
                 }
 
+				if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'saml', true)) {
+						 window.location = response.authorizationContext.loginUrl;
+						 return;
+				}
+
                 manywho.state.setLogin({
                     isVisible: true,
                     directoryId: response.authorizationContext.directoryId,
