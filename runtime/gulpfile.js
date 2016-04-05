@@ -502,7 +502,9 @@ gulp.task('offline-build', function() {
                                         fileDataRequests: []
                                     };
 
-                                    // Find object data requests
+                                    var uniqueDataSyncs = {};
+
+                                    // Find object data requests in the pages
                                     if (snapshot.pageElements != null &&
                                         snapshot.pageElements.length > 0) {
 
@@ -515,65 +517,11 @@ gulp.task('offline-build', function() {
 
                                                 for (var j = 0; j < pageComponents.length; j++) {
 
-                                                    if (pageComponents[j].objectDataRequest != null) {
+                                                    var objectDataRequest = createRuntimeObjectDataRequest(snapshot, pageComponents[j].objectDataRequest, true);
 
-                                                        for (var k = 0; k < snapshot.typeElements.length; k++) {
-
-                                                            if (snapshot.typeElements[k].id == pageComponents[j].objectDataRequest.typeElementId) {
-
-                                                                pageComponents[j].objectDataRequest.name = "Sync " + snapshot.typeElements[k].developerName + "s";
-                                                                pageComponents[j].objectDataRequest.typeElementBindingId = snapshot.typeElements[k].bindings[0].id;
-
-                                                                // Create the additional properties based on the Type
-                                                                pageComponents[j].objectDataRequest.objectDataType = {};
-                                                                pageComponents[j].objectDataRequest.objectDataType.typeElementId = snapshot.typeElements[k].id;
-                                                                pageComponents[j].objectDataRequest.objectDataType.developerName = snapshot.typeElements[k].developerName;
-
-                                                                pageComponents[j].objectDataRequest.objectDataType.properties = [];
-
-                                                                for (var l = 0; l < snapshot.typeElements[k].properties.length; l++) {
-
-                                                                    pageComponents[j].objectDataRequest.objectDataType.properties.push({
-                                                                        "developerName": snapshot.typeElements[k].properties[l].developerName,
-                                                                        "list": null
-                                                                    });
-
-                                                                }
-
-                                                                break;
-
-                                                            }
-
-                                                        }
-
-                                                        // Assign default properties
-                                                        pageComponents[j].objectDataRequest.authorization = null;
-                                                        pageComponents[j].objectDataRequest.configurationValues = null;
-                                                        pageComponents[j].objectDataRequest.command = null;
-                                                        pageComponents[j].objectDataRequest.culture = {
-                                                            "id": null,
-                                                            "developerName": null,
-                                                            "developerSummary": null,
-                                                            "brand": null,
-                                                            "language": "EN",
-                                                            "country": "USA",
-                                                            "variant": null
-                                                        };
-
-                                                        if (pageComponents[j].objectDataRequest.listFilter == null) {
-                                                            pageComponents[j].objectDataRequest.listFilter = {};
-                                                        }
-
-                                                        // Assign a default data batch size and chunk size
-                                                        pageComponents[j].objectDataRequest.listFilter.limit = 250;
-                                                        pageComponents[j].objectDataRequest.chunkSize = 10;
-
-                                                        // Assign the empty state
-                                                        pageComponents[j].objectDataRequest.stateId = "00000000-0000-0000-0000-000000000000";
-                                                        pageComponents[j].objectDataRequest.token = null;
-
+                                                    if (objectDataRequest != null) {
                                                         // Add it to the list of requests to sync
-                                                        dataSync.objectDataRequests.push(pageComponents[j].objectDataRequest);
+                                                        uniqueDataSyncs[objectDataRequest.typeElementBindingId] = objectDataRequest;
 
                                                     }
 
@@ -585,6 +533,47 @@ gulp.task('offline-build', function() {
 
                                     }
 
+                                    // Find the object data requests in the map elements
+                                    if (snapshot.mapElements != null &&
+                                        snapshot.mapElements.length > 0) {
+
+                                        for (var i = 0; i < snapshot.mapElements.length; i++) {
+
+                                            if (snapshot.mapElements[i].dataActions != null &&
+                                                snapshot.mapElements[i].dataActions.length > 0) {
+
+                                                for (var j = 0; j < snapshot.mapElements[i].dataActions.length; j++) {
+
+                                                    // Only sync data load data actions
+                                                    if (snapshot.mapElements[i].dataActions[j].crudOperationType.toLowerCase() == "load") {
+
+                                                        var objectDataRequest = createRuntimeObjectDataRequest(snapshot, snapshot.mapElements[i].dataActions[j].objectDataRequest, true);
+
+                                                        if (objectDataRequest != null) {
+                                                            // Add it to the list of requests to sync
+                                                            uniqueDataSyncs[objectDataRequest.typeElementBindingId] = objectDataRequest;
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    // Go through all of the unique data syncs and add to the standard format
+                                    for (var property in uniqueDataSyncs) {
+
+                                        if (uniqueDataSyncs.hasOwnProperty(property)) {
+
+                                            dataSync.objectDataRequests.push(uniqueDataSyncs[property]);
+
+                                        }
+
+                                    }
 
                                     // Write the data sync file
                                     console.log("Generating js/config/data-sync-" + res.build + ".js");
@@ -611,3 +600,67 @@ gulp.task('offline-build', function() {
         }));
 
 });
+
+function createRuntimeObjectDataRequest(snapshot, objectDataRequest, clearFilter) {
+
+    if (objectDataRequest != null) {
+
+        for (var k = 0; k < snapshot.typeElements.length; k++) {
+
+            if (snapshot.typeElements[k].id == objectDataRequest.typeElementId) {
+
+                objectDataRequest.name = "Sync " + snapshot.typeElements[k].developerName + "s";
+                objectDataRequest.typeElementBindingId = snapshot.typeElements[k].bindings[0].id;
+
+                // Create the additional properties based on the Type
+                objectDataRequest.objectDataType = {};
+                objectDataRequest.objectDataType.typeElementId = snapshot.typeElements[k].id;
+                objectDataRequest.objectDataType.developerName = snapshot.typeElements[k].developerName;
+
+                objectDataRequest.objectDataType.properties = [];
+
+                for (var l = 0; l < snapshot.typeElements[k].properties.length; l++) {
+
+                    objectDataRequest.objectDataType.properties.push({
+                        "developerName": snapshot.typeElements[k].properties[l].developerName,
+                        "list": null
+                    });
+
+                }
+
+                break;
+
+            }
+
+        }
+
+        // Assign default properties
+        objectDataRequest.authorization = null;
+        objectDataRequest.configurationValues = null;
+        objectDataRequest.command = null;
+        objectDataRequest.culture = {
+            "id": null,
+            "developerName": null,
+            "developerSummary": null,
+            "brand": null,
+            "language": "EN",
+            "country": "USA",
+            "variant": null
+        };
+
+        if (objectDataRequest.listFilter == null ||
+            clearFilter == true) {
+            objectDataRequest.listFilter = {};
+        }
+
+        // Assign a default data batch size and chunk size
+        objectDataRequest.listFilter.limit = 250;
+        objectDataRequest.chunkSize = 10;
+
+        // Assign the empty state
+        objectDataRequest.stateId = "00000000-0000-0000-0000-000000000000";
+        objectDataRequest.token = null;
+    }
+
+    return objectDataRequest;
+}

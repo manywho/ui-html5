@@ -124,6 +124,9 @@ manywho.offline = (function (manywho) {
             if (request.listFilter &&
                 request.listFilter != null) {
 
+                // The binding is the most important identifier
+                identifier += request.typeElementBindingId;
+
                 // Check the where filter, we ignore paging and search stuff
                 if (request.listFilter.where &&
                     request.listFilter.where != null &&

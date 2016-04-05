@@ -32,10 +32,33 @@
     function deleteRecording(recording) {
 
         manywho.recording.delete(recording).then(function() {
-            // Remove the recording from the UI
-            $('#' + recording.id).remove();
 
-        });
+            var recordings = this.state.recordings;
+            var isOnline = this.state.isOnline;
+
+            if (recordings != null &&
+                recordings.length > 0) {
+
+                for (var i = 0; i < recordings.length; i++) {
+
+                    if (recordings[i].id == recording.id) {
+
+                        recordings.splice(i);
+                        break;
+
+                    }
+
+                }
+
+            }
+
+            // Set the recordings so they're rendered to the user as expected
+            this.setState({
+                'recordings': recordings,
+                'isOnline': isOnline
+            });
+
+        }.bind(this));
 
     }
 
@@ -145,6 +168,7 @@
                                     className: 'btn btn-success recordings',
                                     'data-action': 'sync',
                                     'data-id': this.state.recordings[i].id,
+                                    disabled: !this.state.isOnline,
                                     onClick: this.onClick
                                 },
                                 'Sync'
@@ -155,6 +179,7 @@
                                     className: 'btn btn-info recordings',
                                     'data-action': 'retry',
                                     'data-id': this.state.recordings[i].id,
+                                    disabled: !this.state.isOnline,
                                     onClick: this.onClick
                                 },
                                 'Retry'
@@ -165,6 +190,7 @@
                                     className: 'btn btn-warning recordings',
                                     'data-action': 'fix',
                                     'data-id': this.state.recordings[i].id,
+                                    disabled: !this.state.isOnline,
                                     onClick: this.onClick
                                 },
                                 'Fix'
@@ -175,6 +201,7 @@
                                     className: 'btn btn-danger recordings',
                                     'data-action': 'delete',
                                     'data-id': this.state.recordings[i].id,
+                                    disabled: !this.state.isOnline,
                                     onClick: this.onClick
                                 },
                                 'Delete'

@@ -444,7 +444,7 @@ permissions and limitations under the License.
             if (!model.objectDataRequest && !model.fileDataRequest) {
 
                 if (!manywho.utils.isNullOrWhitespace(state.search)) {
-                    objectData = manywho.simulation.search(state.search, displayColumns, model.objectData);
+                    objectData = manywho.simulation.search(state.search, displayColumns, model.objectData, false);
                 }
                 else {
                     objectData = model.objectData;

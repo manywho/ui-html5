@@ -11,56 +11,144 @@
 
 manywho.graph = (function (manywho) {
 
+    // Utility method for returning the selected outcome for the provided identifier. If the selectedOutcomeId
+    // parameter is null, we take the "only" outcome, but return null if there are multiple paths as we don't know
+    // which path to follow.
+    //
+    function getSelectedOutcome(mapElement, selectedOutcomeId) {
+
+        // Find the selected outcome so we can grab the action type
+        if (mapElement.outcomes != null &&
+            mapElement.outcomes.length > 0) {
+
+            // Return if we have any branching and no selection
+            if (manywho.utils.isNullOrWhitespace(selectedOutcomeId)) {
+
+                if (mapElement.outcomes.length > 1) {
+                    manywho.log.info('No selected outcome has been provided and there are multiple paths.');
+                    return null;
+                }
+
+                return mapElement.outcomes[0];
+
+            }
+
+            // Find the outcome based on the provided selected outcome identifier
+            for (var j = 0; j < mapElement.outcomes.length; j++) {
+
+                if (manywho.utils.isEqual(mapElement.outcomes[j].id, selectedOutcomeId, true)) {
+
+                    return mapElement.outcomes[j];
+
+                }
+
+            }
+
+        }
+
+        // Simply return if there's nothing left
+        manywho.log.info("The provided Map Element has no matching Outcomes.");
+        return null;
+
+    }
+
+    // Utility method for getting the map element from the snapshot for the provided identifier.
+    //
+    function getMapElement(mapElementId) {
+
+        // Find the map element associated with this request
+        if (offline.snapshot.mapElements &&
+            offline.snapshot.mapElements != null &&
+            offline.snapshot.mapElements.length > 0) {
+
+            for (var j = 0; j < offline.snapshot.mapElements.length; j++) {
+
+                if (manywho.utils.isEqual(offline.snapshot.mapElements[j].id, mapElementId, true)) {
+
+                    return offline.snapshot.mapElements[j];
+
+                }
+
+            }
+
+        }
+
+        manywho.log.error('A MapElement could not be found for provided identifier: ' + mapElementId);
+        return;
+
+    }
+
+    // Utility function that scans through the snapshot Flow graph for all LOAD data actions. We want the offline
+    // simulation engine to execute these as well as possible to improve the user journey.
+    //
+    function checkElementForDataDependencies(dependencyActions, mapElementId, selectedOutcomeId) {
+
+        if (dependencyActions == null) {
+            dependencyActions = [];
+        }
+
+        var mapElement = getMapElement(mapElementId);
+
+        // Grab all of the loading data actions in the order in which the author wants the executed. The simulation
+        // engine will attempt to grab this data from the synchronized data set matching these requests.
+        if (mapElement.dataActions != null &&
+            mapElement.dataActions.length > 0) {
+
+            // Sort them just in case ordering matters
+            var dataActions = mapElement.dataActions.sort(function (a, b) {
+
+                return a.order - b.order;
+
+            });
+
+            for (var i = 0; i < dataActions.length; i++) {
+
+                // We only care about data loads
+                if (manywho.utils.isEqual(dataActions[i].crudOperationType, 'load', true)) {
+
+                    // Push the action into the list of actions
+                    dependencyActions.push(dataActions[i]);
+
+                }
+
+            }
+
+        }
+
+        var selectedOutcome = getSelectedOutcome(mapElement, selectedOutcomeId);
+
+        if (selectedOutcome != null) {
+
+            // Add dependency actions as we crawl through the Flow tree
+            dependencyActions = dependencyActions.concat(
+                checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, selectedOutcome.id)
+            );
+
+        }
+
+        return dependencyActions;
+
+    }
+
     return {
+
+        scanPathForDataActions: function(mapElementId, selectedOutcomeId) {
+
+            return checkElementForDataDependencies(null, mapElementId, selectedOutcomeId);
+
+        },
 
         getPageComponentInfo: function(mapElementId, selectedOutcomeId, pageComponentId) {
 
             var pageComponentInfo = {};
 
-            pageComponentInfo.mapElement = null;
+            pageComponentInfo.mapElement = getMapElement(mapElementId);
 
-            // Find the map element associated with this request
-            if (offline.snapshot.mapElements &&
-                offline.snapshot.mapElements != null &&
-                offline.snapshot.mapElements.length > 0) {
+            var selectedOutcome = getSelectedOutcome(pageComponentInfo.mapElement, selectedOutcomeId);
 
-                for (var j = 0; j < offline.snapshot.mapElements.length; j++) {
-
-                    if (manywho.utils.isEqual(offline.snapshot.mapElements[j].id, mapElementId, true)) {
-
-                        pageComponentInfo.mapElement = offline.snapshot.mapElements[j];
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            if (pageComponentInfo.mapElement == null) {
-                manywho.log.error('A MapElement could not be found for current request.');
-                return;
-            }
-
-            // Find the selected outcome so we can grab the action type
-            if (pageComponentInfo.mapElement.outcomes != null &&
-                pageComponentInfo.mapElement.outcomes.length > 0 &&
-                manywho.utils.isNullOrWhitespace(selectedOutcomeId) == false) {
-
-                for (var j = 0; j < pageComponentInfo.mapElement.outcomes.length; j++) {
-
-                    if (manywho.utils.isEqual(pageComponentInfo.mapElement.outcomes[j].id, selectedOutcomeId, true)) {
-
-                        pageComponentInfo.actionType = pageComponentInfo.mapElement.outcomes[j].pageActionType;
-
-                    }
-
-                }
-
-            } else {
-
-                pageComponentInfo.actionType = null;
-
+            // Assign the action type if we have an outcome
+            if (selectedOutcome != null) {
+                pageComponentInfo.actionType = selectedOutcome.pageActionType;
             }
 
             if (manywho.utils.isNullOrWhitespace(pageComponentInfo.mapElement.pageElementId)) {

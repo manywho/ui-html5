@@ -333,13 +333,6 @@ manywho.simulation = (function (manywho) {
 
         var modifier = cleanId(valueElementId.id);
 
-        // If we also have a property, we add that to the id also
-        if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId) == false) {
-
-            modifier += cleanId(valueElementId.typeElementPropertyId);
-
-        }
-
         return manywho.storage.getCache(tableName + modifier);
 
     }
@@ -613,6 +606,56 @@ manywho.simulation = (function (manywho) {
 
     }
 
+    function getValueFromCache(tableName, typeElementId, valueElementId, referenceObject) {
+
+        return getStateCache(getTableName(tableName, typeElementId), valueElementId)
+            .then(function(response) {
+
+                referenceObject.objectData = null;
+                referenceObject.contentValue = null;
+
+                if (response.data != null) {
+
+                    // We have some object data stored, so we need to get that out
+                    if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId)) {
+
+                        referenceObject.objectData = [response.data];
+
+                    } else {
+
+                        // Find the property in this object and return that
+                        if (response.data.properties != null &&
+                            response.data.properties.length > 0) {
+
+                            for (var i = 0; i < response.data.properties.length; i++) {
+
+                                if (manywho.utils.isEqual(
+                                        response.data.properties[i].typeElementPropertyId,
+                                        valueElementId.typeElementPropertyId,
+                                        true)) {
+
+                                    // We have a match, return the value information from the object
+                                    referenceObject.contentValue = response.data.properties[i].contentValue;
+                                    referenceObject.objectData = response.data.properties[i].objectData;
+
+                                    break;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                return referenceObject;
+
+            });
+
+    }
+
     return {
 
         // Utility function for assigning identifiers to the object data. This is needed so generated objects can be
@@ -624,9 +667,9 @@ manywho.simulation = (function (manywho) {
 
         },
 
-        get: function(tableName, typeElementId, valueElementId) {
+        get: function(tableName, typeElementId, valueElementId, referenceObject) {
 
-            return getStateCache(getTableName(tableName, typeElementId), valueElementId);
+            return getValueFromCache(tableName, typeElementId, valueElementId, referenceObject);
 
         },
 
@@ -832,9 +875,190 @@ manywho.simulation = (function (manywho) {
 
         },
 
+        getObjectDataRequest: function(objectDataRequest) {
+
+            return getTable(getTableName(null, objectDataRequest.typeElementId), objectDataRequest, true)
+                .then(function (dataResponse) {
+
+                    var valueElementId = null;
+                    var columnTypeElementPropertyId = null;
+
+                    if (dataResponse.additionalObjectData.listFilter != null) {
+
+                        if (dataResponse.additionalObjectData.listFilter.filterId != null) {
+
+                            // The user is filtering directly by id
+                            valueElementId = dataResponse.additionalObjectData.listFilter.filterId;
+                            // TODO: We don't know the column for this type of query
+
+                        } else if (dataResponse.additionalObjectData.listFilter.where != null &&
+                            dataResponse.additionalObjectData.listFilter.where.length > 0) {
+
+                            // Check to see if there are multiple where's
+                            if (dataResponse.additionalObjectData.listFilter.where.length > 1) {
+                                manywho.log.error("Data Actions cannot have more than one where condition when executing offline.");
+                                return null;
+                            }
+
+                            valueElementId = dataResponse.additionalObjectData.listFilter.where[0].valueElementToReferenceId;
+                            columnTypeElementPropertyId = dataResponse.additionalObjectData.listFilter.where[0].columnTypeElementPropertyId;
+
+                        }
+
+                    }
+
+                    // If we don't have a value for the filter, we currently don't filter
+                    // TODO: This means we automatically exclude object data requests that have no filter
+
+                    if (valueElementId != null) {
+
+                        // Now we need to get the type for the value that's being referenced. Otherwise we
+                        // can't get the correct object out of the cache
+                        var typeElementIdForValue = null;
+
+                        // Get the type for the value that we're filtering by - this is needed so we can get the value from
+                        // the cache that's associated
+                        if (offline.snapshot.valueElements != null &&
+                            offline.snapshot.valueElements.length > 0) {
+
+                            for (var x = 0; x < offline.snapshot.valueElements.length; x++) {
+
+                                if (manywho.utils.isEqual(offline.snapshot.valueElements[x].id, valueElementId.id, true)) {
+
+                                    typeElementIdForValue = offline.snapshot.valueElements[x].typeElementId;
+                                    break;
+
+                                }
+
+                            }
+                        }
+
+                        if (manywho.utils.isNullOrWhitespace(typeElementIdForValue) == true) {
+                            manywho.log.error("A Type could not be found for the Value being referenced: " + valueElementId.id);
+                            return;
+                        }
+
+                        // Now we have the object data, we need to filter it by the value in the state
+                        return getValueFromCache(
+                            null,
+                            typeElementIdForValue,
+                            valueElementId,
+                            {}).then(function (valueResponse) {
+
+                            // Send in only the column for the "where" clause
+                            var columns = [
+                                {
+                                    "typeElementPropertyId": columnTypeElementPropertyId
+                                }
+                            ];
+
+                            // TODO: Currently we assume "EQUAL" for all filters
+                            // Filter the data by the response content value
+                            var objectData = manywho.simulation.search(
+                                valueResponse.contentValue,
+                                columns,
+                                dataResponse.data,
+                                true);
+
+                            // Return a complex object so we have the source data also
+                            return {
+                                data: objectData,
+                                additionalObjectData: dataResponse.additionalObjectData
+                            };
+
+                        });
+
+                    }
+
+                    // Simply resolve with the provided data as we don't have a filter
+                    return new Promise(function(resolve) {
+                        if (resolve != null) {
+                            resolve(dataResponse);
+                        }
+                    });
+
+                });
+
+        },
+
+        // A lightweight function for applying data actions to the simulation state. Currently this is done in parallel
+        // rather than in ordered series. The data actions are provided in order.
+        //
+        execute: function(mapElementId, selectedOutcomeId) {
+
+            var promises = [];
+
+            var dataActions = manywho.graph.scanPathForDataActions(mapElementId, selectedOutcomeId);
+
+            if (dataActions != null &&
+                dataActions.length > 0) {
+
+                for (var i = 0; i < dataActions.length; i++) {
+
+                    // Add the value element to apply information to make the object handling a little simpler
+                    var request = dataActions[i].objectDataRequest;
+                    request.valueElementToApplyId = dataActions[i].valueElementToApplyId;
+
+                    // Get the data from the data sync tables for each of the data actions provided
+                    promises.push(manywho.simulation.getObjectDataRequest(request).then(function (response) {
+
+                        var contentType = null;
+
+                        // Get the type for the value that we're filtering by - this is needed so we can get the value from
+                        // the cache that's associated
+                        if (offline.snapshot.valueElements != null &&
+                            offline.snapshot.valueElements.length > 0) {
+
+                            for (var x = 0; x < offline.snapshot.valueElements.length; x++) {
+
+                                if (manywho.utils.isEqual(offline.snapshot.valueElements[x].id, response.additionalObjectData.valueElementToApplyId.id, true)) {
+
+                                    contentType = offline.snapshot.valueElements[x].contentType;
+                                    break;
+
+                                }
+
+                            }
+                        }
+
+                        var objectData = response.data;
+
+                        // Make sure we send lists and lists and objects as objects to the cache
+                        if (manywho.utils.isEqual(manywho.component.contentTypes.object, contentType, true) &&
+                            response.data != null &&
+                            response.data.length > 0) {
+
+                            if (objectData.length > 1) {
+                                manywho.log.error("The query is returning more than one object for: " + valueResponse.contentValue);
+                                return;
+                            }
+
+                            objectData = response.data[0];
+
+                        }
+
+                        // Now that we have the filtered data, apply it to the state cache
+                        // We hard code edit to get the right behaviour from the cache
+                        return applyToStateCache(
+                            null,
+                            response.additionalObjectData.typeElementId,
+                            response.additionalObjectData.valueElementToApplyId,
+                            objectData,
+                            'edit'
+                        );
+                    }));
+
+                }
+
+            }
+
+            return Promise.all(promises);
+
+        },
+
         // A lightweight search function for finding matches in the provided object data.
         //
-        search: function(search, columns, objectData) {
+        search: function(search, columns, objectData, isExact) {
 
             // If we have no object data, we don't need to search anything
             if (objectData == null ||
@@ -843,8 +1067,10 @@ manywho.simulation = (function (manywho) {
                 return null;
             }
 
-            // Return all of the object data if no search has been provided
-            if (manywho.utils.isNullOrWhitespace(search)) {
+            // Return all of the object data if no search has been provided and we're not looking for an exact
+            // match on the data
+            if (manywho.utils.isNullOrWhitespace(search) &&
+                isExact == false) {
                 return objectData;
             }
 
@@ -865,10 +1091,27 @@ manywho.simulation = (function (manywho) {
 
                         if (manywho.utils.isEqual(property.typeElementPropertyId, columns[i].typeElementPropertyId, false)) {
 
-                            if (property.contentValue != null &&
-                                property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1) {
+                            if (manywho.utils.isNullOrWhitespace(property.contentValue) == false) {
 
-                                return property;
+                                if (isExact == true) {
+
+                                    // Match based on exact
+                                    if (manywho.utils.isEqual(property.contentValue, search, true)) {
+
+                                        return property;
+
+                                    }
+
+                                } else {
+
+                                    // Match based on any
+                                    if (property.contentValue.toLowerCase().indexOf(search.toLowerCase()) != -1) {
+
+                                        return property;
+
+                                    }
+
+                                }
 
                             }
 

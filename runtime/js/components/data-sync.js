@@ -19,6 +19,12 @@
 
     var dataSync = React.createClass({
 
+        getInitialState: function() {
+            return {
+                isOnline: true
+            };
+        },
+
         onClick: function(e) {
 
             e.preventDefault();
@@ -52,12 +58,13 @@
 
         componentDidMount: function() {
 
-            // Check to see if the user is in fact online
-            if (manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id).online == false) {
+            // Check to see if the user is online
+            var isOnline = manywho.connection.isOnline(manywho.state.getState(this.props.flowKey).id).online;
 
-                $(".data-sync").prop("disabled", true);
-
-            }
+            // Set the recordings so they're rendered to the user as expected
+            this.setState({
+                'isOnline': isOnline
+            });
 
         },
 
@@ -80,7 +87,13 @@
                         React.DOM.div({ className: 'panel-heading' }, offline.dataSync.objectDataRequests[i].name),
                         React.DOM.div({ className: 'panel-body' }, [
                             React.DOM.button(
-                                { className: 'btn btn-success data-sync', 'data-action': 'sync', 'data-id': offline.dataSync.objectDataRequests[i].typeElementBindingId, onClick: this.onClick },
+                                {
+                                    className: 'btn btn-success data-sync',
+                                    'data-action': 'sync',
+                                    'data-id': offline.dataSync.objectDataRequests[i].typeElementBindingId,
+                                    disabled: !this.state.isOnline,
+                                    onClick: this.onClick
+                                },
                                 'Sync'
                             )
                         ]),
