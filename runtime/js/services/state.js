@@ -19,7 +19,7 @@ manywho.state = (function (manywho) {
     var location = {};
     var login = {};
     var options = {};
-    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     function assignGeoLocation(position) {
 
@@ -348,7 +348,7 @@ manywho.state = (function (manywho) {
 
             components[lookUpKey] == null;
             delete components[lookUpKey];
-            
+
         }
 
     }
