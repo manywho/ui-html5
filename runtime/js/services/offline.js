@@ -44,7 +44,7 @@ manywho.offline = (function (manywho) {
                 }
 
                 // Update the simulation data also
-                promises.push(manywho.simulation.set(request));
+                promises.push(manywho.simulation.processRequest(request));
 
             }
 

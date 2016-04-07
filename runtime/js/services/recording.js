@@ -172,7 +172,7 @@ manywho.recording = (function (manywho) {
         // Create an active recording or reset the current one and clone the sequence entries
         // so we know what's been completed
         return {
-            id: manywho.simulation.getGuid(),
+            id: manywho.utils.getGuid(),
             name: defaultName,
             stateId: request.stateId,
             nameReference: sequence.name,

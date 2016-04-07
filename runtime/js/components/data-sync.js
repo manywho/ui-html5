@@ -51,7 +51,7 @@
 
             // Perform the sync on the matched object data request
             if (objectDataRequest != null) {
-                manywho.simulation.syncObjectData(this.props.flowKey, objectDataRequest, progressFunction);
+                manywho.simulation.syncDataSyncObjectData(this.props.flowKey, objectDataRequest, progressFunction);
             }
 
         },

@@ -166,19 +166,19 @@ manywho.storage = (function (manywho) {
 
         },
 
-        // Get arbitrary data that's needed for offline to simulate functions from a cache.
+        // Get the application state from the cache.
         //
-        getCache: function(identifier, objectData) {
+        getState: function(state) {
 
-            return get("Identifier", STATE_CACHE, identifier, objectData);
+            return get("State", STATE_CACHE, "state", state);
 
         },
 
-        // Set arbitrary data that's needed for offline to simulate functions from a cache.
+        // Set the application state in the cache.
         //
-        setCache: function(identifier, objectData) {
+        setState: function(state) {
 
-            return set("Identifier", STATE_CACHE, identifier, objectData);
+            return set("State", STATE_CACHE, "state", state);
 
         },
 

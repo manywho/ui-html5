@@ -42,7 +42,7 @@ manywho.responses = (function (manywho) {
             // Get the object data from the cached value - that's where we source all individual value references
             // This will also make sure the type matches the value, though there's no reliable way of telling if the value
             // being stored in the cache is in fact the value in the binding
-            return manywho.simulation.get(
+            return manywho.simulation.getValue(
                 pageComponentInfo.tableName,
                 pageComponentInfo.typeElement.id,
                 pageComponentInfo.pageComponent.valueElementValueBindingReferenceId,
@@ -131,14 +131,14 @@ manywho.responses = (function (manywho) {
         // also ensures non saved data is not accidentally put in a page simulation as it will not validate as
         // it may not exist yet on the platform. The simulation uses the model time description of the object
         // data request, not the runtime version as we need the details of the filter - not the cached result.
-        return manywho.simulation.getObjectDataRequest(modelObjectDataRequest)
+        return manywho.simulation.getSyncDataForObjectDataRequest(modelObjectDataRequest)
             .then(
                 function(response) {
 
                     response.objectData = response.data;
 
                     // Filter the object data based on search
-                    response.objectData = manywho.simulation.search(objectDataRequest.listFilter.search, null, response.objectData, false);
+                    response.objectData = manywho.simulation.searchObjectData(objectDataRequest.listFilter.search, null, response.objectData, false);
 
                     if (response.objectData != null) {
 
@@ -187,7 +187,7 @@ manywho.responses = (function (manywho) {
                 if (isTableComponent(pageComponentInfo.pageComponent)) {
 
                     // This is a list, so get all the data from the offline table and override
-                    promises.push(manywho.simulation.getAll(pageComponentInfo.tableName, pageComponentInfo.typeElement.id)
+                    promises.push(manywho.simulation.getDataSyncObjectData(pageComponentInfo.tableName, pageComponentInfo.typeElement.id)
                         .then(function(response) {
 
                             pageComponentDataResponse.objectData = response.data;
@@ -262,7 +262,7 @@ manywho.responses = (function (manywho) {
             // First "execute" the graph - which should in no way be mistaken as real execution. The role of this function
             // is purely to simulate what the Flow state could look like based on the limited execution capabilities
             // of the simulation engine.
-            return manywho.simulation.execute(request.currentMapElementId, request.mapElementInvokeRequest.selectedOutcomeId).then(function () {
+            return manywho.simulation.processGraph(request.currentMapElementId, request.mapElementInvokeRequest.selectedOutcomeId).then(function () {
 
                 return generateMapElementResponse(response);
 
@@ -338,7 +338,7 @@ manywho.responses = (function (manywho) {
 
                 // Put the object data into the simulation database
                 // TODO: Under high data volumes this may cause issues as it is async
-                manywho.simulation.updateAll(responseToCache.tableName, responseToCache.objectData);
+                manywho.simulation.upsertAllSyncData(responseToCache.tableName, responseToCache.typeElementId, responseToCache.objectData);
 
                 // Null out the object data as we don't want to keep it in the cached response, we keep it in the simulation
                 // database piece
