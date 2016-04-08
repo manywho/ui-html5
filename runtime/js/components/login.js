@@ -15,7 +15,7 @@
 
         getInitialState: function() {
             return {
-                username: '',
+                username: this.props.username || '',
                 password: '',
                 usernameError: '',
                 passwordError: '',
@@ -116,8 +116,10 @@
 
                             }
 
-                            self.setState(newState);
+                            localStorage.setItem('manywho-draw-login-username', self.state.username);
 
+                            self.setState(newState);
+                            
                         }).fail(function (error) {
 
                         var newState = self.state;
