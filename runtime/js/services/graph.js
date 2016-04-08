@@ -88,8 +88,8 @@ manywho.graph = (function (manywho) {
         // This logic will ignore the first map element as that is very likely a step or input. However, we want to stop
         // scanning once we reach a user screen as those further actions are not relevant for the request.
         if (dependencyActions != null &&
-            manywho.utils.isEqual(mapElement.elementType, 'step') ||
-            manywho.utils.isEqual(mapElement.elementType, 'input')) {
+            (manywho.utils.isEqual(mapElement.elementType, 'step') ||
+             manywho.utils.isEqual(mapElement.elementType, 'input'))) {
             return dependencyActions;
         }
 
@@ -129,9 +129,7 @@ manywho.graph = (function (manywho) {
         if (selectedOutcome != null) {
 
             // Add dependency actions as we crawl through the Flow tree
-            dependencyActions = dependencyActions.concat(
-                checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, selectedOutcome.id)
-            );
+            dependencyActions = checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, selectedOutcome.id);
 
         }
 

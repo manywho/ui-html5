@@ -440,15 +440,14 @@ manywho.simulation = (function (manywho) {
         // Execute the async request to store the data
         return getObjectData(tableName, objectData, isSourcedFromDataSync).then(function(response) {
 
-            if (response.data == null) {
-
-                response.data = [];
-
-            }
-
             // Go through each record in the provided object data and insert/update the entries in the database
             if (response.additionalObjectData != null &&
                 response.additionalObjectData.length > 0) {
+
+                // Only initiate the array if we have data going in
+                if (response.data == null) {
+                    response.data = [];
+                }
 
                 for (var i = 0; i < response.additionalObjectData.length; i++) {
 
