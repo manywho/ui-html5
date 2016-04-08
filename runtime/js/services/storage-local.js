@@ -1,6 +1,6 @@
 manywho.storage = (function (manywho) {
 
-    //var testStorage = {};
+    var testStorage = {};
 
     var RECORDING_TABLE = "recording";
     var RESPONSE_CACHE_NAMESPACE = "response_";
@@ -62,7 +62,7 @@ manywho.storage = (function (manywho) {
             }
 
             localStorage.setItem(identifierModifier + identifier, json);
-            testStorage[identifierModifier + identifier] = json;
+            //testStorage[identifierModifier + identifier] = json;
 
             if (resolve != null) {
                 resolve();

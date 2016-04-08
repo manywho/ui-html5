@@ -580,7 +580,25 @@ gulp.task('offline-build', function() {
                                     fs.writeFileSync(path + "js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
 
                                     console.log("Done!");
-                                    return;
+
+                                    var files = [
+                                        '*.html',
+                                        'css/**/*.css',
+                                        'img/**/*.png',
+                                        'js/**/*.js'
+                                    ];
+
+                                    return browserSync.init(files, {
+                                        server: {
+                                            baseDir: '.',
+                                            index: 'tools.html',
+                                            middleware: function (req, res, next) {
+                                                res.setHeader('Access-Control-Allow-Origin', '*');
+                                                next();
+                                            }
+                                        },
+                                        ghostMode: false
+                                    });
 
                                 })
                                 .catch(function (err) {
