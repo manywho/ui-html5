@@ -513,8 +513,8 @@ manywho.simulation = (function (manywho) {
         }
 
         if (objectData == null) {
-            manywho.log.error("No ObjectData has been provided to set in the offline State.");
-            return null;
+            // Log this as it can happen by it may indicate an issue as data was not found that should have been
+            manywho.log.info("No ObjectData has been provided to set in the offline State for Value: " + valueElementId.id);
         }
 
         // Scope the object data to the provided value
@@ -1046,8 +1046,7 @@ manywho.simulation = (function (manywho) {
 
                 // Make sure we send lists and lists and objects as objects to the cache
                 if (manywho.utils.isEqual(manywho.component.contentTypes.object, contentType, true) &&
-                    objectData != null &&
-                    objectData.length > 0) {
+                    objectData != null) {
 
                     if (objectData.length > 1) {
                         manywho.log.error("The query is returning more than one object for: " + contentType);
@@ -1056,7 +1055,16 @@ manywho.simulation = (function (manywho) {
 
                     // Get the first entry out of the array as we will store the object in the cache
                     // TODO: This logic means that we cannot source lists currently in data actions
-                    objectData = objectData[0];
+                    if (objectData.length > 0) {
+
+                        objectData = objectData[0];
+
+                    } else {
+
+                        // We don't have an object, we just have an empty list, so we return a null entry
+                        objectData = null;
+
+                    }
 
                 }
 

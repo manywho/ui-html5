@@ -40,7 +40,7 @@ manywho.storage = (function (manywho) {
                     }
 
                     // Send the row back in the callback
-                    var json = results.rows.item(i).mw_value;
+                    var json = results.rows.item(0).mw_value;
 
                     // If we have data, return that, otherwise return null
                     if (manywho.utils.isNullOrWhitespace(data) == false) {
@@ -80,7 +80,7 @@ manywho.storage = (function (manywho) {
         }).then(function (tx) {
 
             // Check to see if we should insert or update
-            return tx.executeSql(" mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
+            return tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
 
                 var json = null;
 
@@ -88,18 +88,66 @@ manywho.storage = (function (manywho) {
                     json = JSON.stringify(data);
                 }
 
-                localStorage.setItem(identifierModifier + identifier, json);
+                // If we have rows, this is an update
+                if (results.rows != null &&
+                    results.rows.length > 0) {
+
+                    // Execute the update
+                    return tx.executeSql("UPDATE mw_tables SET mw_value = ? WHERE mw_key = ?", [ identifierModifier + identifier, json ]);
+
+                } else {
+
+                    // Execute the insert
+                    return tx.executeSql("INSERT INTO mw_tables (mw_value, mw_key) VALUES (?, ?)", [ identifierModifier + identifier, json ]);
+
+                }
+
+            });
+
+        });
+
+    }
+
+    // Get all data for the provided namespace
+    //
+    function getAll(namespace) {
+
+        // Initialize the database
+        initialize();
+
+        return db.transaction(function(tx) {
+
+            // Check we have this table in the database
+            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+
+        }).then(function (tx) {
+
+            // Find the data for the provided identifier
+            return tx.executeSql("SELECT my_key, mw_value FROM mw_tables WHERE mw_key LIKE '%?'", [ namespace ], function(tx, results){
+
+                var responses = {};
 
                 if (results.rows != null &&
                     results.rows.length > 0) {
 
-                    // Update
+                    for (var i = 0; i < results.rows.length; i++) {
 
-                } else {
+                        var key = results.rows.item(i).mw_key;
+                        var json = results.rows.item(i).mw_value;
+                        var value = null;
 
-                    // Insert
+                        // If we have data, return that, otherwise return null
+                        if (manywho.utils.isNullOrWhitespace(data) == false) {
+                            value = JSON.parse(json);
+                        }
+
+                        responses[key] = value;
+
+                    }
 
                 }
+
+                return responses;
 
             });
 
@@ -111,18 +159,20 @@ manywho.storage = (function (manywho) {
     //
     function clear(namespace) {
 
-        /*for (var i = 0; i <= localStorage.length - 1; i++) {
+        // Initialize the database
+        initialize();
 
-            // Check to see if the key starts with the provided namespace
-            if (localStorage.key(i).indexOf(namespace) == 0) {
+        return db.transaction(function(tx) {
 
-                // If so, null it out so we remove any remnants of data
-                localStorage.setItem(localStorage.key(i), null);
+            // Check we have this table in the database
+            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
 
-            }
+        }).then(function (tx) {
 
-        }*/
-        alert('clear is not implemented yet for: ' + namespace);
+            // Check to see if we should insert or update
+            tx.executeSql("DELETE FROM mw_tables WHERE mw_key LIKE '%?'", [ namespace ]);
+
+        });
 
     }
 
@@ -168,19 +218,19 @@ manywho.storage = (function (manywho) {
 
         },
 
-        // Get arbitrary data that's needed for offline to simulate functions from a cache.
+        // Get the application state from the cache.
         //
-        getCache: function(identifier, objectData) {
+        getState: function(state) {
 
-            return get("Identifier", STATE_CACHE, identifier, objectData);
+            return get("State", STATE_CACHE, "state", state);
 
         },
 
-        // Set arbitrary data that's needed for offline to simulate functions from a cache.
+        // Set the application state in the cache.
         //
-        setCache: function(identifier, objectData) {
+        setState: function(state) {
 
-            return set("Identifier", STATE_CACHE, identifier, objectData);
+            return set("State", STATE_CACHE, "state", state);
 
         },
 
@@ -207,6 +257,14 @@ manywho.storage = (function (manywho) {
         getResponseCache: function(identifier, responseData) {
 
             return get("Identifier", RESPONSE_CACHE_NAMESPACE, identifier, responseData);
+
+        },
+
+        // Get response data that's needed for offline to simulate functions.
+        //
+        getAllResponseCache: function() {
+
+            return getAll(RESPONSE_CACHE_NAMESPACE);
 
         },
 
