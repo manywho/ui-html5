@@ -67,7 +67,7 @@ permissions and limitations under the License.
 
                     this.setState({
                         isVisible: false,
-                        height: React.findDOMNode(this).clientHeight,
+                        height: ReactDOM.findDOMNode(this).clientHeight,
                         icon: 'toggle-icon glyphicon glyphicon-triangle-right'
                     });
 

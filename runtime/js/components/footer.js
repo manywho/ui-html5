@@ -17,7 +17,7 @@ permissions and limitations under the License.
 
             if (manywho.utils.isEmbedded()) {
 
-                var containerElement = React.findDOMNode(this.props.container);
+                var containerElement = ReactDOM.findDOMNode(this.props.container);
 
                 this.setState({ pageYOffset: -(containerElement.clientHeight-window.innerHeight-20) + window.pageYOffset });
 
@@ -49,7 +49,7 @@ permissions and limitations under the License.
 
             if (!this.props.isMounted && nextProps.isMounted) {
 
-                this.setState({ pageYOffset: -(React.findDOMNode(nextProps.container).clientHeight-window.innerHeight) + window.pageYOffset });
+                this.setState({ pageYOffset: -(ReactDOM.findDOMNode(nextProps.container).clientHeight-window.innerHeight) + window.pageYOffset });
 
             }
 
