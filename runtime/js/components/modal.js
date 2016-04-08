@@ -19,7 +19,7 @@ permissions and limitations under the License.
 
             var children = manywho.model.getChildren('root', this.props.flowKey);
             var outcomes = manywho.model.getOutcomes('root', this.props.flowKey);
-            var state = manywho.state.getComponent('modal', this.props.flowKey) || {};
+            var state = manywho.state.getComponent(manywho.utils.extractElement(this.props.flowKey), this.props.flowKey) || {};
 
             if (state && state.loading == null && !manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'sync', true)) {
 
