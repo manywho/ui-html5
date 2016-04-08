@@ -117,8 +117,9 @@
                             }
 
                             localStorage.setItem('manywho-draw-login-username', self.state.username);
-
-                            self.setState(newState);
+                            
+                            if (this._isMounted)
+                                self.setState(newstate);
                             
                         }).fail(function (error) {
 
@@ -166,6 +167,11 @@
 
             }
 
+            this._isMounted = true;
+        },
+        
+        componentWillUnmount: function() {
+            this._isMounted = false;  
         },
 
         renderForm: function() {
