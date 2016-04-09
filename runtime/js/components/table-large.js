@@ -275,7 +275,7 @@ permissions and limitations under the License.
         },
 
         componentDidUpdate: function() {
-            var selectAll = React.findDOMNode(this.refs.selectAll);
+            var selectAll = ReactDOM.findDOMNode(this.refs.selectAll);
             if (selectAll)
                 selectAll.indeterminate = (this.props.selectedRows.length > 0 && this.props.selectedRows.length !== this.props.totalObjectData);
         },

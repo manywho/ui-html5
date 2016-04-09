@@ -76,7 +76,7 @@ permissions and limitations under the License.
 
             if (attributes && manywho.utils.isEqual(attributes.outcomes, "fixed", true)) {
 
-                var isMounted = React.findDOMNode(this.refs.container) != null;
+                var isMounted = ReactDOM.findDOMNode(this.refs.container) != null;
 
                 outcomeElements = React.createElement(manywho.component.getByName('footer'), { flowKey: this.props.flowKey, container: this.refs.container, isMounted: isMounted }, outcomeElements);
 
