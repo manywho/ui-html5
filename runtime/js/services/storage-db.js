@@ -1,5 +1,11 @@
 manywho.storage = (function (manywho) {
 
+    var RECORDING_TABLE = "recording";
+    var RESPONSE_CACHE_NAMESPACE = "response_";
+    var STATE_DATABASE = "state_database_";
+    var STATE_CACHE = "state_cache_";
+    var SYNC_DATABASE = "sync_database_";
+
     var db = null;
 
     function initialize() {
