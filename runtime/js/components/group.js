@@ -59,13 +59,13 @@ permissions and limitations under the License.
 
         componentDidMount: function() {
 
-            if (!this.props.isDesignTime && this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
+            if (!this.props.isDesignTime && this.refs.group.children[0].children && this.refs.group.children[0].children.length > 0) {
 
-                clearActivePanes(this.refs.group.getDOMNode());
+                clearActivePanes(this.refs.group);
 
-                this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.children[0].children[this.state.activeTabIndex].classList.add('active');
 
-                this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.children[1].children[this.state.activeTabIndex].classList.add('active');
 
             }
 
@@ -73,13 +73,13 @@ permissions and limitations under the License.
 
         componentDidUpdate: function() {
 
-            if (!this.props.isDesignTime && this.refs.group.getDOMNode().children[0].children && this.refs.group.getDOMNode().children[0].children.length > 0) {
+            if (!this.props.isDesignTime && this.refs.group.children[0].children && this.refs.group.children[0].children.length > 0) {
 
-                clearActivePanes(this.refs.group.getDOMNode());
+                clearActivePanes(this.refs.group);
 
-                this.refs.group.getDOMNode().children[0].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.children[0].children[this.state.activeTabIndex].classList.add('active');
 
-                this.refs.group.getDOMNode().children[1].children[this.state.activeTabIndex].classList.add('active');
+                this.refs.group.children[1].children[this.state.activeTabIndex].classList.add('active');
 
             }
 
@@ -96,7 +96,7 @@ permissions and limitations under the License.
         onTabSelected: function(index) {
 
             this.setState({ activeTabIndex: index });
-            $(this.refs.tabs.getDOMNode().children[index].querySelector('a')).tab('show');
+            $(this.refs.tabs.children[index].querySelector('a')).tab('show');
 
         },
 
