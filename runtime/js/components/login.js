@@ -165,6 +165,9 @@
 
                 this.refs.username.focus();
 
+                if (this.props.username)
+                    this.refs.username.setSelectionRange(0, this.props.username.length);
+
             }
 
             this._isMounted = true;
