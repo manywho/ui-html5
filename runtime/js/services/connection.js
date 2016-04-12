@@ -101,6 +101,20 @@ manywho.connection = (function (manywho) {
 
     }
 
+    function getOnlineStatusFromDevice() {
+
+        manywho.log.info('Getting device online status using navigator.');
+
+        if (navigator.onLine == false) {
+            manywho.log.info('Device is offline.');
+            return false;
+        };
+
+        manywho.log.info('Device is online.');
+        return true;
+
+    }
+
     function getOnlineStatus(stateId) {
 
         var onlineStatus = {};
@@ -117,7 +131,7 @@ manywho.connection = (function (manywho) {
 
             }
 
-            onlineStatus.online = navigator.onLine;
+            onlineStatus.online = getOnlineStatusFromDevice();
 
             return onlineStatus;
 
