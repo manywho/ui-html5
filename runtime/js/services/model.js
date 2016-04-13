@@ -414,6 +414,22 @@ permissions and limitations under the License.
 
         },
 
+        getComponentByName: function(name, flowKey) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            var components = flowModel[lookUpKey].components;
+
+            if (components) {
+                for (var id in components) {
+                    if (manywho.utils.isEqual(name, components[id].developerName, true))
+                        return components[id];
+                }
+            }
+
+            return null;
+
+        },
+
         getComponents: function (flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
