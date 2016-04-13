@@ -15,7 +15,7 @@
 
         getInitialState: function() {
             return {
-                username: '',
+                username: this.props.username || '',
                 password: '',
                 usernameError: '',
                 passwordError: '',
@@ -116,8 +116,11 @@
 
                             }
 
-                            self.setState(newState);
-
+                            localStorage.setItem('manywho-draw-login-username', self.state.username);
+                            
+                            if (this._isMounted)
+                                self.setState(newstate);
+                            
                         }).fail(function (error) {
 
                         var newState = self.state;
@@ -162,8 +165,16 @@
 
                 this.refs.username.focus();
 
+                if (this.props.username)
+                    this.refs.username.setSelectionRange(0, this.props.username.length);
+
             }
 
+            this._isMounted = true;
+        },
+        
+        componentWillUnmount: function() {
+            this._isMounted = false;  
         },
 
         renderForm: function() {

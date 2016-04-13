@@ -24,7 +24,7 @@ permissions and limitations under the License.
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&');
 
-            var node = React.findDOMNode(this.refs.content);
+            var node = ReactDOM.findDOMNode(this.refs.content);
             node.innerHTML = html;
 
             var imgs = node.querySelectorAll('img')

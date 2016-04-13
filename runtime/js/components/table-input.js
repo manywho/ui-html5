@@ -114,7 +114,7 @@ permissions and limitations under the License.
 
             if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.datetime, true)) {
 
-                var input = React.findDOMNode(this.refs.input);
+                var input = ReactDOM.findDOMNode(this.refs.input);
 
                 $(input).datetimepicker({
                     locale: 'en-us',
