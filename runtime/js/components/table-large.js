@@ -72,12 +72,12 @@ permissions and limitations under the License.
 
                 if (column == 'mw-outcomes') {
 
-                    return React.DOM.th({className: 'table-outcome-column'}, 'Actions');
+                    return React.DOM.th({className: 'table-outcome-column', key: 'actions'}, 'Actions');
 
                 }
                 else {
 
-                    var headerAttributes = { id: column.developerName };
+                    var headerAttributes = { id: column.developerName, key: 'header-' + column.developerName };
 
                     if (self.props.onHeaderClick) {
 
@@ -159,9 +159,9 @@ permissions and limitations under the License.
 
                     if (column == 'mw-outcomes') {
 
-                        return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId }, outcomes.map(function (outcome) {
+                        return React.DOM.td({ className: 'table-outcome-column', 'data-item': item.externalId, key: item.externalId + column }, outcomes.map(function (outcome) {
 
-                            return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) || outcomeDisplay.outcomes }, null);
+                            return React.createElement(outcomeComponent, { id: outcome.id, key: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, outcomeDisplay: manywho.settings.global('outcomes', this.props.flowKey) || outcomeDisplay.outcomes }, null);
 
                         }, this));
 
@@ -215,7 +215,7 @@ permissions and limitations under the License.
                             }
                             else if (!manywho.utils.isNullOrWhitespace(column.componentType)) {
 
-                                return React.DOM.td({ id: column.typeElementPropertyId },
+                                return React.DOM.td({ id: column.typeElementPropertyId, key: column.typeElementPropertyId },
                                     React.createElement(manywho.component.getByName(column.componentType), {
                                         id: item.externalId,
                                         propertyId: column.typeElementPropertyId,
@@ -232,7 +232,7 @@ permissions and limitations under the License.
                             }
                             else if (column.isEditable) {
 
-                                return React.DOM.td({ id: column.typeElementPropertyId, className: 'editable' },
+                                return React.DOM.td({ id: column.typeElementPropertyId, key: column.typeElementPropertyId, className: 'editable' },
                                     React.createElement(manywho.component.getByName('table-input'), {
                                         id: item.externalId,
                                         propertyId: column.typeElementPropertyId,
@@ -246,7 +246,7 @@ permissions and limitations under the License.
                             }
                             else {
 
-                                return React.DOM.td({ id: column.typeElementPropertyId, onClick: column.isEditable && this.onCellClick },
+                                return React.DOM.td({ id: column.typeElementPropertyId, key: column.typeElementPropertyId, onClick: column.isEditable && this.onCellClick },
                                     React.DOM.span(null, selectedProperty.contentValue)
                                 );
 
@@ -254,7 +254,7 @@ permissions and limitations under the License.
 
                         } else {
 
-                            return React.DOM.td(null, '');
+                            return React.DOM.td({ key: column.typeElementPropertyId }, '');
 
                         }
 
@@ -262,7 +262,7 @@ permissions and limitations under the License.
 
                 }, this));
 
-                return React.DOM.tr({ className: classes, id: item.externalId, onClick: onRowClicked }, columns);
+                return React.DOM.tr({ className: classes, id: item.externalId, key: item.externalId, onClick: onRowClicked }, columns);
 
             }, this);
 

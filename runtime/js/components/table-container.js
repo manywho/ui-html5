@@ -39,77 +39,6 @@ permissions and limitations under the License.
 
     }
 
-    function renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
-
-        var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-        var headerElements = [];
-        var searchElement = null;
-        var outcomesElement = null;
-        var refreshElement = null;
-        var mainElement = document.getElementById(lookUpKey);
-
-        if (isObjectData) {
-
-            var refreshAttributes = { className: 'btn btn-sm btn-default table-refresh', onClick: refresh };
-
-            if (isDesignTime)
-                refreshAttributes.disabled = 'disabled';
-
-            refreshElement = React.DOM.button(refreshAttributes,
-                React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null)
-            );
-
-        }
-
-        if (isSearchEnabled) {
-
-            var buttonAttributes = { className: 'btn btn-default', onClick: search.bind(this, true) };
-
-            if (isDesignTime)
-                buttonAttributes.disabled = 'disabled';
-
-            searchElement = React.DOM.div({ className: 'input-group table-search' }, [
-                    React.DOM.input({ type: 'text', className: 'form-control', value: searchValue, placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
-                    React.DOM.span({ className: 'input-group-btn' },
-                        React.DOM.button(buttonAttributes,
-                            React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
-                        )
-                    )
-            ]);
-
-        }
-
-        if (outcomes) {
-
-            outcomesElement =  React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
-
-                return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
-
-            }));
-
-        }
-
-        if (mainElement && mainElement.clientWidth < 768) {
-
-            headerElements = [outcomesElement, searchElement, refreshElement];
-
-        }
-        else {
-
-            headerElements = [refreshElement, searchElement, outcomesElement];
-
-        }
-
-        if (headerElements.length > 0) {
-
-            return React.DOM.div({ className: 'table-header clearfix' }, headerElements);
-
-        }
-
-        return null;
-
-    }
-
     function renderFooter(pageIndex, hasMoreResults, onNext, onPrev, isDesignTime) {
 
         var footerElements = [];
@@ -144,6 +73,77 @@ permissions and limitations under the License.
         outcomes: null,
 
         mixins: [manywho.component.mixins.collapse],
+
+        renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
+
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            var headerElements = [];
+            var searchElement = null;
+            var outcomesElement = null;
+            var refreshElement = null;
+            var mainElement = document.getElementById(lookUpKey);
+
+            if (isObjectData) {
+
+                var refreshAttributes = { className: 'btn btn-sm btn-default table-refresh', onClick: refresh };
+
+                if (isDesignTime)
+                    refreshAttributes.disabled = 'disabled';
+
+                refreshElement = React.DOM.button(refreshAttributes,
+                    React.DOM.span({ className: 'glyphicon glyphicon-refresh' }, null)
+                );
+
+            }
+
+            if (isSearchEnabled) {
+
+                var buttonAttributes = { className: 'btn btn-default', onClick: search.bind(this, true) };
+
+                if (isDesignTime)
+                    buttonAttributes.disabled = 'disabled';
+
+                searchElement = React.DOM.div({ className: 'input-group table-search' }, [
+                        React.DOM.input({ type: 'text', className: 'form-control', value: searchValue, placeholder: 'Search', onChange: onSearchChanged, onKeyUp: onSearchEntered }),
+                        React.DOM.span({ className: 'input-group-btn' },
+                            React.DOM.button(buttonAttributes,
+                                React.DOM.span({ className: 'glyphicon glyphicon-search' }, null)
+                            )
+                        )
+                ]);
+
+            }
+
+            if (outcomes) {
+
+                outcomesElement =  React.DOM.div({ className: 'table-outcomes' }, outcomes.map(function (outcome) {
+
+                    return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: flowKey });
+
+                }));
+
+            }
+
+            if (mainElement && mainElement.clientWidth < 768) {
+
+                headerElements = [outcomesElement, searchElement, refreshElement];
+
+            }
+            else {
+
+                headerElements = [refreshElement, searchElement, outcomesElement];
+
+            }
+
+            if (headerElements.length > 0) {
+
+                return React.DOM.div({ className: 'table-header clearfix' }, headerElements);
+
+            }
+
+            return null;
+
+        },
 
         onSearchChanged: function (e) {
 
@@ -560,7 +560,7 @@ permissions and limitations under the License.
                 validationElement,
                 React.DOM.div({ className: this.state.isVisible ? '' : ' hidden' }, [
                     fileUpload,
-                    renderHeader(state.search, headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search, (model.objectDataRequest || model.fileDataRequest), this.refresh, this.props.isDesignTime),
+                    this.renderHeader(state.search, headerOutcomes, this.props.flowKey, model.isSearchable, this.onSearchChanged, this.onSearchEnter, this.search, (model.objectDataRequest || model.fileDataRequest), this.refresh, this.props.isDesignTime),
                     content,
                     renderFooter(state.page || 1, hasMoreResults, this.onNext, this.onPrev, this.props.isDesignTime),
                     React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)
