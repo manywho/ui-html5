@@ -74,7 +74,7 @@ permissions and limitations under the License.
 
         mixins: [manywho.component.mixins.collapse],
 
-        renderHeader(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
+        renderHeader: function(searchValue, outcomes, flowKey, isSearchEnabled, onSearchChanged, onSearchEntered, search, isObjectData, refresh, isDesignTime) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
             var headerElements = [];
