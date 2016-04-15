@@ -431,7 +431,7 @@ manywho.utils = (function (manywho, $) {
 
                 if (rootElement.children[i].id == lookUpKey) {
 
-                    React.unmountComponentAtNode(rootElement.children[i]);
+                    ReactDOM.unmountComponentAtNode(rootElement.children[i]);
                     rootElement.removeChild(rootElement.children[i]);
 
                 }
