@@ -71,6 +71,9 @@ permissions and limitations under the License.
                 readonly: !model.isEditable,
                 menubar: 'edit insert view format table tools',
                 toolbar: manywho.settings.global('richtext.toolbar', this.props.flowKey, []),
+                content_css: manywho.settings.global('richtext.content_css', this.props.flowKey, []),
+                importcss_append: manywho.settings.global('richtext.importcss_append', this.props.flowKey, false),
+                importcss_file_filter: manywho.settings.global('richtext.importcss_file_filter', this.props.flowKey, null),
 
                 setup: function (editor) {
 
