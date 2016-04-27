@@ -288,7 +288,6 @@
 
 			});
 
-			var backendUri = 'https://flow.manywho.com';
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
 			// Values specific to the flow
@@ -297,10 +296,10 @@
 
 			manywho.settings.initialize({
 						adminTenantId: manywhoAdminTenantId,
-						playerUrl: backendUri + '/' + tenantId + 'play/default',
-						joinUrl: backendUri + '/' + tenantId + 'play/default',
+						playerUrl: 'http://localhost:3000/tools.html',
+						joinUrl: 'http://localhost:3000/tools.html',
 						platform: {
-							uri: backendUri
+							uri: 'https://flow.manywho.com'
 						}
 					},
 					{
@@ -422,10 +421,10 @@
 					flowId,
 					null,
 					'main',
-					null,
-					null,
+					queryParameters['join'],
+					queryParameters['authorization'],
 					options,
-					null
+					queryParameters['initialization']
 			);
 
 		}

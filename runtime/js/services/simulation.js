@@ -234,8 +234,23 @@ manywho.simulation = (function (manywho) {
     function getActionPlanForActionType(actionType) {
 
         if (manywho.utils.isNullOrWhitespace(actionType)) {
-            manywho.log.error("No ActionType has been provided and therefore no action plan can be determined.");
-            return null;
+            manywho.log.info("No ActionType has been provided and therefore no action plan can be determined. UI code will assume an action plan of 'edit'.");
+            actionType = 'edit';
+        }
+
+        if (manywho.utils.isEqual(actionType, 'save', true) == false &&
+            manywho.utils.isEqual(actionType, 'next', true) == false &&
+            manywho.utils.isEqual(actionType, 'done', true) == false &&
+            manywho.utils.isEqual(actionType, 'submit', true) == false &&
+            manywho.utils.isEqual(actionType, 'delete', true) == false &&
+            manywho.utils.isEqual(actionType, 'remove', true) == false &&
+            manywho.utils.isEqual(actionType, 'edit', true) == false &&
+            manywho.utils.isEqual(actionType, 'view', true) == false &&
+            manywho.utils.isEqual(actionType, 'cancel', true) == false &&
+            manywho.utils.isEqual(actionType, 'back', true) == false &&
+            manywho.utils.isEqual(actionType, 'query', true) == false &&
+            manywho.utils.isEqual(actionType, 'new', true) == false) {
+            manywho.log.info("The ActionType provided is not supported and therefore not action plan can be determined. Action type provided: " + actionType);
         }
 
         var actionPlan = {};
@@ -266,6 +281,7 @@ manywho.simulation = (function (manywho) {
             actionPlan.deleteFromDatabase = true;
 
         } else if (manywho.utils.isEqual(actionType, 'edit', true) ||
+                   manywho.utils.isEqual(actionType, 'query', true) ||
                    manywho.utils.isEqual(actionType, 'view', true)) {
 
             // Put the data into the state only as this isn't new data, but id should appear in pages
