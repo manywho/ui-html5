@@ -271,7 +271,7 @@
 					recordingSequence = null;
 
 					// Show the user the latest list of sequences
-					$('#requests-to-cache').val(JSON.stringify(recordedSequences, null, 4));
+					$('#requests-to-cache').val('offline.sequences = ' + JSON.stringify(recordedSequences, null, 4));
 
 					$(this).html('Start Recording');
 					$(this).attr('data-recording', 'false');
@@ -464,7 +464,7 @@
 		dataSync.objectDataRequests = objectDataRequests;
 		dataSync.fileDataRequests = fileDataRequests;
 
-		$('#data-sync').val('offline.sequences = ' + JSON.stringify(dataSync, null, 4));
+		$('#data-sync').val(JSON.stringify(dataSync, null, 4));
 
 	});
 
