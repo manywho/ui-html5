@@ -43,6 +43,8 @@ permissions and limitations under the License.
             if (this.props.isDesignTime)
                 return;
 
+            e.preventDefault();
+
             var objectDataId = e.currentTarget.getAttribute('data-item');
             var outcomeId = e.currentTarget.getAttribute('data-outcome');
 
