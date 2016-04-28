@@ -153,7 +153,7 @@
 </div>
 
 <link rel="stylesheet" href="{{directory}}css/mw-bootstrap.css" />
-<link rel="stylesheet" href="{{directory}}css/themes/mw-cosmo.css" id="theme" />
+<link rel="stylesheet" href="{{directory}}css/themes/mw-sf1.css" id="theme" />
 
 <link rel="stylesheet" href="{{directory}}css/lib/react-select.css" />
 <link rel="stylesheet" href="{{directory}}css/lib/bootstrap-datetimepicker.css" />
@@ -452,7 +452,7 @@
 
 			}
 
-			$('#responses-cache').val(JSON.stringify(responses, null, 4));
+			$('#responses-cache').val('offline.responses = ' + JSON.stringify(responses, null, 4));
 
 		});
 
@@ -464,7 +464,7 @@
 		dataSync.objectDataRequests = objectDataRequests;
 		dataSync.fileDataRequests = fileDataRequests;
 
-		$('#data-sync').val(JSON.stringify(dataSync, null, 4));
+		$('#data-sync').val('offline.sequences = ' + JSON.stringify(dataSync, null, 4));
 
 	});
 

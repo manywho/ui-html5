@@ -271,7 +271,7 @@ manywho.simulation = (function (manywho) {
             actionPlan.putInState = true;
 
         } else if (manywho.utils.isEqual(actionType, 'delete', true) ||
-                   manywho.utils.isEqual(actionType, 'remove', true)) {
+            manywho.utils.isEqual(actionType, 'remove', true)) {
 
             // This data is no longer required, so we remove it form the database. We don't remove from the state
             // as we may need to show the data in a warning screen. In reality however, the data is deleted from the
@@ -281,8 +281,8 @@ manywho.simulation = (function (manywho) {
             actionPlan.deleteFromDatabase = true;
 
         } else if (manywho.utils.isEqual(actionType, 'edit', true) ||
-                   manywho.utils.isEqual(actionType, 'query', true) ||
-                   manywho.utils.isEqual(actionType, 'view', true)) {
+            manywho.utils.isEqual(actionType, 'query', true) ||
+            manywho.utils.isEqual(actionType, 'view', true)) {
 
             // Put the data into the state only as this isn't new data, but id should appear in pages
             actionPlan.putInState = true;
@@ -584,6 +584,54 @@ manywho.simulation = (function (manywho) {
             state[scopedTableName + modifier] = null;
 
             return manywho.storage.setState(state);
+
+        });
+
+    }
+
+    // This function acts as a gateway to determine where to source the value from. Currently, if this is not
+    // a typed object, we get it from the snap shot rather than the state. This is because we do not currently
+    // hold primitive values in the State.
+    // TODO: Add primitive value support to the State.
+    //
+    function getValue(tableName, typeElementId, valueElementId, referenceObject) {
+
+        if (manywho.utils.isNullOrWhitespace(typeElementId)) {
+
+            return getValueFromSnapShot(valueElementId, referenceObject);
+
+        } else {
+
+            return getValueFromState(getScopedTableName(tableName, typeElementId), valueElementId, referenceObject);
+
+        }
+
+    }
+
+    // This function gets the Value directly from the snap shot as it does not exist in the State.
+    //
+    function getValueFromSnapShot(valueElementId, referenceObject) {
+
+        if (valueElementId == null) {
+            manywho.log.error("No ValueElementId has been provided to get.");
+            return null;
+        }
+
+        if (referenceObject == null) {
+            manywho.log.error("A reference object must be provided to apply the value to.");
+            return null;
+        }
+
+        return new Promise(function(resolve) {
+
+            var valueElement = manywho.graph.getValueElementForId(valueElementId.id);
+
+            referenceObject.contentValue = valueElement.defaultContentValue;
+            referenceObject.objectData = valueElement.defaultObjectData;
+
+            if (resolve != null) {
+                resolve(referenceObject);
+            }
 
         });
 
@@ -1178,11 +1226,6 @@ manywho.simulation = (function (manywho) {
     //
     function applyObjectDataEntryToApp(tableName, typeElementId, valueElementId, objectDataEntry, actionType, isSourcedFromDataSync) {
 
-        if (manywho.utils.isNullOrWhitespace(actionType)) {
-            manywho.log.error("The ActionType argument cannot be null or blank when running in offline mode as it is needed to take the correct action on data.");
-            return null;
-        }
-
         if (valueElementId == null) {
             manywho.log.error("No ValueElementId has been provided to apply to the offline State.");
             return null;
@@ -1227,7 +1270,7 @@ manywho.simulation = (function (manywho) {
         //
         getValue: function(tableName, typeElementId, valueElementId, referenceObject) {
 
-            return getValueFromState(getScopedTableName(tableName, typeElementId), valueElementId, referenceObject);
+            return getValue(tableName, typeElementId, valueElementId, referenceObject);
 
         },
 

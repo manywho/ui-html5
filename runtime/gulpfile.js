@@ -351,6 +351,11 @@ gulp.task('offline-build', function() {
                 type: 'input',
                 name: 'phonegap',
                 message: 'Is this a PhoneGap build? (y/n)'
+            },
+            {
+                type: 'input',
+                name: 'debugging',
+                message: 'Is this a debug build? (y/n)'
             }], function(res) {
 
             // Authenticate the user to the draw API
@@ -433,12 +438,20 @@ gulp.task('offline-build', function() {
 
                                         path = '../../';
 
+                                        var sourceFile = "default-offline.html";
+                                        var dataSource = "db";
+
+                                        if (res.debugging == 'y') {
+                                            sourceFile = "default-tools.html";
+                                            dataSource = "local";
+                                        }
+
                                         // Create a new index.html file with the appropriate settings
-                                        gulp.src(["default-offline.html"])
+                                        gulp.src([sourceFile])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
-                                            .pipe(replace("{{storage}}", 'db'))
+                                            .pipe(replace("{{storage}}", dataSource))
                                             .pipe(replace("{{phonegap}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("index.html"))
@@ -591,7 +604,7 @@ gulp.task('offline-build', function() {
                                     return browserSync.init(files, {
                                         server: {
                                             baseDir: '.',
-                                            index: 'tools.html',
+                                            index: path + 'tools.html',
                                             middleware: function (req, res, next) {
                                                 res.setHeader('Access-Control-Allow-Origin', '*');
                                                 next();
