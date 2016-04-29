@@ -5,16 +5,7 @@ manywho.storage = (function (manywho) {
     var STATE_DATABASE = "state_database_";
     var STATE_CACHE = "state_cache_";
     var SYNC_DATABASE = "sync_database_";
-
     var db = null;
-
-    function initialize() {
-
-        if (db == null) {
-            db = window.sqlitePlugin.openDatabase({name: "manywho"});
-        }
-
-    }
 
     // Shared function for getting data from sqlite storage.
     //
@@ -25,41 +16,55 @@ manywho.storage = (function (manywho) {
             return null;
         }
 
-        // Initialize the database
-        initialize();
+        return new Promise(function(resolve, reject) {
 
-        return db.transaction(function(tx) {
+            db.transaction(function(tx) {
 
-            // Check we have this table in the database
-            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                // Check we have this table in the database
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
 
-        }).then(function (tx) {
+                // Find the data for the provided identifier
+                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
 
-            // Find the data for the provided identifier
-            return tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
+                    if (results.rows != null &&
+                        results.rows.length > 0) {
 
-                if (results.rows != null &&
-                    results.rows.length > 0) {
+                        if (results.rows.length > 1) {
+                            manywho.log.error("There's more than one entry in the data store for the provided Table.");
+                        }
 
-                    if (results.rows.length > 1) {
-                        manywho.log.error("There's more than one entry in the data store for the provided Table.");
+                        // Send the row back in the callback
+                        var json = results.rows.item(0).mw_value;
+
+                        // If we have data, return that, otherwise return null
+                        if (manywho.utils.isNullOrWhitespace(data) == false) {
+                            if (resolve != null) {
+                                resolve(JSON.parse(json));
+                            }
+                        }
+
+                        if (resolve != null) {
+                            resolve(null);
+                        }
                     }
 
-                    // Send the row back in the callback
-                    var json = results.rows.item(0).mw_value;
-
-                    // If we have data, return that, otherwise return null
-                    if (manywho.utils.isNullOrWhitespace(data) == false) {
-                        return JSON.parse(json);
+                    manywho.log.info("The requested Table was not found.");
+                    if (resolve != null) {
+                        resolve(null);
                     }
 
-                    return null;
+                }, function(error) {
+                    alert('GET "SELECT mw_value": ' + error.message);
+                    if (reject != null) {
+                        reject();
+                    }
+                });
 
+            }, function(error) {
+                alert('GET Transaction: ' + error.message);
+                if (reject != null) {
+                    reject();
                 }
-
-                manywho.log.info("The requested Table was not found.");
-                return null;
-
             });
 
         });
@@ -75,39 +80,70 @@ manywho.storage = (function (manywho) {
             return null;
         }
 
-        // Initialize the database
-        initialize();
+        return new Promise(function(resolve, reject) {
 
-        return db.transaction(function(tx) {
+            db.transaction(function(tx) {
 
-            // Check we have this table in the database
-            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                // Check we have this table in the database
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
 
-        }).then(function (tx) {
+                // Check to see if we should insert or update
+                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
 
-            // Check to see if we should insert or update
-            return tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
+                    var json = null;
 
-                var json = null;
+                    if (data != null) {
+                        json = JSON.stringify(data);
+                    }
 
-                if (data != null) {
-                    json = JSON.stringify(data);
+                    // If we have rows, this is an update
+                    if (results.rows != null &&
+                        results.rows.length > 0) {
+
+                        // Execute the update
+                        tx.executeSql("UPDATE mw_tables SET mw_value = ? WHERE mw_key = ?", [ identifierModifier + identifier, json ], function (tx) {
+
+                            if (resolve != null) {
+                                resolve();
+                            }
+
+                        }, function(error) {
+                            alert('SET "UPDATE mw_tables": ' + error.message);
+                            if (reject != null) {
+                                reject();
+                            }
+                        });
+
+                    } else {
+
+                        // Execute the insert
+                        tx.executeSql("INSERT INTO mw_tables (mw_value, mw_key) VALUES (?, ?)", [ identifierModifier + identifier, json ], function (tx) {
+
+                            if (resolve != null) {
+                                resolve();
+                            }
+
+                        }, function(error) {
+                            alert('SET "INSERT INTO mw_tables": ' + error.message);
+                            if (reject != null) {
+                                reject();
+                            }
+                        });
+
+                    }
+
+                }, function(error) {
+                    alert('SET "SELECT mw_value": ' + error.message);
+                    if (reject != null) {
+                        reject();
+                    }
+                });
+
+            }, function(error) {
+                alert('SET Transaction: ' + error.message);
+                if (reject != null) {
+                    reject();
                 }
-
-                // If we have rows, this is an update
-                if (results.rows != null &&
-                    results.rows.length > 0) {
-
-                    // Execute the update
-                    return tx.executeSql("UPDATE mw_tables SET mw_value = ? WHERE mw_key = ?", [ identifierModifier + identifier, json ]);
-
-                } else {
-
-                    // Execute the insert
-                    return tx.executeSql("INSERT INTO mw_tables (mw_value, mw_key) VALUES (?, ?)", [ identifierModifier + identifier, json ]);
-
-                }
-
             });
 
         });
@@ -118,43 +154,54 @@ manywho.storage = (function (manywho) {
     //
     function getAll(namespace) {
 
-        // Initialize the database
-        initialize();
+        return new Promise(function(resolve, reject) {
 
-        return db.transaction(function(tx) {
+            db.transaction(function (tx) {
 
-            // Check we have this table in the database
-            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                // Check we have this table in the database
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
 
-        }).then(function (tx) {
+                // Find the data for the provided identifier
+                tx.executeSql("SELECT my_key, mw_value FROM mw_tables WHERE mw_key LIKE '%?'", [namespace], function (tx, results) {
 
-            // Find the data for the provided identifier
-            return tx.executeSql("SELECT my_key, mw_value FROM mw_tables WHERE mw_key LIKE '%?'", [ namespace ], function(tx, results){
+                    var responses = {};
 
-                var responses = {};
+                    if (results.rows != null &&
+                        results.rows.length > 0) {
 
-                if (results.rows != null &&
-                    results.rows.length > 0) {
+                        for (var i = 0; i < results.rows.length; i++) {
 
-                    for (var i = 0; i < results.rows.length; i++) {
+                            var key = results.rows.item(i).mw_key;
+                            var json = results.rows.item(i).mw_value;
+                            var value = null;
 
-                        var key = results.rows.item(i).mw_key;
-                        var json = results.rows.item(i).mw_value;
-                        var value = null;
+                            // If we have data, return that, otherwise return null
+                            if (manywho.utils.isNullOrWhitespace(data) == false) {
+                                value = JSON.parse(json);
+                            }
 
-                        // If we have data, return that, otherwise return null
-                        if (manywho.utils.isNullOrWhitespace(data) == false) {
-                            value = JSON.parse(json);
+                            responses[key] = value;
+
                         }
-
-                        responses[key] = value;
 
                     }
 
+                    if (resolve != null) {
+                        resolve(responses);
+                    }
+
+                }, function (error) {
+                    alert('GETALL "SELECT my_key, mw_value": ' + error.message);
+                    if (reject != null) {
+                        reject();
+                    }
+                });
+
+            }, function (error) {
+                alert('GETALL Transaction: ' + error.message);
+                if (reject != null) {
+                    reject();
                 }
-
-                return responses;
-
             });
 
         });
@@ -165,24 +212,80 @@ manywho.storage = (function (manywho) {
     //
     function clear(namespace) {
 
-        // Initialize the database
-        initialize();
+        alert('clearing');
 
-        return db.transaction(function(tx) {
+        return new Promise(function(resolve, reject) {
 
-            // Check we have this table in the database
-            tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+            alert('promising');
 
-        }).then(function (tx) {
+            db.transaction(function(tx) {
 
-            // Check to see if we should insert or update
-            tx.executeSql("DELETE FROM mw_tables WHERE mw_key LIKE '%?'", [ namespace ]);
+                alert('transactioning');
+
+                // Check we have this table in the database
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+
+                if (manywho.utils.isNullOrWhitespace(namespace)) {
+
+                    // Check to see if we should insert or update
+                    tx.executeSql("DELETE FROM mw_tables", null, function () {
+
+                        if (resolve != null) {
+                            resolve();
+                        }
+
+                    }, function (error) {
+                        alert('CLEAR "DELETE FROM mw_tables": ' + error.message);
+                        if (reject != null) {
+                            reject();
+                        }
+                    });
+
+                } else {
+
+                    // Check to see if we should insert or update
+                    tx.executeSql("DELETE FROM mw_tables WHERE mw_key LIKE '%?'", [namespace], function () {
+
+                        if (resolve != null) {
+                            resolve();
+                        }
+
+                    }, function (error) {
+                        alert('CLEAR "DELETE FROM mw_tables": ' + error.message);
+                        if (reject != null) {
+                            reject();
+                        }
+                    });
+
+                }
+
+            }, function (error) {
+                alert('CLEAR Transaction: ' + error.message);
+                if (reject != null) {
+                    reject();
+                }
+            });
 
         });
 
     }
 
     return {
+
+        // Clears all data stored in the local database.
+        //
+        clearAll: function() {
+
+            return clear(null);
+
+        },
+
+        // Sets the sql lite database for the storage. This method should only be called when the device is
+        // ready to initialize the database.
+        //
+        setDatabase: function(database) {
+            db = database;
+        },
 
         // Get data that has been populated via data sync and is therefore more "real".
         //

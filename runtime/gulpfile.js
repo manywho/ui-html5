@@ -308,8 +308,8 @@ gulp.task('deploy-player', function () {
 gulp.task('offline', function() {
 
     // Print our logo for a bit of fun
-    console.log("                                                                    @@@@");
-    console.log("                                                                    @@@@");
+    console.log("                                                                   @@@@");
+    console.log("                                                                   @@@@");
     console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
     console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
     console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
@@ -439,11 +439,9 @@ gulp.task('offline-build', function() {
                                         path = '../../';
 
                                         var sourceFile = "default-offline.html";
-                                        var dataSource = "db";
 
                                         if (res.debugging == 'y') {
                                             sourceFile = "default-tools.html";
-                                            dataSource = "local";
                                         }
 
                                         // Create a new index.html file with the appropriate settings
@@ -451,8 +449,8 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
-                                            .pipe(replace("{{storage}}", dataSource))
-                                            .pipe(replace("{{phonegap}}", '<script type="text/javascript" src="cordova.js"></script>'))
+                                            .pipe(replace("{{storage}}", 'db'))
+                                            .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("index.html"))
                                             .pipe(gulp.dest(path));
@@ -477,7 +475,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{storage}}", 'local'))
-                                            .pipe(replace("{{phonegap}}", ''))
+                                            .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("offline.html"))
                                             .pipe(gulp.dest('.'));

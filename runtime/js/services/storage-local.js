@@ -130,6 +130,14 @@ manywho.storage = (function (manywho) {
 
     return {
 
+        // Clears all data stored in the local database.
+        //
+        clearAll: function() {
+
+            localStorage.clear();
+
+        },
+
         // Get data that has been populated via data sync and is therefore more "real".
         //
         getSyncData: function(table, objectData) {

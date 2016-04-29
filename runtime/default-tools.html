@@ -469,7 +469,7 @@
 	});
 
 	$('#clear-storage').on('click', function() {
-		localStorage.clear();
+		manywho.storage.clearAll();
 	})
 
 </script>
@@ -543,12 +543,12 @@
 <script src="{{directory}}js/components/recordings.js"></script>
 <script src="{{directory}}js/components/data-sync.js"></script>
 
-<!-- Extensions -->
+<!-- Config -->
 <script src="js/config/data-sync-{{build}}.js"></script>
 <script src="js/config/responses-{{build}}.js"></script>
 <script src="js/config/sequences-{{build}}.js"></script>
 <script src="js/config/snapshot-{{build}}.js"></script>
-<!-- Extensions -->
+<!-- Config -->
 
 <script>
 	manywho.initialize();
