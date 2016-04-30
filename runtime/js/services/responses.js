@@ -267,9 +267,27 @@ manywho.responses = (function (manywho) {
     // This is the entry point method for generating a response regardless of the request coming in. All requests and
     // responses are processed through this method.
     //
-    function generateResponse(response, request) {
+    function generateResponse(identifier, response, request) {
 
         if (response == null) {
+
+            // Check to see if default responses have been configured for offline
+            if (offline.hasOwnProperty('defaultResponses') &&
+                offline.defaultResponses != null) {
+
+                if (identifier.indexOf('invoke') == 0) {
+                    response = offline.defaultResponses['invoke'];
+                } else if (identifier.indexOf('objectData')) {
+                    response = offline.defaultResponses['objectData'];
+                }
+
+                // Check to see if the response has been found, if not revert to the standard logic
+                if (response != null) {
+                    return response;
+                }
+
+            }
+
             manywho.log.error('A response could not be found for request.');
             return null;
         }
@@ -376,14 +394,14 @@ manywho.responses = (function (manywho) {
 
         if (offline.responses != null) {
 
-            return generateResponse(offline.responses[identifier], request);
+            return generateResponse(identifier, offline.responses[identifier], request);
 
         } else {
 
             // Get the response out of the cached responses based on user activity
             return manywho.storage.getResponseCache(identifier).then(function(response) {
 
-                return generateResponse(response.data, request);
+                return generateResponse(identifier, response.data, request);
 
             });
 

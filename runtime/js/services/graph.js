@@ -345,6 +345,8 @@ manywho.graph = (function (manywho) {
 
     return {
 
+        emptyElementId: "00000000-0000-0000-0000-000000000000",
+
         // Returns the action type for the map element identifier and selected outcome identifier.
         //
         getActionTypeForStep: function(mapElementId, selectedOutcomeId) {
@@ -357,6 +359,12 @@ manywho.graph = (function (manywho) {
         // behave when online.
         //
         scanPathForDataActions: function(mapElementId, selectedOutcomeId) {
+
+            // If this map element is an empty map element then we assume it's a default page for situations where
+            // the user is offline and we don't have a cached response already
+            if (manywho.utils.isEqual(mapElementId, manywho.graph.emptyElementId, true)) {
+                return null;
+            }
 
             return checkElementForDataDependencies(null, mapElementId, selectedOutcomeId);
 
