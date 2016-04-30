@@ -152,19 +152,26 @@ permissions and limitations under the License.
                 containerClassNames.push('hidden');
 
             }
-
+            
             containerClassNames = containerClassNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey));
 
             var outcomeButtons = outcomes && outcomes.map(function (outcome) {
                     return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
                 }, this);
 
+            var style = {}
+            
+            if (model.width && model.width > 0) {
+                style.width = model.width + 'px';
+                style.minWidth = style.width;
+            }
+
             return React.DOM.div({ className: containerClassNames.join(' ') }, [
                 React.DOM.label({ 'for': this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
-                React.DOM.div({ className: wrapperClasses.join(' ') }, [
+                React.DOM.div({ className: wrapperClasses.join(' '), style: style }, [
                     React.createElement(Select, selectAttributes),
                     refreshButton
                 ]),

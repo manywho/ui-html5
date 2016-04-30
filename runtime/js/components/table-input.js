@@ -56,7 +56,7 @@ permissions and limitations under the License.
 
         onKeyUp: function(e) {
 
-            if (e.keyCode == 13 && !this.props.isDesignTime) {
+            if (e.keyCode == 13 && !this.props.isDesignTime && !e.shiftKey) {
 
                 e.preventDefault();
                 e.stopPropagation();
@@ -150,10 +150,9 @@ permissions and limitations under the License.
                 classNames.push('form-control');
 
             }
-
-            return React.DOM.input({
+            
+            var props = {
                 className: classNames.join(' '),
-                type: this.getInputType(this.props.contentType),
                 onClick: this.onClick,
                 onChange: this.onChange,
                 onKeyUp: this.onKeyUp,
@@ -161,7 +160,16 @@ permissions and limitations under the License.
                 onFocus: this.onFocus,
                 onBlur: this.onBlur,
                 ref: 'input'
-            });
+            }
+            
+            if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.string, true)) {
+                props.rows = 1;
+                return React.DOM.textarea(props);
+            }
+            else {
+                props.type = this.getInputType(this.props.contentType);
+                return React.DOM.input(props);
+            }
 
         }
 
