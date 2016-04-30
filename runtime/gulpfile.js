@@ -499,16 +499,17 @@ gulp.task('offline-build', function() {
                                     console.log("Generating js/config/snapshot-" + res.build + ".js");
                                     fs.writeFileSync(path + "js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
 
-
                                     // Write the responses file
                                     console.log("Generating js/config/responses-" + res.build + ".js");
                                     fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
 
+                                    // Write the default responses file
+                                    console.log("Generating js/config/default-" + res.build + ".js");
+                                    fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = {};");
 
                                     // Write the sequences file
                                     console.log("Generating js/config/sequences-" + res.build + ".js");
                                     fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
-
 
                                     var dataSync = {
                                         objectDataRequests: [],
