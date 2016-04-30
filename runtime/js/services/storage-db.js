@@ -1,10 +1,10 @@
 manywho.storage = (function (manywho) {
 
     var RECORDING_TABLE = "recording";
-    var RESPONSE_CACHE_NAMESPACE = "response_";
-    var STATE_DATABASE = "state_database_";
-    var STATE_CACHE = "state_cache_";
-    var SYNC_DATABASE = "sync_database_";
+    var RESPONSE_CACHE_NAMESPACE = "response";
+    var STATE_DATABASE = "state_database";
+    var STATE_CACHE = "state_cache";
+    var SYNC_DATABASE = "sync_database";
     var db = null;
 
     // Shared function for getting data from sqlite storage.
@@ -16,15 +16,18 @@ manywho.storage = (function (manywho) {
             return null;
         }
 
+        // Create the compound identifier
+        var compoundIdentifier = identifierModifier + identifier;
+
         return new Promise(function(resolve, reject) {
 
             db.transaction(function(tx) {
 
                 // Check we have this table in the database
-                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value blob)");
 
                 // Find the data for the provided identifier
-                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
+                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ compoundIdentifier ], function(tx, results){
 
                     if (results.rows != null &&
                         results.rows.length > 0) {
@@ -33,19 +36,22 @@ manywho.storage = (function (manywho) {
                             manywho.log.error("There's more than one entry in the data store for the provided Table.");
                         }
 
-                        // Send the row back in the callback
+                        var response = {};
+                        response.data = null;
+
                         var json = results.rows.item(0).mw_value;
 
                         // If we have data, return that, otherwise return null
-                        if (manywho.utils.isNullOrWhitespace(data) == false) {
-                            if (resolve != null) {
-                                resolve(JSON.parse(json));
-                            }
+                        if (manywho.utils.isNullOrWhitespace(json) == false) {
+                            response.data = JSON.parse(json);
                         }
 
+                        response.additionalObjectData = data;
+
                         if (resolve != null) {
-                            resolve(null);
+                            resolve(response);
                         }
+
                     }
 
                     manywho.log.info("The requested Table was not found.");
@@ -54,14 +60,14 @@ manywho.storage = (function (manywho) {
                     }
 
                 }, function(error) {
-                    alert('GET "SELECT mw_value": ' + error.message);
+                    alert('GET "SELECT mw_value": ' + JSON.stringify(error));
                     if (reject != null) {
                         reject();
                     }
                 });
 
             }, function(error) {
-                alert('GET Transaction: ' + error.message);
+                alert('GET Transaction: ' + JSON.stringify(error));
                 if (reject != null) {
                     reject();
                 }
@@ -80,15 +86,18 @@ manywho.storage = (function (manywho) {
             return null;
         }
 
+        // Create the compound identifier
+        var compoundIdentifier = identifierModifier + identifier;
+
         return new Promise(function(resolve, reject) {
 
             db.transaction(function(tx) {
 
                 // Check we have this table in the database
-                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value blob)");
 
                 // Check to see if we should insert or update
-                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ identifierModifier + identifier ], function(tx, results){
+                tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ compoundIdentifier ], function(tx, results){
 
                     var json = null;
 
@@ -101,14 +110,14 @@ manywho.storage = (function (manywho) {
                         results.rows.length > 0) {
 
                         // Execute the update
-                        tx.executeSql("UPDATE mw_tables SET mw_value = ? WHERE mw_key = ?", [ identifierModifier + identifier, json ], function (tx) {
+                        tx.executeSql("UPDATE mw_tables SET mw_value = ? WHERE mw_key = ?", [ json, compoundIdentifier ], function () {
 
                             if (resolve != null) {
                                 resolve();
                             }
 
                         }, function(error) {
-                            alert('SET "UPDATE mw_tables": ' + error.message);
+                            alert('SET "UPDATE mw_tables": ' + JSON.stringify(error));
                             if (reject != null) {
                                 reject();
                             }
@@ -117,14 +126,14 @@ manywho.storage = (function (manywho) {
                     } else {
 
                         // Execute the insert
-                        tx.executeSql("INSERT INTO mw_tables (mw_value, mw_key) VALUES (?, ?)", [ identifierModifier + identifier, json ], function (tx) {
+                        tx.executeSql("INSERT INTO mw_tables (mw_key, mw_value) VALUES (?, ?)", [ compoundIdentifier, json ], function () {
 
                             if (resolve != null) {
                                 resolve();
                             }
 
                         }, function(error) {
-                            alert('SET "INSERT INTO mw_tables": ' + error.message);
+                            alert('SET "INSERT INTO mw_tables": ' + JSON.stringify(error));
                             if (reject != null) {
                                 reject();
                             }
@@ -133,14 +142,14 @@ manywho.storage = (function (manywho) {
                     }
 
                 }, function(error) {
-                    alert('SET "SELECT mw_value": ' + error.message);
+                    alert('SET "SELECT mw_value": ' + JSON.stringify(error));
                     if (reject != null) {
                         reject();
                     }
                 });
 
             }, function(error) {
-                alert('SET Transaction: ' + error.message);
+                alert('SET Transaction: ' + JSON.stringify(error));
                 if (reject != null) {
                     reject();
                 }
@@ -159,10 +168,10 @@ manywho.storage = (function (manywho) {
             db.transaction(function (tx) {
 
                 // Check we have this table in the database
-                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value blob)");
 
                 // Find the data for the provided identifier
-                tx.executeSql("SELECT my_key, mw_value FROM mw_tables WHERE mw_key LIKE '%?'", [namespace], function (tx, results) {
+                tx.executeSql("SELECT mw_key, mw_value FROM mw_tables WHERE mw_key LIKE '" + namespace + "%'", [], function (tx, results) {
 
                     var responses = {};
 
@@ -176,7 +185,7 @@ manywho.storage = (function (manywho) {
                             var value = null;
 
                             // If we have data, return that, otherwise return null
-                            if (manywho.utils.isNullOrWhitespace(data) == false) {
+                            if (manywho.utils.isNullOrWhitespace(json) == false) {
                                 value = JSON.parse(json);
                             }
 
@@ -191,14 +200,14 @@ manywho.storage = (function (manywho) {
                     }
 
                 }, function (error) {
-                    alert('GETALL "SELECT my_key, mw_value": ' + error.message);
+                    alert('GETALL "SELECT my_key, mw_value": ' + JSON.stringify(error));
                     if (reject != null) {
                         reject();
                     }
                 });
 
             }, function (error) {
-                alert('GETALL Transaction: ' + error.message);
+                alert('GETALL Transaction: ' + JSON.stringify(error));
                 if (reject != null) {
                     reject();
                 }
@@ -212,18 +221,12 @@ manywho.storage = (function (manywho) {
     //
     function clear(namespace) {
 
-        alert('clearing');
-
         return new Promise(function(resolve, reject) {
 
-            alert('promising');
-
-            db.transaction(function(tx) {
-
-                alert('transactioning');
+            db.transaction(function (tx) {
 
                 // Check we have this table in the database
-                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value)");
+                tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value text)");
 
                 if (manywho.utils.isNullOrWhitespace(namespace)) {
 
@@ -235,7 +238,7 @@ manywho.storage = (function (manywho) {
                         }
 
                     }, function (error) {
-                        alert('CLEAR "DELETE FROM mw_tables": ' + error.message);
+                        alert('CLEAR "DELETE FROM mw_tables": ' + JSON.stringify(error));
                         if (reject != null) {
                             reject();
                         }
@@ -251,7 +254,7 @@ manywho.storage = (function (manywho) {
                         }
 
                     }, function (error) {
-                        alert('CLEAR "DELETE FROM mw_tables": ' + error.message);
+                        alert('CLEAR "DELETE FROM mw_tables": ' + JSON.stringify(error));
                         if (reject != null) {
                             reject();
                         }
@@ -260,7 +263,7 @@ manywho.storage = (function (manywho) {
                 }
 
             }, function (error) {
-                alert('CLEAR Transaction: ' + error.message);
+                alert('CLEAR Transaction: ' + JSON.stringify(error));
                 if (reject != null) {
                     reject();
                 }

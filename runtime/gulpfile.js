@@ -463,6 +463,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{storage}}", 'local'))
+                                            .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("tools.html"))
                                             .pipe(gulp.dest(path));
@@ -488,6 +489,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{storage}}", 'local'))
+                                            .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(rename("tools.html"))
                                             .pipe(gulp.dest('.'));

@@ -223,16 +223,29 @@
 
 			manywho.log.enableAll();
 
-			manywho.engine.initialize(
-					tenantId,
-					flowId,
-					null,
-					'main',
-					null,
-					null,
-					options,
-					null
-			);
+			document.addEventListener('deviceready', function() {
+
+				manywho.storage.setDatabase(window.sqlitePlugin.openDatabase({
+					name: 'manywho',
+					location: 'default'
+				}, function () {
+
+					manywho.engine.initialize(
+							tenantId,
+							flowId,
+							null,
+							'main',
+							null,
+							null,
+							options,
+							null
+					);
+
+				}, function (error) {
+					alert(error);
+				}));
+
+			}, false);
 
 		}
 	};
@@ -314,6 +327,9 @@
 <script src="js/config/sequences-{{build}}.js"></script>
 <script src="js/config/snapshot-{{build}}.js"></script>
 <!-- Config -->
+
+<!-- Extensions -->
+<!-- Extensions -->
 
 <script>
 

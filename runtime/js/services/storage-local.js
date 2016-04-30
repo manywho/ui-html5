@@ -1,7 +1,5 @@
 manywho.storage = (function (manywho) {
 
-    var testStorage = {};
-
     var RECORDING_TABLE = "recording";
     var RESPONSE_CACHE_NAMESPACE = "response_";
     var STATE_DATABASE = "state_database_";
@@ -23,7 +21,6 @@ manywho.storage = (function (manywho) {
             }
 
             var json = localStorage.getItem(identifierModifier + identifier);
-            //var json = testStorage[identifierModifier + identifier];
             var response = {};
             response.data = null;
 
@@ -61,8 +58,11 @@ manywho.storage = (function (manywho) {
                 json = JSON.stringify(data);
             }
 
-            localStorage.setItem(identifierModifier + identifier, json);
-            //testStorage[identifierModifier + identifier] = json;
+            try {
+                localStorage.setItem(identifierModifier + identifier, json);
+            } catch (error) {
+                alert(error.message);
+            }
 
             if (resolve != null) {
                 resolve();
