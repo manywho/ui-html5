@@ -55,7 +55,10 @@ dfn {
 }
 h1 {
     font-size: 2em;
-    margin: 0.67em 0;
+    margin-top: 0.67em;
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: 10px !important;
 }
 mark {
     background: #ff0;
@@ -13415,7 +13418,7 @@ header > .navbar {
     }
 }
 .datepicker {
-    padding: 0;
+    padding: 0 0 0 14px;
 }
 .datepicker thead {
     background: #f0f1f2;
@@ -13519,4 +13522,14 @@ input[type="radio"].sf1-radio {
     width: 10px;
     border-radius: 100%;
     background: white;
+}
+
+/* MANYWHO EXTENSION */
+h3.container-label {
+    width: 100% !important;
+    background-color: #1797c0 !important;
+    color: #ffffff !important;
+    float: left !important;
+    clear: left !important;
+    padding: 5px 5px 5px 5px !important;
 }
