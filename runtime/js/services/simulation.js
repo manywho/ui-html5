@@ -245,6 +245,7 @@ manywho.simulation = (function (manywho) {
             manywho.utils.isEqual(actionType, 'delete', true) == false &&
             manywho.utils.isEqual(actionType, 'remove', true) == false &&
             manywho.utils.isEqual(actionType, 'edit', true) == false &&
+            manywho.utils.isEqual(actionType, 'apply', true) == false &&
             manywho.utils.isEqual(actionType, 'view', true) == false &&
             manywho.utils.isEqual(actionType, 'cancel', true) == false &&
             manywho.utils.isEqual(actionType, 'back', true) == false &&
@@ -262,6 +263,7 @@ manywho.simulation = (function (manywho) {
 
         if (manywho.utils.isEqual(actionType, 'save', true) ||
             manywho.utils.isEqual(actionType, 'next', true) ||
+            manywho.utils.isEqual(actionType, 'apply', true) ||
             manywho.utils.isEqual(actionType, 'done', true) ||
             manywho.utils.isEqual(actionType, 'submit', true)) {
 
