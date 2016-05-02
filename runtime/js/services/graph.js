@@ -25,7 +25,7 @@ manywho.graph = (function (manywho) {
             if (manywho.utils.isNullOrWhitespace(selectedOutcomeId)) {
 
                 if (mapElement.outcomes.length > 1) {
-                    manywho.log.info('No selected outcome has been provided and there are multiple paths.');
+                    manywho.log.info('No selected outcome has been provided and there are multiple paths for: ' + mapElement.id);
                     return null;
                 }
 

@@ -409,7 +409,10 @@
 					isFixed: true,
 					isWizard: false
 				},
-				offline: true,
+				offline: {
+					isEnabled: true,
+					isCordova: {{isCordova}}
+				},
 				callbacks: [],
 				collapsible: false,
 				history: null,
@@ -418,16 +421,7 @@
 
 			manywho.log.enableAll();
 
-			manywho.engine.initialize(
-					tenantId,
-					flowId,
-					null,
-					'main',
-					queryParameters['join'],
-					queryParameters['authorization'],
-					options,
-					queryParameters['initialization']
-			);
+			{{initializeCall}}
 
 		}
 	};
@@ -506,7 +500,7 @@
 <script src="{{directory}}js/services/recording.js"></script>
 <script src="{{directory}}js/services/responses.js"></script>
 <script src="{{directory}}js/services/simulation.js"></script>
-<script src="{{directory}}js/services/storage-local.js"></script>
+<script src="{{directory}}js/services/storage-{{storage}}.js"></script>
 
 <script src="{{directory}}js/components/mixins.js"></script>
 <script src="{{directory}}js/components/main.js"></script>

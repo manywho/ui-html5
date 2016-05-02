@@ -23,7 +23,10 @@ manywho.settings = (function (manywho, $) {
             returnToParent: 'Return To Parent',
             status: null
         },
-        offline: true,
+        offline: {
+            isEnabled: true,
+            isCordova: false,
+        },
         paging: {
             table: 10,
             files: 10,

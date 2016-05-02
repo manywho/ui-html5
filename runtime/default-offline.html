@@ -214,7 +214,10 @@
 					isFixed: true,
 					isWizard: false
 				},
-				offline: true,
+				offline: {
+					isEnabled: true,
+					isCordova: {{isCordova}}
+				},
 				callbacks: [],
 				collapsible: false,
 				history: null,
@@ -223,29 +226,7 @@
 
 			manywho.log.enableAll();
 
-			document.addEventListener('deviceready', function() {
-
-				manywho.storage.setDatabase(window.sqlitePlugin.openDatabase({
-					name: 'manywho',
-					location: 'default'
-				}, function () {
-
-					manywho.engine.initialize(
-							tenantId,
-							flowId,
-							null,
-							'main',
-							null,
-							null,
-							options,
-							null
-					);
-
-				}, function (error) {
-					alert(error);
-				}));
-
-			}, false);
+			{{initializeCall}}
 
 		}
 	};
@@ -333,29 +314,7 @@
 <!-- Extensions -->
 
 <script>
-
-	document.addEventListener('deviceready', function () {
-
-		try {
-			// Only make the initialize call when we're sure the database connection has been openned
-			manywho.storage.setDatabase(window.sqlitePlugin.openDatabase(
-					{
-						name: 'my.db',
-						location: 'default'
-					},
-					function () {
-						manywho.initialize();
-					},
-					function (error) {
-						alert(error.message);
-					}
-			));
-		} catch (error) {
-			alert(error.message);
-		}
-
-	}, false);
-
+	manywho.initialize();
 </script>
 </body>
 </html>

@@ -29,15 +29,16 @@ manywho.storage = (function (manywho) {
                 // Find the data for the provided identifier
                 tx.executeSql("SELECT mw_value FROM mw_tables WHERE mw_key = ?", [ compoundIdentifier ], function(tx, results){
 
+                    var response = {};
+                    response.data = null;
+                    response.additionalObjectData = data;
+
                     if (results.rows != null &&
                         results.rows.length > 0) {
 
                         if (results.rows.length > 1) {
                             manywho.log.error("There's more than one entry in the data store for the provided Table.");
                         }
-
-                        var response = {};
-                        response.data = null;
 
                         var json = results.rows.item(0).mw_value;
 
@@ -46,17 +47,15 @@ manywho.storage = (function (manywho) {
                             response.data = JSON.parse(json);
                         }
 
-                        response.additionalObjectData = data;
-
                         if (resolve != null) {
                             resolve(response);
                         }
 
                     }
 
-                    manywho.log.info("The requested Table was not found.");
+                    manywho.log.info("The requested Table was not found for: " + compoundIdentifier);
                     if (resolve != null) {
-                        resolve(null);
+                        resolve(response);
                     }
 
                 }, function(error) {

@@ -155,7 +155,7 @@ manywho.offline = (function (manywho) {
 
         var promises = [];
 
-        if (manywho.settings.global('offline')) {
+        if (manywho.settings.global('offline.isEnabled')) {
 
             var stateId = null;
 

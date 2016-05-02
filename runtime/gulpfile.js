@@ -437,12 +437,36 @@ gulp.task('offline-build', function() {
                                         console.log("Generating PhoneGap index.html");
 
                                         path = '../../';
+                                        var initializeCall = "";
+                                        var enableDebugTools = false;
 
                                         var sourceFile = "default-offline.html";
 
+                                        // Make sure the settings are correct depending on the debug configuration
                                         if (res.debugging == 'y') {
                                             sourceFile = "default-tools.html";
+                                            enableDebugTools = true;
                                         }
+
+                                        // We also need to switch over to the database implementation for initialize
+                                        initializeCall += "document.addEventListener('deviceready', function () {\r\r";
+                                        initializeCall += getExtraIndent(12) + "    try {\r";
+                                        initializeCall += getExtraIndent(12) + "        manywho.storage.setDatabase(window.sqlitePlugin.openDatabase(\r";
+                                        initializeCall += getExtraIndent(12) + "            {\r";
+                                        initializeCall += getExtraIndent(12) + "                name: 'manywho',\r";
+                                        initializeCall += getExtraIndent(12) + "                location: 'default'\r";
+                                        initializeCall += getExtraIndent(12) + "            },\r";
+                                        initializeCall += getExtraIndent(12) + "            function () {\r";
+                                        initializeCall += getExtraIndent(12) + "                " + getInitializeFunctionCall(16, enableDebugTools);
+                                        initializeCall += getExtraIndent(12) + "            },\r";
+                                        initializeCall += getExtraIndent(12) + "            function (error) {\r";
+                                        initializeCall += getExtraIndent(12) + "                alert(error.message);\r";
+                                        initializeCall += getExtraIndent(12) + "            }\r";
+                                        initializeCall += getExtraIndent(12) + "        ));\r";
+                                        initializeCall += getExtraIndent(12) + "    } catch (error) {\r";
+                                        initializeCall += getExtraIndent(12) + "        alert(error.message);\r";
+                                        initializeCall += getExtraIndent(12) + "    }\r";
+                                        initializeCall += getExtraIndent(12) + "}, false);\r";
 
                                         // Create a new index.html file with the appropriate settings
                                         gulp.src([sourceFile])
@@ -451,7 +475,9 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{storage}}", 'db'))
                                             .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
+                                            .pipe(replace("{{isCordova}}", 'true'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{initializeCall}}", initializeCall))
                                             .pipe(rename("index.html"))
                                             .pipe(gulp.dest(path));
 
@@ -464,7 +490,9 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
+                                            .pipe(replace("{{isCordova}}", 'false'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
                                             .pipe(rename("tools.html"))
                                             .pipe(gulp.dest(path));
                                     } else {
@@ -477,7 +505,9 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
+                                            .pipe(replace("{{isCordova}}", 'false'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, false)))
                                             .pipe(rename("offline.html"))
                                             .pipe(gulp.dest('.'));
 
@@ -490,7 +520,9 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
+                                            .pipe(replace("{{isCordova}}", 'false'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
                                             .pipe(rename("tools.html"))
                                             .pipe(gulp.dest('.'));
                                     }
@@ -505,7 +537,7 @@ gulp.task('offline-build', function() {
 
                                     // Write the default responses file
                                     console.log("Generating js/config/default-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = {};");
+                                    fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
 
                                     // Write the sequences file
                                     console.log("Generating js/config/sequences-" + res.build + ".js");
@@ -602,10 +634,17 @@ gulp.task('offline-build', function() {
                                         'js/**/*.js'
                                     ];
 
+                                    var baseDirectory = '.';
+
+                                    if (path != null &&
+                                        path.length > 0) {
+                                        baseDirectory = path;
+                                    }
+
                                     return browserSync.init(files, {
                                         server: {
-                                            baseDir: '.',
-                                            index: path + 'tools.html',
+                                            baseDir: baseDirectory,
+                                            index: 'tools.html',
                                             middleware: function (req, res, next) {
                                                 res.setHeader('Access-Control-Allow-Origin', '*');
                                                 next();
@@ -632,6 +671,200 @@ gulp.task('offline-build', function() {
         }));
 
 });
+
+function createDefaultUncachedResponses(snapshot) {
+    var defaultResponses = {};
+    var navigationElementId = null;
+    var navigationElementDeveloperName = null;
+    var defaultCulture =  {
+        "id": null,
+        "developerName": null,
+        "developerSummary": null,
+        "brand": null,
+        "language": "EN",
+        "country": "USA",
+        "variant": null
+    };
+
+    if (snapshot.navigationElements != null &&
+        snapshot.navigationElements.length > 0) {
+
+        if (snapshot.navigationElements.length > 1) {
+            console.log("More than one Navigation Element has been found, generating navigation for: " + snapshot.navigationElements[0].developerName);
+        }
+
+        navigationElementId = snapshot.navigationElements[0].id;
+        navigationElementDeveloperName = snapshot.navigationElements[0].developerName;
+
+        defaultResponses.navigation = {};
+        defaultResponses.navigation.developerName = snapshot.navigationElements[0].developerName;
+        defaultResponses.navigation.label = snapshot.navigationElements[0].label;
+        defaultResponses.navigation.navigationItemResponses = snapshot.navigationElements[0].navigationItems;
+        defaultResponses.navigation.navigationItemDataResponses = createNavigationItemDataResponses(null, snapshot.navigationElements[0].navigationItems);
+        defaultResponses.navigation.tags = null;
+        defaultResponses.navigation.isVisible = true;
+        defaultResponses.navigation.isEnabled = true;
+
+    }
+
+    // Create the default response for invoke
+    defaultResponses.invoke = {
+        "stateId": "00000000-0000-0000-0000-000000000000",
+        "parentStateId": null,
+        "stateToken": "00000000-0000-0000-0000-000000000000",
+        "alertEmail": "steve.wood@manywho.com",
+        "waitMessage": null,
+        "notAuthorizedMessage": null,
+        "currentMapElementId": "00000000-0000-0000-0000-000000000000",
+        "currentStreamId": null,
+        "invokeType": "FORWARD",
+        "annotations": null,
+        "mapElementInvokeResponses": [
+            {
+                "mapElementId": "00000000-0000-0000-0000-000000000000",
+                "developerName": "Default",
+                "pageResponse": {
+                    "label": "",
+                    "pageContainerResponses": [
+                        {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "containerType": "VERTICAL_FLOW",
+                            "developerName": "root",
+                            "label": "",
+                            "pageContainerResponses": null,
+                        }
+                    ],
+                    "pageComponentResponses": [
+                        {
+                            "pageContainerDeveloperName": "root",
+                            "pageContainerId": "00000000-0000-0000-0000-000000000000",
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "developerName": "Message",
+                            "componentType": "PRESENTATION",
+                            "contentType": null,
+                            "label": "",
+                            "columns": null,
+                            "size": 0,
+                            "maxSize": 0,
+                            "height": 0,
+                            "width": 0,
+                            "hintValue": "",
+                            "helpInfo": "",
+                            "order": 0,
+                            "isMultiSelect": false,
+                            "isSearchable": false,
+                            "hasEvents": false,
+                            "attributes": null
+                        }
+                    ],
+                    "pageComponentDataResponses": [
+                        {
+                            "pageComponentId": "00000000-0000-0000-0000-000000000000",
+                            "isEnabled": true,
+                            "isEditable": false,
+                            "isRequired": false,
+                            "isVisible": true,
+                            "objectData": null,
+                            "objectDataRequest": null,
+                            "fileDataRequest": null,
+                            "contentValue": null,
+                            "content": "<h3 style=\"text-align: left;\">This page is not currently available offline</h3>",
+                            "imageUri": null,
+                            "isValid": true,
+                            "validationMessage": null,
+                            "tags": null
+                        }
+                    ],
+                    "pageContainerDataResponses": [
+                        {
+                            "pageContainerId": "00000000-0000-0000-0000-000000000000",
+                            "isEnabled": true,
+                            "isEditable": true,
+                            "isVisible": true,
+                            "tags": null
+                        }
+                    ],
+                    "tags": null,
+                    "attributes": null,
+                    "order": 0
+                },
+                "outcomeResponses": null,
+                "rootFaults": null
+            }
+        ],
+        "voteResponse": null,
+        "stateLog": null,
+        "preCommitStateValues": null,
+        "stateValues": null,
+        "outputs": null,
+        "statusCode": "200",
+        "runFlowUri": "http://localhost:3000/tools.html?flow-id=00000000-0000-0000-0000-000000000000",
+        "joinFlowUri": "http://localhost:3000/tools.html?join=00000000-0000-0000-0000-000000000000",
+        "authorizationContext": {
+            "directoryName": null,
+            "directoryId": null,
+            "loginUrl": null,
+            "authenticationType": "USERNAME_PASSWORD"
+        }
+    };
+    defaultResponses.invoke.culture = defaultCulture;
+
+    if (navigationElementId != null &&
+        navigationElementId.trim().length > 0) {
+
+        defaultResponses.invoke.navigationElementReferences = [
+            {
+                "id": navigationElementId,
+                "developerName": navigationElementDeveloperName
+            }
+        ];
+
+    }
+
+    // Create the default response for object data that has not been sync'd
+    defaultResponses.objectData = {
+        "objectData": null,
+        "hasMoreResults": true,
+        "typeElementId": "00000000-0000-0000-0000-000000000000",
+        "tableName": null
+    };
+    defaultResponses.objectData.culture = defaultCulture;
+
+    return defaultResponses;
+
+}
+
+function createNavigationItemDataResponses(navigationItemDataResponses, navigationItems) {
+
+    if (navigationItemDataResponses == null) {
+        navigationItemDataResponses = [];
+    }
+
+    if (navigationItems != null &&
+        navigationItems.length > 0) {
+
+        for (var i = 0; i < navigationItems.length; i++) {
+
+            navigationItemDataResponses.push({
+                "navigationItemId": navigationItems[i].id,
+                "navigationItemDeveloperName": navigationItems[i].developerName,
+                "isActive": false,
+                "isCurrent": true,
+                "isEnabled": true,
+                "isVisible": true,
+                "locationMapElementId": navigationItems[i].locationMapElementId,
+                "tags": null
+            });
+
+            createNavigationItemDataResponses(navigationItemDataResponses, navigationItems[i].navigationItems);
+
+        }
+
+    }
+
+    return navigationItemDataResponses;
+
+}
 
 function createRuntimeObjectDataRequest(snapshot, objectDataRequest, clearFilter) {
 
@@ -695,4 +928,52 @@ function createRuntimeObjectDataRequest(snapshot, objectDataRequest, clearFilter
     }
 
     return objectDataRequest;
+}
+
+function getInitializeFunctionCall(extraIndent, isDebug) {
+
+    // This is the default initialize call for the index page
+    var defaultInitializeCall = "";
+    defaultInitializeCall += "manywho.engine.initialize(\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        tenantId,\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        flowId,\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        'main',\r";
+
+    if (isDebug == true) {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['join'],\r";
+    } else {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
+    }
+
+    if (isDebug == true) {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['authorization'],\r";
+    } else {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
+    }
+
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        options,\r";
+
+    if (isDebug == true) {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['initialization']\r";
+    } else {
+        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null\r";
+    }
+
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                    );\r";
+
+    return defaultInitializeCall;
+
+}
+
+function getExtraIndent(extraIndent) {
+
+    var indent = "";
+
+    for (var i = 0; i < extraIndent; i++) {
+        indent += " ";
+    }
+
+    return indent;
+
 }

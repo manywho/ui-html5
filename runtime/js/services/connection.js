@@ -103,12 +103,36 @@ manywho.connection = (function (manywho) {
 
     function getOnlineStatusFromDevice() {
 
-        manywho.log.info('Getting device online status using navigator.');
+        if (manywho.settings.global('offline.isCordova')) {
+            return getOnlineStatusFromCordova();
+        }
 
+        manywho.log.info('Getting device online status using navigator.');
         if (navigator.onLine == false) {
+
             manywho.log.info('Device is offline.');
             return false;
-        };
+
+        }
+
+        manywho.log.info('Device is online.');
+        return true;
+
+    }
+
+    function getOnlineStatusFromCordova() {
+
+        manywho.log.info('Getting device online status using Cordova.');
+        var networkState = navigator.connection.type;
+
+        if (manywho.utils.isEqual(networkState, Connection.UNKNOWN, true) ||
+            manywho.utils.isEqual(networkState, Connection.NONE, true) ||
+            manywho.utils.isEqual(networkState, Connection.CELL, true)) {
+
+            manywho.log.info('Device is offline.');
+            return false;
+
+        }
 
         manywho.log.info('Device is online.');
         return true;
@@ -164,7 +188,7 @@ manywho.connection = (function (manywho) {
         getDeferred: function(resolveContext, event, urlPart, methodType, tenantId, stateId, authenticationToken, requestObject) {
 
             // Check to see if the engine is running offline
-            if (manywho.settings.global('offline') &&
+            if (manywho.settings.global('offline.isEnabled') &&
                 this.isOnline(stateId).online == false ||
                 this.isOnline(stateId).dataSyncRequired == true) {
 
