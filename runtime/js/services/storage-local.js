@@ -136,6 +136,8 @@ manywho.storage = (function (manywho) {
 
             localStorage.clear();
 
+            return manywho.utils.getEmptyPromise();
+
         },
 
         // Get data that has been populated via data sync and is therefore more "real".

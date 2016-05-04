@@ -181,7 +181,7 @@
 					recordingSequence = null;
 
 					// Show the user the latest list of sequences
-					$('#requests-to-cache').val('offline.sequences = ' + JSON.stringify(recordedSequences, null, 4));
+					$('#requests-to-cache').val('offline.sequences = ' + JSON.stringify(recordedSequences, null, 4) + ";");
 
 					$(this).html('Start Recording');
 					$(this).attr('data-recording', 'false');
@@ -356,7 +356,7 @@
 
 			}
 
-			$('#responses-cache').val('offline.responses = ' + JSON.stringify(responses, null, 4));
+			$('#responses-cache').val('offline.responses = ' + JSON.stringify(responses, null, 4) + ";");
 
 		});
 
@@ -373,9 +373,18 @@
 	});
 
 	$('#clear-storage').on('click', function() {
+
 		manywho.storage.clearAll().then(function () {
-			alert('Cleared!');
+
+			if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+				alert('Cleared!');
+			} else {
+				alert('Cleared! The browser will refresh to capture the initialization in the cache.');
+				location.reload();
+			}
+
 		});
+
 	});
 
 </script>
@@ -448,6 +457,10 @@
 <script src="{{directory}}js/components/login.js"></script>
 <script src="{{directory}}js/components/recordings.js"></script>
 <script src="{{directory}}js/components/data-sync.js"></script>
+
+<!-- Overrides -->
+{{overrides}}
+<!-- Overrides -->
 
 <!-- Config -->
 <script src="js/config/data-sync-{{build}}.js"></script>

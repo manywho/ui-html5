@@ -326,6 +326,44 @@ gulp.task('offline', function() {
 
 gulp.task('offline-build', function() {
 
+    // Print our logo for a bit of fun
+    console.log("                                                                   @@@@");
+    console.log("                                                                   @@@@");
+    console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
+    console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@  @@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@@@@ @@@@ @@@@  @@@@ @@@@@@@@@@ @@@@@@@@@@@@@@@ @@@@  @@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@   @@@@@ @@@@ @@@@  @@@@  @@@@@@@@@  @@@@@@ @@@@@@  @@@@  @@@@    @@@@@@");
+    console.log("                                             @@@@@");
+    console.log("                                           @@@@@@@");
+    console.log("                                           @@@@@");
+
+    runSequence('offline-build', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+
+});
+
+gulp.task('offline-run', function() {
+
+    // Print our logo for a bit of fun
+    console.log("                                                                   @@@@");
+    console.log("                                                                   @@@@");
+    console.log("  @@@@   @@@@       @@@@@       @@@@    @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@     @@@@@@");
+    console.log("@@@@@@@@@@@@@@@  @@@@@@@@@@   @@@@@@@@  @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@@@@@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@@@@@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@    @@@@ @@@@  @@@@ @@@@  @@@@ @@@@ @@@@@ @@@@ @@@@  @@@@ @@@@    @@@@");
+    console.log("@@@@ @@@@@ @@@@ @@@@@@@ @@@@ @@@@  @@@@ @@@@@@@@@@ @@@@@@@@@@@@@@@ @@@@  @@@@  @@@@@@@@@@");
+    console.log("@@@@ @@@@@ @@@@   @@@@@ @@@@ @@@@  @@@@  @@@@@@@@@  @@@@@@ @@@@@@  @@@@  @@@@    @@@@@@");
+    console.log("                                             @@@@@");
+    console.log("                                           @@@@@@@");
+    console.log("                                           @@@@@");
+
+    runSequence('offline-run', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+
+});
+
+gulp.task('offline-build', function() {
+
     gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
             type: 'input',
@@ -356,6 +394,11 @@ gulp.task('offline-build', function() {
                 type: 'input',
                 name: 'debugging',
                 message: 'Is this a debug build? (y/n)'
+            },
+            {
+                type: 'input',
+                name: 'sequences',
+                message: 'Do you want to override any existing recording sequences? (y/n)'
             }], function(res) {
 
             // Authenticate the user to the draw API
@@ -439,12 +482,14 @@ gulp.task('offline-build', function() {
                                         path = '../../';
                                         var initializeCall = "";
                                         var enableDebugTools = false;
+                                        var overrides = "";
 
                                         var sourceFile = "default-offline.html";
 
                                         // Make sure the settings are correct depending on the debug configuration
                                         if (res.debugging == 'y') {
                                             sourceFile = "default-tools.html";
+                                            overrides = "<script src=\"js/manywho/authorization.js\"></script>";
                                             enableDebugTools = true;
                                         }
 
@@ -473,6 +518,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
+                                            .pipe(replace("{{overrides}}", overrides))
                                             .pipe(replace("{{storage}}", 'db'))
                                             .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{isCordova}}", 'true'))
@@ -488,6 +534,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
+                                            .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -503,6 +550,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
+                                            .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -518,6 +566,7 @@ gulp.task('offline-build', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
+                                            .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -539,9 +588,13 @@ gulp.task('offline-build', function() {
                                     console.log("Generating js/config/default-" + res.build + ".js");
                                     fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
 
-                                    // Write the sequences file
-                                    console.log("Generating js/config/sequences-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
+                                    if (res.sequences == 'y') {
+                                        // Write the sequences file
+                                        console.log("Generating js/config/sequences-" + res.build + ".js");
+                                        fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
+                                    } else {
+                                        console.log("Skipping js/config/sequences-" + res.build + ".js");
+                                    }
 
                                     var dataSync = {
                                         objectDataRequests: [],
@@ -667,6 +720,56 @@ gulp.task('offline-build', function() {
                 .catch(function (err) {
                     console.log('Login Error: ' + err);
                 });
+
+        }));
+
+});
+
+gulp.task('offline-run', function() {
+
+    gulp.src('js/config/snapshot.js')
+        .pipe(gulpPrompt.prompt([{
+            type: 'input',
+            name: 'phonegap',
+            message: 'Was this a PhoneGap build? (y/n)'
+        },
+            {
+                type: 'input',
+                name: 'debugging',
+                message: 'Was this a debug build? (y/n)'
+            }], function(res) {
+
+            var path = '';
+
+            if (res.phonegap == 'y') {
+                path = '../../';
+            }
+
+            var files = [
+                '*.html',
+                'css/**/*.css',
+                'img/**/*.png',
+                'js/**/*.js'
+            ];
+
+            var baseDirectory = '.';
+
+            if (path != null &&
+                path.length > 0) {
+                baseDirectory = path;
+            }
+
+            return browserSync.init(files, {
+                server: {
+                    baseDir: baseDirectory,
+                    index: 'tools.html',
+                    middleware: function (req, res, next) {
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        next();
+                    }
+                },
+                ghostMode: false
+            });
 
         }));
 
