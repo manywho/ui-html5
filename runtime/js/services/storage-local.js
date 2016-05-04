@@ -180,9 +180,9 @@ manywho.storage = (function (manywho) {
 
         // Get the application state from the cache.
         //
-        getState: function(state) {
+        getState: function(data) {
 
-            return get("State", STATE_CACHE, "state", state);
+            return get("State", STATE_CACHE, "state", data);
 
         },
 
