@@ -446,7 +446,13 @@ permissions and limitations under the License.
                 if (!manywho.utils.isNullOrWhitespace(state.search)) {
                     objectData = model.objectData.filter(function(item) {
                         return item.properties.filter(function(prop) {
-                            return displayColumns.indexOf(prop.typeElementPropertyId) != -1 && prop.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1;
+                                var matchingColumns = displayColumns.filter(function(column) {
+                                    return column.typeElementPropertyId === prop.typeElementPropertyId && column.isDisplayValue;
+                                });
+                                if (matchingColumns && matchingColumns.length > 0) {
+                                    return prop.contentValue.toLowerCase().indexOf(state.search.toLowerCase()) != -1;
+                                }
+                                return false;
                         }).length > 0;
                     });
                 }
