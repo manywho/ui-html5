@@ -320,7 +320,7 @@ gulp.task('offline', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-build', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-build-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
 
 });
 
@@ -339,7 +339,7 @@ gulp.task('offline-build', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-build', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-build-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
 
 });
 
@@ -358,11 +358,11 @@ gulp.task('offline-run', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-run', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-run-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
 
 });
 
-gulp.task('offline-build', function() {
+gulp.task('offline-build-sequence', function() {
 
     gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
@@ -725,7 +725,7 @@ gulp.task('offline-build', function() {
 
 });
 
-gulp.task('offline-run', function() {
+gulp.task('offline-run-sequence', function() {
 
     gulp.src('js/config/snapshot.js')
         .pipe(gulpPrompt.prompt([{
