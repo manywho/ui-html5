@@ -164,15 +164,9 @@
 
 					// If we have a recording with something in it, save it to the list of sequences
 					if (recordingSequence != null &&
-							recordingSequence.sequence != null &&
+                            recordingSequence.sequence != null &&
 							recordingSequence.sequence.length > 0) {
-
-						// Push a current entry to the sequence before finishing
-						recordingSequence.sequence.push({
-							mapElementId: currentMapElementId,
-							selectedOutcomeId: null
-						});
-
+                        
 						recordedSequences.push(JSON.parse(JSON.stringify(recordingSequence)));
 
 					}
@@ -232,6 +226,7 @@
 											recordingSequence.name = 'My Sequence';
 											recordingSequence.entryOutcomeId = handleString(selectedOutcomeId);
 											recordingSequence.entryMapElementId = handleString(request.currentMapElementId);
+											recordingSequence.allowInterruptions = false;
 											recordingSequence.sequence = [];
 
 										} else {

@@ -775,59 +775,59 @@ manywho.engine = (function (manywho) {
 
         },
 
-        objectDataRequest: function(id, request, flowKey, limit, search, orderBy, orderByDirection, page) {
+        objectDataRequest: function(componentId, request, flowKey, limit, search, orderBy, orderByDirection, page) {
 
             var self = this;
 
-            manywho.state.setComponentLoading(id, { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading(componentId, { message: manywho.settings.global('localization.loading') }, flowKey);
             self.render(flowKey);
 
-            return manywho.ajax.dispatchObjectDataRequest(request, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey), limit, search, orderBy, orderByDirection, page)
+            return manywho.ajax.dispatchObjectDataRequest(componentId, request, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey), limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
 
-                    var component = manywho.model.getComponent(id, flowKey);
+                    var component = manywho.model.getComponent(componentId, flowKey);
                     component.objectData = response.objectData;
                     component.objectDataRequest.hasMoreResults = response.hasMoreResults;
-                    manywho.state.setComponentError(id, null, flowKey);
+                    manywho.state.setComponentError(componentId, null, flowKey);
 
                 })
                .fail(function (xhr, status, error) {
 
-                   manywho.state.setComponentError(id, error, flowKey);
+                   manywho.state.setComponentError(componentId, error, flowKey);
 
                })
                .always(function () {
 
-                   manywho.state.setComponentLoading(id, null, flowKey);
+                   manywho.state.setComponentLoading(componentId, null, flowKey);
                    self.render(flowKey);
 
                });
 
         },
 
-        fileDataRequest: function (id, request, flowKey, limit, search, orderBy, orderByDirection, page) {
+        fileDataRequest: function (componentId, request, flowKey, limit, search, orderBy, orderByDirection, page) {
 
             var self = this;
 
-            manywho.state.setComponentLoading(id, { message: manywho.settings.global('localization.loading') }, flowKey);
+            manywho.state.setComponentLoading(componentId, { message: manywho.settings.global('localization.loading') }, flowKey);
             self.render(flowKey);
 
-            return manywho.ajax.dispatchFileDataRequest(request, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey), limit, search, orderBy, orderByDirection, page)
+            return manywho.ajax.dispatchFileDataRequest(componentId, request, manywho.utils.extractTenantId(flowKey), manywho.state.getAuthenticationToken(flowKey), limit, search, orderBy, orderByDirection, page)
                 .then(function (response) {
 
-                    var component = manywho.model.getComponent(id, flowKey);
+                    var component = manywho.model.getComponent(componentId, flowKey);
                     component.objectData = response.objectData;
                     component.fileDataRequest.hasMoreResults = response.hasMoreResults;
 
                 })
                .fail(function (xhr, status, error) {
 
-                   manywho.state.setComponentError(id, error, flowKey);
+                   manywho.state.setComponentError(componentId, error, flowKey);
 
                })
                .always(function () {
 
-                   manywho.state.setComponentLoading(id, null, flowKey);
+                   manywho.state.setComponentLoading(componentId, null, flowKey);
                    self.render(flowKey);
 
                });

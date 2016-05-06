@@ -11,11 +11,14 @@
 
 manywho.ajax = (function (manywho) {
 
-    function dispatchDataRequest(urlPart, eventPrefix, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
+    function dispatchDataRequest(urlPart, eventPrefix, componentId, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
         request.listFilter = request.listFilter || {};
         request.listFilter.limit = limit || manywho.settings.global('paging.files');
         request.listFilter.search = search || null;
+
+        // We tag the request with the component id to allow us to better distinguish requests (particularly in offline)
+        request.pageComponentId = componentId;
 
         if (orderBy) {
             request.listFilter.orderByPropertyDeveloperName = orderBy;
@@ -204,19 +207,19 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        dispatchObjectDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
+        dispatchObjectDataRequest: function (componentId, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             manywho.log.info('Dispatching object data request');
 
-            return dispatchDataRequest('/api/service/1/data', 'objectData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
+            return dispatchDataRequest('/api/service/1/data', 'objectData', componentId, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
         },
 
-        dispatchFileDataRequest: function (request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
+        dispatchFileDataRequest: function (componentId, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page) {
 
             manywho.log.info('Dispatching object data request');
 
-            return dispatchDataRequest('/api/service/1/file', 'fileData', request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
+            return dispatchDataRequest('/api/service/1/file', 'fileData', componentId, request, tenantId, authenticationToken, limit, search, orderBy, orderByDirection, page);
 
         },
 

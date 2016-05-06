@@ -145,14 +145,9 @@ manywho.simulation = (function (manywho) {
 
         return getObjectData(scopedTableName, objectDataRequest, true).then(function (dataResponse) {
 
-            // Now that we have all of the object data for the request, unfiltered, we need to query the data back
-            var valueElementId = null;
-            var columnTypeElementPropertyId = null;
-
-            // We need to get the value that is providing the filter and also the column on which we are filtering. At
-            // the moment, this logic only supports single where clause filtering as anything else is getting a bit too
-            // advanced. We also assume that the filter is an equality filter
-            // TODO: Add multi-column filtering support for object data requests
+            // Now that we have all of the object data for the request, unfiltered, we need to query the data back.
+            // We need to get the value that is providing the filter and also the column on which we are filtering.
+            // We assume that the filter is an equality filter
             // TODO: Add other options for filter equality other than simply EQUAL
             // TODO: Add filter by identifier as the logic should simply filter by the root external id
             if (dataResponse.additionalObjectData.listFilter != null) {
@@ -163,54 +158,48 @@ manywho.simulation = (function (manywho) {
                     return null;
 
                 } else if (dataResponse.additionalObjectData.listFilter.where != null &&
-                    dataResponse.additionalObjectData.listFilter.where.length > 0) {
+                           dataResponse.additionalObjectData.listFilter.where.length > 0) {
 
-                    // Check to see if there are multiple where's
-                    if (dataResponse.additionalObjectData.listFilter.where.length > 1) {
-                        manywho.log.error("Data Actions cannot have more than one where condition when executing offline.");
-                        return null;
+                    // Go through each of the wheres and apply to the object data one at a time
+                    for (var i = 0; i < dataResponse.additionalObjectData.listFilter.where.length; i++) {
+
+                        var valueElementId = dataResponse.additionalObjectData.listFilter.where[0].valueElementToReferenceId;
+                        var columnTypeElementPropertyId = dataResponse.additionalObjectData.listFilter.where[0].columnTypeElementPropertyId;
+
+                        // Now we need to get the type for the value that's being referenced in the where filter. Otherwise we
+                        // can't get the correct object out of the cache
+                        var typeElementIdForValue = manywho.graph.getValueElementForId(valueElementId.id).typeElementId;
+
+                        // Get the value the column will be filtered by, passing in an empty reference object to have the
+                        // object data or content value applied
+                        var valueResponse = manywho.simulation.getValue(
+                            dataResponse.additionalObjectData.activeState,
+                            null,
+                            typeElementIdForValue,
+                            valueElementId,
+                            {});
+
+                        // Send in only the column for the "where" clause so we only match the column for which the filter
+                        // actually applies
+                        var columns = [
+                            {
+                                "typeElementPropertyId": columnTypeElementPropertyId
+                            }
+                        ];
+
+                        // Filter the data by the response content value
+                        var objectData = manywho.simulation.searchObjectData(
+                            valueResponse.contentValue,
+                            columns,
+                            dataResponse.data,
+                            true);
+
+                        // Apply the filtered data result
+                        dataResponse.data = objectData;
+
                     }
-
-                    valueElementId = dataResponse.additionalObjectData.listFilter.where[0].valueElementToReferenceId;
-                    columnTypeElementPropertyId = dataResponse.additionalObjectData.listFilter.where[0].columnTypeElementPropertyId;
 
                 }
-
-            }
-
-            // If we don't have a value for the filter, we currently don't filter
-            if (valueElementId != null) {
-
-                // Now we need to get the type for the value that's being referenced in the where filter. Otherwise we
-                // can't get the correct object out of the cache
-                var typeElementIdForValue = manywho.graph.getValueElementForId(valueElementId.id).typeElementId;
-
-                // Get the value the column will be filtered by, passing in an empty reference object to have the
-                // object data or content value applied
-                var valueResponse =  manywho.simulation.getValue(
-                    dataResponse.additionalObjectData.activeState,
-                    null,
-                    typeElementIdForValue,
-                    valueElementId,
-                    {});
-
-                // Send in only the column for the "where" clause so we only match the column for which the filter
-                // actually applies
-                var columns = [
-                    {
-                        "typeElementPropertyId": columnTypeElementPropertyId
-                    }
-                ];
-
-                // Filter the data by the response content value
-                var objectData = manywho.simulation.searchObjectData(
-                    valueResponse.contentValue,
-                    columns,
-                    dataResponse.data,
-                    true);
-
-                // Apply the filtered data result
-                dataResponse.data = objectData;
 
             }
 
@@ -1029,6 +1018,7 @@ manywho.simulation = (function (manywho) {
 
         // Dispatch the ajax request here as this functionality must be connected to the network to succeed
         manywho.ajax.dispatchObjectDataRequest(
+            null,
             requests[pointer],
             tenantId,
             authenticationToken,

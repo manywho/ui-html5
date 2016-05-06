@@ -99,7 +99,7 @@ manywho.responses = (function (manywho) {
     // we use the binding currently. This does run the risk of confusing multiple object data requests for the same
     // Type.
     //
-    function findObjectDataRequestForBindingAndPage(objectDataRequest) {
+    function findObjectDataRequestForBindingAndPage(pageComponentId) {
 
         if (offline.snapshot.pageElements != null &&
             offline.snapshot.pageElements.length > 0) {
@@ -111,14 +111,12 @@ manywho.responses = (function (manywho) {
 
                     for (var j = 0; j < offline.snapshot.pageElements[i].pageComponents.length; j++) {
 
-                        if (offline.snapshot.pageElements[i].pageComponents[j].objectDataRequest != null &&
-                            manywho.utils.isEqual(
-                                objectDataRequest.typeElementBindingId, //manywho.offline.generateIdentifierForRequest('', '', objectDataRequest),
-                                offline.snapshot.pageElements[i].pageComponents[j].objectDataRequest.typeElementBindingId,  //manywho.offline.generateIdentifierForRequest('', '', offline.snapshot.pageElements[i].pageComponents[j].objectDataRequest),
+                        if (manywho.utils.isEqual(
+                                offline.snapshot.pageElements[i].pageComponents[j].id,
+                                pageComponentId,
                                 true)) {
 
                             // If the identifiers match, we assume the object data requests are the same
-                            // TODO: this could result in requests being confused but it's the only way to identify them based on how we async load
                             return offline.snapshot.pageElements[i].pageComponents[j].objectDataRequest;
 
                         }
@@ -141,7 +139,7 @@ manywho.responses = (function (manywho) {
     function generateObjectDataResponse(objectDataRequest) {
 
         // Turn the inbound request into a model object data request
-        var modelObjectDataRequest = findObjectDataRequestForBindingAndPage(objectDataRequest);
+        var modelObjectDataRequest = findObjectDataRequestForBindingAndPage(objectDataRequest.pageComponentId);
 
         // This is a list, so get all the data from the offline table and override. The data is also sourced
         // from the async scoped table so we don't inter-mix async data of the same type with local lists. This

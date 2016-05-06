@@ -177,7 +177,7 @@ manywho.offline = (function (manywho) {
                 manywho.recording.set(request);
 
                 // Commit any changes in an async call
-                promises.push(manywho.recording.finish());
+                promises.push(manywho.recording.finish(request));
 
             }
 

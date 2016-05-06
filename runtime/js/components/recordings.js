@@ -17,18 +17,6 @@
 
     }
 
-    function retryRecording(flowKey, recording) {
-
-        alert('retry');
-
-    }
-
-    function fixRecording(flowKey, recording) {
-
-        alert('fix');
-
-    }
-
     function deleteRecording(recording) {
 
         manywho.recording.delete(recording).then(function() {
@@ -98,11 +86,11 @@
 
                     } else if (manywho.utils.isEqual('retry', recordingAction, true)) {
 
-                        retryRecording(flowKey, recording);
+                        //retryRecording(flowKey, recording);
 
                     } else if (manywho.utils.isEqual('fix', recordingAction, true)) {
 
-                        fixRecording(flowKey, recording);
+                        //fixRecording(flowKey, recording);
 
                     } else if (manywho.utils.isEqual('delete', recordingAction, true)) {
 
@@ -173,39 +161,7 @@
                                 },
                                 'Sync'
                             ),
-                            React.DOM.span(null, ' '),
-                            React.DOM.button(
-                                {
-                                    className: 'btn btn-info recordings',
-                                    'data-action': 'retry',
-                                    'data-id': this.state.recordings[i].id,
-                                    disabled: !this.state.isOnline,
-                                    onClick: this.onClick
-                                },
-                                'Retry'
-                            ),
-                            React.DOM.span(null, ' '),
-                            React.DOM.button(
-                                {
-                                    className: 'btn btn-warning recordings',
-                                    'data-action': 'fix',
-                                    'data-id': this.state.recordings[i].id,
-                                    disabled: !this.state.isOnline,
-                                    onClick: this.onClick
-                                },
-                                'Fix'
-                            ),
-                            React.DOM.span(null, ' '),
-                            React.DOM.button(
-                                {
-                                    className: 'btn btn-danger recordings',
-                                    'data-action': 'delete',
-                                    'data-id': this.state.recordings[i].id,
-                                    disabled: !this.state.isOnline,
-                                    onClick: this.onClick
-                                },
-                                'Delete'
-                            )
+                            React.DOM.span(null, ' ')
                         ]),
                         React.DOM.div({className: 'panel-footer'}, [
                             React.DOM.div({className: 'progress'}, [
@@ -215,6 +171,39 @@
                             ])
                         ])
                     ]));
+
+                    /*React.DOM.button(
+                        {
+                            className: 'btn btn-info recordings',
+                            'data-action': 'retry',
+                            'data-id': this.state.recordings[i].id,
+                            disabled: !this.state.isOnline,
+                            onClick: this.onClick
+                        },
+                        'Retry'
+                    ),
+                        React.DOM.span(null, ' '),
+                        React.DOM.button(
+                            {
+                                className: 'btn btn-warning recordings',
+                                'data-action': 'fix',
+                                'data-id': this.state.recordings[i].id,
+                                disabled: !this.state.isOnline,
+                                onClick: this.onClick
+                            },
+                            'Fix'
+                        ),
+                        React.DOM.span(null, ' '),
+                        React.DOM.button(
+                            {
+                                className: 'btn btn-danger recordings',
+                                'data-action': 'delete',
+                                'data-id': this.state.recordings[i].id,
+                                disabled: !this.state.isOnline,
+                                onClick: this.onClick
+                            },
+                            'Delete'
+                        )*/
 
                 }
 

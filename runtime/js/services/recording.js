@@ -11,7 +11,7 @@
 
 manywho.recording = (function (manywho) {
 
-    var activeRecording = null;
+    var activeRecordings = null;
 
     // Perform a join on the Flow. This function is needed if the user is replaying recordings back to the platform or
     // we won't have a live state for multiple recording playbacks. It can also be used generally to get the UI back
@@ -98,6 +98,26 @@ manywho.recording = (function (manywho) {
             requests[pointer].stateToken = response.stateToken;
         }
 
+        // Ignore the first request as this is the request to navigate. We ignore the last one as it's the navigate back again.
+        if (pointer > 0 &&
+            pointer < (requests.length - 1)) {
+
+            // Check to make sure the request/responses match as expected, otherwise something has gone wrong
+            if (manywho.utils.isEqual(requests[pointer].currentMapElementId, response.currentMapElementId, true) == false) {
+
+                manywho.log.error("The Response coming back from the platform does not match the expected response.");
+                alert("Something has gone wrong with this recording.");
+
+                // Something has gone wrong, we need ot join the user to the workflow so they can take corrective action
+                // Join the user back into the workflow
+                joinFlow(flowKey, tenantId, response.stateId, authenticationToken);
+
+                return;
+
+            }
+
+        }
+
         manywho.ajax.invoke(requests[pointer], tenantId, authenticationToken).done(function (response) {
 
             // Move the progress bar first so we capture the 100%
@@ -134,8 +154,11 @@ manywho.recording = (function (manywho) {
             manywho.state.getLocation(flowKey)
         ));
 
+        // Push in the start request as this is needed to make sure we get the right start info
+        requests.push(recording.startRequest);
+
         // Now go through each of the requests in turn that need to be executed
-        for (var i = (recording.sequence.length - 1); i >= 0; i--) {
+        for (var i = 0; i < recording.sequence.length; i++) {
             requests.push(recording.sequence[i].request);
         }
 
@@ -187,14 +210,19 @@ manywho.recording = (function (manywho) {
 
         var defaultName = "Recording on " + getRecordingDateTime();
 
+        // We create a sequence entry for this request as this request is starting the recording
+
+
         // Create an active recording or reset the current one and clone the sequence entries
         // so we know what's been completed
         return {
-            id: manywho.utils.getGuid(),
+            id: manywho.utils.cleanGuid(manywho.utils.getGuid()),
             name: defaultName,
             stateId: request.stateId,
             nameReference: sequence.name,
+            startRequest: JSON.parse(JSON.stringify(request)),
             startMapElementId: request.currentMapElementId,
+            allowInterruptions: sequence.allowInterruptions,
             sequence: JSON.parse(JSON.stringify(sequence.sequence))
         };
 
@@ -212,7 +240,7 @@ manywho.recording = (function (manywho) {
                         response.data = [];
                     }
 
-                    response.data.push(recording);
+                    response.data.push(JSON.parse(JSON.stringify(recording)));
 
                     return manywho.storage.setRecordingData(response.data);
 
@@ -223,8 +251,8 @@ manywho.recording = (function (manywho) {
 
     }
 
-    // This function is called to start recording of requests based on the provided offline sequences provided. A
-    // sequence represents a serious of identifiers that allow us to correctly identify requests that need to go back
+    // This function is called to start recordings of requests based on the provided offline sequences provided. A
+    // sequence represents a series of identifiers that allow us to correctly identify requests that need to go back
     // into the platform.
     //
     function startRecording(identifier, request) {
@@ -233,6 +261,11 @@ manywho.recording = (function (manywho) {
         if (offline.sequences != null &&
             offline.sequences.length >= 0 &&
             manywho.utils.isNullOrWhitespace(identifier) == false) {
+
+            // The active recordings array can be null
+            if (activeRecordings == null) {
+                activeRecordings = {};
+            }
 
             for (var i = 0; i < offline.sequences.length; i++) {
 
@@ -243,10 +276,14 @@ manywho.recording = (function (manywho) {
                         manywho.offline.generateIdentifierForRequest("invoke", null, offline.sequences[i]),
                         true)) {
 
-                    // Create an active recording or reset the current one and clone the sequence entries
-                    // so we know what's been completed
-                    activeRecording = createRecording(offline.sequences[i], request);
-                    break;
+                    manywho.log.info("Starting recording for current request sequence: " + offline.sequences[i].name);
+
+                    // Create an active recording and clone the sequence entries so we know what's been completed
+                    // We keep looping around as we may have more sequences that match this entry point
+                    var activeRecording = createRecording(offline.sequences[i], request);
+
+                    // Add the recording according to its key so it's easier to manage active recordings
+                    activeRecordings[activeRecording.id] = activeRecording;
 
                 }
 
@@ -258,33 +295,50 @@ manywho.recording = (function (manywho) {
 
     // Check to see if the recording is finished, and if so, reset the recording engine so data doesn't get confused.
     //
-    function finishRecording() {
+    function finishRecording(request) {
 
-        if (activeRecording != null) {
+        if (activeRecordings != null &&
+            request != null &&
+            request.mapElementInvokeRequest &&
+            request.mapElementInvokeRequest != null) {
 
-            var isComplete = true;
+            // Go through each of the active records to see if any of them are finished
+            for (var property in activeRecordings) {
 
-            // Go through the sequence to check if it's complete
-            for (var i = 0; i < activeRecording.sequence.length; i++) {
+                var activeRecording = activeRecordings[property];
 
-                if (activeRecording.sequence[i].request == null) {
+                if (activeRecording != null) {
 
-                    isComplete = false;
-                    break;
+                    var isComplete = true;
+
+                    // Go through the sequence to check if it's complete
+                    for (var i = 0; i < activeRecording.sequence.length; i++) {
+
+                        if (activeRecording.sequence[i].request == null) {
+
+                            isComplete = false;
+                            break;
+
+                        }
+
+                    }
+
+                    if (isComplete) {
+
+                        manywho.log.info("Finished recording for current request sequence: " + activeRecording.nameReference);
+
+                        // Push the recording a reset
+                        return saveRecording(activeRecording).then(function () {
+
+                            // Make sure we reset the active recording after it's saved
+                            // TODO: if more than one recording is saved as a result of a sequence, this will have issues with parallel writes as the saveRecording is async
+                            manywho.recording.reset(activeRecording);
+
+                        });
+
+                    }
 
                 }
-
-            }
-
-            if (isComplete) {
-
-                // Push the recording a reset
-                return saveRecording(activeRecording).then(function() {
-
-                    // Make sure we reset the active recording after it's saved
-                    manywho.recording.reset();
-
-                });
 
             }
 
@@ -298,56 +352,87 @@ manywho.recording = (function (manywho) {
     //
     function setRequest(request) {
 
-        // Check to see if there's an active recording and that this is an invoke request coming in
-        if (activeRecording != null &&
+        // Check to see if there are any active recordings and that this is an invoke request coming in
+        if (activeRecordings != null &&
+            request != null &&
             request.mapElementInvokeRequest &&
             request.mapElementInvokeRequest != null) {
 
-            var found = false;
-            var active = 0;
+            // Go through each of the active recordings to see if this request should be remembered
+            for (var property in activeRecordings) {
 
-            for (var i = 0; i < activeRecording.sequence.length; i++) {
+                var activeRecording = activeRecordings[property];
 
-                if (request.currentMapElementId &&
-                    manywho.utils.isEqual(request.currentMapElementId, activeRecording.sequence[i].mapElementId, true) == true) {
+                if (activeRecording != null) {
 
-                    // Assign the request object into this sequence so it's stored or overwritten
-                    active = i;
-                    found = true;
-                    break;
+                    var found = false;
+                    var active = 0;
+
+                    for (var i = 0; i < activeRecording.sequence.length; i++) {
+
+                        if (request.currentMapElementId &&
+                            manywho.utils.isEqual(request.currentMapElementId, activeRecording.sequence[i].mapElementId, true) == true) {
+
+                            // Assign the request object into this sequence so it's stored or overwritten
+                            active = i;
+                            found = true;
+                            break;
+
+                        }
+
+                    }
+
+                    // This request is out of sequence, so we need to check how to handle this to reduce data corruption
+                    if (found == false) {
+
+                        if (activeRecording.allowInterruptions == false) {
+                            manywho.log.info("Sequence interrupted due to invalid MapElement. Terminating for recording: " + activeRecording.sequence.name);
+
+                            // Null the active recording as the user has interrupted the path
+                            activeRecordings[property] = null;
+                        }
+
+                        // No more to do for this active recording
+                        continue;
+                    }
+
+                    // Check to see if the sequence specified a selected outcome and if that matches the request
+                    if (manywho.utils.isNullOrWhitespace(activeRecording.sequence[active].selectedOutcomeId) == false &&
+                        manywho.utils.isEqual(
+                            activeRecording.sequence[active].selectedOutcomeId,
+                            request.mapElementInvokeRequest.selectedOutcomeId,
+                            true) == false) {
+
+                        if (activeRecording.allowInterruptions == false) {
+
+                            manywho.log.info("Sequence interrupted due to invalid Outcome. Terminating for recording: " + activeRecording.sequence.name);
+
+                            // The outcome is specified and the outcome does not match
+                            activeRecordings[property] = null;
+                        }
+
+                        // No more to do for this active recording
+                        continue;
+
+                    }
+
+                    // Check to see if the name reference needs to be updated
+                    if (activeRecording.nameReference != null) {
+
+                        // TODO: Check to see if the value exists in the request
+
+                    }
+
+                    // As we've passed the above validation, we assign the request to the active recording
+                    // We also clone the object to make sure changes are now fixed
+                    activeRecording.sequence[active].request = JSON.parse(JSON.stringify(request));
+
+                    // Set the active recording back into the active recordings registry
+                    activeRecordings[property] = activeRecording;
 
                 }
 
             }
-
-            // This request is out of sequence, null the active recording
-            if (found == false) {
-                activeRecording = null;
-                return;
-            }
-
-            // Check to see if the sequence specified a selected outcome and if that matches the request
-            if (manywho.utils.isNullOrWhitespace(activeRecording.sequence[active].selectedOutcomeId) == false &&
-                manywho.utils.isEqual(
-                    activeRecording.sequence[active].selectedOutcomeId,
-                    request.mapElementInvokeRequest.selectedOutcomeId,
-                    true) == false) {
-
-                // The outcome is specified and the outcome does not match
-                activeRecording = null;
-                return;
-
-            }
-
-            // Check to see if the name reference needs to be updated
-            if (activeRecording.nameReference != null) {
-
-                // TODO: Check to see if the value exists in the request
-
-            }
-
-            // As we've passed the above validation, we assign the request to the active recording
-            activeRecording.sequence[active].request = request;
 
         }
 
@@ -393,7 +478,7 @@ manywho.recording = (function (manywho) {
             var stateData = manywho.state.getState(flowKey);
 
             // Now execute the sequence
-            executeRequestSequence(stateData.currentMapElementId, stateData, flowKey, recording, false, progressFunction);
+            executeRequestSequence(stateData.currentMapElementId, stateData, flowKey, recording, true, progressFunction);
 
         }
 
@@ -432,6 +517,22 @@ manywho.recording = (function (manywho) {
 
     }
 
+    // This function takes the active recording and resets it in the active recordings data store so we don't get
+    // multiple recordings for the same sequence confused
+    //
+    function resetActiveRecording(activeRecording) {
+
+        if (activeRecording == null) {
+            manywho.log.error("No ActiveRecording was provided to reset.");
+            return;
+        }
+
+        if (activeRecordings != null) {
+            activeRecordings[activeRecording.id] = null;
+        }
+
+    }
+
     return {
 
         // The unique identifier to be used when the Flow has been started entirely offline and therefore does not
@@ -450,9 +551,9 @@ manywho.recording = (function (manywho) {
         },
 
         // This function simply deletes the active recording so the sequencing doesn't get confused.
-        reset: function() {
+        reset: function(activeRecording) {
 
-            activeRecording = null;
+            resetActiveRecording(activeRecording);
 
         },
 
@@ -460,9 +561,9 @@ manywho.recording = (function (manywho) {
         // so, commit the active recording into the recordings array. Basically - the active recording is finished and
         // we should reset system.
         //
-        finish: function () {
+        finish: function (request) {
 
-            finishRecording();
+            finishRecording(request);
 
         },
 
