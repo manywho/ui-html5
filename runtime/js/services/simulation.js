@@ -532,7 +532,7 @@ manywho.simulation = (function (manywho) {
             objectData != null &&
             Array.isArray(objectData) == false) {
 
-            // We assume the existing object is the most complete
+            // Start by going over the existing object
             if (existingObjectData.properties != null &&
                 existingObjectData.properties.length > 0) {
 
@@ -557,10 +557,47 @@ manywho.simulation = (function (manywho) {
 
                 }
 
-                // Re-assign the object data to the existing, now merged, value
-                objectData = existingObjectData;
+            }
+
+            // Now we have to go through the properties in the incoming object and make sure the existing object is complete
+            if (objectData.properties != null &&
+                objectData.properties.length > 0) {
+
+                for (var i = 0; i < objectData.properties.length; i++) {
+
+                    var found = false;
+                    var property = null;
+
+                    if (existingObjectData.properties != null &&
+                        existingObjectData.properties.length > 0) {
+
+                        for (var j = 0; j < existingObjectData.properties.length; j++) {
+
+                            if (manywho.utils.isEqual(existingObjectData.properties[j].typeElementPropertyId, objectData.properties[i].typeElementPropertyId, true)) {
+                                found = true;
+                                break;
+                            }
+
+                            property = objectData.properties[i];
+
+                        }
+
+                    }
+
+                    if (existingObjectData.properties == null) {
+                        existingObjectData.properties = [];
+                    }
+
+                    if (found == false) {
+                        existingObjectData.properties.push(property);
+                    }
+
+                }
 
             }
+
+            // Re-assign the object data to the existing, now merged, value
+            objectData = existingObjectData;
 
         }
 

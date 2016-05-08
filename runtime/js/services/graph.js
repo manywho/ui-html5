@@ -129,7 +129,7 @@ manywho.graph = (function (manywho) {
         if (selectedOutcome != null) {
 
             // Add dependency actions as we crawl through the Flow tree
-            dependencyActions = checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, selectedOutcome.id);
+            dependencyActions = checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, null);
 
         }
 
