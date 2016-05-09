@@ -11,6 +11,27 @@
 
 manywho.offline = (function (manywho) {
 
+    // Utility function to test if a request is an "invoke" request.
+    //
+    function isInvokeRequest(request) {
+
+        // We determine that it's an invoke request based on there being a selected outcome id and there being
+        // page component input responses. Technically invoke requests do not all pass this test.
+        if (request != null &&
+            request.mapElementInvokeRequest &&
+            manywho.utils.isNullOrWhitespace(request.mapElementInvokeRequest.selectedOutcomeId) == false &&
+            request.mapElementInvokeRequest.pageRequest != null &&
+            request.mapElementInvokeRequest.pageRequest.pageComponentInputResponses != null &&
+            request.mapElementInvokeRequest.pageRequest.pageComponentInputResponses.length > 0) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
     // Utility function that helps the offline engine uniquely identify request/response pairs. This is used in various
     // places as we don't always have an identifier for the request - or the way in which we'd get the request identifier
     // varies by type: navigation, objectData, invoke, initialize. All requests go through this function.
@@ -192,6 +213,14 @@ manywho.offline = (function (manywho) {
     }
 
     return {
+
+        // Helps determine if the provided request is an invoke request or something else.
+        //
+        isInvokeRequest: function (request) {
+
+            return isInvokeRequest(request);
+
+        },
 
         // Handle the request coming in so we can provide any recording of captured data that will need to be sync'd
         // back to the platform when next connected.

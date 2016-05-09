@@ -483,7 +483,6 @@ gulp.task('offline-build-sequence', function() {
                                         var initializeCall = "";
                                         var enableDebugTools = false;
                                         var overrides = "";
-
                                         var sourceFile = "default-offline.html";
 
                                         // Make sure the settings are correct depending on the debug configuration
@@ -492,6 +491,9 @@ gulp.task('offline-build-sequence', function() {
                                             overrides = "<script src=\"js/manywho/authorization.js\"></script>";
                                             enableDebugTools = true;
                                         }
+
+                                        // Read in any extensions
+                                        var extensions = getExtensions(path, res.build);
 
                                         // We also need to switch over to the database implementation for initialize
                                         initializeCall += "document.addEventListener('deviceready', function () {\r\r";
@@ -519,6 +521,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{overrides}}", overrides))
+                                            .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'db'))
                                             .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{isCordova}}", 'true'))
@@ -535,6 +538,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{overrides}}", ""))
+                                            .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -545,12 +549,16 @@ gulp.task('offline-build-sequence', function() {
                                     } else {
                                         console.log("Generating offline.html");
 
+                                        // Read in any extensions
+                                        var extensions = getExtensions(path, res.build);
+
                                         // Create a new offline.html file with the appropriate settings
                                         gulp.src(["default-offline.html"])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{overrides}}", ""))
+                                            .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -567,6 +575,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{overrides}}", ""))
+                                            .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
@@ -1078,5 +1087,26 @@ function getExtraIndent(extraIndent) {
     }
 
     return indent;
+
+}
+
+function getExtensions(path, build) {
+
+    var extensionsReferences = "";
+
+    // Read in any extensions
+    var extensions = JSON.parse(fs.readFileSync(path + "js/config/extensions-" + build + ".json", "utf8"));
+
+    if (extensions != null &&
+        extensions.length > 0) {
+
+        // Go through each of the extensions and add them to the build
+        for (var i = 0; i < extensions.length; i++) {
+            extensionsReferences += '<script src="' + extensions[i] + '"></script>\r';
+        }
+
+    }
+
+    return extensionsReferences;
 
 }

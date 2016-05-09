@@ -210,9 +210,6 @@ manywho.recording = (function (manywho) {
 
         var defaultName = "Recording on " + getRecordingDateTime();
 
-        // We create a sequence entry for this request as this request is starting the recording
-
-
         // Create an active recording or reset the current one and clone the sequence entries
         // so we know what's been completed
         return {
@@ -298,9 +295,7 @@ manywho.recording = (function (manywho) {
     function finishRecording(request) {
 
         if (activeRecordings != null &&
-            request != null &&
-            request.mapElementInvokeRequest &&
-            request.mapElementInvokeRequest != null) {
+            manywho.offline.isInvokeRequest(request)) {
 
             // Go through each of the active records to see if any of them are finished
             for (var property in activeRecordings) {
@@ -354,9 +349,7 @@ manywho.recording = (function (manywho) {
 
         // Check to see if there are any active recordings and that this is an invoke request coming in
         if (activeRecordings != null &&
-            request != null &&
-            request.mapElementInvokeRequest &&
-            request.mapElementInvokeRequest != null) {
+            manywho.offline.isInvokeRequest(request)) {
 
             // Go through each of the active recordings to see if this request should be remembered
             for (var property in activeRecordings) {
