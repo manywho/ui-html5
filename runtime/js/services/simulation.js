@@ -166,6 +166,13 @@ manywho.simulation = (function (manywho) {
                         var valueElementId = dataResponse.additionalObjectData.listFilter.where[0].valueElementToReferenceId;
                         var columnTypeElementPropertyId = dataResponse.additionalObjectData.listFilter.where[0].columnTypeElementPropertyId;
 
+                        // Check to make sure the user is using EQUAL
+                        if (manywho.utils.isNullOrWhitespace(dataResponse.additionalObjectData.listFilter.where[0].criteriaType) ||
+                            !manywho.utils.isEqual(dataResponse.additionalObjectData.listFilter.where[0].criteriaType, "EQUAL", true)) {
+                            manywho.log.error("The ObjectDataRequest is attempting to filter by a criteriaType other than EQUAL. The following criteriaType is not supported: " + dataResponse.additionalObjectData.listFilter.where[0].criteriaType);
+                            return null;
+                        }
+
                         // Now we need to get the type for the value that's being referenced in the where filter. Otherwise we
                         // can't get the correct object out of the cache
                         var typeElementIdForValue = manywho.graph.getValueElementForId(valueElementId.id).typeElementId;
@@ -464,10 +471,9 @@ manywho.simulation = (function (manywho) {
 
     }
 
-    // This function is used to get the object data from the application State. This object data can be a list or an
-    // individual object data entry. It depends on the Value.
+    // This function is used to get the object data from the application State.
     //
-    function getObjectDataFromState(state, scopedTableName, valueElementId) {
+    function getObjectDataFromState(state, scopedTableName, valueElement) {
 
         if (state == null) {
             manywho.log.error("No State provided to get object data from.");
@@ -479,21 +485,20 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        if (valueElementId == null) {
-            manywho.log.error("No ValueElementId has been provided to get from in the offline State.");
+        if (valueElement == null) {
+            manywho.log.error("No ValueElement has been provided to get from in the offline State.");
             return null;
         }
 
         // Scope the object data to the provided value
-        var modifier = getModifierForValueElementId(valueElementId);
+        var modifier = getModifierForValueElementId({ id: valueElement.id, typeElementPropertyId: null });
 
         // Get the value from the cached state
         return state[scopedTableName + modifier];
 
     }
 
-    // This function is used to set the object data into the application State. This object data can be a list or an
-    // individual object data entry. It depends on the Value.
+    // This function is used to set the object data into the application State.
     //
     function putObjectDataInState(state, scopedTableName, valueElementId, objectData) {
 
@@ -512,7 +517,8 @@ manywho.simulation = (function (manywho) {
             return null;
         }
 
-        if (objectData == null) {
+        if (objectData == null ||
+            objectData.length == 0) {
             // Log this as it can happen by it may indicate an issue as data was not found that should have been
             manywho.log.info("No ObjectData has been provided to set in the offline State for Value: " + valueElementId.id);
         }
@@ -520,76 +526,44 @@ manywho.simulation = (function (manywho) {
         // Scope the object data to the provided value
         var modifier = getModifierForValueElementId(valueElementId);
 
+        // Get the full value object as we'll need it to do a little extra validation that the offline engine is executing
+        // the logic as expected
+        var valueElement = manywho.graph.getValueElementForId(valueElementId.id);
+
         // We need to do a little more than just assign the object as the incoming object data may not be complete
         // if it was assembled from a form. As a result, it will not have all of the properties it needs if the
         // user is editing an existing entry. As a result, if a Value already exists in the state, we merge the
         // incoming object data with the value that exists in the state.
-        var existingObjectData = getObjectDataFromState(state, scopedTableName, valueElementId);
+        var existingObjectData = getObjectDataFromState(state, scopedTableName, valueElement);
 
         // We only do this for object data objects
         if (existingObjectData != null &&
-            Array.isArray(existingObjectData) == false &&
+            existingObjectData.length > 0 &&
             objectData != null &&
-            Array.isArray(objectData) == false) {
+            objectData.length > 0 &&
+            manywho.utils.isEqual(valueElement.contentType, manywho.component.contentTypes.object, true)) {
 
-            // Start by going over the existing object
-            if (existingObjectData.properties != null &&
-                existingObjectData.properties.length > 0) {
+            // Use the existing object as the reference for the properties
+            if (existingObjectData[0].properties != null &&
+                existingObjectData[0].properties.length > 0) {
 
-                for (var i = 0; i < existingObjectData.properties.length; i++) {
+                for (var i = 0; i < existingObjectData[0].properties.length; i++) {
 
-                    if (objectData.properties != null &&
-                        objectData.properties.length > 0) {
+                    if (objectData[0].properties != null &&
+                        objectData[0].properties.length > 0) {
 
-                        for (var j = 0; j < objectData.properties.length; j++) {
+                        for (var j = 0; j < objectData[0].properties.length; j++) {
 
-                            if (manywho.utils.isEqual(existingObjectData.properties[i].typeElementPropertyId, objectData.properties[j].typeElementPropertyId, true)) {
+                            if (manywho.utils.isEqual(existingObjectData[0].properties[i].typeElementPropertyId, objectData[0].properties[j].typeElementPropertyId, true)) {
 
-                                existingObjectData.properties[i].contentValue = objectData.properties[j].contentValue;
-                                existingObjectData.properties[i].objectData = objectData.properties[j].objectData;
+                                existingObjectData[0].properties[i].contentValue = objectData[0].properties[j].contentValue;
+                                existingObjectData[0].properties[i].objectData = objectData[0].properties[j].objectData;
                                 break;
 
                             }
 
                         }
 
-                    }
-
-                }
-
-            }
-
-            // Now we have to go through the properties in the incoming object and make sure the existing object is complete
-            if (objectData.properties != null &&
-                objectData.properties.length > 0) {
-
-                for (var i = 0; i < objectData.properties.length; i++) {
-
-                    var found = false;
-                    var property = null;
-
-                    if (existingObjectData.properties != null &&
-                        existingObjectData.properties.length > 0) {
-
-                        for (var j = 0; j < existingObjectData.properties.length; j++) {
-
-                            if (manywho.utils.isEqual(existingObjectData.properties[j].typeElementPropertyId, objectData.properties[i].typeElementPropertyId, true)) {
-                                found = true;
-                                break;
-                            }
-
-                            property = objectData.properties[i];
-
-                        }
-
-                    }
-
-                    if (existingObjectData.properties == null) {
-                        existingObjectData.properties = [];
-                    }
-
-                    if (found == false) {
-                        existingObjectData.properties.push(property);
                     }
 
                 }
@@ -696,13 +670,10 @@ manywho.simulation = (function (manywho) {
 
         // We get the object data value from the state first as we only store objects in the state, so we need to get
         // this out so we can find the appropriate property value
-        var rootValueElementId = {
-            id: valueElementId.id,
-            typeElementPropertyId: null
-        };
+        var valueElement = manywho.graph.getValueElementForId(valueElementId.id);
 
         // Get the object data from the State and find the value being specifically referenced
-        var objectData = getObjectDataFromState(state, scopedTableName, rootValueElementId);
+        var objectData = getObjectDataFromState(state, scopedTableName, valueElement);
 
         // Set the properties on the reference object so they're ready to be set
         referenceObject.objectData = null;
@@ -710,48 +681,39 @@ manywho.simulation = (function (manywho) {
 
         // At this stage, we don't know if the value coming back is an individual object data entry or an array so
         // we need to test for that in this logic
-        if (objectData != null) {
+        if (objectData != null &&
+            objectData.length > 0) {
 
             // We have some object data stored, so we need to get that out
             if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId)) {
 
                 // The value is the root value, so we don't need to dig into the properties, we just return the
                 // actual object data value back
-                if (Array.isArray(objectData)) {
-
-                    // The value is an array, so simply apply that to the reference object
-                    referenceObject.objectData = objectData;
-
-                } else {
-
-                    // The value is an object, so we need to convert it over to an array as the platform engine
-                    // returns all object data regardless of list or object as an array
-                    referenceObject.objectData = [objectData];
-
-                }
+                referenceObject.objectData = objectData;
 
             } else {
 
-                if (Array.isArray(objectData)) {
-                    manywho.log.error("Something is wrong with the configuration of the Flow as the page is attempting to reference a property in a list.");
+                if (objectData.length > 1 &&
+                    manywho.utils.isEqual(valueElement.contentType, manywho.component.contentTypes.object, true)) {
+                    manywho.log.error("Something is wrong with the offline engine as the logic is expecting an object and the engine has multiple values stored.");
                     return null;
                 }
 
                 // The caller is referencing a property in the object, so we need to find that property and return
                 // the value as requested
-                if (objectData.properties != null &&
-                    objectData.properties.length > 0) {
+                if (objectData[0].properties != null &&
+                    objectData[0].properties.length > 0) {
 
-                    for (var i = 0; i < objectData.properties.length; i++) {
+                    for (var i = 0; i < objectData[0].properties.length; i++) {
 
                         if (manywho.utils.isEqual(
-                                objectData.properties[i].typeElementPropertyId,
+                                objectData[0].properties[i].typeElementPropertyId,
                                 valueElementId.typeElementPropertyId,
                                 true)) {
 
                             // We have a match, return the value information from the object
-                            referenceObject.contentValue = objectData.properties[i].contentValue;
-                            referenceObject.objectData = objectData.properties[i].objectData;
+                            referenceObject.contentValue = objectData[0].properties[i].contentValue;
+                            referenceObject.objectData = objectData[0].properties[i].objectData;
 
                             break;
 
@@ -770,79 +732,148 @@ manywho.simulation = (function (manywho) {
 
     }
 
-    // This function manages the construction of object data based on page component input responses. Usually the
-    // object is constructed from multiple inputs so all of these individual inputs are aggregated into a single object
-    // value.
+    // This function sets a specific value into the application State - typically to apply an operation that is setting
+    // a value to a specific property.
     //
-    function applyPageComponentInputResponseToObjectData(existingObjectDataEntry, pageComponentInfo, pageComponentInputResponse) {
+    function setValueInState(state, scopedTableName, valueElementId, value) {
 
-        if (pageComponentInfo == null) {
-            manywho.log.error("No PageComponentInfo cannot be null when generating object data for request.");
+        if (manywho.utils.isNullOrWhitespace(scopedTableName)) {
+            manywho.log.error("No ScopedTableName has been provided to set against in the offline State.");
             return null;
         }
 
-        if (pageComponentInputResponse == null) {
-            manywho.log.error("No PageComponentInputResponse cannot be null when generating object data for request.");
+        if (valueElementId == null) {
+            manywho.log.error("No ValueElementId has been provided to set against in the offline State.");
             return null;
         }
 
-        // If we have a property, we need to construct the object
-        if (pageComponentInfo.typeElementProperty != null) {
+        // We get the object data value from the state first as we only store objects in the state, so we need to get
+        // this out so we can find the appropriate property value
+        var valueElement = manywho.graph.getValueElementForId(valueElementId.id);
 
-            if (existingObjectDataEntry == null) {
+        // Get the object data from the State and find the value being specifically referenced
+        var objectData = getObjectDataFromState(state, scopedTableName, valueElement);
 
-                // We don't yet have an existing object data value for this request, so create one
-                existingObjectDataEntry = {
-                    "developerName": pageComponentInfo.typeElement.developerName,
-                    "typeElementId": pageComponentInfo.typeElement.id,
-                    "properties": []
-                }
+        // Apply the value to the object data
+        objectData = applyValueToObjectData(valueElement, valueElementId, objectData, value);
 
-            }
+        // Put the modified object data back into the state
+        putObjectDataInState(state, scopedTableName, valueElementId, objectData);
 
-            var updatePerformed = false;
+    }
 
-            // Check to see if we have this property already. If the user has accidentally bound the value to more than
-            // one input, we don't want to create an invalid object with two of the same property
-            for (var i = 0; i < existingObjectDataEntry.properties.length; i++) {
+    // This is a utility function for creating empty typed objects.
+    //
+    function createEmptyObject(typeElement) {
 
-                if (manywho.utils.isEqual(existingObjectDataEntry.properties[i].typeElementPropertyId, pageComponentInfo.typeElementProperty.id, true)) {
+        if (typeElement == null) {
+            manywho.log.error("No TypeElement provided for creating the empty object.");
+            return null;
+        }
 
-                    // We have the property already, so update it
-                    existingObjectDataEntry.properties[i].contentValue = pageComponentInputResponse.contentValue;
-                    existingObjectDataEntry.properties[i].objectData = pageComponentInputResponse.objectData;
-                    updatePerformed = true;
+        // Create the new object data entry
+        var objectDataEntry = {
+            "developerName": typeElement.developerName,
+            "typeElementId": typeElement.id,
+            "properties": []
+        }
 
-                }
+        // Now we fill up all the properties so we have them for reference
+        if (typeElement.properties != null &&
+            typeElement.properties.length > 0) {
 
-            }
+            for (var i = 0; i < typeElement.properties.length; i++) {
 
-            // If the property was not found, we need to push it into the existing object data entry as part of this
-            // object data value.
-            if (updatePerformed == false) {
-
-                existingObjectDataEntry.properties.push({
-                    "typeElementPropertyId": pageComponentInfo.typeElementProperty.id,
-                    "developerName": pageComponentInfo.typeElementProperty.developerName,
-                    "contentType": pageComponentInfo.typeElementProperty.contentType,
-                    "contentValue": pageComponentInputResponse.contentValue,
-                    "objectData": pageComponentInputResponse.objectData
-                });
+                createProperty(objectDataEntry, typeElement.properties[i]);
 
             }
+
+        }
+
+        return objectDataEntry;
+
+    }
+
+    // This is a utility function for generating new properties in an object data entry.
+    //
+    function createProperty(objectDataEntry, typeElementProperty) {
+
+        objectDataEntry.properties.push({
+            "typeElementPropertyId": typeElementProperty.id,
+            "developerName": typeElementProperty.developerName,
+            "contentType": typeElementProperty.contentType,
+            "contentValue": null,
+            "objectData": null
+        });
+
+    }
+
+    // This is a utility function for applying values to a particular property in object data.
+    //
+    function applyValueToObjectData(valueElement, valueElementId, objectData, value) {
+
+        if (valueElement == null) {
+            manywho.log.error("A ValueElement was not provided for the value to be applied.");
+            return null;
+        }
+
+        if (valueElementId == null) {
+            manywho.log.error("A ValueElementId was not provided for the value to be applied.");
+            return null;
+        }
+
+        if (manywho.utils.isNullOrWhitespace(valueElementId.typeElementPropertyId)) {
+
+            // The user is assigning the whole object, so we can simply return the object data provided in the value
+            return value.objectData;
 
         } else {
 
-            // The component is bound to a whole object. Not sure what to do with this as it will be an array not a
-            // single object and this method is assembling an object from various properties on the page. As a result,
-            // it cannot just be assigned here.
-            // TODO: this about more complex data collection
-            manywho.log.error('The scenario of mapping a whole object has not yet been implemented.');
+            // The user is assigning an object that does not yet exist in the state
+            if (objectData == null ||
+                objectData.length == 0) {
+
+                // Get the type for the value so we can generate the empty object
+                var typeElement = manywho.graph.getTypeElementForId(valueElement.typeElementId);
+
+                // Create the empty object so we have somewhere to store the incoming value
+                objectData = [createEmptyObject(typeElement)];
+
+            }
+
+            if (objectData.length > 1 &&
+                manywho.utils.isEqual(valueElement.contentType, manywho.component.contentTypes.object, true)) {
+                manywho.log.error("Something is wrong with the offline engine as the logic is expecting an object and the engine has multiple values stored.");
+                return null;
+            }
+
+            // The caller is referencing a property in the object, so we need to find that property and apply the
+            // incoming reference object value as expected
+            if (objectData[0].properties != null &&
+                objectData[0].properties.length > 0) {
+
+                for (var i = 0; i < objectData[0].properties.length; i++) {
+
+                    if (manywho.utils.isEqual(
+                            objectData[0].properties[i].typeElementPropertyId,
+                            valueElementId.typeElementPropertyId,
+                            true)) {
+
+                        // We have a match, return the value information from the object
+                        objectData[0].properties[i].contentValue = value.contentValue;
+                        objectData[0].properties[i].objectData = value.objectData;
+
+                        break;
+
+                    }
+
+                }
+
+            }
 
         }
 
-        // Return the existing object data entry ready to be populated with more properties depending on the page.
-        return existingObjectDataEntry;
+        return objectData;
 
     }
 
@@ -865,7 +896,7 @@ manywho.simulation = (function (manywho) {
         // in the simulation engine to give the user the best experience that the application is in fact executing.
         for (var i = 0; i < pageComponentInputResponses.length; i++) {
 
-            var aggregateObjectDataEntry = null;
+            var aggregateObjectData = null;
             var response = {};
 
             // Get the page component info, which is an aggregate of a whole bunch of metadata about this component,
@@ -887,37 +918,36 @@ manywho.simulation = (function (manywho) {
                 pageComponentInputResponses[i].objectData.length > 0) {
 
                 // If the component has object data, then the aggregate object data entry is the object data provided.
-                // As we are assuming a singular object here, it does mean that we don't currently support multi-selection.
-                // TODO: This logic should be expanded to support multiple object selections
-                aggregateObjectDataEntry = pageComponentInputResponses[i].objectData[0];
-
-                // We don't currently fault the engine, but do log an error
-                if (pageComponentInputResponses[i].objectData.length > 1) {
-                    manywho.log.info("The PageComponentInputResponse contains more than one object. This is not yet supported in the offline UI.")
-                }
+                aggregateObjectData = pageComponentInputResponses[i].objectData;
 
             } else {
 
-                var existingAggregateObjectDataEntry = null;
+                var existingAggregateObjectData = null;
 
                 if (pageObjectData[pageComponentInfo.valueElement.id] != null) {
-                    existingAggregateObjectDataEntry = pageObjectData[pageComponentInfo.valueElement.id].data;
+                    existingAggregateObjectData = pageObjectData[pageComponentInfo.valueElement.id].data;
                 }
 
-                // Pass in any existing aggregate object data entry and apply the value for this page component to it.
-                // This logic separates object data entries by both type and value id to make sure multiple objects
-                // do not bleed together and same object types on same page can also be achieved.
-                aggregateObjectDataEntry = applyPageComponentInputResponseToObjectData(
-                    existingAggregateObjectDataEntry,
-                    pageComponentInfo,
-                    pageComponentInputResponses[i]
-                );
+                // Make sure the page component does in fact have something to store
+                if (pageComponentInfo.pageComponent.valueElementValueBindingReferenceId != null) {
+
+                    // Pass in any existing aggregate object data and apply the value for this page component to it.
+                    // This logic separates object data entries by both type and value id to make sure multiple objects
+                    // do not bleed together and same object types on same page can also be achieved.
+                    aggregateObjectData = applyValueToObjectData(
+                        pageComponentInfo.valueElement,
+                        pageComponentInfo.pageComponent.valueElementValueBindingReferenceId,
+                        existingAggregateObjectData,
+                        pageComponentInputResponses[i]
+                    );
+
+                }
 
             }
 
             // We add the page component info to a response object so the logic is simpler
             response.pageComponentInfo = pageComponentInfo;
-            response.data = aggregateObjectDataEntry;
+            response.data = aggregateObjectData;
 
             // Assign the object data so we have it for any further page component input responses
             pageObjectData[pageComponentInfo.valueElement.id] = response;
@@ -975,11 +1005,11 @@ manywho.simulation = (function (manywho) {
 
                     // Apply this object data entry to the application state appropriately. This is an async operation, so
                     // we need to add the call to the array of promises. We do this call on an object by object basis.
-                    applyObjectDataEntryToState(
+                    applyObjectDataToState(
                         state,
                         pageObjectData[property].pageComponentInfo.tableName,
                         pageObjectData[property].pageComponentInfo.typeElement.id,
-                        pageObjectData[property].pageComponentInfo.valueElement,
+                        { id: pageObjectData[property].pageComponentInfo.valueElement.id, typeElementPropertyId: null },
                         pageObjectData[property].data,
                         pageObjectData.actionType
                     );
@@ -990,7 +1020,7 @@ manywho.simulation = (function (manywho) {
                     }
 
                     // Bucket the data for the database by the type element identifier
-                    objectDataToUpdate[pageObjectData[property].pageComponentInfo.typeElement.id].push(pageObjectData[property].data);
+                    objectDataToUpdate[pageObjectData[property].pageComponentInfo.typeElement.id].concat(pageObjectData[property].data);
 
                 }
 
@@ -1136,25 +1166,151 @@ manywho.simulation = (function (manywho) {
 
     }
 
+    // This function validates that the provided command for the operation is in fact supported.
+    //
+    function validateOperationCommand(command) {
+
+        if (command == null ||
+            manywho.utils.isEqual(command, "NEW") ||
+            manywho.utils.isEqual(command, "EMPTY") ||
+            manywho.utils.isEqual(command, "SET_EQUAL") ||
+            manywho.utils.isEqual(command, "VALUE_OF")) {
+            return true;
+        }
+
+        manywho.log.info("The Operation command is not supported and this operation will be ignored: " + command);
+        return false;
+
+    }
+
+    // This function executes an individual operation against the provided state.
+    //
+    function executeOperation(state, operation) {
+
+        if (state == null) {
+            manywho.log.error("No State has been provided to execute the operation against.");
+            return null;
+        }
+
+        if (operation == null) {
+            manywho.log.error("No Operation has been provided to execute against the State.");
+            return null;
+        }
+
+        var value = {
+            objectData: null,
+            contentValue: null
+        };
+
+        if (operation.valueElementToReferenceId != null) {
+
+            // Check to make sure this is a valid command
+            if (validateOperationCommand(operation.valueElementToReferenceId.command) == false) {
+                return;
+            }
+
+            // Get the Value from the graph so we know the type
+            var valueElement = manywho.graph.getValueElementForId(operation.valueElementToReferenceId.id);
+
+            // Get the Value from the state so we have it to apply
+            value = getValue(state, null, valueElement.typeElementId, operation.valueElementToReferenceId, value);
+
+        }
+
+        if (operation.valueElementToApplyId != null) {
+
+            // Check to make sure this is a valid command
+            if (validateOperationCommand(operation.valueElementToApplyId.command) == false) {
+                return;
+            }
+
+            // Get the Value from the graph so we know the type
+            var valueElement = manywho.graph.getValueElementForId(operation.valueElementToApplyId.id);
+
+            if (!manywho.utils.isNullOrWhitespace(operation.valueElementToApplyId.command) &&
+                (manywho.utils.isEqual(operation.valueElementToApplyId.command, "NEW") ||
+                 manywho.utils.isEqual(operation.valueElementToApplyId.command, "EMPTY"))) {
+                // Make sure we send a null value
+                setValueInState(state, getScopedTableName(null, valueElement.typeElementId), operation.valueElementToApplyId, {
+                    objectData: null,
+                    contentValue: null
+                });
+            } else {
+                // Apply the value retrieved from the state
+                setValueInState(state, getScopedTableName(null, valueElement.typeElementId), operation.valueElementToApplyId, value);
+            }
+
+        }
+
+    }
+
+    // This function executes an individual data action against the provided state. We provide the state as an object as
+    // the data actions will execute in parallel and we need the state object to stay in sync across all parallel requests.
+    //
+    function executeDataAction(state, dataAction) {
+
+        if (state == null) {
+            manywho.log.error("No State has been provided to execute the data action against.");
+            return null;
+        }
+
+        if (dataAction == null) {
+            manywho.log.error("No DataAction has been provided to execute against the State.");
+            return null;
+        }
+
+        // Add the value element to apply information to make the object handling a little simpler
+        var objectDataRequest = dataAction.objectDataRequest;
+        objectDataRequest.valueElementToApplyId = dataAction.valueElementToApplyId;
+        objectDataRequest.activeState = state;
+
+        // Get the data from the data sync tables for each of the data actions provided
+        return manywho.simulation.getSyncDataForObjectDataRequest(state, objectDataRequest).then(function (response) {
+
+            // Now that we have the filtered data, apply it to the application state, hard coding 'edit' as this
+            // is the behaviour that a data action performs at a system level
+            applyObjectDataToState(
+                response.additionalObjectData.activeState,
+                null,
+                response.additionalObjectData.typeElementId,
+                response.additionalObjectData.valueElementToApplyId,
+                response.data,
+                'edit'
+            );
+
+        });
+
+    }
+
     // This function crawls the graph for data actions, aggregates them and executes them against the local database
     // based on rudimentary logic. The goal of this function is to correctly source "real" data so users completing
     // pages as part of their offline use we be using data that exists in the remote database.
     //
-    function processDataActionsInPath(mapElementId, selectedOutcomeId) {
+    function processLogicInPath(mapElementId, selectedOutcomeId) {
 
-        // Get all of the data actions for the provided map element and path (scans the path until the path forks) or
-        // it hits a user element
-        var dataActions = manywho.graph.scanPathForDataActions(mapElementId, selectedOutcomeId);
+        // We don't bother checking the current Map Element for logic as this will be a Page or Step, so we need
+        // to first get the selected outcome for this map element so we can work out what the next map element is
+        // in the execution path.
+        var outcome = manywho.graph.getOutcomeForPath(mapElementId, selectedOutcomeId);
 
-        if (dataActions == null ||
-            dataActions.length == 0) {
+        if (outcome == null) {
+            // Nothing to do as we don't have anywhere to go
             return manywho.utils.getEmptyPromise();
         }
 
-        // This is a really complex piece of async. We need to do this to make sure the state doesn't lose integrity
-        // due to multiple updates on the same object. As a result, the state object is passed up through the async
-        // calls so the parallel updates are all performed on the same object
-        return manywho.storage.getState(dataActions).then(function(response) {
+        // Now check to see if there's any logic that must be executed for the next map element
+        var logicResult = manywho.graph.checkElementForLogic(outcome.nextMapElementId, null);
+
+        // If there's nothing to execute, don't bother grabbing and updating the state, simply return
+        if (logicResult.dataActions == null &&
+            logicResult.operations == null &&
+            logicResult.keepGoing == false) {
+            return manywho.utils.getEmptyPromise();
+        }
+
+        // As we do have some logic for this outcome, we kick off the async loop of logic to perform any data actions
+        // or operations that might exist in the Flow.
+        return manywho.storage.getState(outcome).then(function(response) {
 
             var state = response.data;
 
@@ -1162,70 +1318,69 @@ manywho.simulation = (function (manywho) {
                 state = {};
             }
 
-            var promises = [];
+            // Kick off the async loop - this will suffer from heap size issues potentially as it's recursive async
+            return processLogicElementInPath(state, response.additionalObjectData.nextMapElementId).then(function() {
 
-            // Go through each of the data actions and apply the data correctly to the application state
-            for (var i = 0; i < response.additionalObjectData.length; i++) {
-
-                // Add the value element to apply information to make the object handling a little simpler
-                var objectDataRequest = dataActions[i].objectDataRequest;
-                objectDataRequest.valueElementToApplyId = dataActions[i].valueElementToApplyId;
-                objectDataRequest.activeState = state;
-
-                // Get the data from the data sync tables for each of the data actions provided
-                promises.push(manywho.simulation.getSyncDataForObjectDataRequest(state, objectDataRequest).then(function (response) {
-
-                    // We grab the content type so we can do additional validation on the returned data so we don't get
-                    // erratic behaviour with multiple objects
-                    var contentType = manywho.graph.getValueElementForId(response.additionalObjectData.valueElementToApplyId.id).contentType;
-                    var objectData = response.data;
-
-                    // Make sure we send lists and lists and objects as objects to the cache
-                    if (manywho.utils.isEqual(manywho.component.contentTypes.object, contentType, true) &&
-                        objectData != null) {
-
-                        if (objectData.length > 1) {
-                            manywho.log.error("The query is returning more than one object for: " + contentType);
-                            return;
-                        }
-
-                        // Get the first entry out of the array as we will store the object in the cache
-                        // TODO: This logic means that we cannot source lists currently in data actions
-                        if (objectData.length > 0) {
-
-                            objectData = objectData[0];
-
-                        } else {
-
-                            // We don't have an object, we just have an empty list, so we return a null entry
-                            objectData = null;
-
-                        }
-
-                    }
-
-                    // Now that we have the filtered data, apply it to the application state, hard coding 'edit' as this
-                    // is the behaviour that a data action performs at a system level
-                    applyObjectDataEntryToState(
-                        response.additionalObjectData.activeState,
-                        null,
-                        response.additionalObjectData.typeElementId,
-                        response.additionalObjectData.valueElementToApplyId,
-                        objectData,
-                        'edit'
-                    );
-
-                }));
-
-            }
-
-            // Make sure all the promises have executed and then store the state back into the database
-            return Promise.all(promises).then(function() {
-
-                // Store the state back into the database after it has been fully updated
-                manywho.storage.setState(state);
+                return manywho.storage.setState(state);
 
             });
+
+        });
+
+    }
+
+    // This function executes an individual logic element in the path. This is a recursive function based on the structure
+    // of the Flow.
+    //
+    function processLogicElementInPath(state, mapElementId) {
+
+        if (state == null) {
+            manywho.log.error("No State has been provided to executed logic against.");
+            return null;
+        }
+
+        if (manywho.utils.isNullOrWhitespace(mapElementId)) {
+            manywho.log.error("No MapElementId has been provided for the current logic step.");
+            return null;
+        }
+
+        // Now check to see if there's any logic that must be executed for the next map element
+        var logicResult = manywho.graph.checkElementForLogic(mapElementId, null);
+
+        var promises = [];
+
+        if (logicResult.dataActions != null &&
+            logicResult.dataActions.length > 0) {
+
+            // Go through each of the data actions and apply the data correctly to the application state
+            for (var i = 0; i < logicResult.dataActions.length; i++) {
+                promises.push(executeDataAction(state, logicResult.dataActions[i]));
+            }
+
+        }
+
+        if (logicResult.operations != null &&
+            logicResult.operations.length > 0) {
+
+            // Go through each of the operations and apply the data correctly to the application state
+            for (var i = 0; i < logicResult.operations.length; i++) {
+                executeOperation(state, logicResult.operations[i]);
+            }
+
+            // Add an empty promise so this method resolves correctly
+            promises.push(manywho.utils.getEmptyPromise());
+
+        }
+
+        // Make sure all the promises have executed and then store the state back into the database
+        return Promise.all(promises).then(function() {
+
+            if (logicResult.keepGoing == false) {
+                return state;
+            }
+
+            // Call back to this function to keep executing through the path
+            return processLogicElementInPath(state, logicResult.nextMapElementId);
 
         });
 
@@ -1300,19 +1455,19 @@ manywho.simulation = (function (manywho) {
 
     }
 
-    // This is an aggregate function that applies the provided object data entry to the State and/or database depending
+    // This is an aggregate function that applies the provided object data to the State and/or database depending
     // on the action type. There are bulk methods for data inserts etc that can be better than using this method.
     //
-    function applyObjectDataEntryToState(state, tableName, typeElementId, valueElementId, objectDataEntry, actionType) {
+    function applyObjectDataToState(state, tableName, typeElementId, valueElementId, objectData, actionType) {
 
         if (state == null) {
             manywho.log.error("No State has been provided to apply the object data to.");
-            return null;
+            return;
         }
 
         if (valueElementId == null) {
             manywho.log.error("No ValueElementId has been provided to apply to the offline State.");
-            return null;
+            return;
         }
 
         // Reset the table name to the full table name
@@ -1323,7 +1478,7 @@ manywho.simulation = (function (manywho) {
 
         if (actionPlan.putInState) {
 
-            putObjectDataInState(state, tableName, valueElementId, objectDataEntry);
+            putObjectDataInState(state, tableName, valueElementId, objectData);
 
         }
 
@@ -1343,6 +1498,14 @@ manywho.simulation = (function (manywho) {
         getValue: function(state, tableName, typeElementId, valueElementId, referenceObject) {
 
             return getValue(state, tableName, typeElementId, valueElementId, referenceObject);
+
+        },
+
+        // Sets a value in the state to the provided value.
+        //
+        setValue: function(state, tableName, typeElementId, valueElementId, referenceObject) {
+
+            return setValueInState(state, getScopedTableName(tableName, typeElementId), valueElementId, referenceObject);
 
         },
 
@@ -1370,12 +1533,11 @@ manywho.simulation = (function (manywho) {
 
         },
 
-        // A lightweight function for applying data actions to the simulation state. Currently this is done in parallel
-        // rather than in ordered series. The data actions are provided in order.
+        // A lightweight function for applying data actions and operations to the simulation state.
         //
         processGraph: function(mapElementId, selectedOutcomeId) {
 
-            return processDataActionsInPath(mapElementId, selectedOutcomeId);
+            return processLogicInPath(mapElementId, selectedOutcomeId);
 
         },
 

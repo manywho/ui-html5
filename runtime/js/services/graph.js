@@ -78,30 +78,32 @@ manywho.graph = (function (manywho) {
 
     }
 
-    // Utility function that scans through the snapshot Flow graph for all LOAD data actions. We want the offline
+    // Utility function that checks the current element for logic we can execute offline. We want the offline
     // simulation engine to execute these as well as possible to improve the user journey.
     //
-    function checkElementForDataDependencies(dependencyActions, mapElementId, selectedOutcomeId) {
+    function checkElementForLogicDependencies(mapElementId, selectedOutcomeId) {
+
+        var logicResult = {};
+        logicResult.keepGoing = false;
+        logicResult.nextMapElementId = null;
+        logicResult.operations = null;
+        logicResult.dataActions = null;
 
         var mapElement = getMapElement(mapElementId);
 
-        // This logic will ignore the first map element as that is very likely a step or input. However, we want to stop
-        // scanning once we reach a user screen as those further actions are not relevant for the request.
-        if (dependencyActions != null &&
-            (manywho.utils.isEqual(mapElement.elementType, 'step') ||
-             manywho.utils.isEqual(mapElement.elementType, 'input'))) {
-            return dependencyActions;
-        }
-
-        // For the first execution, the data actions will be null, so we need to create a new list
-        if (dependencyActions == null) {
-            dependencyActions = [];
+        // This is a step or input, we don't need to perform any actions and likely don't need to keep executing any
+        // simulated logic
+        if (manywho.utils.isEqual(mapElement.elementType, 'step') ||
+            manywho.utils.isEqual(mapElement.elementType, 'input')) {
+            return logicResult;
         }
 
         // Grab all of the loading data actions in the order in which the author wants the executed. The simulation
         // engine will attempt to grab this data from the synchronized data set matching these requests.
         if (mapElement.dataActions != null &&
             mapElement.dataActions.length > 0) {
+
+            logicResult.dataActions = [];
 
             // Sort them just in case ordering matters
             var dataActions = mapElement.dataActions.sort(function (a, b) {
@@ -116,9 +118,32 @@ manywho.graph = (function (manywho) {
                 if (manywho.utils.isEqual(dataActions[i].crudOperationType, 'load', true)) {
 
                     // Push the action into the list of actions
-                    dependencyActions.push(dataActions[i]);
+                    logicResult.dataActions.push(dataActions[i]);
 
                 }
+
+            }
+
+        }
+
+        // Grab all of the operations in the order in which the author wants the executed. The simulation
+        // engine will attempt to apply these operations to the state data.
+        if (mapElement.operations != null &&
+            mapElement.operations.length > 0) {
+
+            logicResult.operations = [];
+
+            // Sort them just in case ordering matters
+            var operations = mapElement.operations.sort(function (a, b) {
+
+                return a.order - b.order;
+
+            });
+
+            for (var i = 0; i < operations.length; i++) {
+
+                // Push the operation into the list of operations
+                logicResult.operations.push(operations[i]);
 
             }
 
@@ -128,18 +153,57 @@ manywho.graph = (function (manywho) {
 
         if (selectedOutcome != null) {
 
-            // Add dependency actions as we crawl through the Flow tree
-            dependencyActions = checkElementForDataDependencies(dependencyActions, selectedOutcome.nextMapElementId, null);
+            logicResult.keepGoing = true;
+            logicResult.nextMapElementId = selectedOutcome.nextMapElementId;
 
         }
 
-        return dependencyActions;
+        return logicResult;
+
+    }
+
+    // Find the type for the provided identifier.
+    //
+    function getTypeElementForId(typeElementId) {
+
+        if (manywho.utils.isNullOrWhitespace(typeElementId)) {
+            manywho.log.error("No TypeElementId was provided to get the associated Type.");
+            return null;
+        }
+
+        // Find the type element associated with this request, based on the page component
+        if (offline.snapshot.typeElements &&
+            offline.snapshot.typeElements != null &&
+            offline.snapshot.typeElements.length > 0) {
+
+            for (var j = 0; j < offline.snapshot.typeElements.length; j++) {
+
+                if (manywho.utils.isEqual(
+                        offline.snapshot.typeElements[j].id,
+                        typeElementId,
+                        true)) {
+
+                    return offline.snapshot.typeElements[j];
+
+                }
+
+            }
+
+        }
+
+        manywho.log.error('A TypeElement could not be found for the provided identifier.');
+        return;
 
     }
 
     // Find the value for the provided identifier.
     //
     function getValueElementForId(valueElementId) {
+
+        if (manywho.utils.isNullOrWhitespace(valueElementId)) {
+            manywho.log.error("No ValueElementId was provided to get the associated Value.");
+            return null;
+        }
 
         // Find the value element associated with this request, based on the page component
         if (offline.snapshot.valueElements &&
@@ -281,7 +345,7 @@ manywho.graph = (function (manywho) {
 
         }
 
-        pageComponentInfo.valueElement = manywho.graph.getValueElementForId(pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.id);
+        pageComponentInfo.valueElement = getValueElementForId(pageComponentInfo.pageComponent.valueElementValueBindingReferenceId.id);
 
         if (manywho.utils.isNullOrWhitespace(pageComponentInfo.valueElement.typeElementId)) {
             manywho.log.error('The State is trying to store data for a PageComponent that does not have a Typed ' +
@@ -289,34 +353,7 @@ manywho.graph = (function (manywho) {
             return;
         }
 
-        pageComponentInfo.typeElement = null;
-
-        // Find the type element associated with this request, based on the value element
-        if (offline.snapshot.typeElements &&
-            offline.snapshot.typeElements != null &&
-            offline.snapshot.typeElements.length > 0) {
-
-            for (var j = 0; j < offline.snapshot.typeElements.length; j++) {
-
-                if (manywho.utils.isEqual(
-                        offline.snapshot.typeElements[j].id,
-                        pageComponentInfo.valueElement.typeElementId,
-                        true)) {
-
-                    pageComponentInfo.typeElement = offline.snapshot.typeElements[j];
-                    break;
-
-                }
-
-            }
-
-        }
-
-        if (pageComponentInfo.typeElement == null) {
-            manywho.log.error('A TypeElement could not be found for current request.');
-            return;
-        }
-
+        pageComponentInfo.typeElement = getTypeElementForId(pageComponentInfo.valueElement.typeElementId);
         pageComponentInfo.typeElementProperty = null;
 
         // Find the type element associated with this request, based on the value element
@@ -358,7 +395,7 @@ manywho.graph = (function (manywho) {
         // Scan for all data actions in the provided path so the offline engine can best simulate how the platform will
         // behave when online.
         //
-        scanPathForDataActions: function(mapElementId, selectedOutcomeId) {
+        checkElementForLogic: function(mapElementId, selectedOutcomeId) {
 
             // If this map element is an empty map element then we assume it's a default page for situations where
             // the user is offline and we don't have a cached response already
@@ -366,7 +403,16 @@ manywho.graph = (function (manywho) {
                 return null;
             }
 
-            return checkElementForDataDependencies(null, mapElementId, selectedOutcomeId);
+            return checkElementForLogicDependencies(mapElementId, selectedOutcomeId);
+
+        },
+
+        // Returns the outcome path the engine should follow either because the user selected the outcome or because
+        // it is the only outcome path that can be followed according to the structure of the Flow.
+        //
+        getOutcomeForPath: function(mapElementId, selectedOutcomeId) {
+
+            return getSelectedOutcome(getMapElement(mapElementId), selectedOutcomeId);
 
         },
 
@@ -375,6 +421,14 @@ manywho.graph = (function (manywho) {
         getValueElementForId: function(valueElementId) {
 
             return getValueElementForId(valueElementId);
+
+        },
+
+        // Returns the type element for the provided identifier.
+        //
+        getTypeElementForId: function(typeElementId) {
+
+            return getTypeElementForId(typeElementId);
 
         },
 

@@ -317,7 +317,7 @@ manywho.responses = (function (manywho) {
 
             if (responseToCache.objectData == null ||
                 responseToCache.objectData.length == 0) {
-                manywho.log.info("We cannot cache object data responses that contain no data.");
+                manywho.log.info("The offline runtime cannot cache object data responses that contain no data.");
                 return;
             }
 
@@ -335,14 +335,21 @@ manywho.responses = (function (manywho) {
 
         }
 
+        // If the response has a status code, we want to disable and security redirection or login dialog as this will
+        // not work when the user is offline
+        // TODO: This is effectively a security hole for offline as it will allow unauthenticated users access to cached data
+        if (responseToCache.hasOwnProperty("statusCode") &&
+            responseToCache.hasOwnProperty("authorizationContext")) {
+            // This will prevent the UI from redirecting or prompting the user for login information
+            responseToCache.statusCode = "200";
+            responseToCache.authorizationContext = null;
+        }
+
         // Assign a copy of the object so the remote caller cannot manipulate the data store indirectly
         if (offline.responses == null) {
             // Put the response into the cached responses based on user activity
             // TODO: Under high data volumes this may cause issues as it is async
             manywho.storage.setResponseCache(identifier, responseToCache);
-        } else {
-            // Put the response into the pre-configured list
-            offline.responses[identifier] = responseToCache;
         }
 
     }
