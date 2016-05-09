@@ -1288,6 +1288,11 @@ manywho.simulation = (function (manywho) {
     //
     function processLogicInPath(mapElementId, selectedOutcomeId) {
 
+        if (manywho.utils.isEqual(mapElementId, manywho.graph.emptyElementId, true)) {
+            // This isn't a real map element, so there's no logic to process
+            return manywho.utils.getEmptyPromise();
+        }
+
         // We don't bother checking the current Map Element for logic as this will be a Page or Step, so we need
         // to first get the selected outcome for this map element so we can work out what the next map element is
         // in the execution path.

@@ -379,7 +379,15 @@ manywho.responses = (function (manywho) {
 
         if (offline.responses != null) {
 
-            return generateResponse(identifier, offline.responses[identifier], request);
+            return new Promise(function(resolve, reject) {
+
+                var response = generateResponse(identifier, offline.responses[identifier], request);
+
+                if (resolve != null) {
+                    resolve(response);
+                }
+
+            });
 
         } else {
 
