@@ -505,6 +505,11 @@ manywho.simulation = (function (manywho) {
         // Scope the object data to the provided value
         var modifier = getModifierForValueElementId(valueElementId);
 
+        // Clone the object data just to be sure we don't have multiple threads acting on it
+        if (objectData != null) {
+            objectData = JSON.parse(JSON.stringify(objectData));
+        }
+
         // Assign the object data to the state
         state[scopedTableName + modifier] = objectData;
 
@@ -914,13 +919,12 @@ manywho.simulation = (function (manywho) {
 
         }
 
-        var promises = [];
-
         // We do all of the actions below against the state object in memory to stop parallel threads confusing the
         // state of the state :)
-        promises.push(manywho.storage.getState(request).then(function(response) {
+        return manywho.storage.getState(request).then(function(response) {
 
             var state = response.data;
+            var promises = [];
 
             if (state == null) {
                 state = {};
@@ -1002,13 +1006,15 @@ manywho.simulation = (function (manywho) {
 
             //}
 
-            // Add state storage as a promise as that can happen in parallel with the database updates
-            promises.push(manywho.storage.setState(state));
-
             // We don't return this call until all promises have successfully executed in series so data doesn't get lost.
-            return Promise.all(promises);
+            return Promise.all(promises).then(function() {
 
-        }));
+                // Update the state before going further
+                return manywho.storage.setState(state);
+
+            });
+
+        });
 
     }
 
