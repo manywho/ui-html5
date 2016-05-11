@@ -181,11 +181,7 @@ permissions and limitations under the License.
 
                     flowModel[lookUpKey].label = engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.label;
 
-                    if (engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.attributes) {
-
-                        manywho.model.setAttributes(flowKey, engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.attributes);
-
-                    }
+                    manywho.model.setAttributes(flowKey, engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.attributes || null);
 
                     this.setContainers(flowKey,
                                         engineInvokeResponse.mapElementInvokeResponses[0].pageResponse.pageContainerResponses,
