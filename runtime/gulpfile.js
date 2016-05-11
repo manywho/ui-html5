@@ -388,17 +388,12 @@ gulp.task('offline-build-sequence', function() {
             {
                 type: 'input',
                 name: 'phonegap',
-                message: 'Is this a PhoneGap build? (y/n)'
+                message: 'Is this a Cordova build? (y/n)'
             },
             {
                 type: 'input',
                 name: 'debugging',
                 message: 'Is this a debug build? (y/n)'
-            },
-            {
-                type: 'input',
-                name: 'sequences',
-                message: 'Do you want to override any existing recording sequences? (y/n)'
             }], function(res) {
 
             // Authenticate the user to the draw API
@@ -477,18 +472,16 @@ gulp.task('offline-build-sequence', function() {
                                     var path = '';
 
                                     if (res.phonegap == 'y') {
-                                        console.log("Generating PhoneGap index.html");
+                                        console.log("Generating Cordova index.html");
 
                                         path = '../../';
                                         var initializeCall = "";
                                         var enableDebugTools = false;
-                                        var overrides = "";
                                         var sourceFile = "default-offline.html";
 
                                         // Make sure the settings are correct depending on the debug configuration
                                         if (res.debugging == 'y') {
                                             sourceFile = "default-tools.html";
-                                            overrides = "<script src=\"js/manywho/authorization.js\"></script>";
                                             enableDebugTools = true;
                                         }
 
@@ -520,17 +513,18 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
-                                            .pipe(replace("{{overrides}}", overrides))
+                                            .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>"))
                                             .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'db'))
                                             .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
                                             .pipe(replace("{{isCordova}}", 'true'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{playJoinUrl}}", "'index.html'"))
                                             .pipe(replace("{{initializeCall}}", initializeCall))
                                             .pipe(rename("index.html"))
                                             .pipe(gulp.dest(path));
 
-                                        console.log("Generating PhoneGap tools.html");
+                                        console.log("Generating Cordova tools.html");
 
                                         // Create a new tools.html file with the appropriate settings
                                         gulp.src(["default-tools.html"])
@@ -542,6 +536,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{storage}}", 'local'))
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
+                                            .pipe(replace("{{playJoinUrl}}", "'http://localhost:3000/tools.html'"))
                                             .pipe(replace("{{build}}", res.build))
                                             .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
                                             .pipe(rename("tools.html"))
@@ -563,6 +558,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
                                             .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, false)))
                                             .pipe(rename("offline.html"))
                                             .pipe(gulp.dest('.'));
@@ -580,6 +576,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{cordova}}", ''))
                                             .pipe(replace("{{isCordova}}", 'false'))
                                             .pipe(replace("{{build}}", res.build))
+                                            .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
                                             .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
                                             .pipe(rename("tools.html"))
                                             .pipe(gulp.dest('.'));
@@ -589,26 +586,39 @@ gulp.task('offline-build-sequence', function() {
                                     console.log("Generating js/config/snapshot-" + res.build + ".js");
                                     fs.writeFileSync(path + "js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
 
-                                    // Write the responses file
-                                    console.log("Generating js/config/responses-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
+                                    if (res.debugging == 'y') {
+                                        // Write the responses file
+                                        console.log("Generating js/config/responses-" + res.build + ".js");
+                                        fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
+                                    } else {
+                                        // Don't override default responses for a non-debug build
+                                        console.log("Not generating js/config/responses-" + res.build + ".js");
+                                    }
 
-                                    // Write the default responses file
-                                    console.log("Generating js/config/default-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
+                                    if (overwriteDefaultResponses(path, res.build)) {
+                                        // Write the default responses file
+                                        console.log("Generating js/config/default-" + res.build + ".js");
+                                        fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
+                                    } else {
+                                        // Don't override default responses for a non-debug build
+                                        console.log("Not generating js/config/default-" + res.build + ".js");
+                                    }
 
-                                    if (res.sequences == 'y') {
+                                    if (overwriteSequences(path, res.build)) {
                                         // Write the sequences file
-                                        console.log("Generating js/config/sequences-" + res.build + ".js");
+                                        console.log("Generating empty js/config/sequences-" + res.build + ".js");
                                         fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
                                     } else {
-                                        console.log("Skipping js/config/sequences-" + res.build + ".js");
+                                        // Only generate the sequences file if it doesn't exist
+                                        console.log("Not generating js/config/sequences-" + res.build + ".js");
                                     }
 
                                     var dataSync = {
                                         objectDataRequests: [],
                                         fileDataRequests: []
                                     };
+
+                                    var dataSyncOverrides = getDataSyncOverrides(path, res.build);
 
                                     var uniqueDataSyncs = {};
 
@@ -625,7 +635,7 @@ gulp.task('offline-build-sequence', function() {
 
                                                 for (var j = 0; j < pageComponents.length; j++) {
 
-                                                    var objectDataRequest = createRuntimeObjectDataRequest(snapshot, pageComponents[j].objectDataRequest, true);
+                                                    var objectDataRequest = createRuntimeObjectDataRequest(snapshot, pageComponents[j].objectDataRequest, dataSyncOverrides, true);
 
                                                     if (objectDataRequest != null) {
                                                         // Add it to the list of requests to sync
@@ -655,7 +665,7 @@ gulp.task('offline-build-sequence', function() {
                                                     // Only sync data load data actions
                                                     if (snapshot.mapElements[i].dataActions[j].crudOperationType.toLowerCase() == "load") {
 
-                                                        var objectDataRequest = createRuntimeObjectDataRequest(snapshot, snapshot.mapElements[i].dataActions[j].objectDataRequest, true);
+                                                        var objectDataRequest = createRuntimeObjectDataRequest(snapshot, snapshot.mapElements[i].dataActions[j].objectDataRequest, dataSyncOverrides, true);
 
                                                         if (objectDataRequest != null) {
                                                             // Add it to the list of requests to sync
@@ -978,7 +988,7 @@ function createNavigationItemDataResponses(navigationItemDataResponses, navigati
 
 }
 
-function createRuntimeObjectDataRequest(snapshot, objectDataRequest, clearFilter) {
+function createRuntimeObjectDataRequest(snapshot, objectDataRequest, dataSyncOverrides, clearFilter) {
 
     if (objectDataRequest != null) {
 
@@ -1028,10 +1038,30 @@ function createRuntimeObjectDataRequest(snapshot, objectDataRequest, clearFilter
         if (objectDataRequest.listFilter == null ||
             clearFilter == true) {
             objectDataRequest.listFilter = {};
+            // Assign a default data batch size
+            objectDataRequest.listFilter.limit = 250;
         }
 
-        // Assign a default data batch size and chunk size
-        objectDataRequest.listFilter.limit = 250;
+        if (dataSyncOverrides != null &&
+            dataSyncOverrides.length > 0) {
+
+            for (var i = 0; i < dataSyncOverrides.length; i++) {
+
+                if (dataSyncOverrides[i].typeElementBindingId == objectDataRequest.typeElementBindingId) {
+
+                    console.log("Applying data sync override for: " + objectDataRequest.name);
+
+                    // If the binding matches, we override the generated filter with the override
+                    objectDataRequest.listFilter = dataSyncOverrides[i].listFilter;
+                    break;
+
+                }
+
+            }
+
+        }
+
+        // Assign a default chunk size
         objectDataRequest.chunkSize = 10;
 
         // Assign the empty state
@@ -1090,23 +1120,63 @@ function getExtraIndent(extraIndent) {
 
 }
 
+function overwriteSequences(path, build) {
+
+    try {
+        fs.readFileSync(path + "js/config/sequences-" + build + ".js", "utf8");
+        return false;
+    } catch (error) {
+        return true;
+    }
+
+}
+
+function overwriteDefaultResponses(path, build) {
+
+    try {
+        fs.readFileSync(path + "js/config/default-" + build + ".js", "utf8");
+        return false;
+    } catch (error) {
+        return true;
+    }
+
+}
+
 function getExtensions(path, build) {
 
     var extensionsReferences = "";
 
-    // Read in any extensions
-    var extensions = JSON.parse(fs.readFileSync(path + "js/config/extensions-" + build + ".json", "utf8"));
+    try {
+        // Read in any extensions
+        var extensions = JSON.parse(fs.readFileSync(path + "js/config/extensions-" + build + ".json", "utf8"));
 
-    if (extensions != null &&
-        extensions.length > 0) {
+        if (extensions != null &&
+            extensions.length > 0) {
 
-        // Go through each of the extensions and add them to the build
-        for (var i = 0; i < extensions.length; i++) {
-            extensionsReferences += '<script src="' + extensions[i] + '"></script>\r';
+            // Go through each of the extensions and add them to the build
+            for (var i = 0; i < extensions.length; i++) {
+                console.log("Applying extension: " + extensions[i]);
+                extensionsReferences += '<script src="' + extensions[i] + '"></script>\r';
+            }
+
         }
-
+    } catch (error) {
+        console.log("No extensions provided")
     }
 
     return extensionsReferences;
+
+}
+
+function getDataSyncOverrides(path, build) {
+
+    try {
+        // Read in any data sync filter customizations
+        return JSON.parse(fs.readFileSync(path + "js/config/data-sync-overrides-" + build + ".json", "utf8"));
+    } catch (error) {
+        console.log("No data sync filter customizations provided")
+    }
+
+    return null;
 
 }
