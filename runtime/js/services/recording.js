@@ -96,6 +96,10 @@ manywho.recording = (function (manywho) {
             // Make sure we re-assign the state token so the engine doesn't get confused with parallel requests
             requests[pointer].stateId = response.stateId;
             requests[pointer].stateToken = response.stateToken;
+        } else {
+            // We haven't get started the recording sequence for this state, so we should kick things off
+            requests[pointer].stateId = manywho.state.getState(flowKey).id;
+            requests[pointer].stateToken = requests[pointer].stateId;
         }
 
         // Ignore the first request as this is the request to navigate. We ignore the last one as it's the navigate back again.
@@ -379,7 +383,7 @@ manywho.recording = (function (manywho) {
                     if (found == false) {
 
                         if (activeRecording.allowInterruptions == false) {
-                            manywho.log.info("Sequence interrupted due to invalid MapElement. Terminating for recording: " + activeRecording.sequence.name);
+                            manywho.log.info("Sequence interrupted due to invalid MapElement. Terminating for recording: " + activeRecording.sequence.nameReference);
 
                             // Null the active recording as the user has interrupted the path
                             activeRecordings[property] = null;
@@ -398,7 +402,7 @@ manywho.recording = (function (manywho) {
 
                         if (activeRecording.allowInterruptions == false) {
 
-                            manywho.log.info("Sequence interrupted due to invalid Outcome. Terminating for recording: " + activeRecording.sequence.name);
+                            manywho.log.info("Sequence interrupted due to invalid Outcome. Terminating for recording: " + activeRecording.sequence.nameReference);
 
                             // The outcome is specified and the outcome does not match
                             activeRecordings[property] = null;
