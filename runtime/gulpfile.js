@@ -1081,27 +1081,10 @@ function getInitializeFunctionCall(extraIndent, isDebug) {
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        flowId,\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        'main',\r";
-
-    if (isDebug == true) {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['join'],\r";
-    } else {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
-    }
-
-    if (isDebug == true) {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['authorization'],\r";
-    } else {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
-    }
-
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['join'],\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['authorization'],\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        options,\r";
-
-    if (isDebug == true) {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['initialization']\r";
-    } else {
-        defaultInitializeCall += getExtraIndent(extraIndent) + "                        null\r";
-    }
-
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['initialization']\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                    );\r";
 
     return defaultInitializeCall;
