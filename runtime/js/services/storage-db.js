@@ -258,7 +258,7 @@ manywho.storage = (function (manywho) {
         //
         clearAll: function() {
 
-            return clear(null);
+            return clear();
 
         },
 
