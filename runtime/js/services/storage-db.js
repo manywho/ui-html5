@@ -218,7 +218,7 @@ manywho.storage = (function (manywho) {
 
     // Clear data from the provided namespace
     //
-    function clear(namespace) {
+    function clear() {
 
         return new Promise(function(resolve, reject) {
 
@@ -227,39 +227,19 @@ manywho.storage = (function (manywho) {
                 // Check we have this table in the database
                 tx.executeSql("CREATE TABLE IF NOT EXISTS mw_tables (mw_key string primary key, mw_value text)");
 
-                if (manywho.utils.isNullOrWhitespace(namespace)) {
+                // Check to see if we should insert or update
+                tx.executeSql("DELETE FROM mw_tables", null, function () {
 
-                    // Check to see if we should insert or update
-                    tx.executeSql("DELETE FROM mw_tables", null, function () {
+                    if (resolve != null) {
+                        resolve();
+                    }
 
-                        if (resolve != null) {
-                            resolve();
-                        }
-
-                    }, function (error) {
-                        alert('CLEAR "DELETE FROM mw_tables": ' + JSON.stringify(error));
-                        if (reject != null) {
-                            reject();
-                        }
-                    });
-
-                } else {
-
-                    // Check to see if we should insert or update
-                    tx.executeSql("DELETE FROM mw_tables WHERE mw_key LIKE '%?'", [namespace], function () {
-
-                        if (resolve != null) {
-                            resolve();
-                        }
-
-                    }, function (error) {
-                        alert('CLEAR "DELETE FROM mw_tables": ' + JSON.stringify(error));
-                        if (reject != null) {
-                            reject();
-                        }
-                    });
-
-                }
+                }, function (error) {
+                    alert('CLEAR "DELETE FROM mw_tables": ' + JSON.stringify(error));
+                    if (reject != null) {
+                        reject();
+                    }
+                });
 
             }, function (error) {
                 alert('CLEAR Transaction: ' + JSON.stringify(error));
@@ -325,7 +305,7 @@ manywho.storage = (function (manywho) {
         //
         clearData: function() {
 
-            return clear(STATE_DATABASE);
+            return set("Table", STATE_DATABASE, table, null);
 
         },
 

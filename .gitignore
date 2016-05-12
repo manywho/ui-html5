@@ -2,6 +2,7 @@
 /extensions
 
 /runtime/node_modules
+/runtime/___node_modules
 /runtime/css/*.css
 /runtime/css/themes/mw-*.css
 /runtime/dist
