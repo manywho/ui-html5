@@ -102,6 +102,11 @@ manywho.recording = (function (manywho) {
             requests[pointer].stateToken = requests[pointer].stateId;
         }
 
+        if (requests[pointer].stateId == manywho.recording.emptyStateId) {
+            alert('The application thinks it is still offline.');
+            return;
+        }
+
         // Ignore the first request as this is the request to navigate. We ignore the last one as it's the navigate back again.
         if (pointer > 0 &&
             pointer < (requests.length - 1)) {

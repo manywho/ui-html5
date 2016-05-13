@@ -219,6 +219,14 @@ manywho.state = (function (manywho) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
+            if (manywho.utils.isEqual(id, manywho.recording.emptyStateId, true)) {
+                var currentState = manywho.state.getState(flowKey);
+
+                // Do not overwrite the state with empty guids as this will confuse the engine going on and offline
+                id = currentState.id;
+                token = currentState.token;
+            }
+
             state[lookUpKey] = {
                 id: id,
                 token: token,
