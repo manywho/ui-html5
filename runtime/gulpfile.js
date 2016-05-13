@@ -512,8 +512,9 @@ gulp.task('offline-build-sequence', function() {
                                         gulp.src([sourceFile])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
-                                            .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>"))
+                                            .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>\r<script src=\"js/manywho/log.js\"></script>"))
                                             .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'db'))
                                             .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
@@ -530,6 +531,7 @@ gulp.task('offline-build-sequence', function() {
                                         gulp.src(["default-tools.html"])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
                                             .pipe(replace("{{directory}}", 'manywho/runtime/'))
                                             .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{extensions}}", extensions))
@@ -551,6 +553,7 @@ gulp.task('offline-build-sequence', function() {
                                         gulp.src(["default-offline.html"])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{extensions}}", extensions))
@@ -569,6 +572,7 @@ gulp.task('offline-build-sequence', function() {
                                         gulp.src(["default-tools.html"])
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
+                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
                                             .pipe(replace("{{directory}}", ''))
                                             .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{extensions}}", extensions))
@@ -1079,7 +1083,7 @@ function getInitializeFunctionCall(extraIndent, isDebug) {
     defaultInitializeCall += "manywho.engine.initialize(\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        tenantId,\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        flowId,\r";
-    defaultInitializeCall += getExtraIndent(extraIndent) + "                        null,\r";
+    defaultInitializeCall += getExtraIndent(extraIndent) + "                        flowVersionId,\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        'main',\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['join'],\r";
     defaultInitializeCall += getExtraIndent(extraIndent) + "                        queryParameters['authorization'],\r";

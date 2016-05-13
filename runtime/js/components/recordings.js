@@ -74,12 +74,6 @@
 
                 manywho.recording.getRecording(recordingId).then(function (recording) {
 
-                    // Set the connection to ensure the connection does connect
-                    manywho.connection.setOnlineOverride({
-                        override: true,
-                        dataSyncRequired: false
-                    });
-
                     if (manywho.utils.isEqual('sync', recordingAction, true)) {
 
                         manywho.recording.replay(flowKey, recording, progressFunction);
@@ -102,13 +96,6 @@
                     // This is an async method so does run the risk of showing inconsistencies of the clear query
                     // takes a while.
                     manywho.simulation.clearData();
-
-                    // Set the connection back to default settings (which is needed to allow the recording playback to function)
-                    manywho.connection.setOnlineOverride({
-                        override: false,
-                        dataSyncRequired: false,
-                        online: true
-                    });
 
                 });
 
