@@ -754,7 +754,7 @@ gulp.task('offline-run-sequence', function() {
         .pipe(gulpPrompt.prompt([{
             type: 'input',
             name: 'phonegap',
-            message: 'Was this a PhoneGap build? (y/n)'
+            message: 'Was this a Cordova build? (y/n)'
         },
             {
                 type: 'input',
