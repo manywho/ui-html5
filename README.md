@@ -24,6 +24,3 @@ http://localhost:3000?tenant-id=<tenant-id>&join=<state-id>
 ```
 
 If you don't have a state id you can get it entering `manywho.state.getState().id` in the browser console once the flow is running.
-
-##Docs
-Some more information about the HTML5 player can be found here: https://developers.manywho.com/display/MA/HTML5
