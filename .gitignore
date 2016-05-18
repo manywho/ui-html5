@@ -5,6 +5,7 @@
 /runtime/css/*.css
 /runtime/css/themes/mw-*.css
 /runtime/dist
+/runtime/build
 
 /draw/node_modules
 /draw/mxgraph
