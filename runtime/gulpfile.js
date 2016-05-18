@@ -1,80 +1,34 @@
-var gulp = require('gulp'),
-    browserSync = require('browser-sync');
-    less = require('gulp-less'),
-    watch = require('gulp-watch'),
-    jshint = require('gulp-jshint'),
-    stylish = require('jshint-stylish'),
-    plumber = require('gulp-plumber'),
-    concat = require('gulp-concat'),
-    minifyCSS = require('gulp-minify-css'),
-    del = require('del'),
-    revall = require('gulp-rev-all'),
-    uglify = require('gulp-uglify'),
-    runSequence = require('run-sequence'),
-    order = require("gulp-order"),
-    awspublish = require('gulp-awspublish'),
-    rename = require("gulp-rename"),
-    replace = require('gulp-replace'),
-    aws = require('aws-sdk'),
-    gutil = require('gulp-util'),
-    sourcemaps = require('gulp-sourcemaps'),
-    argv = require('yargs').argv;
+var gulp = require('gulp');
+var plugins = require('gulp-load-plugins')();
+var browserSync = require('browser-sync');
+var runSequence = require('run-sequence');
+var del = require('del');
 
+function getTask(task) {
+    return require('./gulp-tasks/' + task)(gulp, plugins, browserSync);
+}
 
-// Dev Time
-gulp.task('less', function () {
+// Dev
 
-    gulp.src(['css/*.less', '!css/mw-bootstrap.less'])
-        .pipe(plumber())
-        .pipe(watch('css/*.less'))
-        .pipe(less())
-        .pipe(gulp.dest('css'));
+gulp.task('dev-less', getTask('dev/less'));
+gulp.task('dev-js', getTask('dev/less'));
+gulp.task('dev-ts', getTask('dev/ts'));
+gulp.task('dev-bootstrap', getTask('dev/bootstrap'));
+gulp.task('dev-bootstrap-themes', getTask('dev/bootstrap-themes'));
 
+gulp.task('dev-fonts', function () {
+    return gulp.src('css/fonts/*.*').pipe(gulp.dest('./build/css/fonts'));
 });
 
-gulp.task('jshint', function () {
-
-    gulp.src('js/*.js')
-        .pipe(plumber())
-        .pipe(watch('js/*.js'))
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish))
-        .pipe(jshint.reporter('fail'));
-
+gulp.task('dev-lib', function () {
+    return gulp.src('css/lib/*.*').pipe(gulp.dest('./build/css/lib'));
 });
 
-gulp.task('bootstrap', function () {
+gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib'], function () {
 
-    gulp.src('css/mw-bootstrap.less')
-        .pipe(less())
-        .pipe(replace('.mw-bs html {', '.mw-bs {'))
-        .pipe(replace('.mw-bs body {', '.mw-bs {'))
-        .pipe(gulp.dest('css'));
-
-});
-
-gulp.task('bootstrap-templates', function () {
-
-    gulp.src('css/themes/*.less')
-        .pipe(less())
-        .pipe(replace('.mw-bs html {', '.mw-bs {'))
-        .pipe(replace('.mw-bs body {', '.mw-bs {'))
-        .pipe(gulp.dest('css/themes'));
-
-});
-
-gulp.task('browser-sync', function () {
-
-    var files = [
-        '*.html',
-        'css/**/*.css',
-        'img/**/*.png',
-        'js/**/*.js'
-    ];
-
-    browserSync.init(files, {
+    browserSync.init({
         server: {
-            baseDir: '.',
+            baseDir: './',
             index: 'debug.html',
             middleware: function (req, res, next) {
                 res.setHeader('Access-Control-Allow-Origin', '*');
@@ -84,220 +38,49 @@ gulp.task('browser-sync', function () {
         ghostMode: false
     });
 
+    gulp.watch('css/*.less', ['dev-less']);
+    gulp.watch('js/**/*.js', ['dev-js']).on('change', browserSync.reload);
+    gulp.watch('js/**/*.ts', ['dev-ts']).on('change', browserSync.reload);
+    gulp.watch('debug.html').on('change', browserSync.reload);
+
 });
 
-gulp.task('refresh', ['jshint', 'less', 'bootstrap', 'bootstrap-templates', 'browser-sync']);
+// Dist
 
-// Production Build
-gulp.task('clean-dist', function (cb) {
+gulp.task('dist-less', getTask('dist/less'));
+gulp.task('dist-bootstrap', getTask('dist/bootstrap'));
+gulp.task('dist-bootstrap-themes', getTask('dist/bootstrap-themes'));
+gulp.task('dist-js', getTask('dist/js'));
+gulp.task('dist-loader', getTask('dist/loader'));
+gulp.task('dist-rev', getTask('dist/rev'));
 
+gulp.task('dist-clean', function (cb) {
     del(['dist'], cb);
-
 });
 
-gulp.task('less-dist', function () {
-
-    return gulp.src(['css/*.less', '!css/mw-bootstrap.less', 'css/lib/react-select.css', 'css/lib/bootstrap-datetimepicker.css', 'css/lib/jquery.textcomplete.css'])
-                .pipe(concat('compiled.less'))
-                .pipe(less())
-                .pipe(minifyCSS())
-                .pipe(gulp.dest('./dist/css'));
-
+gulp.task('dist-fonts', function () {
+    return gulp.src('css/fonts/*.*').pipe(gulp.dest('./dist/css/fonts'));
 });
 
-gulp.task('fonts-dist', function () {
-
-    return gulp.src('css/fonts/*.*')
-                .pipe(gulp.dest('./dist/css/fonts'));
-
+gulp.task('dist-vendor', function () {
+    return gulp.src(['js/vendor/*.js', 'js/vendor/vendor.json']).pipe(gulp.dest('./dist/js/vendor'));
 });
 
-gulp.task('bootstrap-dist', function () {
-
-    return gulp.src('css/mw-bootstrap.less')
-                .pipe(less())
-                .pipe(replace('.mw-bs html {', '.mw-bs {'))
-                .pipe(replace('.mw-bs body {', '.mw-bs {'))
-                .pipe(minifyCSS())
-                .pipe(gulp.dest('./dist/css'));
-
-});
-
-gulp.task('bootstrap-themes-dist', function () {
-
-    return gulp.src('css/themes/*.less')
-                .pipe(less())
-                .pipe(replace('.mw-bs html {', '.mw-bs {'))
-                .pipe(replace('.mw-bs body {', '.mw-bs {'))
-                .pipe(minifyCSS())
-                .pipe(gulp.dest('./dist/css/themes'));
-
-});
-
-gulp.task('js-dist', function () {
-
-    return gulp.src(['js/**/*.js', '!js/vendor/*.js', '!js/services/loader.js', '!js/services/ajaxproxy.js', '!js/services/ajaxproxy2.js'])
-                .pipe(order(['services/*.js', 'lib/*.js', 'components/mixins.js', 'components/*.js']))
-                .pipe(concat('compiled.js'))
-                .pipe(sourcemaps.init())
-                .pipe(uglify().on('error', gutil.log))
-                .pipe(sourcemaps.write('.'))
-                .pipe(gulp.dest('./dist/js'));
-
-});
-
-gulp.task('js-vendor-dist', function () {
-
-    return gulp.src(['js/vendor/*.js', 'js/vendor/vendor.json'])
-                .pipe(gulp.dest('./dist/js/vendor'));
-
-});
-
-gulp.task('js-loader-dist', function () {
-
-    return gulp.src(['js/services/loader.js'])
-                .pipe(uglify())
-                .pipe(rename('loader.min.js'))
-                .pipe(gulp.dest('./dist/js'));
-
-});
-
-gulp.task('html-dist', function () {
-
-    return gulp.src('default.html')
-            .pipe(gulp.dest('./dist/'));
-
-});
-
-gulp.task('rev-dist', function () {
-
-    return gulp.src(['dist/**', '!dist/*.html', '!dist/js/vendor/*.js', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js'])
-                .pipe(revall({ ignore: ['/css/themes/.*css', '/css/fonts/.*', '/css/.*png'] }))
-                .pipe(gulp.dest('./dist/'))
-                .pipe(revall.manifest({ fileName: 'hashes.json' }))
-                .pipe(gulp.dest('./dist/'))
+gulp.task('dist-html', function () {
+    return gulp.src('default.html').pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('dist', function () {
-
-    runSequence('clean-dist',
-                ['less-dist', 'js-dist', 'js-loader-dist', 'bootstrap-dist', 'bootstrap-themes-dist', 'fonts-dist', 'js-vendor-dist'],
-                'html-dist',
-                'rev-dist');
-
+    console.log(plugins);
+    runSequence('dist-clean',
+                ['dist-less', 'dist-js', 'dist-loader', 'dist-bootstrap', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
+                'dist-html',
+                'dist-rev');
 });
 
 // Deploy
-gulp.task('deploy-cdn', function () {
 
-    var distribution = {
-        key: process.env.BAMBOO_AWSKEY,
-        secret: process.env.BAMBOO_AWSSECRET,
-        bucket: process.env.BAMBOO_CDNBUCKET,
-        region: process.env.BAMBOO_CDNREGION,
-        distributionId: process.env.BAMBOO_CDNDISTRIBUTIONID
-    };
-
-    var publisher = awspublish.create(distribution);
-    var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
-
-    if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
-        headers = null;
-    }
-
-    return gulp.src(['dist/**/*.*', '!dist/hashes.json', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
-                .pipe(awspublish.gzip())
-                .pipe(publisher.publish(headers))
-                .pipe(awspublish.reporter())
-
-});
-
-gulp.task('deploy-short-cache', function () {
-
-    var distribution = {
-        key: process.env.BAMBOO_AWSKEY,
-        secret: process.env.BAMBOO_AWSSECRET,
-        bucket: process.env.BAMBOO_CDNBUCKET,
-        region: process.env.BAMBOO_CDNREGION,
-        distributionId: process.env.BAMBOO_CDNDISTRIBUTIONID
-    };
-
-    var publisher = awspublish.create(distribution);
-    var headers = { 'Cache-Control': 'max-age=600, no-transform, public' };
-
-    if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
-        headers = null;
-    }
-
-    return gulp.src(['dist/hashes.json', 'dist/js/vendor/vendor.json', 'dist/js/loader.min.js'])
-                .pipe(rename(function(path) {
-                    console.log(path);
-                    if (path.basename == "loader.min") {
-                        path.dirname = "js"
-                    }
-                    if (path.basename == "vendor") {
-                        path.dirname= "js/vendor/"
-                    }
-                }))
-                .pipe(awspublish.gzip())
-                .pipe(publisher.publish(headers))
-                .pipe(awspublish.reporter())
-
-});
-
-gulp.task('invalidate', function (cb) {
-
-    console.log('Invalidating hashes.json & loader');
-
-    var params = {
-        DistributionId: process.env.BAMBOO_CDNDISTRIBUTIONID,
-        InvalidationBatch: {
-            CallerReference: 'deploy-' + Math.random(),
-            Paths: {
-                Quantity: 2,
-                Items: ['/hashes.json', '/js/vendor/vendor.json', '/js/loader.min.js']
-            }
-        }
-    };
-
-    var cloudfront = new aws.CloudFront({
-        accessKeyId: process.env.BAMBOO_AWSKEY,
-        secretAccessKey: process.env.BAMBOO_AWSSECRET,
-        region: process.env.BAMBOO_CDNREGION,
-    });
-
-    cloudfront.createInvalidation(params, function (err, data) {
-
-        if (err) {
-
-            console.log(err, err.stack);
-
-        }
-
-        cb();
-
-    });
-
-});
-
-gulp.task('deploy-player', function () {
-
-    var distribution = {
-        key: process.env.BAMBOO_AWSKEY,
-        secret: process.env.BAMBOO_AWSSECRET,
-        bucket: process.env.BAMBOO_PLAYERSBUCKET,
-        region: process.env.BAMBOO_CDNREGION,
-    };
-
-    var tenantId = argv.tenant;
-    var publisher = awspublish.create(distribution);
-    var headers = {};
-
-    return gulp.src(['dist/default.html'])
-                .pipe(replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
-                .pipe(replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
-                .pipe(rename(tenantId + '.' + argv.player))
-                .pipe(publisher.publish(headers))
-                .pipe(awspublish.reporter())
-
-});
+gulp.task('deploy-cdn', getTask('deploy/cdn'));
+gulp.task('deploy-short-cache', getTask('deploy/short-cache'));
+gulp.task('invalidate', getTask('deploy/invalidate'));
+gulp.task('deploy-player', getTask('deploy/player'));
