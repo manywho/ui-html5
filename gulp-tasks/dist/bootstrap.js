@@ -4,7 +4,9 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.less())
             .pipe(plugins.replace('.mw-bs html {', '.mw-bs {'))
             .pipe(plugins.replace('.mw-bs body {', '.mw-bs {'))
-            .pipe(plugins.minifyCSS())
+            .pipe(plugins.cleanCss({
+                keepSpecialComments: 0
+            }))
             .pipe(gulp.dest('./dist/css'));
     }
 }
