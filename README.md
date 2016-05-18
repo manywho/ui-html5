@@ -1,4 +1,4 @@
-# ManyWHo HTML5 Player
+# ManyWho HTML5 Player
 
 HTML5 framework that renders [ManyWho](https://manywho.com) Flows in the browser.
 
