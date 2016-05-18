@@ -14,7 +14,7 @@ All that basically says is that if you want to use this code, make sure you use 
 ##Development Setup
 1. Install [nodejs](http://nodejs.org/)
 2. Install gulp cli `npm install gulp -g`
-3. cd into the runtime folder and run `npm install`
+3. cd into the root folder and run `npm install`
 
 If you are running on Windows you will also need to install the following (to build socket.io):
 
