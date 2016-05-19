@@ -3,9 +3,10 @@ var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
 var runSequence = require('run-sequence');
 var del = require('del');
+var argv = require('yargs').argv;
 
 function getTask(task) {
-    return require('./gulp-tasks/' + task)(gulp, plugins, browserSync);
+    return require('./gulp-tasks/' + task)(gulp, plugins, browserSync, argv);
 }
 
 // Dev
