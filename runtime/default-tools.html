@@ -102,10 +102,11 @@
 
 <script>
 
-	// Override all errors and throw an alert
-	window.onerror = function (errorMsg, url, lineNumber) {
-		alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
-	};
+	// Prevent the Cordova back button
+	document.addEventListener("backbutton", onBackKeyDown, false);
+	function onBackKeyDown(e) {
+		e.preventDefault();
+	}
 
 	function handleString(string) {
 		if (manywho.utils.isNullOrWhitespace(string) == false) {
