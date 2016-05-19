@@ -33,10 +33,15 @@ manywho.authorization = (function (manywho) {
             if (response.authorizationContext != null && response.authorizationContext.directoryId != null) {
 
                 if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'oauth2', true)) {
-
                     window.location = response.authorizationContext.loginUrl;
-                    return;
 
+                    return;
+                }
+
+                if (manywho.utils.isEqual(response.authorizationContext.authenticationType, 'saml', true)) {
+                    window.location = response.authorizationContext.loginUrl;
+
+                    return;
                 }
 
                 manywho.state.setLogin({
