@@ -12,4 +12,4 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.sourcemaps.write())
             .pipe(gulp.dest('build/js'));
     }
-}
+};

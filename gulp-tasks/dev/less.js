@@ -7,4 +7,4 @@ module.exports = function(gulp, plugins, browserSync) {
             .pipe(gulp.dest('build/css'))
             .pipe(browserSync.stream());
     }
-}
+};
