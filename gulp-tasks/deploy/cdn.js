@@ -1,3 +1,5 @@
+var awspublish = require('gulp-awspublish');
+
 module.exports = function(gulp, plugins) {
     return function() {
         var distribution = {
@@ -16,8 +18,8 @@ module.exports = function(gulp, plugins) {
         }
 
         return gulp.src(['dist/**/*.*', '!dist/hashes.json', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
-            .pipe(plugins.awspublish.gzip())
+            .pipe(awspublish.gzip())
             .pipe(publisher.publish(headers))
-            .pipe(plugins.awspublish.reporter());
+            .pipe(awspublish.reporter());
     }
 }
