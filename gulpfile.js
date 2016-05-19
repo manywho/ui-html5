@@ -11,7 +11,7 @@ function getTask(task) {
 // Dev
 
 gulp.task('dev-less', getTask('dev/less'));
-gulp.task('dev-js', getTask('dev/less'));
+gulp.task('dev-js', getTask('dev/js'));
 gulp.task('dev-ts', getTask('dev/ts'));
 gulp.task('dev-bootstrap', getTask('dev/bootstrap'));
 gulp.task('dev-bootstrap-themes', getTask('dev/bootstrap-themes'));

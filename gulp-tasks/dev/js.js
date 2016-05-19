@@ -3,4 +3,4 @@ module.exports = function(gulp, plugins) {
         gulp.src('js/**/*.js')
             .pipe(gulp.dest('build/js'));
     }
-}
+};
