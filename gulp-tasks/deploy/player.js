@@ -1,3 +1,5 @@
+var argv = require('yargs').argv;
+
 module.exports = function(gulp, plugins) {
     return function() {
         var distribution = {
