@@ -1,6 +1,16 @@
 # ManyWho HTML5 Player
 
-HTML5 framework that renders [ManyWho](https://manywho.com) Flows in the browser.
+HTML5 framework that renders [ManyWho](https://manywho.com) Flows in the browser. The framework is built upon some standard 
+front end technologies including:
+
+| Library ||
+| ---- | --- |
+| [React](https://facebook.github.io/react/) | Rendering of the various UI components & containers |
+| [Bootstrap](https://getbootstrap.com/) | Styling and some component behavior e.g. tabs |
+| [Bootswatch](https://bootswatch.com/) | Themes |
+| [LogLevel](https://github.com/pimterry/loglevel) | Logging |
+| [Moment](https://momentjs.com/) | Date & Time manipulation |
+| [Socket.io](http://socket.io/) | Real-time collaboration |
 
 ## Usage
 
