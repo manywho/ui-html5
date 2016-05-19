@@ -1,3 +1,5 @@
+var awspublish = require('gulp-awspublish');
+
 module.exports = function(gulp, plugins) {
     return function() {
         var distribution = {
@@ -25,8 +27,8 @@ module.exports = function(gulp, plugins) {
                     path.dirname= "js/vendor/"
                 }
             }))
-            .pipe(plugins.awspublish.gzip())
+            .pipe(awspublish.gzip())
             .pipe(publisher.publish(headers))
-            .pipe(plugins.awspublish.reporter())
+            .pipe(awspublish.reporter())
     }
 }
