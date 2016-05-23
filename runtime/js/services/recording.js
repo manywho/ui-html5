@@ -12,6 +12,7 @@
 manywho.recording = (function (manywho) {
 
     var activeRecordings = null;
+    var internalCounter = 0;
 
     // Perform a join on the Flow. This function is needed if the user is replaying recordings back to the platform or
     // we won't have a live state for multiple recording playbacks. It can also be used generally to get the UI back
@@ -213,17 +214,45 @@ manywho.recording = (function (manywho) {
         return dd + '/' + mm + '/' + yyyy;
     }
 
+    // Cleans existing recordings for the provided identifier so we don't end up with half finished duplicate recordings.
+    //
+    function cleanExitingRecordings(requestIdentifier) {
+
+        if (activeRecordings != null) {
+
+            // Go through each of the active records to see if we have an existing one for this request identifier
+            for (var property in activeRecordings) {
+
+                var activeRecording = activeRecordings[property];
+
+                // If the request identifier matches, then this is a matching recording so we need to make sure we
+                // don't create duplicate entries. This new recording should replace the active recording
+                if (manywho.utils.isEqual(requestIdentifier, activeRecording.requestIdentifier, true)) {
+
+                    // Remove the property from the object completely
+                    delete activeRecordings[activeRecording.id];
+
+                }
+
+            }
+
+        }
+
+    }
+
     // In memory implementation of a create recording function
     //
-    function createRecording(sequence, request) {
+    function createRecording(sequence, request, identifierFromRequest) {
 
         var defaultName = "Recording on " + getRecordingDateTime();
 
         // Create an active recording or reset the current one and clone the sequence entries
-        // so we know what's been completed
+        // so we know what's been completed. We also add an internal counter as the guids can duplicate
+        // if they're generated very quickly.
         return {
-            id: manywho.utils.cleanGuid(manywho.utils.getGuid()),
+            id: manywho.utils.cleanGuid(manywho.utils.getGuid()) + internalCounter++,
             name: defaultName,
+            requestIdentifier: identifierFromRequest,
             stateId: request.stateId,
             nameReference: sequence.name,
             startRequest: JSON.parse(JSON.stringify(request)),
@@ -273,6 +302,9 @@ manywho.recording = (function (manywho) {
                 activeRecordings = {};
             }
 
+            // Clean any existing recordings for this identifier
+            cleanExitingRecordings(identifier);
+
             for (var i = 0; i < offline.sequences.length; i++) {
 
                 // Check the entry identifiers for the sequence to see if one matches
@@ -286,7 +318,7 @@ manywho.recording = (function (manywho) {
 
                     // Create an active recording and clone the sequence entries so we know what's been completed
                     // We keep looping around as we may have more sequences that match this entry point
-                    var activeRecording = createRecording(offline.sequences[i], request);
+                    var activeRecording = createRecording(offline.sequences[i], request, identifier);
 
                     // Add the recording according to its key so it's easier to manage active recordings
                     activeRecordings[activeRecording.id] = activeRecording;
@@ -530,7 +562,7 @@ manywho.recording = (function (manywho) {
         }
 
         if (activeRecordings != null) {
-            activeRecordings[activeRecording.id] = null;
+            delete activeRecordings[activeRecording.id];
         }
 
     }
