@@ -117,7 +117,17 @@ manywho.engine = (function (manywho) {
 
     function notifyError(flowKey, response) {
 
-        if (response) {
+        if (response && !response.responseText && response.status === 0 && response.statusText === 'error') {
+
+            manywho.model.addNotification(flowKey, {
+                message: manywho.settings.global('errorMessage', flowKey),
+                position: 'center',
+                type: 'danger',
+                timeout: '0',
+                dismissible: true
+            });
+
+        } else if (response) {
 
             manywho.model.addNotification(flowKey, {
                 message: response.responseText,
@@ -424,7 +434,7 @@ manywho.engine = (function (manywho) {
 
         }
 
-        return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
+        return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken, flowKey)
             .then(function (response) {
 
                 return isAuthorized(response, flowKey);
@@ -463,7 +473,11 @@ manywho.engine = (function (manywho) {
 
             }, function (response) {
 
-                manywho.authorization.invokeAuthorization(response, flowKey, callback);
+                if (response) {
+
+                    manywho.authorization.invokeAuthorization(response, flowKey, callback);
+
+                }
 
             })
             .then(function (response) {
