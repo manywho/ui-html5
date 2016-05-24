@@ -434,7 +434,7 @@ manywho.engine = (function (manywho) {
 
         }
 
-        return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken, flowKey)
+        return manywho.ajax.invoke(invokeRequest, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
 
                 return isAuthorized(response, flowKey);
