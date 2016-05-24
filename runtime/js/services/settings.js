@@ -52,6 +52,7 @@ manywho.settings = (function (manywho, $) {
             ],
             toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage'
         },
+        errorMessage: 'Whoops, something went wrong inside ManyWho - if this keeps happening, contact us at support@manywho.com',
         outcomes: null,
         shortcuts: {
             progressOnEnter: true
