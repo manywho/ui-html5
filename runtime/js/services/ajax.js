@@ -185,7 +185,7 @@ manywho.ajax = (function (manywho) {
 
         },
 
-        invoke: function (engineInvokeRequest, tenantId, authenticationToken, flowKey) {
+        invoke: function (engineInvokeRequest, tenantId, authenticationToken) {
 
             manywho.log.info('Invoking State: ' + engineInvokeRequest.stateId);
 
