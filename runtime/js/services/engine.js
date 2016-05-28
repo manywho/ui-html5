@@ -21,7 +21,11 @@ manywho.engine = (function (manywho) {
 
             var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
 
-                return component.objectDataRequest != null || component.fileDataRequest != null;
+                if (manywho.utils.getBooleanAttributeValue(component.attributes, 'processOnLoad', true)) {
+
+                    return component.objectDataRequest != null || component.fileDataRequest != null;
+
+                }
 
             });
 

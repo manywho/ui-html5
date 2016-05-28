@@ -464,6 +464,21 @@ permissions and limitations under the License.
             }
             else if (model.objectDataRequest || model.fileDataRequest) {
                 objectData = model.objectData;
+
+                // If we're not processing on load, we want to check to make sure the model object data is "real"
+                if (manywho.utils.getBooleanAttributeValue(model.attributes, 'processOnLoad', true) == false &&
+                    objectData != null &&
+                    objectData.length > 0) {
+
+                    if (manywho.utils.isEqual(objectData[0].internalId, objectData[0].externalId, true)) {
+
+                        // This is an internal object that has not been saved as the internal identifier is equal to
+                        // the external identifier - we therefore don't want to render it
+                        objectData = [];
+
+                    }
+
+                }
             }
 
             if (state.error) {
