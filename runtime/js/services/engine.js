@@ -117,7 +117,7 @@ manywho.engine = (function (manywho) {
 
     function notifyError(flowKey, response) {
 
-        if (response && !response.responseText && response.status === 0 && response.statusText === 'error') {
+        if (response && !response.responseText && (response.status === 0 || response.status === 500 || response.status === 504)) {
 
             manywho.model.addNotification(flowKey, {
                 message: manywho.settings.global('errorMessage', flowKey),
