@@ -7,6 +7,9 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.cleanCss({
                 keepSpecialComments: 0
             }))
-            .pipe(gulp.dest('./dist/css'));
+            .pipe(plugins.rev())
+            .pipe(gulp.dest('./dist/css'))
+            .pipe(plugins.rev.manifest('hashes.json', { merge: true }))
+            .pipe(gulp.dest('./dist'))
     }
 }

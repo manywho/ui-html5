@@ -12,7 +12,10 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.concat('compiled.js'))
             .pipe(plugins.sourcemaps.init())
             .pipe(plugins.uglify().on('error', plugins.util.log))
+            .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist/js'));            
+            .pipe(gulp.dest('./dist/js'))
+            .pipe(plugins.rev.manifest('hashes.json', { merge: true }))
+            .pipe(gulp.dest('./dist'))       
     }
 }

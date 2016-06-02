@@ -11,7 +11,10 @@ module.exports = function(gulp, plugins) {
                 advanced: true,
                 keepSpecialComments: 0
             }))
+            .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist/css'));
+            .pipe(gulp.dest('./dist/css'))
+            .pipe(plugins.rev.manifest('hashes.json', { merge: true }))
+            .pipe(gulp.dest('./dist'))
     }
 }

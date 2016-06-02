@@ -22,7 +22,7 @@
     "gulp-order": "^1.1.1",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.2",
-    "gulp-rev-all": "^0.7.0",
+    "gulp-rev": "^7.0.0",
     "gulp-sourcemaps": "^1.5.1",
     "gulp-tslint": "^5.0.0",
     "gulp-typescript": "^2.13.4",

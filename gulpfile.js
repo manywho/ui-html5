@@ -53,7 +53,6 @@ gulp.task('dist-bootstrap', getTask('dist/bootstrap'));
 gulp.task('dist-bootstrap-themes', getTask('dist/bootstrap-themes'));
 gulp.task('dist-js', getTask('dist/js'));
 gulp.task('dist-loader', getTask('dist/loader'));
-gulp.task('dist-rev', getTask('dist/rev'));
 
 gulp.task('dist-clean', function (cb) {
     del(['dist'], cb);
@@ -73,9 +72,11 @@ gulp.task('dist-html', function () {
 
 gulp.task('dist', function () {
     runSequence('dist-clean',
-                ['dist-less', 'dist-js', 'dist-loader', 'dist-bootstrap', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
-                'dist-html',
-                'dist-rev');
+                'dist-less',
+                'dist-js',
+                'dist-bootstrap',
+                ['dist-loader', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
+                'dist-html');
 });
 
 // Deploy
