@@ -381,7 +381,8 @@ manywho.responses = (function (manywho) {
 
             return new Promise(function(resolve, reject) {
 
-                var response = generateResponse(identifier, offline.responses[identifier], request);
+                // We clone the object so the response manipulation that happens up the stack doesn't affect the cache
+                var response = generateResponse(identifier, JSON.parse(JSON.stringify(offline.responses[identifier])), request);
 
                 if (resolve != null) {
                     resolve(response);
