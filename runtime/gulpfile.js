@@ -1042,8 +1042,10 @@ function createRuntimeObjectDataRequest(snapshot, objectDataRequest, dataSyncOve
         if (objectDataRequest.listFilter == null ||
             clearFilter == true) {
             objectDataRequest.listFilter = {};
+
             // Assign a default data batch size
             objectDataRequest.listFilter.limit = 250;
+            objectDataRequest.listFilter.chunkSize = 10;
         }
 
         if (dataSyncOverrides != null &&
@@ -1064,9 +1066,6 @@ function createRuntimeObjectDataRequest(snapshot, objectDataRequest, dataSyncOve
             }
 
         }
-
-        // Assign a default chunk size
-        objectDataRequest.chunkSize = 10;
 
         // Assign the empty state
         objectDataRequest.stateId = "00000000-0000-0000-0000-000000000000";

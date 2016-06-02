@@ -1037,7 +1037,7 @@ manywho.simulation = (function (manywho) {
             requests[pointer],
             tenantId,
             authenticationToken,
-            requests[pointer].limit,
+            requests[pointer].listFilter.limit,
             null,
             null,
             null,
@@ -1084,7 +1084,7 @@ manywho.simulation = (function (manywho) {
         var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
         // Get the number of chunks that need to be sent
-        var chunks = Math.ceil(wholeObjectDataRequest.listFilter.limit / wholeObjectDataRequest.chunkSize);
+        var chunks = Math.ceil(wholeObjectDataRequest.listFilter.limit / wholeObjectDataRequest.listFilter.chunkSize);
 
         // Create an object data request for each chunk
         for (var i = 0; i < chunks; i++) {
@@ -1093,8 +1093,8 @@ manywho.simulation = (function (manywho) {
             var chunkObjectDataRequest = JSON.parse(JSON.stringify(wholeObjectDataRequest));
 
             // Set the limit to the chunk size
-            chunkObjectDataRequest.listFilter.limit = wholeObjectDataRequest.chunkSize;
-            chunkObjectDataRequest.listFilter.offset = (i * wholeObjectDataRequest.chunkSize);
+            chunkObjectDataRequest.listFilter.limit = wholeObjectDataRequest.listFilter.chunkSize;
+            chunkObjectDataRequest.listFilter.offset = (i * wholeObjectDataRequest.listFilter.chunkSize);
 
             // Set the state id to the current live state
             chunkObjectDataRequest.stateId = stateId;
