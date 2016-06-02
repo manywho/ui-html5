@@ -53,6 +53,7 @@ gulp.task('dist-bootstrap', getTask('dist/bootstrap'));
 gulp.task('dist-bootstrap-themes', getTask('dist/bootstrap-themes'));
 gulp.task('dist-js', getTask('dist/js'));
 gulp.task('dist-loader', getTask('dist/loader'));
+gulp.task('dist-hashes', getTask('dist/hashes'));
 
 gulp.task('dist-clean', function (cb) {
     del(['dist'], cb);
@@ -76,7 +77,8 @@ gulp.task('dist', function () {
                 'dist-js',
                 'dist-bootstrap',
                 ['dist-loader', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
-                'dist-html');
+                'dist-html',
+                'dist-hashes');
 });
 
 // Deploy
