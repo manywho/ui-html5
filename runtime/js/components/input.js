@@ -11,7 +11,40 @@ permissions and limitations under the License.
 
 (function (manywho) {
 
-    function getInputType(contentType) {
+    function getPattern(model) {
+
+        if (model != null &&
+            model.attributes &&
+            model.attributes.pattern && !manywho.utils.isNullOrWhitespace(model.attributes.pattern)) {
+
+            return model.attributes.pattern;
+
+        }
+
+        if (model.tags != null &&
+            model.tags.length > 0) {
+
+            for (var i = 0; i < model.tags.length; i++) {
+
+                if (model.tags[i].developerName.toLowerCase() == 'pattern') {
+
+                    return model.tags[i].contentValue;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    function getInputType(attributes, contentType) {
+
+        if (attributes &&
+            attributes.type &&
+            !manywho.utils.isNullOrWhitespace(attributes.type)) {
+            return attributes.type;
+        }
 
         switch(contentType.toUpperCase())
         {
@@ -110,6 +143,15 @@ permissions and limitations under the License.
 
             }
 
+            if (!manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true) &&
+                model.attributes &&
+                model.attributes.mask &&
+                manywho.utils.isNullOrWhitespace(model.attributes.mask) == false) {
+
+                $('#' + this.props.id).mask(model.attributes.mask);
+
+            }
+
         },
 
         componentWillUnmount: function () {
@@ -202,6 +244,23 @@ permissions and limitations under the License.
 
             }
 
+            var patternToApply = getPattern(model);
+
+            if (!manywho.utils.isNullOrWhitespace(patternToApply)) {
+
+                var regExp = new RegExp(patternToApply);
+                var contentValue = manywho.state.getComponent(this.props.id, this.props.flowKey).contentValue;
+
+                if (regExp.test(contentValue) == true) {
+                    $('#' + this.props.id).parent().removeClass('has-error');
+                    $('button.outcome').prop('disabled', false);
+                } else {
+                    $('#' + this.props.id).parent().addClass('has-error');
+                    $('button.outcome').prop('disabled', true);
+                }
+
+            }
+
             this.forceUpdate();
 
         },
@@ -237,13 +296,16 @@ permissions and limitations under the License.
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
             var contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
+            var patternToApply = getPattern(model);
+
             var attributes = {
-                type: !this.props.isDesignTime ? getInputType(contentType) : 'text',
+                type: !this.props.isDesignTime ? getInputType(model.attributes, contentType) : 'text',
                 placeholder: model.hintValue,
                 value: contentValue,
                 id: this.props.id,
                 maxLength: model.maxSize,
-                size: model.size
+                size: model.size,
+                pattern: patternToApply
             };
 
             if (!model.isEditable)
@@ -260,7 +322,7 @@ permissions and limitations under the License.
             }
 
             if (model.isRequired)
-                attributes.required = '';
+                attributes.required = 'required';
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false)
                 isValid = false;
