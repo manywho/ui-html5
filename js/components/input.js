@@ -139,7 +139,7 @@ permissions and limitations under the License.
 
                 var value = this.parseNumberInput(e.target.value, model.maxSize);
 
-                if (value) {
+                if (value !== null && value !== '') {
 
                     manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
                     this.setState({ value: value });
