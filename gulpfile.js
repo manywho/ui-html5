@@ -72,9 +72,9 @@ gulp.task('dist-html', function () {
 });
 
 gulp.task('dist', function () {
-    runSequence('dist-clean',
-                'dist-less',
+    runSequence('dist-clean',              
                 'dist-js',
+                'dist-less',
                 'dist-bootstrap',
                 ['dist-loader', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
                 'dist-html',
