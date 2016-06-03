@@ -2,7 +2,9 @@ module.exports = function(gulp, plugins) {
     return function() {
         gulp.src('dist/hashes.json')        
             .pipe(plugins.jsonEditor(function(hashes) {
-                for (hash in hashes) {
+                console.log('Original hashes ' + JSON.stringify(hashes));
+                
+                for (hash in hashes) {                    
                     if (hashes[hash].indexOf('.css') != -1) {
                         console.log('Re-writing hash ' + hashes[hash] + ' to ' + '/css/' + hashes[hash]);
                         hashes[hash] = '/css/' + hashes[hash];
