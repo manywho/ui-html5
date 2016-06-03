@@ -14,7 +14,5 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
             .pipe(gulp.dest('./dist/css'))
-            .pipe(plugins.rev.manifest('./dist/hashes.json', { merge: true }))
-            .pipe(gulp.dest('.'))
     }
 }

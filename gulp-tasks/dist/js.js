@@ -14,8 +14,6 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.uglify().on('error', plugins.util.log))
             .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist/js'))
-            .pipe(plugins.rev.manifest('./dist/hashes.json', { merge: true }))
-            .pipe(gulp.dest('.'))       
+            .pipe(gulp.dest('./dist/js'))       
     }
 }

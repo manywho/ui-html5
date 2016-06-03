@@ -4,6 +4,8 @@ var browserSync = require('browser-sync');
 var runSequence = require('run-sequence');
 var del = require('del');
 var argv = require('yargs').argv;
+var fs = require('fs');
+var glob = require("glob")
 
 function getTask(task) {
     return require('./gulp-tasks/' + task)(gulp, plugins, browserSync, argv);
@@ -53,7 +55,7 @@ gulp.task('dist-bootstrap', getTask('dist/bootstrap'));
 gulp.task('dist-bootstrap-themes', getTask('dist/bootstrap-themes'));
 gulp.task('dist-js', getTask('dist/js'));
 gulp.task('dist-loader', getTask('dist/loader'));
-gulp.task('dist-hashes', getTask('dist/hashes'));
+//gulp.task('dist-hashes', getTask('dist/hashes'));
 
 gulp.task('dist-clean', function (cb) {
     del(['dist'], cb);
@@ -69,6 +71,20 @@ gulp.task('dist-vendor', function () {
 
 gulp.task('dist-html', function () {
     return gulp.src('default.html').pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('dist-hashes', function() {
+    
+    var css = glob.sync('dist/css/compiled-*.css')[0];
+    var js = glob.sync('dist/js/compiled-*.js')[0];
+    var bootstrap = glob.sync('dist/css/mw-bootstrap-*.css')[0];
+    
+    fs.writeFileSync('dist/hashes.json', JSON.stringify({
+        css: '/css/' + css,
+        js: '/js/' + js,
+        bootstrap: '/css/' + bootstrap
+    }), 'utf8');
+    
 });
 
 gulp.task('dist', function () {
