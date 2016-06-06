@@ -87,6 +87,7 @@ permissions and limitations under the License.
                 ]),
                 React.DOM.textarea(attributes, null),
                 React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                React.DOM.span({ className: 'help-block' }, model.helpInfo),
                 outcomeButtons
             ]);
 
