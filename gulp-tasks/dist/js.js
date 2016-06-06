@@ -1,8 +1,6 @@
 module.exports = function(gulp, plugins) {
     return function() {
         gulp.src('js/**/*.ts')
-            .pipe(plugins.tslint())
-            .pipe(plugins.tslint.report("verbose"))
             .pipe(plugins.typescript({
                 target: 'ES5',
                 jsx: 'react',
@@ -12,7 +10,9 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.concat('compiled.js'))
             .pipe(plugins.sourcemaps.init())
             .pipe(plugins.uglify().on('error', plugins.util.log))
+            .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist/js'));            
+            .pipe(gulp.dest('./dist/js'))       
     }
+}
 }

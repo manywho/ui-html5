@@ -1,3 +1,5 @@
+var aws = require('aws-sdk');
+
 module.exports = function(gulp, plugins) {
     return function() {
         console.log('Invalidating hashes.json & loader');
@@ -13,7 +15,7 @@ module.exports = function(gulp, plugins) {
             }
         };
 
-        var cloudfront = new plugins.aws.CloudFront({
+        var cloudfront = new aws.CloudFront({
             accessKeyId: process.env.BAMBOO_AWSKEY,
             secretAccessKey: process.env.BAMBOO_AWSSECRET,
             region: process.env.BAMBOO_CDNREGION,

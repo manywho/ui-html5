@@ -1,8 +1,6 @@
 module.exports = function(gulp, plugins) {
     return function() {
         gulp.src(['css/*.less', '!css/mw-bootstrap.less'])
-            .pipe(plugins.lesshint())
-            .pipe(plugins.lesshint.reporter())
             .pipe(plugins.addSrc(['css/lib/react-select.css', 'css/lib/bootstrap-datetimepicker.css', 'css/lib/jquery.textcomplete.css']))
             .pipe(plugins.concat('compiled.less'))
             .pipe(plugins.less())
@@ -11,7 +9,9 @@ module.exports = function(gulp, plugins) {
                 advanced: true,
                 keepSpecialComments: 0
             }))
+            .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist/css'));
+            .pipe(gulp.dest('./dist/css'))
     }
+}
 }
