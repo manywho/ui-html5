@@ -1,8 +1,6 @@
 module.exports = function(gulp, plugins) {
     return function() {
         gulp.src('js/**/*.ts')
-            .pipe(plugins.tslint())
-            .pipe(plugins.tslint.report("verbose"))
             .pipe(plugins.typescript({
                 target: 'ES5',
                 jsx: 'react',
