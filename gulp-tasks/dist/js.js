@@ -15,4 +15,3 @@ module.exports = function(gulp, plugins) {
             .pipe(gulp.dest('./dist/js'))       
     }
 }
-}

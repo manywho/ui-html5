@@ -33,7 +33,6 @@
     "run-sequence": "^1.2.1",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
-    "tslint": "^3.10.2",
     "yargs": "^2.3.0"
   }
 }
