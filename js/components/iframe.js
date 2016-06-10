@@ -15,6 +15,8 @@
 
         render: function () {
 
+            manywho.log.info('Rendering iframe: ' + this.props.id);
+
             var classes = manywho.styling.getClasses(this.props.parentId, this.props.id, 'iframe', this.props.flowKey);
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
@@ -24,7 +26,7 @@
             }, this);
 
             return React.DOM.div({ className: classes.join(' ') }, [
-                React.DOM.iframe({ src: model.imageUri, width: model.width, height: model.height, id: this.props.id }, null),
+                React.DOM.iframe({ src: model.imageUri, width: model.width, height: model.height, id: this.props.id, frameBorder: 0 }, null),
                 outcomeButtons
             ]);
 
