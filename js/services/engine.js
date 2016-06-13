@@ -31,6 +31,15 @@ manywho.engine = (function (manywho) {
 
                     var limit = manywho.settings.global('paging.' + component.componentType);
 
+                    if (component.attributes.paginationSize) {
+                        try {
+                            limit = parseInt(component.attributes.paginationSize);
+                        }
+                        catch (ex)
+                        {
+                        }
+                    }
+
                     if (component.fileDataRequest) {
 
                         return manywho.engine.fileDataRequest(component.id, component.fileDataRequest, flowKey, limit);
