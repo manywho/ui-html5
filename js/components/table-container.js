@@ -464,8 +464,19 @@ permissions and limitations under the License.
                     var page = (state.page - 1) || 0;
                     var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
 
-                    hasMoreResults = (page * limit) + limit + 1 <= objectData.length;
-                    objectData = objectData.slice(page * limit, (page * limit) + limit);
+                    if (model.attributes.paginationSize) {
+                        try {
+                            limit = parseInt(model.attributes.paginationSize);
+                        }
+                        catch (ex)
+                        {
+                        }
+                    }
+
+                    if (limit > 0) {
+                        hasMoreResults = (page * limit) + limit + 1 <= objectData.length;
+                        objectData = objectData.slice(page * limit, (page * limit) + limit);
+                    }
                 }
             }
             else if (model.objectDataRequest || model.fileDataRequest) {
