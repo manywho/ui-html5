@@ -463,15 +463,10 @@ permissions and limitations under the License.
                 if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true) && objectData) {
                     var page = (state.page - 1) || 0;
                     var limit = parseInt(manywho.settings.flow('paging.table', this.props.flowKey) || 10);
+                    var paginationSize = parseInt(component.attributes.paginationSize);
 
-                    if (model.attributes.paginationSize) {
-                        try {
-                            limit = parseInt(model.attributes.paginationSize);
-                        }
-                        catch (ex)
-                        {
-                        }
-                    }
+                    if (!isNaN(paginationSize))
+                        limit = paginationSize;
 
                     if (limit > 0) {
                         hasMoreResults = (page * limit) + limit + 1 <= objectData.length;
