@@ -181,7 +181,7 @@ permissions and limitations under the License.
                 this.clearSelection();
 
             var limit = manywho.settings.global('paging.table');
-            var paginationSize = parseInt(component.attributes.paginationSize);
+            var paginationSize = parseInt(model.attributes.paginationSize);
 
             if (!isNaN(paginationSize))
                 limit = paginationSize;
