@@ -180,7 +180,7 @@ permissions and limitations under the License.
             if (clearSelection)
                 this.clearSelection();
 
-            var limit = manywho.settings.global('paging.' + component.componentType);
+            var limit = manywho.settings.global('paging.table');
             var paginationSize = parseInt(component.attributes.paginationSize);
 
             if (!isNaN(paginationSize))
