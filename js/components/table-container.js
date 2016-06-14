@@ -180,14 +180,20 @@ permissions and limitations under the License.
             if (clearSelection)
                 this.clearSelection();
 
+            var limit = manywho.settings.global('paging.' + component.componentType);
+            var paginationSize = parseInt(component.attributes.paginationSize);
+
+            if (!isNaN(paginationSize))
+                limit = paginationSize;
+
             if (model.objectDataRequest) {
 
-                manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+                manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
 
             }
             else if (model.fileDataRequest) {
 
-                manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, manywho.settings.global('paging.table'), state.search, null, null, state.page);
+                manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
 
             }
             else {
