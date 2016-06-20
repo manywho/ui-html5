@@ -93,7 +93,10 @@ permissions and limitations under the License.
 
     }
 
-    function getButtonSize(bindingId, flowKey) {
+    function getButtonSize(bindingId, size, flowKey) {
+
+        if (size)
+            return 'btn-' + size;
 
         if (!manywho.utils.isNullOrWhitespace(bindingId)) {
 
@@ -106,7 +109,7 @@ permissions and limitations under the License.
 
         }
 
-        return '';
+        return 'btn-default';
 
     }
 
@@ -150,7 +153,7 @@ permissions and limitations under the License.
             var classes = [
                 'outcome btn',
                 getButtonType(model.pageActionType || model.pageActionBindingType),
-                getButtonSize(model.pageObjectBindingId, this.props.flowKey)
+                getButtonSize(model.pageObjectBindingId, this.props.size, this.props.flowKey)
             ];
 
             var content;

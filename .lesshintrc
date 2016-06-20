@@ -1,4 +1,5 @@
 {
     "importantRule": false,
-    "zeroUnit": false
+    "zeroUnit": false,
+    "trailingWhitespace": false
 }

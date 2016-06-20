@@ -1,0 +1,6 @@
+{
+  "globalDependencies": {
+    "react-global": "registry:dt/react-global#0.14.0+20160316155526",
+    "react-motion": "registry:dt/react-motion#0.0.0+20160406115320"
+  }
+}
