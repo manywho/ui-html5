@@ -55,14 +55,13 @@
     .mw-tiles-item {
         display: flex;
         flex-direction: column;
-        flex-grow: 1;        
-        padding: 1em;
+        flex-grow: 1;
     }
 
     .mw-tiles-item-header {
         display: flex;
         flex-direction: row;
-        margin-bottom: 0.5em;
+        padding: 1em 1em 0.5em 1em;
 
         & > h3 {
             flex-grow: 1;
@@ -76,6 +75,7 @@
 
     .mw-tiles-item-content {
         flex-grow: 1;
+        padding: 0 1em 1em 1em;
     }
 
     .mw-tiles-item-outcomes {
@@ -83,8 +83,9 @@
         flex-direction: row;
 
          .outcome {
+            border-radius: 0;
             flex-grow: 1;
-            margin-bottom: 0 !important;
+            margin-bottom: 0 !important;            
         }
     }
 

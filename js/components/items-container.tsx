@@ -37,11 +37,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         return false;
     }
 
-    onOutcome(objectDataId, outcomeId) {
+    onOutcome(e: any, outcome: any) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
 
-        manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [objectDataId]) }, this.props.flowKey, true);
+        manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [e.currentTarget.id]) }, this.props.flowKey, true);
 
         manywho.engine.move(outcome, this.props.flowKey)
             .then(() => {
