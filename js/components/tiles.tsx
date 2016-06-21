@@ -81,6 +81,8 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         const outcomes: any = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
         const columns: Array<any> = manywho.component.getDisplayColumns(model.columns) || [];
 
+        let className = manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey).join(' ');
+
         let labelElement = null;
         if (!manywho.utils.isNullOrWhitespace(model.label))
             labelElement = <label>{model.label}</label>;
@@ -118,7 +120,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             
         const deleteOutcome: any = outcomes && outcomes.find((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true));
 
-        return (<div className="mw-tiles" ref="container">
+        return (<div className={className} ref="container">
             {labelElement}
             {headerElement}
             <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }}>
