@@ -81,7 +81,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         const outcomes: any = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
         const columns: Array<any> = manywho.component.getDisplayColumns(model.columns) || [];
 
-        let className = manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey).join(' ');
+        let className = manywho.styling.getClasses(this.props.parentId, this.props.id, "tiles", this.props.flowKey).join(' ');
 
         let labelElement = null;
         if (!manywho.utils.isNullOrWhitespace(model.label))
@@ -105,8 +105,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
         let items = this.props.objectData;
 
-        if (state.loading && manywho.utils.isEmptyObjectData(this.state.objectData))
-            items = new Array(manywho.settings.global('paging.tiles', this.props.flowKey) + 1);
+        if (state.loading && manywho.utils.isEmptyObjectData(this.state.objectData)) {
+            items = [];
+            for (var i = 1; i <= manywho.settings.global('paging.tiles', this.props.flowKey) + 1; i++) {
+                items.push(i);
+            }
+        }
 
         if (this.props.page > 1)
             items.unshift({ type: 'prev' });
@@ -132,7 +136,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                             if (state.loading)
                                 return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
 
-                            return (<div className="mw-tiles-item-container" key={item.externalId} style={{ transform: transform }} ref="items">
+                            return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }} ref="items">
                                 <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }} onRest={this.onAnimationDone}>
                                     {interpolatingStyle => {
                                         const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
