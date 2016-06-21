@@ -25,32 +25,16 @@ declare var manywho : any;
     }
 
     function renderFooter(pageIndex: number, hasMoreResults: boolean, onNext: Function, onPrev: Function, isDesignTime: boolean) {
-
-        var footerElements = [];
-
-        if (pageIndex > 1 || hasMoreResults) {
-
-            footerElements.push(React.createElement(manywho.component.getByName('mw-pagination'),
-                {
-                    pageIndex: pageIndex,
-                    hasMoreResults: hasMoreResults,
-                    containerClasses: 'pull-right',
-                    onNext: onNext,
-                    onPrev: onPrev,
-                    isDesignTime: isDesignTime
-                }
-            ));
-
-        }
-
-        if (footerElements.length > 0) {
-
-            return React.DOM.div({ className: 'table-footer clearfix' }, footerElements);
-
-        }
+        if (pageIndex > 1 || hasMoreResults)
+            return React.createElement(manywho.component.getByName('mw-pagination'), {
+                pageIndex: pageIndex,
+                hasMoreResults: hasMoreResults,
+                onNext: onNext,
+                onPrev: onPrev,
+                isDesignTime: isDesignTime
+            });
 
         return null;
-
     }
 
     var table = React.createClass({

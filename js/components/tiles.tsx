@@ -16,35 +16,37 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
         this.state = { objectData: [], updateObjectData: false };
 
-        this.onMore = this.onMore.bind(this);
         this.onSelect = this.onSelect.bind(this);
-        this.renderMore = this.renderMore.bind(this);
+        this.onOutcome = this.onOutcome.bind(this);
+        this.onNext = this.onNext.bind(this);
+        this.onPrev = this.onPrev.bind(this);
         this.renderItem = this.renderItem.bind(this);
-    }
-
-    componentWillReceiveProps(nextProps: ITilesProps) {
-        if (this.state.updateObjectData)
-            this.setState({ objectData: this.state.objectData.concat(nextProps.objectData), updateObjectData: false })
-        else
-            this.setState({ objectData: nextProps.objectData, updateObjectData: false });
-    }
-
-    onMore() {
-        this.setState({ updateObjectData: true, objectData: this.state.objectData });
-        setTimeout(() => this.props.onNext());
     }
 
     onSelect(e) {
         this.props.select(e.currentTarget.id);
     }
 
-    renderMore(): JSX.Element {
-        return (<div className="mw-tiles-more" onClick={this.onMore}>...</div>)
+    onOutcome(e) {
+        this.props.onOutcome(e.currentTarget.parentElement.parentElement.id, e.currentTarget.id);
+    }
+
+    onPrev() {
+        this.props.onPrev();
+        setTimeout(() => (this.refs['container'] as HTMLElement).scrollIntoView(true));
+    }
+
+    onNext() {
+        this.props.onNext();
+        setTimeout(() => (this.refs['container'] as HTMLElement).scrollIntoView(true));
     }
 
     renderItem(item: any, columns: Array<any>, outcomes: Array<any>, deleteOutcome: any) : JSX.Element {
-        if (item.type === 'more')
-            return this.renderMore();
+        if (item.type === 'next')
+            return <div className="mw-tiles-next" onClick={this.onNext}><span className="glyphicon glyphicon-arrow-right"/></div>;
+
+        if (item.type === 'prev')
+            return <div className="mw-tiles-prev" onClick={this.onPrev}><span className="glyphicon glyphicon-arrow-left"/></div>;
 
         let className = 'mw-tiles-item';
         if (item.isSelected)
@@ -54,7 +56,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         
         let deleteOutcomeElement = null;
         if (deleteOutcome)
-            deleteOutcomeElement = React.createElement(manywho.component.getByName('outcome'), { id: deleteOutcome.id, flowKey: this.props.flowKey, onClick: this.props.onOutcome, size: 'sm' });
+            deleteOutcomeElement = React.createElement(manywho.component.getByName('outcome'), { id: deleteOutcome.id, flowKey: this.props.flowKey, onClick: this.onOutcome, size: 'sm' });
 
         let content: string = null;
         if (columns.length > 1)
@@ -92,21 +94,31 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             refresh: this.props.refresh
         });
 
-        let items = this.state.objectData;
+        if (this.props.contentElement)
+            return (<div className="mw-tiles">
+                {labelElement}
+                {headerElement}
+                {this.props.contentElement}
+            </div>);
+
+        let items = this.props.objectData;
 
         if (state.loading && manywho.utils.isEmptyObjectData(this.state.objectData))
-            items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            items = new Array(manywho.settings.global('paging.tiles', this.props.flowKey) + 1);
+
+        if (this.props.page > 1)
+            items.unshift({ type: 'prev' });
 
         if (this.props.hasMoreResults)
-            items = items.concat([{ type: 'more' }]);
+            items = items.concat([{ type: 'next' }]);
 
         const footerOutcomes: Array<JSX.Element> = outcomes && outcomes
             .filter((outcome) => !manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)
-            .map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, onClick: this.props.onOutcome, size: 'default' }));
+            .map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, onClick: this.onOutcome, size: 'default' }));
             
         const deleteOutcome: any = outcomes && outcomes.find((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true));
 
-        return (<div className="mw-tiles">
+        return (<div className="mw-tiles" ref="container">
             {labelElement}
             {headerElement}
             <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }}>
@@ -118,8 +130,8 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                             if (state.loading)
                                 return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
 
-                            return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }}>
-                                <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
+                            return (<div className="mw-tiles-item-container" key={item.externalId} style={{ transform: transform }} ref="items">
+                                <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }} onRest={this.onAnimationDone}>
                                     {interpolatingStyle => {
                                         const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
 

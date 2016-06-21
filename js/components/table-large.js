@@ -107,13 +107,8 @@ permissions and limitations under the License.
         },
 
         onOutcomeClick: function (e, outcome) {
-
-            if (this.props.isDesignTime)
-                return;
-
             var objectDataId = e.currentTarget.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
-
         },
 
         onCellEditCommitted: function(id, propertyId, value) {

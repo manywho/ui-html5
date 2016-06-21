@@ -174,7 +174,7 @@ permissions and limitations under the License.
 
             classes = classes.join(' ');
 
-            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, content);
+            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick, key: this.props.id }, content);
 
         }
 
