@@ -122,7 +122,8 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             .filter((outcome) => !manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)
             .map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, onClick: this.onOutcome, size: 'default' }));
             
-        const deleteOutcome: any = outcomes && outcomes.find((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true));
+        const deleteOutcome: any = outcomes && outcomes
+            .filter((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)[0];
 
         return (<div className={className} ref="container">
             {labelElement}
