@@ -138,7 +138,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                                 return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
 
                             return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }} ref="items">
-                                <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }} onRest={this.onAnimationDone}>
+                                <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
                                     {interpolatingStyle => {
                                         const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
 
