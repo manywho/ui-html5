@@ -41,7 +41,8 @@ gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-boot
         ghostMode: false
     });
 
-    gulp.watch('css/*.less', ['dev-less']);
+    gulp.watch('css/*.less', ['dev-less', 'dev-bootstrap']);
+    gulp.watch('css/themes/*.less', ['dev-bootstrap-themes'])
     gulp.watch('js/**/*.js', ['dev-js']).on('change', browserSync.reload);
     gulp.watch('js/**/*.ts', ['dev-ts']).on('change', browserSync.reload);
     gulp.watch('debug.html').on('change', browserSync.reload);

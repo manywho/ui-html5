@@ -9,9 +9,16 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+declare var manywho: any;
+declare var React: any;
+
 (function (manywho) {
 
-    function getButtonType(action) {
+    function getType(model) {
+        if (model.attributes && model.attributes.type)
+            return 'btn-' + model.attributes.type;
+
+        const action: string = model.pageActionType || model.pageActionBindingType;
 
         if (!manywho.utils.isNullOrWhitespace(action)) {
 
@@ -43,10 +50,13 @@ permissions and limitations under the License.
         }
 
         return 'btn-default';
-
     }
 
-    function getIconType(action) {
+    function getIcon(model) {
+        if (model.attributes && model.attributes.icon)
+            return 'glypicon-' + model.attributes.icon;
+
+        const action: string = model.pageActionType || model.pageActionBindingType;
 
         if (!manywho.utils.isNullOrWhitespace(action)) {
 
@@ -93,86 +103,64 @@ permissions and limitations under the License.
 
     }
 
-    function getButtonSize(bindingId, flowKey) {
+    function getSize(model, flowKey) {
+        if (model.attributes && model.attributes.size)
+            return 'btn-' + model.attributes.size;
 
-        if (!manywho.utils.isNullOrWhitespace(bindingId)) {
-
-            var component = manywho.model.getComponent(bindingId, flowKey);
-            if (component) {
-
+        if (!manywho.utils.isNullOrWhitespace(model.pageObjectBindingId)) {
+            var component = manywho.model.getComponent(model.pageObjectBindingId, flowKey);
+            if (component)
                 return 'btn-sm'
-
-            }
-
         }
 
         return '';
+    }
 
+    function getContent(model, display: string) {
+        if (display)
+            switch (display.toUpperCase()) {
+                case "ICON":
+                    return <span className={'glyphicon ' + getIcon(model)} />
+                case 'ICONANDTEXT':
+                    return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
+            }
+        else
+            return model.label
     }
 
     var outcome = React.createClass({
 
         onClick: function(e) {
-
             e.preventDefault();
             e.stopPropagation();
 
-            var model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
-            var self = this;
-
-            if (this.props.onClick) {
-
+            const model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
+            
+            if (this.props.onClick)
                 this.props.onClick(e, model, this.props.flowKey);
-
-            }
-            else {
-
-                manywho.engine.move(model, this.props.flowKey).then(function() {
-
-                    if (model.isOut) {
-
-                        manywho.engine.flowOut(model, self.props.flowKey);
-
-                    }
-
+            else
+                manywho.engine.move(model, this.props.flowKey).then(() => {
+                    if (model.isOut)
+                        manywho.engine.flowOut(model, this.props.flowKey);
                 });
-
-            }
-
         },
 
         render: function () {
-
             manywho.log.info('Rendering Outcome: ' + this.props.id);
 
-            var model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
+            const model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
+            let className = `outcome btn ${getType(model)} ${getSize(model, this.props.flowKey)}`;
+            let content = getContent(model, manywho.settings.global('outcomes.display', this.props.flowKey));
 
-            var classes = [
-                'outcome btn',
-                getButtonType(model.pageActionType || model.pageActionBindingType),
-                getButtonSize(model.pageObjectBindingId, this.props.flowKey)
-            ];
+            if (model.attributes) {
+                if (model.attributes.classes)
+                    className += ' ' + model.attributes.classes;
 
-            var content;
-
-            if (manywho.utils.isEqual(this.props.outcomeDisplay, 'icons', true)  && model.pageActionType) {
-
-                var icon = 'glyphicon ' + getIconType(model.pageActionType || model.pageActionBindingType);
-
-                classes.push('btn-icons');
-
-                content = React.DOM.span({ className: icon, title: model.pageActionType || model.pageActionBindingType }, null);
-
-            } else {
-
-                content = model.label;
-
+                if (model.attributes.display)
+                    content = getContent(model, model.attributes.display);   
             }
 
-            classes = classes.join(' ');
-
-            return React.DOM.button({ id: this.props.id, className: classes, onClick: this.onClick }, content);
-
+            return <button id={this.props.id} className={className} onClick={this.onClick}>{content}</button>
         }
 
     });
