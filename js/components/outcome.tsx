@@ -123,6 +123,8 @@ declare var React: any;
                     return <span className={'glyphicon ' + getIcon(model)} />
                 case 'ICONANDTEXT':
                     return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
+                default:
+                    return model.label
             }
         else
             return model.label
