@@ -5,8 +5,7 @@ declare var manywho: any;
 declare var ReactMotion: any;
 
 interface ITilesState {
-    objectData: Array<any>,
-    updateObjectData: boolean
+    flip: boolean
 }
 
 class Tiles extends React.Component<ITilesProps, ITilesState> {
@@ -14,13 +13,14 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     constructor(props: ITilesProps){
         super(props);
 
-        this.state = { objectData: [], updateObjectData: false };
+        this.state = { flip: false };
 
         this.onSelect = this.onSelect.bind(this);
         this.onOutcome = this.onOutcome.bind(this);
         this.onNext = this.onNext.bind(this);
         this.onPrev = this.onPrev.bind(this);
         this.renderItem = this.renderItem.bind(this);
+        this.onRest = this.onRest.bind(this);
     }
 
     onSelect(e) {
@@ -39,6 +39,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     onNext() {
         this.props.onNext();
         setTimeout(() => (this.refs['container'] as HTMLElement).scrollIntoView(true));
+    }
+
+    onRest() {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+        if (!model.objectDataRequest && !model.fileDataRequest)
+            this.setState({ flip: true });
     }
 
     renderItem(item: any, columns: Array<any>, outcomes: Array<any>, deleteOutcome: any) : JSX.Element {
@@ -105,7 +111,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
         let items = this.props.objectData;
 
-        if (state.loading && manywho.utils.isEmptyObjectData(this.state.objectData)) {
+        if (state.loading && manywho.utils.isEmptyObjectData(items)) {
             items = [];
             for (var i = 1; i <= manywho.settings.global('paging.tiles', this.props.flowKey) + 1; i++) {
                 items.push(i);
@@ -128,13 +134,13 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         return (<div className={className} ref="container">
             {labelElement}
             {headerElement}
-            <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }}>
+            <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>
                 {interpolatingStyle => {
                     const transform : string = `scale(${interpolatingStyle.scale},${interpolatingStyle.scale})`;
                     
                     return (<div className="mw-tiles-items">
                         {items.map((item, index) => {
-                            if (state.loading)
+                            if (state.loading || !this.state.flip)
                                 return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
 
                             return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }} ref="items">
