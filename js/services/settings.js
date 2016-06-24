@@ -43,7 +43,7 @@ manywho.settings = (function (manywho, $) {
             downloadUriPropertyName: 'Download Uri'
         },
         richText: {
-            url: 'https://tinymce.cachefly.net/4.1/tinymce.min.js',
+            url: 'https://cdn.tinymce.com/4/tinymce.min.js',
             fontSize: '14px',
             plugins: [
                 "advlist autolink link lists link image charmap print hr anchor spellchecker",
