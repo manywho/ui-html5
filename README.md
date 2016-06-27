@@ -16,17 +16,18 @@ front end technologies including:
 
 ### Building
 
-To build the HTML5 player you will need to have [nodejs](http://nodejs.org/) and [gulp](http://gulpjs.com/) installed.
+To build the HTML5 player you will need to have [nodejs](http://nodejs.org/), [gulp](http://gulpjs.com/) and [typings](https://github.com/typings/typings) installed.
 
 Then install dependencies:
 
 ```
 npm install
+typings install
 ```
 
 ### Running
 
-You can start the dev server by running `gulp refresh`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc).
+You can start the dev server by running `npm start`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc).
 
 You can then initialize a flow with:
 ```

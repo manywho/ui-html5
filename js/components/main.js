@@ -33,8 +33,8 @@ permissions and limitations under the License.
 
             if (!manywho.utils.isEmbedded()) {
 
-                var main = this.refs.main.getDOMNode();
-                var nav = this.refs.nav.getDOMNode();
+                var main = ReactDOM.findDOMNode(this.refs.main);
+                var nav = ReactDOM.findDOMNode(this.refs.nav);
 
                 var height = main.clientHeight + ((nav) ? nav.clientHeight : 0);
 
