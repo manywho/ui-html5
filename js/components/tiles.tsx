@@ -140,10 +140,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                     
                     return (<div className="mw-tiles-items">
                         {items.map((item, index) => {
-                            if (state.loading || !this.state.flip)
-                                return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
+                            const key: string = `${this.props.page.toString()}-${index}`;
 
-                            return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }} ref="items">
+                            if (state.loading || !this.state.flip)
+                                return <div className="mw-tiles-item-container" key={key} style={{ transform: transform }}></div> 
+
+                            return (<div className="mw-tiles-item-container" key={key} style={{ transform: transform }} ref="items">
                                 <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
                                     {interpolatingStyle => {
                                         const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
