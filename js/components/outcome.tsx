@@ -122,7 +122,7 @@ declare var React: any;
                 case "ICON":
                     return <span className={'glyphicon ' + getIcon(model)} />
                 case "ICONNOBACKGROUND":
-                    return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} />
+                    return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} onClick={this.onClick} id={this.props.id} />
                 case 'ICONANDTEXT':
                     return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
                 default:
