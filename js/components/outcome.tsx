@@ -164,7 +164,8 @@ declare var React: any;
                     content = getContent(model, model.attributes.display);
 
                 if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND')) {
-                    content.props.className += model.attributes.classes
+                    if (model.attributes.classes)
+                        content.props.className += ' ' + model.attributes.classes;
                     return content;
                 }
             }
