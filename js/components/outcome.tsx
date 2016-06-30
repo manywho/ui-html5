@@ -54,7 +54,7 @@ declare var React: any;
 
     function getIcon(model) {
         if (model.attributes && model.attributes.icon)
-            return 'glypicon-' + model.attributes.icon;
+            return 'glyphicon-' + model.attributes.icon;
 
         const action: string = model.pageActionType || model.pageActionBindingType;
 
@@ -121,6 +121,8 @@ declare var React: any;
             switch (display.toUpperCase()) {
                 case "ICON":
                     return <span className={'glyphicon ' + getIcon(model)} />
+                case "ICONNOBACKGROUND":
+                    return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} />
                 case 'ICONANDTEXT':
                     return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
                 default:
@@ -159,7 +161,12 @@ declare var React: any;
                     className += ' ' + model.attributes.classes;
 
                 if (model.attributes.display)
-                    content = getContent(model, model.attributes.display);   
+                    content = getContent(model, model.attributes.display);
+
+                if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND')) {
+                    content.props.className += model.attributes.classes
+                    return content;
+                }
             }
 
             return <button id={this.props.id} className={className} onClick={this.onClick}>{content}</button>
