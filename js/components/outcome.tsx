@@ -116,23 +116,23 @@ declare var React: any;
         return '';
     }
 
-    function getContent(model, display: string) {
-        if (display)
-            switch (display.toUpperCase()) {
-                case "ICON":
-                    return <span className={'glyphicon ' + getIcon(model)} />
-                case "ICONNOBACKGROUND":
-                    return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} onClick={this.onClick} id={this.props.id} />
-                case 'ICONANDTEXT':
-                    return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
-                default:
-                    return model.label
-            }
-        else
-            return model.label
-    }
-
     var outcome = React.createClass({
+
+        getContent: function (model, display: string) {
+            if (display)
+                switch (display.toUpperCase()) {
+                    case "ICON":
+                        return <span className={'glyphicon ' + getIcon(model)} />
+                    case "ICONNOBACKGROUND":
+                        return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} onClick={this.onClick} id={this.props.id} />
+                    case 'ICONANDTEXT':
+                        return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
+                    default:
+                        return model.label
+                }
+            else
+                return model.label
+        },
 
         onClick: function(e) {
             e.preventDefault();
@@ -154,14 +154,14 @@ declare var React: any;
 
             const model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
             let className = `outcome btn ${getType(model)} ${getSize(model, this.props.flowKey)}`;
-            let content = getContent(model, manywho.settings.global('outcomes.display', this.props.flowKey));
+            let content = this.getContent(model, manywho.settings.global('outcomes.display', this.props.flowKey));
 
             if (model.attributes) {
                 if (model.attributes.classes)
                     className += ' ' + model.attributes.classes;
 
                 if (model.attributes.display)
-                    content = getContent(model, model.attributes.display);
+                    content = this.getContent(model, model.attributes.display);
 
                 if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND')) {
                     if (model.attributes.classes)
