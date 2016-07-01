@@ -149,6 +149,10 @@ declare var React: any;
                 });
         },
 
+        shouldComponentUpdate(nextProps, nextState) {
+            return this.props.id != nextProps.id;
+        },
+
         render: function () {
             manywho.log.info('Rendering Outcome: ' + this.props.id);
 
