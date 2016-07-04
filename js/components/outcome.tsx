@@ -189,7 +189,7 @@ declare var React: any;
                 if (model.attributes.display)
                     content = this.getContent(model, model.attributes.display);
 
-                if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND')) {
+                if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND', true)) {
                     if (model.attributes.classes)
                         content.props.className += ' ' + model.attributes.classes;
                     return content;
