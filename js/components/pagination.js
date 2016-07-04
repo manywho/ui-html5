@@ -19,12 +19,12 @@ permissions and limitations under the License.
             
             var previousAttributes = { className: 'btn btn-default', onClick: this.props.onPrev };
 
-            if (this.props.pageIndex <= 1 || this.props.isDeisgnTime)
+            if (this.props.pageIndex <= 1 || this.props.isDesignTime)
                 previousAttributes.disabled = 'disabled';
 
             var nextAttributes = { className: 'btn btn-default', onClick: this.props.onNext };
 
-            if (!this.props.hasMoreResults || this.props.isDeisgnTime)
+            if (!this.props.hasMoreResults || this.props.isDesignTime)
                 nextAttributes.disabled = 'disabled';
 
             return React.DOM.div({ className: this.props.containerClasses }, [

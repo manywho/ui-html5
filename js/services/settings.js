@@ -43,7 +43,7 @@ manywho.settings = (function (manywho, $) {
             downloadUriPropertyName: 'Download Uri'
         },
         richText: {
-            url: 'https://tinymce.cachefly.net/4.1/tinymce.min.js',
+            url: 'https://cdn.tinymce.com/4/tinymce.min.js',
             fontSize: '14px',
             plugins: [
                 "advlist autolink link lists link image charmap print hr anchor spellchecker",
@@ -53,7 +53,9 @@ manywho.settings = (function (manywho, $) {
             toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage'
         },
         errorMessage: 'Whoops, something went wrong inside ManyWho - if this keeps happening, contact us at support@manywho.com',
-        outcomes: null,
+        outcomes: {
+            display: null
+        },
         shortcuts: {
             progressOnEnter: true
         },

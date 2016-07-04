@@ -16,7 +16,16 @@ permissions and limitations under the License.
         margin-bottom: 1em !important;
     }
 
-    .modal-footer > .outcome, .table-outcomes > .outcome {
+    .outcome > .glyphicon {
+        margin-right: 0.5em;
+    }
+
+    .outcome > .glyphicon:last-child {
+        margin-right: 0;
+    }
+
+    .modal-footer > .outcome,
+    .table-outcomes > .outcome {
         margin-bottom: 0 !important;
     }
 
@@ -29,7 +38,8 @@ permissions and limitations under the License.
         margin-right: 0;
     }
 
-    .mw-vertical_flow > .outcome, .mw-inline_flow > .outcome {
+    .mw-vertical_flow > .outcome,
+    .mw-inline_flow > .outcome {
         margin-top: 0.5em;
     }
 
@@ -38,18 +48,29 @@ permissions and limitations under the License.
      }
 
     .btn-icons {
-        background-image: none;
         background-color: transparent;
-        color: #4f4f4f;
-        border: none;
+        background-image: none;
+        border: 0;
         box-shadow: none;
-        padding: 0;
+        color: #4f4f4f;
         margin-bottom: 0 !important;
         margin-right: 0.5em;
+        padding: 0;
 
         span {
             padding: 4px 6px;
         }
+    }
+
+    .outcome-icon-no-background {
+        color: #888888;
+        cursor: pointer;
+        font-size: 1.5em;
+        margin-right: 0.75em;
+    }
+
+    .outcome-icon-no-background:last-child {
+        margin-right: 0;
     }
 
 }

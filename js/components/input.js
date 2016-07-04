@@ -46,33 +46,6 @@ permissions and limitations under the License.
 
     }
 
-    function parseValue(value, maxSize) {
-
-        if (value != null) {
-
-            value = value.replace(/^\s+|\s+$/g, '');
-
-            if (manywho.utils.isNullOrWhitespace(value))
-                return value;
-
-            var max = (Math.pow(10, maxSize)) - 1;
-            var min = (Math.pow(10, maxSize) * -1) + 1;
-
-            if (value.indexOf('.', value.length-1) !== -1 || value.indexOf('0', value.length-1) !== -1) {
-                return value;
-            }
-
-            var parsedValue = parseFloat(value);
-
-            parsedValue = Math.min(parsedValue, max);
-            return Math.max(parsedValue, min);
-
-        }
-
-        return null;
-
-    }
-
     var input = React.createClass({
 
         componentDidMount: function () {
@@ -130,22 +103,26 @@ permissions and limitations under the License.
 
         },
 
-        parseNumberInput: function (e) {
+        parseNumberInput: function (value, maxSize) {
 
-            var parsedValue = parseFloat(e.target.value);
+            if (value != null) {
 
-            if (!isNaN(parsedValue)) {
+                value = value.replace(/^\s+|\s+$/g, '');
 
-                manywho.state.setComponent(this.props.id, { contentValue: e.target.value }, this.props.flowKey, true);
+                if (manywho.utils.isNullOrWhitespace(value))
+                    return isNaN(value);
+
+                var max = (Math.pow(10, maxSize)) - 1;
+                var min = (Math.pow(10, maxSize) * - 1) + 1;
+
+                var parsedValue = parseFloat(value);
+
+                parsedValue = Math.min(parsedValue, max);
+                parsedValue = Math.max(parsedValue, min);
+
+                return parsedValue;
 
             }
-            else {
-
-                manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
-
-            }
-
-            this.setState({ value: parsedValue });
 
         },
 
@@ -160,12 +137,14 @@ permissions and limitations under the License.
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.number, true)) {
 
-                var value = parseValue(e.target.value, model.maxSize);
+                var value = this.parseNumberInput(e.target.value, model.maxSize);
 
-                if (value !== "")
+                if (value !== null && value !== '') {
+
                     manywho.state.setComponent(this.props.id, { contentValue: value }, this.props.flowKey, true);
+                    this.setState({ value: value });
 
-                this.setState({ value: value });
+                }
 
             }
             else if (manywho.utils.isEqual(model.contentType, manywho.component.contentTypes.datetime, true)) {
@@ -318,7 +297,6 @@ permissions and limitations under the License.
                 }
                 else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
 
-                    attributes.onBlur = this.parseNumberInput;
                     attributes.style = { width: 30 + (15 * model.size) + "px !important" };
                     attributes.max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
                     attributes.min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;

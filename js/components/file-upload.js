@@ -80,7 +80,7 @@ permissions and limitations under the License.
                     });
 
                     setTimeout(function() {
-                        self.setState({ isUploadComplete: false, isProgressVisible: false, progress: 100, });
+                        self.setState({ isUploadComplete: false, isProgressVisible: false, progress: 100 });
                     }, 2000);
 
                     self.refs.upload.getDOMNode().value = '';
@@ -94,6 +94,8 @@ permissions and limitations under the License.
                     {
 
                         manywho.state.setComponent(self.props.id, { objectData: response.objectData }, self.props.flowKey, true);
+
+                        manywho.component.handleEvent(self, manywho.model.getComponent(self.props.id, self.props.flowKey), self.props.flowKey);
 
                     }
 
