@@ -121,6 +121,7 @@ declare var React: any;
             if (display)
                 switch (display.toUpperCase()) {
                     case "ICON":
+                    case "ICONS":
                         return <span className={'glyphicon ' + getIcon(model)} />
                     case "ICONNOBACKGROUND":
                         let className = 'outcome-icon-no-background glyphicon ' + getIcon(model);
@@ -194,6 +195,10 @@ declare var React: any;
                     return content;
                 }
             }
+
+            // Back compat for existing "outcome" attribute on tables
+            if (!manywho.utils.isNullOrWhitespace(this.props.display))
+                content = this.getContent(model, this.props.display);
 
             return <button id={this.props.id} className={className} onClick={this.onClick}>{content}</button>
         }
