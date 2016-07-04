@@ -100,7 +100,6 @@ declare var React: any;
         }
 
         return null;
-
     }
 
     function getSize(model, flowKey) {
@@ -124,7 +123,17 @@ declare var React: any;
                     case "ICON":
                         return <span className={'glyphicon ' + getIcon(model)} />
                     case "ICONNOBACKGROUND":
-                        return <span className={'outcome-icon-no-background glyphicon ' + getIcon(model)} title={model.label} onClick={this.onClick} id={this.props.id} />
+                        let className = 'outcome-icon-no-background glyphicon ' + getIcon(model);
+                        
+                        if (this.state.isMouseOver)
+                            className += ' no-background-' + getType(model);
+
+                        return <span className={className} 
+                                    title={model.label}
+                                    onClick={this.onClick}
+                                    id={this.props.id}
+                                    onMouseEnter={this.onMouseEnter}
+                                    onMouseLeave={this.onMouseLeave} />
                     case 'ICONANDTEXT':
                         return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
                     default:
@@ -149,8 +158,20 @@ declare var React: any;
                 });
         },
 
+        onMouseEnter(e) {
+            this.setState({ isMouseOver: true });
+        },
+
+        onMouseLeave(e) {
+            this.setState({ isMouseOver: false });
+        },
+
+        getInitialState() {
+            return { isMouseOver: false }
+        },
+
         shouldComponentUpdate(nextProps, nextState) {
-            return this.props.id != nextProps.id;
+            return this.props.id != nextProps.id || this.state.isMouseOver != nextState.isMouseOver;
         },
 
         render: function () {
