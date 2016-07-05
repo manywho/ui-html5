@@ -97,5 +97,6 @@ gulp.task('dist', function () {
 
 gulp.task('deploy-cdn', getTask('deploy/cdn'));
 gulp.task('deploy-short-cache', getTask('deploy/short-cache'));
+gulp.task('deploy-no-cache', getTask('deploy/no-cache'));
 gulp.task('invalidate', getTask('deploy/invalidate'));
 gulp.task('deploy-player', getTask('deploy/player'));

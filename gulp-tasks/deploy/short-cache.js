@@ -17,15 +17,13 @@ module.exports = function(gulp, plugins) {
             headers = null;
         }
 
-        return gulp.src(['dist/hashes.json', 'dist/js/vendor/vendor.json', 'dist/js/loader.min.js'])
-            .pipe(plugins.rename(function(path) {
-                console.log(path);
-                if (path.basename == "loader.min") {
+        return gulp.src(['dist/js/vendor/vendor.json', 'dist/js/loader.min.js'])
+            .pipe(plugins.rename(function(path) {                
+                if (path.basename == "loader.min")
                     path.dirname = "js"
-                }
-                if (path.basename == "vendor") {
+
+                if (path.basename == "vendor")
                     path.dirname= "js/vendor/"
-                }
             }))
             .pipe(awspublish.gzip())
             .pipe(publisher.publish(headers))
