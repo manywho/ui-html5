@@ -18,7 +18,7 @@ permissions and limitations under the License.
 @active-color : #ffffff;
 @active-background : #006fd0;
 
-@incomplete-color : lighten(#000, 60%);
+@incomplete-color : lighten(#000000, 60%);
 @incomplete-background : #dddddd;
 
 .li-color(@color, @background) {
@@ -27,7 +27,10 @@ permissions and limitations under the License.
   &:after {
     border-left: 16px solid @background;
   }
-  & > a, & > a:active, & > a:visited, & > a:focus {
+  & > a,
+  & > a:active,
+  & > a:visited,
+  & > a:focus {
     color: @color !important;
     background: @background;
   }
@@ -50,25 +53,33 @@ permissions and limitations under the License.
         z-index: 1100;
     }
 
+    .fixed-nav > .navbar {
+      top: 0;
+      left: 0;
+      position: absolute;
+      right: 0
+    }
+
+    .has-navbar {
+      padding-top: 5em;
+    }
+
     .navbar-wizard {
       background-color: @wizard-background;
-      min-height: 64px !important;
-      height: 64px !important;
       border: 0;
+      height: 64px !important;
+      min-height: 64px !important;
 
-      .navbar-header {
-        .navbar-brand {
+      .navbar-header .navbar-brand {
+          color: @active-background;
           height: 50px !important;
           padding: 20px 10px;
-          color: @active-background;
-        }
       }
 
       .navbar-nav {
-        margin-top: 12px;
         margin-left: 1em;
+        margin-top: 12px;
         text-align: center;
-
       }
 
       .return-to-parent {
@@ -76,25 +87,26 @@ permissions and limitations under the License.
       }
 
       .top-nav-element {
-        float: none;
         display: inline-block;
+        float: none;
+        height: 40px;
         position: relative;
         min-width: 150px;
-        height: 40px;
+
         .li-color(@complete-color, @complete-background);
         margin-right: 5px;
 
         & > a {
-          display: inline-block;
-          position: relative;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 40px !important;
-          font-size: 1.2em;
           background-color: transparent !important;
-          white-space: nowrap;
+          display: inline-block;
+          font-size: 1.2em;
+          height: 40px !important;
+          left: 0;
           padding: 10px 15px !important;
+          position: relative;
+          right: 0;
+          top: 0;
+          white-space: nowrap;
 
           &:hover {
             color: #cbcbcb !important;
