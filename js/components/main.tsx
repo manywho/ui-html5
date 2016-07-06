@@ -26,24 +26,6 @@ declare var manywho: any;
                 window.addEventListener("beforeunload", (event) => manywho.engine.sync(this.props.flowKey));
         },
 
-        componentDidUpdate: function() {
-            if (!manywho.utils.isEmbedded()) {
-                var main = this.refs.main.getDOMNode();
-                var nav = this.refs.nav.getDOMNode();
-
-                var height = main.clientHeight + ((nav) ? nav.clientHeight : 0);
-
-                if (height <= window.innerHeight) {
-                    document.body.style.height = "100%";
-                    document.documentElement.style.height = "100%";
-                }
-                else {
-                    document.body.style.height = "auto";
-                    document.documentElement.style.height = "auto";
-                }
-            }
-        },
-
         render: function () {
             manywho.log.info("Rendering Main");
 
