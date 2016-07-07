@@ -124,17 +124,7 @@ declare var React: any;
                     case "ICONS":
                         return <span className={'glyphicon ' + getIcon(model)} />
                     case "ICONNOBACKGROUND":
-                        let className = 'outcome-icon-no-background glyphicon ' + getIcon(model);
-                        
-                        if (this.state.isMouseOver)
-                            className += ' no-background-' + getType(model);
-
-                        return <span className={className} 
-                                    title={model.label}
-                                    onClick={this.onClick}
-                                    id={this.props.id}
-                                    onMouseEnter={this.onMouseEnter}
-                                    onMouseLeave={this.onMouseLeave} />
+                        return <span className={'glyphicon ' + getIcon(model)} />
                     case 'ICONANDTEXT':
                         return [<span className={'glyphicon ' + getIcon(model)} />, model.label]
                     default:
@@ -159,20 +149,8 @@ declare var React: any;
                 });
         },
 
-        onMouseEnter(e) {
-            this.setState({ isMouseOver: true });
-        },
-
-        onMouseLeave(e) {
-            this.setState({ isMouseOver: false });
-        },
-
-        getInitialState() {
-            return { isMouseOver: false }
-        },
-
         shouldComponentUpdate(nextProps, nextState) {
-            return this.props.id != nextProps.id || this.state.isMouseOver != nextState.isMouseOver;
+            return this.props.id != nextProps.id;
         },
 
         render: function () {
@@ -190,17 +168,15 @@ declare var React: any;
                     content = this.getContent(model, model.attributes.display);
 
                 if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND', true)) {
-                    if (model.attributes.classes)
-                        content.props.className += ' ' + model.attributes.classes;
-                    return content;
-                }
+                    className += ' btn-nobackground';
+                }                                     
             }
 
             // Back compat for existing "outcome" attribute on tables
             if (!manywho.utils.isNullOrWhitespace(this.props.display))
                 content = this.getContent(model, this.props.display);
 
-            return <button id={this.props.id} className={className} onClick={this.onClick}>{content}</button>
+            return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
         }
 
     });
