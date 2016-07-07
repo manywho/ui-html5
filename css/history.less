@@ -12,8 +12,8 @@ permissions and limitations under the License.
 .mw-bs {
 
     .main-history {
-        width: 60% !important;
         float: left;
+        width: 60% !important;
     }
 
     .nav-history {
@@ -21,13 +21,13 @@ permissions and limitations under the License.
     }
 
     .history-view {
-        height: 100%;
-        min-height: 500px;
-        width: calc(~"40% - 20px");
-        margin-left: 1em;
-        margin-bottom: 0;
         float: right;
+        height: 100%;
+        margin-bottom: 0;
+        margin-left: 1em;
+        min-height: 500px;
         overflow: auto;
+        width: calc(~"40% - 20px");
 
         .history-row {
             overflow: auto;
@@ -35,9 +35,9 @@ permissions and limitations under the License.
             .step {
                 border: 1px solid transparent;
                 border-radius: 3px;
+                cursor: pointer;
                 margin-bottom: 10px;
                 padding: 0;
-                cursor: pointer;
 
                 .step-title {
                     font-size: 20px;
@@ -54,17 +54,17 @@ permissions and limitations under the License.
             }
 
             .outcome-info {
-                float: left;
-                padding: 10px;
-                background: rgba(221,221,221,0.6);
-                text-align: center;
+                background: rgba(221, 221, 221, 0.6);
                 color: #333333;
+                float: left;
                 margin-left: 1.5%;
+                padding: 10px;
+                text-align: center;
             }
 
             .selected-outcome {
-                color: #FFFFFF;
                 background: rgba(76, 175, 80, 0.6);
+                color: #ffffff;
             }
         }
     }

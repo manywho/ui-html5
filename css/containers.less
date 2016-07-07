@@ -11,7 +11,8 @@ permissions and limitations under the License.
 
 @container-margin: 20px;
 
-html, body {
+html,
+body {
     width: 100%;
 }
 
@@ -20,31 +21,30 @@ body {
 }
 
 #manywho {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 500px;
+    height: 100%;
+    min-height: 500px;
+    position: relative;
+    width: 100%;
 }
 
 .flow-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    top: 0;
     bottom: 0;
+    height: 100%;
     left: 0;
+    position: relative;
     right: 0;
+    top: 0;
+    width: 100%;
 }
 
 .modal-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
     bottom: 0;
+    height: 100%;
     left: 0;
+    position: absolute;
     right: 0;
-
+    top: 0;
+    width: 100%;
 }
 
 .mw-bs {
@@ -71,13 +71,13 @@ body {
     }
 
     .main-empty:nth-of-type(1) {
-        margin-top: 0;
         margin-bottom: 0;
+        margin-top: 0;
     }
 
     .row {
-        margin-right: 0 !important;
         margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 
     .mw-vertical_flow {
@@ -93,8 +93,8 @@ body {
     }
 
     .mw-horizontal_flow > div > .row > * {
-        padding-left: 0;
         margin-bottom: 0;
+        padding-left: 0;
     }
 
     .mw-inline_flow {
@@ -129,8 +129,8 @@ body {
 
     .toggle-icon {
         font-size: 0.5em;
-        margin-top: -0.5em;
         margin-right: 0.6em;
+        margin-top: -0.5em;
         vertical-align: middle;
     }
 
@@ -140,19 +140,19 @@ body {
     }
 
     .collapsed-container {
+        overflow: hidden;
         transition: height 0.3s;
         transition-timing-function: ease-in;
-        overflow: hidden;
     }
 
     .page-label {
-        margin-top: 0;
         display: none;
+        margin-top: 0;
     }
 
     .page-label:empty {
-        margin: 0;
         display: none;
+        margin: 0;
     }
 
 }
