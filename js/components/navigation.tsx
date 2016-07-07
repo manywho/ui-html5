@@ -141,9 +141,6 @@ declare var manywho: any;
 
                 let className = 'navbar navbar-default';
 
-                if (!this.props.isFullWidth)
-                    className += ' container'
-
                 if (manywho.settings.global('navigation.isWizard', this.props.flowKey, true))
                     className += ' navbar-wizard';
 
@@ -153,8 +150,13 @@ declare var manywho: any;
                 if (manywho.settings.global('history', this.props.flowKey))
                     className += ' nav-history';
 
+                let innerClassName = '';
+
+                if (!this.props.isFullWidth)
+                    innerClassName += ' container'
+
                 return (<nav className={className} ref="navigationBar">
-                    <div>
+                    <div className={innerClassName}>
                         {this.getHeaderElement(this.props.id, navigation)}
                         <div className="collapse navbar-collapse" id={this.props.id} ref="container">
                             <ul className="nav navbar-nav">{navElements}</ul>
