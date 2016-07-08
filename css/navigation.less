@@ -53,17 +53,6 @@ permissions and limitations under the License.
         z-index: 1100;
     }
 
-    .fixed-nav > .navbar {
-      top: 0;
-      left: 0;
-      position: absolute;
-      right: 0
-    }
-
-    .has-navbar {
-      padding-top: 5em;
-    }
-
     .navbar-wizard {
       background-color: @wizard-background;
       border: 0;
@@ -155,19 +144,6 @@ permissions and limitations under the License.
         .li-color(@incomplete-color, @incomplete-background);
       }
     }
-
-    .navbar-fixed-top + .main {
-        padding-top: 60px;
-    }
-
-    .navbar-double-height + .main {
-        padding-top: 120px;
-    }
-
-    .navbar-triple-height + .main {
-        padding-top: 180px;
-    }
-
 }
 
 @media (max-width: 768px) {
@@ -220,14 +196,6 @@ permissions and limitations under the License.
     .active ~ li {
       .li-color(@incomplete-color, @incomplete-background);
     }
-  }
-
-  .navbar-double-height + .main {
-    padding-top: 60px !important;
-  }
-
-  .navbar-triple-height + .main {
-    padding-top: 60px !important;
   }
 
 }

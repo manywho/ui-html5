@@ -80,51 +80,6 @@ declare var manywho: any;
             manywho.engine.navigate(this.props.id, e.target.id, null, this.props.flowKey);
         },
 
-        componentDidMount: function () {
-            this.handleResizeDebounced = manywho.utils.debounce(this.handleResize, 500);
-            window.addEventListener('resize', this.handleResizeDebounced);
-        },
-
-        componentWillUnmount: function () {
-            window.removeEventListener('resize', this.handleResizeDebounced);
-        },
-
-        handleResize: function () {
-
-            if (this.refs.navigationBar) {
-
-                var navigationElement = this.refs.navigationBar.getDOMNode();
-
-                if (navigationElement.classList.contains('navbar-double-height')) navigationElement.classList.remove('navbar-double-height');
-
-                if (navigationElement.classList.contains('navbar-triple-height')) navigationElement.classList.remove('navbar-triple-height');
-
-                var header = navigationElement.querySelector('.navbar-header');
-
-                var navigationTitle = header.querySelector('.navbar-brand');
-
-                if (!navigationElement.classList.contains('navbar-double-height')) {
-
-                    if (navigationTitle && navigationElement.clientHeight > 100) {
-
-                        navigationElement.classList.add('navbar-triple-height');
-
-                    } else if (!navigationTitle && navigationElement.clientHeight > 100) {
-
-                        navigationElement.classList.add('navbar-double-height');
-
-                    }
-
-                }
-
-            }
-
-        },
-
-        componentDidUpdate: function () {
-            this.handleResize();
-        },
-
         render: function () {
             var navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
 
@@ -167,7 +122,6 @@ declare var manywho: any;
             }
 
             return null;
-
         }
 
     });
