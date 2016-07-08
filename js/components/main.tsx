@@ -35,7 +35,15 @@ declare var manywho: any;
             const attributes = manywho.model.getAttributes(this.props.flowKey);
             const componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
             const isFixedFooter: boolean = attributes != null && manywho.utils.isEqual(attributes.outcomes, "fixed", true)
+            const isFixedNav: boolean = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
             
+            const navElement = React.createElement(manywho.component.getByName('navigation'), { 
+                id: manywho.model.getDefaultNavigationId(this.props.flowKey), 
+                flowKey: this.props.flowKey,
+                isFixed: isFixedNav,
+                isFullWidth: manywho.settings.global('isFullWidth', this.props.flowKey, false)
+            });
+
             if (state && state.loading == null && !manywho.utils.isEqual(manywho.model.getInvokeType(this.props.flowKey), 'sync', true))
                 manywho.component.focusInput(this.props.flowKey);
 
@@ -47,7 +55,6 @@ declare var manywho: any;
                 outcomeElements = null;
             }
             
-            let containerClassName = "full-height clearfix";
             let classNames = 'main';
 
             classNames += (manywho.settings.global('isFullWidth', this.props.flowKey, false)) ? ' container-fluid full-width' : ' container';
@@ -58,34 +65,27 @@ declare var manywho: any;
             if (manywho.settings.global('history', this.props.flowKey))
                 classNames += ' main-history';
 
-            if (isFixedFooter)
-                containerClassName += " has-footer";            
-
-            const content = (<div className={containerClassName}>
-                {React.createElement(manywho.component.getByName('navigation'), { id: manywho.model.getDefaultNavigationId(this.props.flowKey), flowKey: this.props.flowKey, ref: 'nav' })}
-                <div className={classNames} onKeyUp={this.onEnter} ref="main">
-                    <h2 className="page-label">{manywho.model.getLabel(this.props.flowKey)}</h2>
-                    {componentElements}
-                    {outcomeElements}
-                    {React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey })}
-                    {React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey })}
-                    {React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })}
-                </div>
-                {React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey })}
-                {React.createElement(manywho.component.getByName('history'), { flowKey: this.props.flowKey })}
-                {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' })}
-                {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' })}
-                {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' })}
-                {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)}
-            </div>);
-
-            if (isFixedFooter)
-                return (<div className="full-height footer-fixed-wrapper">
-                    {content}
-                    {fixedFooter}
-                </div>);
-            else
-                return content;
+            return (<div className="main-container">
+                        {(isFixedNav) ? navElement : null}
+                        <div className="main-scroller">
+                            {(isFixedNav) ? null : navElement}
+                            <div className={classNames} onKeyUp={this.onEnter} ref="main">
+                                <h2 className="page-label">{manywho.model.getLabel(this.props.flowKey)}</h2>
+                                {componentElements}
+                                {outcomeElements}
+                                {React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey })}
+                                {React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey })}
+                                {React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })}
+                            </div>
+                            {React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey })}
+                            {React.createElement(manywho.component.getByName('history'), { flowKey: this.props.flowKey })}
+                            {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' })}
+                            {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' })}
+                            {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' })}
+                            {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)}
+                        </div>
+                        {(isFixedFooter) ? fixedFooter : null}
+                    </div>);
         }
     });
 
