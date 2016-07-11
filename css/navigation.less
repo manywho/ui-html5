@@ -28,10 +28,10 @@ permissions and limitations under the License.
   &:after {
     border-left: 16px solid @background;
   }
-
   & > a,
   & > a:active,
   & > a:visited,
+  & > a:focus {
   & > a:focus {
     background: @background;
     color: @color !important;
@@ -61,12 +61,11 @@ permissions and limitations under the License.
       height: 64px !important;
       min-height: 64px !important;
 
-      .navbar-header {
-        .navbar-brand {
+      .navbar-header .navbar-brand {
+          color: @active-background;
           color: @active-background;
           height: 50px !important;
           padding: 20px 10px;
-        }
       }
 
       .navbar-nav {
@@ -83,6 +82,7 @@ permissions and limitations under the License.
         display: inline-block;
         float: none;
         height: 40px;
+
         margin-right: 5px;
         min-width: 150px;
         position: relative;
@@ -146,19 +146,6 @@ permissions and limitations under the License.
         .li-color(@incomplete-color, @incomplete-background);
       }
     }
-
-    .navbar-fixed-top + .main {
-        padding-top: 60px;
-    }
-
-    .navbar-double-height + .main {
-        padding-top: 120px;
-    }
-
-    .navbar-triple-height + .main {
-        padding-top: 180px;
-    }
-
 }
 
 @media (max-width: 768px) {
@@ -211,14 +198,6 @@ permissions and limitations under the License.
     .active ~ li {
       .li-color(@incomplete-color, @incomplete-background);
     }
-  }
-
-  .navbar-double-height + .main {
-    padding-top: 60px !important;
-  }
-
-  .navbar-triple-height + .main {
-    padding-top: 60px !important;
   }
 
 }
