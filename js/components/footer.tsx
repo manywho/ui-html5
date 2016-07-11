@@ -18,15 +18,13 @@ declare var manywho: any;
     var footer = React.createClass({
         render: function () {
             if (this.props.children) {
-
                 manywho.log.info("Rendering Footer");
 
-                let className = 'footer-fixed-bottom';
+                let className = 'mw-footer';
                 className += (manywho.settings.global('isFullWidth', this.props.flowKey, false)) ? ' container-fluid' : ' container';
 
                 return <div className={className}>{this.props.children}</div>
             }
-
             return null;
         }
     });
