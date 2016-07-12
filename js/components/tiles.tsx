@@ -89,6 +89,9 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, "tiles", this.props.flowKey).join(' ');
 
+        if (model.isVisible == false)
+            className += ' hidden';
+
         let labelElement = null;
         if (!manywho.utils.isNullOrWhitespace(model.label))
             labelElement = <label>{model.label}</label>;
