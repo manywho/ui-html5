@@ -82,6 +82,9 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     render() {
         manywho.log.info('Rendering Tiles: ' + this.props.id);
 
+        if (this.props.isDesignTime)
+            return null;
+
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const outcomes: any = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
