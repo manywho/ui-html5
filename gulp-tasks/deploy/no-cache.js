@@ -19,7 +19,7 @@ module.exports = function(gulp, plugins) {
 
         return gulp.src('dist/hashes.json')
             .pipe(awspublish.gzip())
-            .pipe(publisher.publish(headers))
+            .pipe(publisher.publish(headers, { force: true }))
             .pipe(awspublish.reporter())
     }
 }

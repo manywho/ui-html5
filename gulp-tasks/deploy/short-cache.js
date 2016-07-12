@@ -26,7 +26,7 @@ module.exports = function(gulp, plugins) {
                     path.dirname= "js/vendor/"
             }))
             .pipe(awspublish.gzip())
-            .pipe(publisher.publish(headers))
+            .pipe(publisher.publish(headers, { force: true }))
             .pipe(awspublish.reporter())
     }
 }
