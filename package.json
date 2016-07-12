@@ -34,5 +34,8 @@
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
     "yargs": "^2.3.0"
+  },
+  "scripts": {
+    "start": "gulp refresh"
   }
 }

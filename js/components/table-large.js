@@ -107,13 +107,8 @@ permissions and limitations under the License.
         },
 
         onOutcomeClick: function (e, outcome) {
-
-            if (this.props.isDesignTime)
-                return;
-
             var objectDataId = e.currentTarget.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
-
         },
 
         onCellEditCommitted: function(id, propertyId, value) {
@@ -306,6 +301,6 @@ permissions and limitations under the License.
 
     });
 
-    manywho.component.register("table-large", tableLarge);
+    manywho.component.register("mw-table-large", tableLarge);
 
 }(manywho));

@@ -26,7 +26,8 @@ manywho.settings = (function (manywho, $) {
         paging: {
             table: 10,
             files: 10,
-            select: 250
+            select: 250,
+            tiles: 20
         },
         collaboration: {
             uri: 'https://realtime.manywho.com'
@@ -102,7 +103,7 @@ manywho.settings = (function (manywho, $) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            flows[lookUpKey] = manywho.utils.extend({}, [globals, settings], true);
+            flows[lookUpKey] = $.extend(true, {}, globals, settings);
 
         },
 

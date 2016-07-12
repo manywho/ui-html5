@@ -6,5 +6,6 @@
 /css/themes/mw-*.css
 /dist
 /build
+/typings
 
 .awspublish-manywho-cdn-react

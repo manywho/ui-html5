@@ -9,7 +9,9 @@ module.exports = function(gulp, plugins) {
             .pipe(plugins.order(['services/*.js', 'lib/*.js', 'components/mixins.js', 'components/*.js']))
             .pipe(plugins.concat('compiled.js'))
             .pipe(plugins.sourcemaps.init())
-            .pipe(plugins.uglify().on('error', plugins.util.log))
+            .pipe(plugins.uglify({
+                preserveComments: 'license'
+            }).on('error', plugins.util.log))
             .pipe(plugins.rev())
             .pipe(plugins.sourcemaps.write('.'))
             .pipe(gulp.dest('./dist/js'))       
