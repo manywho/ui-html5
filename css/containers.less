@@ -29,6 +29,7 @@ body {
 
 .flow-container {
     bottom: 0;
+    display: flex;
     height: 100%;
     left: 0;
     position: relative;
@@ -65,16 +66,19 @@ body {
     .main-container {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex-grow: 1;
         overflow: hidden;
     }
 
     .main-scroller {
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
         overflow-y: auto;
     }
 
     .main {
+        flex-grow: 1;
         margin-bottom: @container-margin;
     }
 
