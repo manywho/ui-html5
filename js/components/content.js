@@ -22,50 +22,16 @@ permissions and limitations under the License.
             var self = this;
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-            tinymce.PluginManager.add('manywho_elements', function (editor, url) {
-
-                editor.addButton('manywho_elements', {
-                    text: 'Insert Reference',
-                    icon: false,
-                    onclick: function () {
-
-                        var tenantId = manywho.utils.getObjectDataProperty(model.tags, 'ManyWhoTenantId').contentValue;
-                        var authenticationToken = manywho.utils.getObjectDataProperty(model.tags, 'AuthenticationToken').contentValue;
-
-                        manywho.ajax.getValueReferences(tenantId, authenticationToken).then(function(response) {
-                            var items = response.map(function(item) {
-                                if (item.typeElementPropertyDeveloperName) {
-                                    return { text: item.developerName + ' / ' + item.typeElementPropertyDeveloperName, value: '{![' + item.developerName + '].[' + item.typeElementPropertyDeveloperName + ']}'};
-                                } else {
-                                    return { text: item.developerName, value: '{![' + item.developerName + ']}'};
-                                }
-                            });
-
-                            items.unshift({ text: 'Please select reference value', value: '' });
-
-                            editor.windowManager.open({
-                                title: 'Add Reference to a Value',
-                                body: [
-                                    {
-                                        type: 'listbox',
-                                        name: 'reference',
-                                        label: 'Reference',
-                                        values: items
-                                    }
-                                ],
-                                onsubmit: function (e) {
-                                    // Insert content when the window form is submitted
-                                    editor.insertContent(e.data.reference);
-                                }
-                            });
-                        });
-                    }
+            var customPlugins = manywho.settings.global('richtext.custom_plugins', this.props.flowKey, null);
+            if (customPlugins)
+                Object.keys(customPlugins).forEach(function(name) {
+                    tinymce.PluginManager.add(name, customPlugins[name]) 
                 });
-            });
 
             tinymce.init({
                 selector: 'textarea#' + this.props.id,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
+                external_plugins: manywho.settings.global('richtext.external_plugins', this.props.flowKey, []),
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
                 height: model.height * 16, // Do the same for the height
                 readonly: !model.isEditable,
@@ -81,36 +47,27 @@ permissions and limitations under the License.
 
                     if (!self.props.isDesignTime) {
 
-                        editor.addButton('mwimage', {
-                            title: 'Images',
-                            icon: 'image',
-                            onclick: function () {
-
-                                self.setState({ isImageUploadOpen: true });
-                                self.render();
-
-                            }
-
-                        });
+                        if (manywho.settings.global('richtext.imageUploadEnabled', self.props.flowKey, true))
+                            editor.addButton('mwimage', {
+                                title: 'Images',
+                                icon: 'image',
+                                onclick: function () {
+                                    self.setState({ isImageUploadOpen: true });
+                                    self.render();
+                                }
+                            });
 
                         editor.on('change', self.handleChange);
 
-                        if (model.hasEvents) {
+                        if (model.hasEvents)
                             editor.on('blur', self.handleEvent);
-                        }
-
                     }
 
                     editor.on('init', function () {
-
                          this.getDoc().body.style.fontSize = manywho.settings.global('richtext.fontsize', self.props.flowKey, '13px');
-
-                     });
+                    });
                  }
             });
-
-            this.setState({ isInitialized: true });
-
         },
 
         statics: {
@@ -139,7 +96,6 @@ permissions and limitations under the License.
         getInitialState: function() {
 
             return {
-                isInitialized: false,
                 isImageUploadOpen: false
             }
 
@@ -187,33 +143,13 @@ permissions and limitations under the License.
         },
 
         componentWillUnmount: function () {
-
-            if (this.state.isInitialized && this.editor) {
-
+            if (this.editor)
                 tinymce.remove('textarea#' + this.props.id);
-
-            }
-
-            window.clearInterval(this.changeInterval);
-
         },
 
         handleChange: function (e) {
-
-            if (this.state.isInitialized && this.editor) {
-
-                var content = this.editor.getContent();
-                var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-
-                if (!manywho.utils.isEqual(content, state.contentValue, false)) {
-
-                    manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
-                    this.skipSetContent = true;
-
-                }
-
-            }
-
+            var content = this.editor.getContent();
+            manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
         },
 
         handleEvent: function (e) {
@@ -326,8 +262,11 @@ permissions and limitations under the License.
                 placeholder: model.hintValue,
                 maxLength: model.maxSize,
                 cols: model.width,
-                rows: model.height
+                rows: model.height,
+                value: state.contentValue
             };
+
+            attributes['data-flowkey'] = this.props.flowKey;
 
             if (!this.props.isDesignTime && state)
                 attributes.defaultValue = state.contentValue;
@@ -343,18 +282,11 @@ permissions and limitations under the License.
 
             var classNames = [
                 'form-group',
-                (model.isVisible == false || !this.state.isInitialized) ? 'hidden' : '',
+                (model.isVisible == false) ? 'hidden' : '',
                 (isValid) ? '' : 'has-error'
             ]
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))
             .join(' ');
-
-            if (!this.props.isDesignTime && this.state.isInitialized && state.contentValue && state.contentValue.length > 0 && !this.skipSetContent) {
-
-                tinymce.get(this.props.id).setContent(state.contentValue);
-                this.skipSetContent = false;
-
-            }
 
             var childElements = [React.DOM.label({ htmlFor: this.props.id }, [
                     model.label,
