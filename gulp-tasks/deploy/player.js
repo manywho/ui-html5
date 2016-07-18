@@ -15,7 +15,7 @@ module.exports = function(gulp, plugins, browserSync, argv) {
                     .pipe(plugins.replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
                     .pipe(plugins.replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
                     .pipe(plugins.rename(tenantId + '.' + argv.player))
-                    .pipe(publisher.publish(headers))
+                    .pipe(publisher.publish(headers, { force: true }))
                     .pipe(plugins.awspublish.reporter())
     }
 };

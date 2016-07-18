@@ -44,7 +44,7 @@ gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-boot
     gulp.watch('css/*.less', ['dev-less', 'dev-bootstrap']);
     gulp.watch('css/themes/*.less', ['dev-bootstrap-themes'])
     gulp.watch('js/**/*.js', ['dev-js']).on('change', browserSync.reload);
-    gulp.watch('js/**/*.ts', ['dev-ts']).on('change', browserSync.reload);
+    gulp.watch(['js/**/*.ts', 'js/**/*.tsx'], ['dev-ts']).on('change', browserSync.reload);
     gulp.watch('debug.html').on('change', browserSync.reload);
 
 });
@@ -97,5 +97,6 @@ gulp.task('dist', function () {
 
 gulp.task('deploy-cdn', getTask('deploy/cdn'));
 gulp.task('deploy-short-cache', getTask('deploy/short-cache'));
+gulp.task('deploy-no-cache', getTask('deploy/no-cache'));
 gulp.task('invalidate', getTask('deploy/invalidate'));
 gulp.task('deploy-player', getTask('deploy/player'));

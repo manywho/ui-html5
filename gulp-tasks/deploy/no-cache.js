@@ -11,20 +11,13 @@ module.exports = function(gulp, plugins) {
         };
 
         var publisher = awspublish.create(distribution);
-        var headers = { 'Cache-Control': 'max-age=600, no-transform, public' };
+        var headers = { 'Cache-Control': 'no-cache' };
 
         if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
             headers = null;
         }
 
-        return gulp.src(['dist/js/vendor/vendor.json', 'dist/js/loader.min.js'])
-            .pipe(plugins.rename(function(path) {                
-                if (path.basename == "loader.min")
-                    path.dirname = "js"
-
-                if (path.basename == "vendor")
-                    path.dirname= "js/vendor/"
-            }))
+        return gulp.src('dist/hashes.json')
             .pipe(awspublish.gzip())
             .pipe(publisher.publish(headers, { force: true }))
             .pipe(awspublish.reporter())

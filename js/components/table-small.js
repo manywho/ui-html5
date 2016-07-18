@@ -29,13 +29,8 @@ permissions and limitations under the License.
     var tableSmall = React.createClass({
 
         onOutcomeClick: function(e, outcome) {
-
-            if (this.props.isDesignTime)
-                return;
-
             var objectDataId = e.target.parentElement.getAttribute('data-item');
             this.props.onOutcome(objectDataId, outcome.id);
-
         },
 
         onItemClick: function(e) {
@@ -195,6 +190,6 @@ permissions and limitations under the License.
 
     });
 
-    manywho.component.register("table-small", tableSmall);
+    manywho.component.register("mw-table-small", tableSmall);
 
 }(manywho));
