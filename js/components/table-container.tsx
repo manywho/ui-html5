@@ -224,7 +224,7 @@ declare var manywho : any;
             return <div className={classNames}>
                 {labelElement}
                 {validationElement}
-                <div className={this.state.isVisible ? '' : ' hidden'}>
+                <div className={'clearfix' + (this.state.isVisible ? '' : ' hidden')}>
                     {fileUpload}
                     {headerElement}
                     {contentElement}
