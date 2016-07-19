@@ -80,7 +80,7 @@ permissions and limitations under the License.
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            return React.DOM.div({ className: classNames, id: this.props.id }, [
+            return React.DOM.div({ className: classNames }, [
                 React.DOM.label({ htmlFor: this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
