@@ -145,7 +145,7 @@ permissions and limitations under the License.
             if (!this.props.isDesignTime && !model.isVisible)
                 classes.push('hidden');
 
-            return React.DOM.div({ className: classes.join(' '), ref: 'group' }, [
+            return React.DOM.div({ className: classes.join(' '), id: this.props.id, ref: 'group' }, [
                 React.createElement('ul', { className: 'nav nav-tabs', ref: 'tabs' }, tabs),
                 React.createElement('div', { className: classes + ' tab-content' }, this.props.children || manywho.component.getChildComponents(children, this.props.id, this.props.flowKey)),
                 outcomeButtons

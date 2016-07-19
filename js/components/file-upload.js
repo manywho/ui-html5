@@ -219,7 +219,7 @@ permissions and limitations under the License.
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            return React.DOM.div({ className: componentClasses.join(' ') }, [
+            return React.DOM.div({ className: componentClasses.join(' '), id: this.props.id }, [
                 React.DOM.div({ className: 'clearfix' }, [
                     React.createElement(Dropzone, dropzoneAttributes, [
                         React.DOM.div(null, 'Drop files here, or click to select files')

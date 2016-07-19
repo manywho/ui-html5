@@ -304,7 +304,7 @@ permissions and limitations under the License.
 
             }
 
-            return React.DOM.div({ className: classNames }, childElements);
+            return React.DOM.div({ className: classNames, id: this.props.id }, childElements);
 
         }
 

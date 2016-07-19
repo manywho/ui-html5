@@ -221,7 +221,7 @@ declare var manywho : any;
                 refresh: this.props.refresh
             });
 
-            return <div className={classNames}>
+            return <div className={classNames} id={this.props.id}>
                 {labelElement}
                 {validationElement}
                 <div className={'clearfix' + (this.state.isVisible ? '' : ' hidden')}>

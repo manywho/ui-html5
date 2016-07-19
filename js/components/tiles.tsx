@@ -137,7 +137,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         const deleteOutcome: any = outcomes && outcomes
             .filter((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)[0];
 
-        return (<div className={className} ref="container">
+        return (<div className={className} id={this.props.id} ref="container">
             {labelElement}
             {headerElement}
             <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>

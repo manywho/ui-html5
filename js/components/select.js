@@ -166,7 +166,7 @@ permissions and limitations under the License.
                 style.minWidth = style.width;
             }
 
-            return React.DOM.div({ className: containerClassNames.join(' ') }, [
+            return React.DOM.div({ className: containerClassNames.join(' '), id: this.props.id }, [
                 React.DOM.label({ 'for': this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
