@@ -17,6 +17,21 @@ declare var manywho: any;
 
     var navigation = React.createClass({
 
+        getItem(items: any, id: string) {
+            for (const itemId in items) {
+                if (itemId === id)
+                    return items[id];
+                else {
+                    const item = items[itemId];
+                    if (item.items) {
+                        let foundItem = this.getItem(item.items, id);
+                        if (foundItem)
+                            return foundItem;
+                    }
+                }
+            }
+        },
+
         getHeaderElement: function(id, navigation) {
             var children = [
                 <button className="navbar-toggle collapsed" data-toggle="collapse" data-target={'#' + id} ref="toggle">
@@ -73,6 +88,12 @@ declare var manywho: any;
 
         onClick: function(e) {
             e.preventDefault();
+
+            const navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
+            const item = this.getItem(navigation.items, e.target.id);
+
+            if (!item.isEnabled)
+                return false;
 
             if (!manywho.utils.isEqual(window.getComputedStyle(this.refs.toggle).display, 'none', true))
                 this.refs.toggle.click();
