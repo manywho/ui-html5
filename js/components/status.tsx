@@ -9,6 +9,8 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+/// <reference path="../../typings/index.d.ts" />
+
 declare var manywho: any;
 
 (function (manywho) {
