@@ -34,8 +34,8 @@ declare var manywho: any;
             const state = manywho.state.getComponent('main', this.props.flowKey) || {};
             const attributes = manywho.model.getAttributes(this.props.flowKey);
             const componentElements = manywho.component.getChildComponents(children, this.props.id, this.props.flowKey);
-            const isFixedFooter: boolean = attributes != null && manywho.utils.isEqual(attributes.outcomes, "fixed", true)
             const isFixedNav: boolean = manywho.settings.global('navigation.isFixed', this.props.flowKey, true);
+            let isFixedFooter: boolean = manywho.settings.global('outcomes.isFixed', this.props.flowKey, false);
             
             const navElement = React.createElement(manywho.component.getByName('navigation'), { 
                 id: manywho.model.getDefaultNavigationId(this.props.flowKey), 
@@ -49,6 +49,9 @@ declare var manywho: any;
 
             let outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);
             let fixedFooter = null;
+
+            if (attributes != null && manywho.utils.isEqual(attributes.outcomes, "fixed", true))
+                isFixedFooter = true;
 
             if (isFixedFooter) {
                 fixedFooter = React.createElement(manywho.component.getByName('footer'), { flowKey: this.props.flowKey }, outcomeElements);

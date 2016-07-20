@@ -55,7 +55,8 @@ manywho.settings = (function (manywho, $) {
         },
         errorMessage: 'Whoops, something went wrong inside ManyWho - if this keeps happening, contact us at support@manywho.com',
         outcomes: {
-            display: null
+            display: null,
+            isFixed: false,
         },
         shortcuts: {
             progressOnEnter: true
