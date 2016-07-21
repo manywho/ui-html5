@@ -62,7 +62,12 @@ manywho.settings = (function (manywho, $) {
             progressOnEnter: true
         },
         isFullWidth: false,
-        collapsible: false,
+        collapsible: {
+            default: {
+                enabled: true,
+                collapsed: false
+            }
+        },
         history: false,
         containerSelector: '#manywho',
         syncOnUnload: true

@@ -13,10 +13,32 @@ permissions and limitations under the License.
 
 declare var manywho: any;
 declare var ReactCollapse: any;
+declare var ReactMotion: any;
 
 (function (manywho) {
 
     var container = React.createClass({
+
+        isCollapsible: function(model) {
+            if (model.attributes && model.attributes.isCollapsible != null)
+                return manywho.utils.isEqual(model.attributes.isCollapsible, 'true', true);
+
+            let isCollapsible = manywho.settings.global('collapsible', this.props.flowKey, null);
+            
+            if (isCollapsible === null)
+                return false;
+
+            if (typeof isCollapsible === 'boolean')
+                return isCollapsible;
+
+            if (typeof isCollapsible === 'object') {
+                const settings = isCollapsible[model.containerType.toLowerCase()] || isCollapsible.default;
+                if (settings)
+                    return settings.enabled;
+            }
+
+            return false;
+        },
 
         onToggle: function(e) {
             this.setState({ isCollapsed: !this.state.isCollapsed });
@@ -40,10 +62,16 @@ declare var ReactCollapse: any;
 
             if (isCollapsed == null)
                 if (model.attributes && model.attributes.isCollapsed != null)
-                    isCollapsed = manywho.utils.isEqual(model.attributes.isCollapsible, 'true', true);
+                    isCollapsed = manywho.utils.isEqual(model.attributes.isCollapsed, 'true', true);
 
-            if (isCollapsed == null)
-                isCollapsed = manywho.settings.global('collapsed', this.props.flowKey, false);
+            if (isCollapsed == null) {
+                const collapsible = manywho.settings.global('collapsible', this.props.flowKey, false);
+                if (typeof collapsible === 'object') {
+                    const settings = collapsible[model.containerType.toLowerCase()] || collapsible.default;
+                    if (settings)
+                        isCollapsed = settings.collapsed;
+                }
+            }
 
             this.setState({ isCollapsed: isCollapsed });
         },
@@ -56,12 +84,7 @@ declare var ReactCollapse: any;
             const children = manywho.model.getChildren(this.props.id, this.props.flowKey);
             const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             const outcomeButtons = outcomes && outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
-            
-            let isCollapsible = manywho.settings.global('collapsible', this.props.flowKey, false);
-            
-            if (model.attributes && model.attributes.isCollapsible != null)
-                isCollapsible = manywho.utils.isEqual(model.attributes.isCollapsible, 'true', true);
-
+            const isCollapsible = this.isCollapsible(model);
             let label = null;
             
             if (model.label) {
@@ -79,12 +102,19 @@ declare var ReactCollapse: any;
             if (!this.props.isDesignTime && !model.isVisible)
                 className += ' hidden';
 
-            return <div className={className} id={this.props.id}>
-                {label}
-                <ReactCollapse isOpened={!this.state.isCollapsed} keepCollapsedContent={true}>
+            let content = null;
+
+            if (isCollapsible && model.label)
+                content = <ReactCollapse isOpened={!this.state.isCollapsed} keepCollapsedContent={true} springConfig={ReactMotion.presets.gentle}>
                     {React.createElement(manywho.component.getByName('mw-' + model.containerType), this.props)}
                     {outcomeButtons}
                 </ReactCollapse>
+            else
+                content = [React.createElement(manywho.component.getByName('mw-' + model.containerType), this.props), outcomeButtons]
+
+            return <div className={className} id={this.props.id}>
+                {label}
+                {content}
             </div>
         }
 
