@@ -40,21 +40,45 @@ declare var ReactMotion: any;
             return false;
         },
 
+        getCollapseGroupKey: function(group) {
+            return `${group}-${manywho.utils.extractTenantId(this.props.flowKey)}-${manywho.utils.extractFlowId(this.props.flowKey)}-${manywho.utils.extractFlowVersionId(this.props.flowKey)}`;
+        },
+
+        getCollapseGroup: function(model) {
+            const collapsible = manywho.settings.global('collapsible', this.props.flowKey, false);
+            let settings = null;
+
+            if (typeof collapsible === 'object')
+                settings = collapsible[model.containerType.toLowerCase()] || collapsible.default;
+
+            if (settings && settings.group)
+                return settings.group;
+
+            if (model.attributes && model.attributes.collapseGroup != null)
+                return model.attributes.collapseGroup;
+        
+            return null;
+        },
+
         onToggle: function(e) {
             this.setState({ isCollapsed: !this.state.isCollapsed });
 
             const model = manywho.model.getContainer(this.props.id, this.props.flowKey);
+            const collapseGroup = this.getCollapseGroup(model);
 
-            if (model.attributes && model.attributes.collapseGroup != null)
-                localStorage.setItem(`${model.attributes.collapseGroup}-${this.props.flowKey}`, JSON.stringify(!this.state.isCollapsed));
+            if (collapseGroup) {
+                localStorage.setItem(this.getCollapseGroupKey(collapseGroup), JSON.stringify(!this.state.isCollapsed));
+                manywho.engine.render(this.props.flowKey);
+            }
         },
 
         componentWillMount: function() {
             const model = manywho.model.getContainer(this.props.id, this.props.flowKey);
+            const collapseGroup = this.getCollapseGroup(model);
             let isCollapsed = null;
 
-            if (model.attributes && model.attributes.collapseGroup != null) {
-                var isGroupCollapsed = localStorage.getItem(`${model.attributes.collapseGroup}-${this.props.flowKey}`);
+            if (collapseGroup) {
+                const isGroupCollapsed = localStorage.getItem(this.getCollapseGroupKey(collapseGroup));
 
                 if (!manywho.utils.isNullOrWhitespace(isGroupCollapsed))
                     isCollapsed = JSON.parse(isGroupCollapsed);
@@ -74,6 +98,18 @@ declare var ReactMotion: any;
             }
 
             this.setState({ isCollapsed: isCollapsed });
+        },
+
+        componentWillReceiveProps(nextProps) {
+            const model = manywho.model.getContainer(this.props.id, this.props.flowKey);
+            const collapseGroup = this.getCollapseGroup(model);
+
+            if (collapseGroup) {
+                const isGroupCollapsed = localStorage.getItem(this.getCollapseGroupKey(collapseGroup));
+
+                if (!manywho.utils.isNullOrWhitespace(isGroupCollapsed))
+                    this.setState({ isCollapsed: JSON.parse(isGroupCollapsed) });
+            }
         },
 
         render: function () {
