@@ -65,7 +65,7 @@ declare var ReactCollapse: any;
             let label = null;
             
             if (model.label) {
-                label = <h3>model.label</h3>
+                label = <h3>{model.label}</h3>
                 
                 if (isCollapsible) {
                     let toggleIcon = (this.state.isCollapsed) ? 'plus' : 'minus';
