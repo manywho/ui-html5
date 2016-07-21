@@ -27,7 +27,7 @@ declare var manywho: any;
 
     });
 
-    manywho.component.registercontainer('inline_flow', inline);
+    manywho.component.registerContainer('inline_flow', inline);
 
     manywho.styling.registerContainer('inline_flow', (item, container) => {
         return ['pull-left'];
