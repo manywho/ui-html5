@@ -61,6 +61,10 @@ body {
 
     .mw-container {
         margin-bottom: @container-margin;
+
+        & > h3 > .glyphicon {
+            font-size: 75%;
+        }
     }
 
     .main-container {
@@ -96,14 +100,6 @@ body {
         margin-right: 0 !important;
     }
 
-    .mw-vertical_flow {
-        .mw-container;
-    }
-
-    .mw-horizontal_flow {
-        .mw-container;
-    }
-
     .mw-vertical_flow:last-child {
         margin-bottom: 0;
     }
@@ -111,10 +107,6 @@ body {
     .mw-horizontal_flow > div > .row > * {
         margin-bottom: 0;
         padding-left: 0;
-    }
-
-    .mw-inline_flow {
-        .mw-container;
     }
 
     .mw-inline_flow > div > * {
