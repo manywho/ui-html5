@@ -43,7 +43,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
     onRest() {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        if (!model.objectDataRequest && !model.fileDataRequest)
+        if (this.props.objectData)
             this.setState({ flip: true });
     }
 
