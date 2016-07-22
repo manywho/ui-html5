@@ -251,6 +251,7 @@ permissions and limitations under the License.
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+            var value = (state) ? state.contentValue : model.contentValue;
             var isValid = true;
 
             if (typeof model.isValid !== 'undefined' && model.isValid == false) {
@@ -263,13 +264,13 @@ permissions and limitations under the License.
                 maxLength: model.maxSize,
                 cols: model.width,
                 rows: model.height,
-                value: state.contentValue
+                value: value
             };
 
             attributes['data-flowkey'] = this.props.flowKey;
 
-            if (!this.props.isDesignTime && state)
-                attributes.defaultValue = state.contentValue;
+            if (!this.props.isDesignTime)
+                attributes.defaultValue = value;
 
             if (!model.isEnabled)
                 attributes.disabled = 'disabled';
