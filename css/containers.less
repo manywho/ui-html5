@@ -62,7 +62,7 @@ body {
     .mw-container {
         margin-bottom: @container-margin;
 
-        & > h3 { 
+        & > h3 {
             cursor: pointer;
 
             & > .glyphicon {
@@ -77,9 +77,16 @@ body {
 
     .main-container {
         display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    .main-container-inner {
+        display: flex;
         flex-direction: column;
         flex-grow: 1;
         overflow: hidden;
+        position: relative;
     }
 
     .main-scroller {
@@ -171,6 +178,9 @@ body {
         margin: 0;
     }
 
+    .auto-width {
+        width: auto;
+    }
 }
 
 @media(max-width: 768px) {

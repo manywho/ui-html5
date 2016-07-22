@@ -59,35 +59,33 @@ declare var manywho: any;
             }
             
             let classNames = 'main';
-
             classNames += (manywho.settings.global('isFullWidth', this.props.flowKey, false)) ? ' container-fluid full-width' : ' container';
-                
-            if (manywho.settings.isDebugEnabled(this.props.flowKey))
-                classNames += ' main-debug';
 
-            if (manywho.settings.global('history', this.props.flowKey))
-                classNames += ' main-history';
+            if (manywho.settings.isDebugEnabled(this.props.flowKey) || manywho.settings.global('history', this.props.flowKey))
+                classNames += ' auto-width';
 
             return (<div className="main-container">
-                        {(isFixedNav) ? navElement : null}
-                        <div className="main-scroller">
-                            {(isFixedNav) ? null : navElement}
-                            <div className={classNames} onKeyUp={this.onEnter} ref="main">
-                                <h2 className="page-label">{manywho.model.getLabel(this.props.flowKey)}</h2>
-                                {componentElements}
-                                {outcomeElements}
-                                {React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey })}
-                                {React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey })}
-                                {React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })}
+                        <div className="main-container-inner">
+                            {(isFixedNav) ? navElement : null}
+                            <div className="main-scroller">
+                                {(isFixedNav) ? null : navElement}
+                                <div className={classNames} onKeyUp={this.onEnter} ref="main">
+                                    <h2 className="page-label">{manywho.model.getLabel(this.props.flowKey)}</h2>
+                                    {componentElements}
+                                    {outcomeElements}
+                                    {React.createElement(manywho.component.getByName('status'), { flowKey: this.props.flowKey })}
+                                    {React.createElement(manywho.component.getByName('voting'), { flowKey: this.props.flowKey })}
+                                    {React.createElement(manywho.component.getByName('feed'), { flowKey: this.props.flowKey })}
+                                </div>                                
                             </div>
-                            {React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey })}
-                            {React.createElement(manywho.component.getByName('history'), { flowKey: this.props.flowKey })}
+                            {(isFixedFooter) ? fixedFooter : null}
                             {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'left' })}
                             {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'center' })}
-                            {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' })}
+                            {React.createElement(manywho.component.getByName('notifications'), { flowKey: this.props.flowKey, position: 'right' })}    
                             {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)}
                         </div>
-                        {(isFixedFooter) ? fixedFooter : null}
+                        {React.createElement(manywho.component.getByName('debug'), { flowKey: this.props.flowKey })}
+                        {React.createElement(manywho.component.getByName('history'), { flowKey: this.props.flowKey })}
                     </div>);
         }
     });

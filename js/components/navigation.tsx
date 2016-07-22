@@ -120,12 +120,6 @@ declare var manywho: any;
                 if (manywho.settings.global('navigation.isWizard', this.props.flowKey, true))
                     className += ' navbar-wizard';
 
-                if (manywho.settings.isDebugEnabled(this.props.flowKey))
-                    className += ' nav-debug';
-
-                if (manywho.settings.global('history', this.props.flowKey))
-                    className += ' nav-history';
-
                 let innerClassName = '';
 
                 if (!this.props.isFullWidth)
