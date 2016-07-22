@@ -188,13 +188,13 @@
             if (!manywho.utils.isNullOrWhitespace(this.state.passwordError))
                 passwordFormClasses.push('has-error');
 
-            return React.DOM.div({ className: 'mw-vertical_flow clearfix'}, [
-                React.DOM.div({ className: 'mw-inline_flow clearfix'},
+            return React.DOM.div({ className: 'mw-vertical_flow mw-container clearfix'}, [
+                React.DOM.div({ className: 'mw-inline_flow mw-container clearfix'},
                     React.DOM.div({ className: 'pull-left mw-presentation'},
                         React.DOM.span({}, ['Directory: ', React.DOM.strong({}, this.props.directoryName)])
                     )
                 ),
-                React.DOM.div({ className: 'mw-inline_flow clearfix'},
+                React.DOM.div({ className: 'mw-inline_flow mw-container clearfix'},
                     React.DOM.div({ className: 'clearfix' },
                         React.DOM.div({ className: usernameFormClasses.join(' ') }, [
                             React.DOM.label({ htmlFor: 'mw-username' }, [
@@ -206,7 +206,7 @@
                         ])
                     )
                 ),
-                React.DOM.div({ className: 'mw-inline_flow clearfix'}, [
+                React.DOM.div({ className: 'mw-inline_flow mw-container clearfix'}, [
                     React.DOM.div({ className: 'clearfix' }, [
                         React.DOM.div({ className: passwordFormClasses.join(' ')}, [
                             React.DOM.label({ htmlFor: 'mw-password' }, [
