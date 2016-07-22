@@ -64,7 +64,7 @@ manywho.settings = (function (manywho, $) {
         isFullWidth: false,
         collapsible: {
             default: {
-                enabled: true,
+                enabled: false,
                 collapsed: false,
                 group: null
             }
