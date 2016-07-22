@@ -101,7 +101,7 @@ declare var $: any;
     manywho.component.registerContainer('group', group);
 
     manywho.styling.registerContainer('group', (item, container) => {
-        return ['tab-pane'];
+        return ['tab-pane', 'label-hidden'];
     });
 
 }(manywho));
