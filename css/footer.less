@@ -11,25 +11,23 @@ permissions and limitations under the License.
 
 .mw-bs {
 
-    .footer-fixed-bottom {
-        width: 100%;
-        overflow: hidden;
-        padding-top: 1em
+    .mw-footer {
+        flex-shrink: 0;
+        padding: 1em 1em 0 1em;
     }
 
-    .footer-fixed {
-        position: fixed;
-        bottom: 0;
+    .mw-footer:empty {
+        display: none;
     }
 
-    .footer-embedded {
-        overflow: hidden;
-        position: absolute;
-        bottom: 0;
+    .mw-footer.container {
+        padding-left: 0;
     }
 
-    .has-footer {
-        padding-bottom: 3em;
+    .mw-footer.container-fluid {
+        align-self: stretch;
+        margin-left: 0;
+        margin-right: 0;
     }
 
 }

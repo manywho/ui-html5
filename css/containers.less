@@ -11,7 +11,8 @@ permissions and limitations under the License.
 
 @container-margin: 20px;
 
-html, body {
+html,
+body {
     width: 100%;
 }
 
@@ -20,31 +21,31 @@ body {
 }
 
 #manywho {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 500px;
+    height: 100%;
+    min-height: 500px;
+    position: relative;
+    width: 100%;
 }
 
 .flow-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    top: 0;
     bottom: 0;
+    display: flex;
+    height: 100%;
     left: 0;
+    position: relative;
     right: 0;
+    top: 0;
+    width: 100%;
 }
 
 .modal-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
     bottom: 0;
+    height: 100%;
     left: 0;
+    position: absolute;
     right: 0;
-
+    top: 0;
+    width: 100%;
 }
 
 .mw-bs {
@@ -60,9 +61,43 @@ body {
 
     .mw-container {
         margin-bottom: @container-margin;
+
+        & > h3 {
+            cursor: pointer;
+
+            & > .glyphicon {
+                font-size: 75%;
+            }
+        }
+
+        .label-hidden > h3 {
+            display: none;
+        }
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    .main-container-inner {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .main-scroller {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow-y: auto;
     }
 
     .main {
+        flex-grow: 1;
         margin-bottom: @container-margin;
     }
 
@@ -71,21 +106,13 @@ body {
     }
 
     .main-empty:nth-of-type(1) {
-        margin-top: 0;
         margin-bottom: 0;
+        margin-top: 0;
     }
 
     .row {
-        margin-right: 0 !important;
         margin-left: 0 !important;
-    }
-
-    .mw-vertical_flow {
-        .mw-container;
-    }
-
-    .mw-horizontal_flow {
-        .mw-container;
+        margin-right: 0 !important;
     }
 
     .mw-vertical_flow:last-child {
@@ -93,12 +120,8 @@ body {
     }
 
     .mw-horizontal_flow > div > .row > * {
-        padding-left: 0;
         margin-bottom: 0;
-    }
-
-    .mw-inline_flow {
-        .mw-container;
+        padding-left: 0;
     }
 
     .mw-inline_flow > div > * {
@@ -129,8 +152,8 @@ body {
 
     .toggle-icon {
         font-size: 0.5em;
-        margin-top: -0.5em;
         margin-right: 0.6em;
+        margin-top: -0.5em;
         vertical-align: middle;
     }
 
@@ -140,20 +163,24 @@ body {
     }
 
     .collapsed-container {
+        overflow: hidden;
         transition: height 0.3s;
         transition-timing-function: ease-in;
-        overflow: hidden;
     }
 
     .page-label {
+        display: none;
         margin-top: 0;
     }
 
     .page-label:empty {
-        margin: 0;
         display: none;
+        margin: 0;
     }
 
+    .auto-width {
+        width: auto;
+    }
 }
 
 @media(max-width: 768px) {

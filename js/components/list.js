@@ -48,7 +48,7 @@
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            return React.DOM.div({ className: classes.join(' ') }, [
+            return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                 React.DOM.label(null, model.label ),
                 list,
                 outcomeButtons,

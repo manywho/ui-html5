@@ -29,7 +29,7 @@
 
             }
 
-            return React.DOM.div({ className: classes.join(' ') }, [
+            return React.DOM.div({ className: classes.join(' '), id: this.props.id }, [
                 React.DOM.img({ className: 'img-responsive' , src: model.imageUri, alt: model.developerName, id: this.props.id }, null),
                 outcomeButtons
             ]);

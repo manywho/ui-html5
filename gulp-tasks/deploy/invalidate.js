@@ -9,7 +9,7 @@ module.exports = function(gulp, plugins) {
             InvalidationBatch: {
                 CallerReference: 'deploy-' + Math.random(),
                 Paths: {
-                    Quantity: 2,
+                    Quantity: 3,
                     Items: ['/hashes.json', '/js/vendor/vendor.json', '/js/loader.min.js']
                 }
             }
@@ -22,12 +22,8 @@ module.exports = function(gulp, plugins) {
         });
 
         cloudfront.createInvalidation(params, function (err, data) {
-
             if (err)
                 console.log(err, err.stack);
-
-            cb();
-
         });
     }
 }

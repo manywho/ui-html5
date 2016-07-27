@@ -1,5 +1,6 @@
 {
     "importantRule": false,
     "zeroUnit": false,
-    "trailingWhitespace": false
+    "qualifyingElement": false,
+    "idSelector": false
 }

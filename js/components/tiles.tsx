@@ -43,7 +43,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
     onRest() {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        if (!model.objectDataRequest && !model.fileDataRequest)
+        if (this.props.objectData)
             this.setState({ flip: true });
     }
 
@@ -82,12 +82,18 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     render() {
         manywho.log.info('Rendering Tiles: ' + this.props.id);
 
+        if (this.props.isDesignTime)
+            return null;
+
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const outcomes: any = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
         const columns: Array<any> = manywho.component.getDisplayColumns(model.columns) || [];
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, "tiles", this.props.flowKey).join(' ');
+
+        if (model.isVisible == false)
+            className += ' hidden';
 
         let labelElement = null;
         if (!manywho.utils.isNullOrWhitespace(model.label))
@@ -131,7 +137,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         const deleteOutcome: any = outcomes && outcomes
             .filter((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)[0];
 
-        return (<div className={className} ref="container">
+        return (<div className={className} id={this.props.id} ref="container">
             {labelElement}
             {headerElement}
             <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>
@@ -140,10 +146,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                     
                     return (<div className="mw-tiles-items">
                         {items.map((item, index) => {
-                            if (state.loading || !this.state.flip)
-                                return <div className="mw-tiles-item-container" key={index} style={{ transform: transform }}></div> 
+                            const key: string = `${this.props.page.toString()}-${index}`;
 
-                            return (<div className="mw-tiles-item-container" key={index} style={{ transform: transform }} ref="items">
+                            if (state.loading || !this.state.flip)
+                                return <div className="mw-tiles-item-container" key={key} style={{ transform: transform }}></div> 
+
+                            return (<div className="mw-tiles-item-container" key={key} style={{ transform: transform }} ref="items">
                                 <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
                                     {interpolatingStyle => {
                                         const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;

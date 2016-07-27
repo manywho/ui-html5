@@ -199,7 +199,7 @@ declare var manywho : any;
             if (model.isVisible == false)
                 classNames += ' hidden';
 
-            classNames = classNames.concat(manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey));
+            classNames += ' ' + manywho.styling.getClasses(this.props.parentId, this.props.id, "table", this.props.flowKey).join(' ');
 
             if (model.attributes && model.attributes.classes)
                 classNames += ' ' + model.attributes.classes;
@@ -221,10 +221,10 @@ declare var manywho : any;
                 refresh: this.props.refresh
             });
 
-            return <div className={classNames}>
+            return <div className={classNames} id={this.props.id}>
                 {labelElement}
                 {validationElement}
-                <div className={this.state.isVisible ? '' : ' hidden'}>
+                <div className={'clearfix' + (this.state.isVisible ? '' : ' hidden')}>
                     {fileUpload}
                     {headerElement}
                     {contentElement}

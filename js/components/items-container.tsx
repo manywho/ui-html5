@@ -130,6 +130,11 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
     }
 
     clearSelection() {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+        if (model.objectData)
+            model.objectData.forEach((item) => { item.isSelected = false });
+        
         manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
         this.forceUpdate();
     }

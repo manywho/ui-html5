@@ -54,12 +54,21 @@ manywho.settings = (function (manywho, $) {
             toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage'
         },
         errorMessage: 'Whoops, something went wrong inside ManyWho - if this keeps happening, contact us at support@manywho.com',
-        outcomes: null,
+        outcomes: {
+            display: null,
+            isFixed: false,
+        },
         shortcuts: {
             progressOnEnter: true
         },
         isFullWidth: false,
-        collapsible: false,
+        collapsible: {
+            default: {
+                enabled: false,
+                collapsed: false,
+                group: null
+            }
+        },
         history: false,
         containerSelector: '#manywho',
         syncOnUnload: true
