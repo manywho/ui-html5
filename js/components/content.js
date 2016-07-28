@@ -29,7 +29,7 @@ permissions and limitations under the License.
                 });
 
             tinymce.init({
-                selector: 'textarea#' + this.props.id,
+                selector: 'textarea#content-' + this.props.id,
                 plugins: manywho.settings.global('richtext.plugins', this.props.flowKey, []),
                 external_plugins: manywho.settings.global('richtext.external_plugins', this.props.flowKey, []),
                 width: model.width * 19, // Multiply the width by a "best guess" font-size as the manywho width is columns and tinymce width is pixels
@@ -144,7 +144,7 @@ permissions and limitations under the License.
 
         componentWillUnmount: function () {
             if (this.editor)
-                tinymce.remove('textarea#' + this.props.id);
+                tinymce.remove('textarea#content-' + this.props.id);
         },
 
         handleChange: function (e) {
@@ -259,7 +259,7 @@ permissions and limitations under the License.
             }
 
             var attributes = {
-                id: this.props.id,
+                id: 'content-' + this.props.id,
                 placeholder: model.hintValue,
                 maxLength: model.maxSize,
                 cols: model.width,
@@ -289,7 +289,7 @@ permissions and limitations under the License.
             .concat(manywho.styling.getClasses(this.props.parentId, this.props.id, 'content', this.props.flowKey))
             .join(' ');
 
-            var childElements = [React.DOM.label({ htmlFor: this.props.id }, [
+            var childElements = [React.DOM.label({ htmlFor: 'content-' + this.props.id }, [
                     model.label,
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),

@@ -50,8 +50,8 @@ declare var manywho: any;
             let outcomeElements = manywho.component.getOutcomes(outcomes, this.props.flowKey);
             let fixedFooter = null;
 
-            if (attributes != null && manywho.utils.isEqual(attributes.outcomes, "fixed", true))
-                isFixedFooter = true;
+            if (attributes != null && typeof attributes.outcomes !== 'undefined')
+                isFixedFooter = manywho.utils.isEqual(attributes.outcomes, "fixed", false);
 
             if (isFixedFooter) {
                 fixedFooter = React.createElement(manywho.component.getByName('footer'), { flowKey: this.props.flowKey }, outcomeElements);
