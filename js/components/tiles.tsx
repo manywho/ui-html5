@@ -68,13 +68,22 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         if (columns.length > 1)
             content = item.properties.find((property) => property.typeElementPropertyId == columns[1].typeElementPropertyId).contentValue;
         
+        let footer: Array<JSX.Element> = null;
+        if (columns.length > 2)
+            footer = columns.map((column, index) => {
+                if (index > 1) {
+                    const property = item.properties.find((property) => property.typeElementPropertyId == column.typeElementPropertyId);
+                    return <li><strong>{property.developerName}</strong>: {property.contentValue}</li>
+                }
+            });
+
         return (<div className={className} onClick={this.onSelect} id={item.externalId}>
             <div className="mw-tiles-item-header">
                 <h3>{header}</h3>
                 {deleteOutcomeElement}
             </div>
-            <div className="mw-tiles-item-content">{content}</div>            
-            <div className="mw-tiles-item-footer"></div>
+            <div className="mw-tiles-item-content">{content}</div>
+            <ul className="mw-tiles-item-footer list-unstyled">{footer}</ul>
             <div className="mw-tiles-item-outcomes">{outcomes}</div>
         </div>);
     }
