@@ -1,30 +1,30 @@
 /* Stolen from: http://davidwalsh.name/css-flip */
 .mw-flip {
 
-	&.flip-container {
+	& > .flip-container {
 		perspective: 1000px;
 	}
 
-	&.flip-container,
+	& > .flip-container,
 	.front,
 	.back {
 		height: 250px;
 		width: 250px;
 	}
 
-	&.rotateY .flipper {
+	& > .flip-container.rotateY .flipper {
 		transform: rotateY(180deg);
 	    transform-origin: 50% 100%;
 	}
 
-	&.rotateX .flipper {
+	& > .flip-container.rotateX .flipper {
 	  	transform: rotateX(-180deg);
 	    transform-origin: 100% 50%;
 	}
 
 	.flipper {
 	  	position: relative;
-		  transform-style: preserve-3d;
+		transform-style: preserve-3d;
 		transition: 0.6s;
 	}
 

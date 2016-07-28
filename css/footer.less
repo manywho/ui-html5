@@ -12,7 +12,12 @@ permissions and limitations under the License.
 .mw-bs {
 
     .mw-footer {
-        margin-top: 1em;
+        flex-shrink: 0;
+        padding: 1em 1em 0 1em;
+    }
+
+    .mw-footer:empty {
+        display: none;
     }
 
     .mw-footer.container {
