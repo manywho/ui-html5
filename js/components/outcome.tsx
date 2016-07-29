@@ -159,6 +159,7 @@ declare var React: any;
             const model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
             let className = `outcome btn ${getType(model)} ${getSize(model, this.props.flowKey)}`;
             let content = this.getContent(model, manywho.settings.global('outcomes.display', this.props.flowKey));
+            let uri = null;
 
             if (model.attributes) {
                 if (model.attributes.classes)
@@ -169,14 +170,20 @@ declare var React: any;
 
                 if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND', true)) {
                     className += ' btn-nobackground';
-                }                                     
+                }
+
+                if (model.attributes.uri)
+                    uri = model.attributes.uri;
             }
 
             // Back compat for existing "outcome" attribute on tables
             if (!manywho.utils.isNullOrWhitespace(this.props.display))
                 content = this.getContent(model, this.props.display);
 
-            return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
+            if (uri)
+                return <a id={this.props.id} className={className} title={model.label} href={uri} target="_blank">{content}</a>
+            else
+                return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
         }
 
     });

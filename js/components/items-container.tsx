@@ -43,9 +43,26 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             return;
 
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [objectDataId]) }, this.props.flowKey, true);
+        const objectData = manywho.component.getSelectedRows(model, [objectDataId]);
+
+        manywho.state.setComponent(model.id, { objectData:  objectData }, this.props.flowKey, true);
 
         const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
+
+        if (outcome.attributes) {
+            if (outcome.attributes.uri) {
+                window.open(outcome.attributes.uri, '_blank');
+                return;
+            }
+
+            if (outcome.attributes.uriTypeElementPropertyId) {
+                const property = objectData[0].properties.filter((prop) => manywho.utils.isEqual(prop.typeElementPropertyId, outcome.attributes.uriTypeElementPropertyId, true))[0];
+                if (property) {
+                    window.open(property.contentValue, '_blank');
+                    return;
+                }
+            }
+        }
 
         manywho.engine.move(outcome, this.props.flowKey)
             .then(() => {
