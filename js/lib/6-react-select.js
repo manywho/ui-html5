@@ -552,8 +552,8 @@ var Select = React.createClass({
 			case 8:
 				// backspace
 				if (!this.state.inputValue && this.props.backspaceRemoves) {
-					event.preventDefault();
 					this.popValue();
+					return;
 				}
 				return;
 			case 9:
