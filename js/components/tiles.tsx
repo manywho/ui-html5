@@ -5,7 +5,8 @@ declare var manywho: any;
 declare var ReactMotion: any;
 
 interface ITilesState {
-    flip: boolean
+    flip: boolean,
+    isContentElementVisible: boolean;
 }
 
 class Tiles extends React.Component<ITilesProps, ITilesState> {
@@ -13,7 +14,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     constructor(props: ITilesProps){
         super(props);
 
-        this.state = { flip: false };
+        this.state = { flip: false, isContentElementVisible: false };
 
         this.onSelect = this.onSelect.bind(this);
         this.onOutcome = this.onOutcome.bind(this);
@@ -43,8 +44,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
     onRest() {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+        
+        if (this.props.contentElement)
+            this.setState({ flip: false, isContentElementVisible: true });
+
         if (this.props.objectData)
-            this.setState({ flip: true });
+            this.setState({ flip: true, isContentElementVisible: false });        
     }
 
     renderItem(item: any, columns: Array<any>, outcomes: Array<any>, deleteOutcome: any) : JSX.Element {
@@ -117,16 +122,9 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             refresh: this.props.refresh
         });
 
-        if (this.props.contentElement)
-            return (<div className="mw-tiles">
-                {labelElement}
-                {headerElement}
-                {this.props.contentElement}
-            </div>);
-
         let items = this.props.objectData;
 
-        if (state.loading && manywho.utils.isEmptyObjectData(items)) {
+        if (!this.props.objectData) {
             items = [];
             for (var i = 1; i <= manywho.settings.global('paging.tiles', this.props.flowKey) + 1; i++) {
                 items.push(i);
@@ -136,7 +134,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         if (this.props.page > 1)
             items.unshift({ type: 'prev' });
 
-        if (this.props.hasMoreResults)
+        if (this.props.hasMoreResults === true)
             items = items.concat([{ type: 'next' }]);
 
         const footerOutcomes: Array<JSX.Element> = outcomes && outcomes
@@ -146,10 +144,12 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
         const deleteOutcome: any = outcomes && outcomes
             .filter((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)[0];
 
-        return (<div className={className} id={this.props.id} ref="container">
-            {labelElement}
-            {headerElement}
-            <ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>
+        let contentElement = null;
+        
+        if (this.state.isContentElementVisible && this.props.contentElement)
+            contentElement = this.props.contentElement;
+        else {
+            contentElement = (<ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>
                 {interpolatingStyle => {
                     const transform : string = `scale(${interpolatingStyle.scale},${interpolatingStyle.scale})`;
                     
@@ -175,7 +175,13 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                         })}
                     </div>) 
                 }}
-            </ReactMotion.Motion>
+            </ReactMotion.Motion>);
+        }
+
+        return (<div className={className} id={this.props.id} ref="container">
+            {labelElement}
+            {headerElement}
+            {contentElement}
         </div>);
     }
 

@@ -21,6 +21,7 @@ manywho.settings = (function (manywho, $) {
             joining: 'Joining',
             sending: 'Sending',
             returnToParent: 'Return To Parent',
+            noResults: 'No Results',
             status: null
         },
         paging: {

@@ -240,6 +240,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         if (columns.length == 0)
             contentElement = <div className="mw-items-error"><p className="lead">No display columns have been defined</p></div>
 
+        if (!state.loading && (!objectData || objectData.length == 0))
+            contentElement = <div className="mw-items-empty"><p className="lead">{manywho.settings.global('localization.noResults', this.props.flowKey)}</p></div>
+
         const props = {
             id: this.props.id,
             parentId: this.props.parentId,
