@@ -45,14 +45,14 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
         const isChecked = (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true;
 
-        let shape = 'round';// manywho.settings.global('toggle.shape', this.props.flowKey, null);
+        let shape = manywho.settings.global('toggle.shape', this.props.flowKey, null);
         let background = manywho.settings.global('toggle.background', this.props.flowKey, null);
 
         if (model.attributes) {
-            if (model.attributes.shape)
+            if (typeof model.attributes.shape !== 'undefined')
                 shape = model.attributes.shape;
 
-            if (model.attributes.background)
+            if (typeof model.attributes.background !== 'undefined')
                 background = model.attributes.background;
         }
 

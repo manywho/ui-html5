@@ -3,42 +3,42 @@
     .mw-toggle {
 
         label {
-            position: relative;
             display: inline-block;
-            width: 60px;
             height: 34px;
+            position: relative;
+            width: 60px;
 
             input {
                 display: none;
             }
 
             div {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
+                -webkit-transition: 0.4s;
+                background-color: #cccccc;
                 bottom: 0;
-                background-color: #ccc;
-                -webkit-transition: .4s;
-                transition: .4s;
+                cursor: pointer;
+                left: 0;
+                position: absolute;
+                right: 0;
+                top: 0;
+                transition: 0.4s;
             }
 
             div:before {
-                position: absolute;
-                content: "";
-                height: 26px;
-                width: 26px;
-                left: 4px;
-                bottom: 4px;
+                -webkit-transition: 0.4s;
                 background-color: white;
-                -webkit-transition: .4s;
-                transition: .4s;
+                bottom: 4px;
+                content: '';
+                height: 26px;
+                left: 4px;
+                position: absolute;
+                transition: 0.4s;
+                width: 26px;
             }
 
             input:checked + div:before {
-                -webkit-transform: translateX(26px);
                 -ms-transform: translateX(26px);
+                -webkit-transform: translateX(26px);
                 transform: translateX(26px);
             }
 
