@@ -1,0 +1,77 @@
+/// <reference path="../../typings/index.d.ts" />
+/// <reference path="../interfaces/IComponentProps.ts" />
+
+declare var manywho: any;
+
+interface IToggleState {
+}
+
+class Toggle extends React.Component<IComponentProps, IToggleState> {
+
+    constructor(props: IComponentProps){
+        super(props);
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(e) {
+        manywho.state.setComponent(this.props.id, { contentValue: e.target.checked }, this.props.flowKey, true);
+        this.handleEvent(null);
+        this.forceUpdate();
+    }
+
+    handleEvent(e) {
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
+    }
+
+    render() {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+        manywho.log.info(`Rendering Toggle: ${this.props.id}, ${model.developerName}`);
+
+        const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+        const outcomes: any = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+        const outcomeElements: Array<JSX.Element> = outcomes && outcomes
+            .map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
+
+        let className = (manywho.styling.getClasses(this.props.parentId, this.props.id, 'toggle', this.props.flowKey)).join(' ');
+
+        if (typeof model.isValid !== 'undefined' && model.isValid == false)
+            className += 'has-error';
+
+        if (!model.isVisible)
+            className += 'hidden';
+
+        const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
+        const isChecked = (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true;
+
+        let shape = 'round';// manywho.settings.global('toggle.shape', this.props.flowKey, null);
+        let background = manywho.settings.global('toggle.background', this.props.flowKey, null);
+
+        if (model.attributes) {
+            if (model.attributes.shape)
+                shape = model.attributes.shape;
+
+            if (model.attributes.background)
+                background = model.attributes.background;
+        }
+
+        const sliderClassName = `${shape} ${background}`;
+
+        return <div className={className}>
+            <label>{model.label}</label>
+            <div>
+                <label>
+                    <input type="checkbox" readOnly={!model.isEditable} required={model.isRequired} disabled={!model.isEnabled} checked={isChecked} onChange={this.handleChange} onBlur={this.handleEvent}/>
+                    <div className={sliderClassName}></div>
+                </label>
+            </div>
+            <span className="help-block">{model.validationMessage}</span>
+            <span className="help-block">{model.helpInfo}</span>
+            {outcomeElements}
+        </div>
+    }
+
+}
+
+manywho.component.register('toggle', Toggle);
