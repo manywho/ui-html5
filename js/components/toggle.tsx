@@ -56,12 +56,12 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         const sliderClassName = `${shape} ${background}`;
         const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
-        const props = {
+        const props: any = {
             type: 'checkbox',
             readOnly: !model.isEditable,
             required: model.isRequired,
             disabled: !model.isEnabled,
-            checked: (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true;
+            checked: (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true
         }
 
         if (!this.props.isDesignTime) {
