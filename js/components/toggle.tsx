@@ -42,9 +42,6 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         if (!model.isVisible)
             className += 'hidden';
 
-        const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
-        const isChecked = (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true;
-
         let shape = manywho.settings.global('toggle.shape', this.props.flowKey, null);
         let background = manywho.settings.global('toggle.background', this.props.flowKey, null);
 
@@ -57,12 +54,26 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         }
 
         const sliderClassName = `${shape} ${background}`;
+        const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
+
+        const props = {
+            type: 'checkbox',
+            readOnly: !model.isEditable,
+            required: model.isRequired,
+            disabled: !model.isEnabled,
+            checked: (typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true;
+        }
+
+        if (!this.props.isDesignTime) {
+            props.onChange = this.handleChange;
+            props.onBlur = this.handleEvent;
+        }
 
         return <div className={className}>
             <label>{model.label}</label>
             <div>
                 <label>
-                    <input type="checkbox" readOnly={!model.isEditable} required={model.isRequired} disabled={!model.isEnabled} checked={isChecked} onChange={this.handleChange} onBlur={this.handleEvent}/>
+                    <input {...props} />
                     <div className={sliderClassName}></div>
                 </label>
             </div>
