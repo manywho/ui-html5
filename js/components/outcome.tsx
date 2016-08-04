@@ -9,8 +9,9 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+/// <reference path="../../typings/index.d.ts" />
+
 declare var manywho: any;
-declare var React: any;
 
 (function (manywho) {
 
@@ -152,7 +153,7 @@ declare var React: any;
                 });
         },
 
-        shouldComponentUpdate(nextProps, nextState) {
+        shouldComponentUpdate(nextProps: any, nextState) {
             return this.props.id != nextProps.id;
         },
 

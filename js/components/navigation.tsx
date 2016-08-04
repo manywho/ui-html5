@@ -51,7 +51,7 @@ declare var manywho: any;
         getNavElements: function(items, isTopLevel) {
             var elements = [];
 
-            for (itemId in items) {
+            for (const itemId in items) {
                 var item = items[itemId];
                 var element = null;
 
