@@ -42,18 +42,6 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         if (!model.isVisible)
             className += 'hidden';
 
-        let shape = manywho.settings.global('toggle.shape', this.props.flowKey, null);
-        let background = manywho.settings.global('toggle.background', this.props.flowKey, null);
-
-        if (model.attributes) {
-            if (typeof model.attributes.shape !== 'undefined')
-                shape = model.attributes.shape;
-
-            if (typeof model.attributes.background !== 'undefined')
-                background = model.attributes.background;
-        }
-
-        const sliderClassName = `${shape} ${background}`;
         const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
         const props: any = {
@@ -69,12 +57,31 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
             props.onBlur = this.handleEvent;
         }
 
+        const backgrounds = [null, 'success', 'info', 'warning', 'danger'];
+
+        let shape = manywho.settings.global('toggle.shape', this.props.flowKey, null);
+        let background = manywho.settings.global('toggle.background', this.props.flowKey, null);
+
+        if (model.attributes) {
+            if (typeof model.attributes.shape !== 'undefined')
+                shape = model.attributes.shape;
+
+            if (typeof model.attributes.background !== 'undefined')
+                background = model.attributes.background;
+        }
+
+        const sliderClassName = `${shape} ${background}`;
+        let style = null;
+
+        if (backgrounds.indexOf(background) == -1)
+            style = { background: background }
+
         return <div className={className}>
             <label>{model.label}</label>
             <div>
                 <label>
                     <input {...props} />
-                    <div className={sliderClassName}></div>
+                    <div className={sliderClassName} style={style}></div>
                 </label>
             </div>
             <span className="help-block">{model.validationMessage}</span>
