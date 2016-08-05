@@ -465,27 +465,24 @@ manywho.utils = (function (manywho, $) {
 
         isEmptyObjectData: function(model) {
 
-            if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
-
-                for (prop in model.objectData[0].properties) {
-
-                    if (!manywho.utils.isNullOrWhitespace(model.objectData[0].properties[prop].contentValue)) {
-
-                        return false;
-
-                    }
-
-                }
-
-            }
-            else if (model.objectData) {
-
+            if (model.objectDataRequest && model.objectData && model.objectData.length == 1)
+                return manywho.utils.isPlaceholderObjectData(model.objectData);
+            else if (model.objectData)
                 return false;
 
-            }
-
             return true;
+        },
 
+        isPlaceholderObjectData: function(objectData) {
+            if (objectData.length == 1) {
+                for (prop in objectData[0].properties) {
+                    if (!manywho.utils.isNullOrWhitespace(objectData[0].properties[prop].contentValue))
+                        return false;
+                }
+                return true;
+            }
+            
+            return false;
         },
 
         // Stolen from: https://github.com/johndugan/javascript-debounce/blob/master/debounce.js

@@ -5,8 +5,7 @@ declare var manywho: any;
 declare var ReactMotion: any;
 
 interface ITilesState {
-    flip: boolean,
-    isContentElementVisible: boolean;
+    animation: string;
 }
 
 class Tiles extends React.Component<ITilesProps, ITilesState> {
@@ -14,7 +13,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
     constructor(props: ITilesProps){
         super(props);
 
-        this.state = { flip: false, isContentElementVisible: false };
+        this.state = { animation: 'expand' };
 
         this.onSelect = this.onSelect.bind(this);
         this.onOutcome = this.onOutcome.bind(this);
@@ -44,12 +43,15 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
     onRest() {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        
-        if (this.props.contentElement)
-            this.setState({ flip: false, isContentElementVisible: true });
+        let animation = null;
 
-        if (this.props.objectData)
-            this.setState({ flip: true, isContentElementVisible: false });        
+        if (this.props.contentElement && this.state.animation === 'expand')
+            animation = 'collapse';
+
+        if (this.props.objectData && this.state.animation === 'expand')
+            animation = 'flip';
+
+        setTimeout(() => this.setState({ animation: animation }));
     }
 
     renderItem(item: any, columns: Array<any>, outcomes: Array<any>, deleteOutcome: any) : JSX.Element {
@@ -122,9 +124,9 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             refresh: this.props.refresh
         });
 
-        let items = this.props.objectData;
+        let items = this.props.objectData.map(item => item);
 
-        if (!this.props.objectData) {
+        if (!this.props.objectData || manywho.utils.isPlaceholderObjectData(this.props.objectData)) {
             items = [];
             for (var i = 1; i <= manywho.settings.global('paging.tiles', this.props.flowKey) + 1; i++) {
                 items.push(i);
@@ -146,10 +148,22 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
         let contentElement = null;
         
-        if (this.state.isContentElementVisible && this.props.contentElement)
+        if (!this.state.animation && this.props.contentElement)
             contentElement = this.props.contentElement;
         else {
-            contentElement = (<ReactMotion.Motion defaultStyle={{ scale: 0 }} style={{ scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }} onRest={this.onRest}>
+            let style = null;
+
+            switch (this.state.animation) {
+                case "expand":
+                case "flip":
+                    style = { scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }
+                    break;
+                case "collapse":
+                    style = { scale: ReactMotion.spring(0, ReactMotion.presets.gentle) }
+                    break;
+            }
+
+            contentElement = (<ReactMotion.Motion defaultStyle={{scale: 0}} style={style} onRest={this.onRest}>
                 {interpolatingStyle => {
                     const transform : string = `scale(${interpolatingStyle.scale},${interpolatingStyle.scale})`;
                     
@@ -157,7 +171,7 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
                         {items.map((item, index) => {
                             const key: string = `${this.props.page.toString()}-${index}`;
 
-                            if (state.loading || !this.state.flip)
+                            if (state.loading || this.state.animation !== 'flip')
                                 return <div className="mw-tiles-item-container" key={key} style={{ transform: transform }}></div> 
 
                             return (<div className="mw-tiles-item-container" key={key} style={{ transform: transform }} ref="items">
