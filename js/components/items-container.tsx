@@ -82,8 +82,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
         else if (model.fileDataRequest)
             manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
-        else 
+        else {
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
+            this.forceUpdate();
+        }
     }
 
     search(search: string, clearSelection : boolean) {
@@ -253,13 +255,15 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             onOutcome: this.onOutcome,
             select: this.select,
             selectAll: this.selectAll,
+            clearSelection: this.clearSelection,
             objectData: objectData,
             onSearch: this.search,
             outcomes: outcomes,
             refresh: this.refresh,
             onNext: this.onNext,
             onPrev: this.onPrev,
-            page: state.page || 1
+            page: state.page || 1,
+            limit: limit
         }
 
         switch (model.componentType.toUpperCase()) {
@@ -268,6 +272,8 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
                 return React.createElement(manywho.component.getByName('mw-table'), props);
             case 'TILES':
                 return React.createElement(manywho.component.getByName('mw-tiles'), props);
+            case 'SELECT':
+                return React.createElement(manywho.component.getByName('mw-select'), props);
         }
         
         return null;
@@ -275,4 +281,4 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
 }
 
-manywho.component.register("mw-items-container", ItemsContainer, ['table', 'files', 'tiles']);
+manywho.component.register("mw-items-container", ItemsContainer, ['table', 'files', 'tiles', 'select']);

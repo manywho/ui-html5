@@ -27,7 +27,7 @@ manywho.settings = (function (manywho, $) {
         paging: {
             table: 10,
             files: 10,
-            select: 250,
+            select: 20,
             tiles: 20
         },
         collaboration: {
