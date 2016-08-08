@@ -4,23 +4,17 @@
 declare var manywho: any;
 declare var ReactMotion: any;
 
-interface ITilesState {
-    animation: string;
-}
-
-class Tiles extends React.Component<ITilesProps, ITilesState> {
+class Tiles extends React.Component<ITilesProps, any> {
 
     constructor(props: ITilesProps){
         super(props);
-
-        this.state = { animation: 'expand' };
 
         this.onSelect = this.onSelect.bind(this);
         this.onOutcome = this.onOutcome.bind(this);
         this.onNext = this.onNext.bind(this);
         this.onPrev = this.onPrev.bind(this);
         this.renderItem = this.renderItem.bind(this);
-        this.onRest = this.onRest.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
     onSelect(e) {
@@ -38,20 +32,11 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
 
     onNext() {
         this.props.onNext();
-        setTimeout(() => (this.refs['container'] as HTMLElement).scrollIntoView(true));
+        setTimeout(() => (this.refs['container'] as HTMLElement).scrollIntoView(true));        
     }
 
-    onRest() {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        let animation = null;
-
-        if (this.props.contentElement && this.state.animation === 'expand')
-            animation = 'collapse';
-
-        if (this.props.objectData && this.state.animation === 'expand')
-            animation = 'flip';
-
-        setTimeout(() => this.setState({ animation: animation }));
+    onSearch(search: string, clearSelection : boolean) {
+        this.props.onSearch(search, clearSelection);
     }
 
     renderItem(item: any, columns: Array<any>, outcomes: Array<any>, deleteOutcome: any) : JSX.Element {
@@ -119,25 +104,10 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             flowKey: this.props.flowKey,
             isSearchable: model.isSearchable,
             isRefreshable: (model.objectDataRequest || model.fileDataRequest),
-            onSearch: this.props.onSearch,
+            onSearch: this.onSearch,
             outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowKey),
             refresh: this.props.refresh
         });
-
-        let items = this.props.objectData.map(item => item);
-
-        if (!this.props.objectData || manywho.utils.isPlaceholderObjectData(this.props.objectData)) {
-            items = [];
-            for (var i = 1; i <= manywho.settings.global('paging.tiles', this.props.flowKey) + 1; i++) {
-                items.push(i);
-            }
-        }
-
-        if (this.props.page > 1)
-            items.unshift({ type: 'prev' });
-
-        if (this.props.hasMoreResults === true)
-            items = items.concat([{ type: 'next' }]);
 
         const footerOutcomes: Array<JSX.Element> = outcomes && outcomes
             .filter((outcome) => !manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)
@@ -147,55 +117,46 @@ class Tiles extends React.Component<ITilesProps, ITilesState> {
             .filter((outcome) => manywho.utils.isEqual(outcome.pageActionType, 'Delete', true) && !outcome.isBulkAction)[0];
 
         let contentElement = null;
+        let items = [];
+
+        if (this.props.objectData && !manywho.utils.isPlaceholderObjectData(this.props.objectData)) {
+            items = this.props.objectData.map(item => item);
+
+            if (this.props.page > 1)
+                items.unshift({ type: 'prev' });
+
+            if (this.props.hasMoreResults === true)
+                items = items.concat([{ type: 'next' }]);
+        }
         
-        if (!this.state.animation && this.props.contentElement)
+        if (this.props.contentElement)
             contentElement = this.props.contentElement;
         else {
-            let style = null;
+            contentElement = (<div className="mw-tiles-items">
+                {items.map((item, index) => {
+                    const key: string = `${this.props.page.toString()}-${index}`;
 
-            switch (this.state.animation) {
-                case "expand":
-                case "flip":
-                    style = { scale: ReactMotion.spring(1, ReactMotion.presets.gentle) }
-                    break;
-                case "collapse":
-                    style = { scale: ReactMotion.spring(0, ReactMotion.presets.gentle) }
-                    break;
-            }
+                    return (<div className="mw-tiles-item-container" key={key} ref="items">
+                        <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
+                            {interpolatingStyle => {
+                                const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
 
-            contentElement = (<ReactMotion.Motion defaultStyle={{scale: 0}} style={style} onRest={this.onRest}>
-                {interpolatingStyle => {
-                    const transform : string = `scale(${interpolatingStyle.scale},${interpolatingStyle.scale})`;
-                    
-                    return (<div className="mw-tiles-items">
-                        {items.map((item, index) => {
-                            const key: string = `${this.props.page.toString()}-${index}`;
-
-                            if (state.loading || this.state.animation !== 'flip')
-                                return <div className="mw-tiles-item-container" key={key} style={{ transform: transform }}></div> 
-
-                            return (<div className="mw-tiles-item-container" key={key} style={{ transform: transform }} ref="items">
-                                <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
-                                    {interpolatingStyle => {
-                                        const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
-
-                                        return (<div style={{ transform: transform }}>
-                                            <div className="front"></div>
-                                            <div className="back">{this.renderItem(item, columns, footerOutcomes, deleteOutcome)}</div>
-                                        </div>);
-                                    }}
-                                </ReactMotion.Motion>
-                            </div>)                            
-                        })}
-                    </div>) 
-                }}
-            </ReactMotion.Motion>);
+                                return (<div style={{ transform: transform }}>
+                                    <div className="front"></div>
+                                    <div className="back">{this.renderItem(item, columns, footerOutcomes, deleteOutcome)}</div>
+                                </div>);
+                            }}
+                        </ReactMotion.Motion>
+                    </div>)                            
+                })}
+            </div>);
         }
 
         return (<div className={className} id={this.props.id} ref="container">
             {labelElement}
             {headerElement}
             {contentElement}
+            {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message }, null)}
         </div>);
     }
 
