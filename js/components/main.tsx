@@ -23,7 +23,9 @@ declare var manywho: any;
             manywho.utils.removeLoadingIndicator('loader');
 
             if (manywho.settings.global('syncOnUnload', this.props.flowKey, true))
-                window.addEventListener("beforeunload", (event) => manywho.engine.sync(this.props.flowKey));
+                window.addEventListener("beforeunload", (event) => {
+                    manywho.engine.sync(this.props.flowKey)
+                });
         },
 
         render: function () {
