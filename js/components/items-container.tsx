@@ -128,7 +128,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         }
 
         manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-        this.forceUpdate();
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     selectAll(e) {
@@ -144,7 +144,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             });
 
             manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-            this.forceUpdate();
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
         }
     }
 
@@ -155,7 +155,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             model.objectData.forEach((item) => { item.isSelected = false });
         
         manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
-        this.forceUpdate();
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     onNext() {
