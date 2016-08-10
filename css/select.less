@@ -17,16 +17,6 @@ permissions and limitations under the License.
         width: 100%;
     }
 
-    .select-loading-icon {
-        padding-left: 0.5em;
-        padding-top: 4px;
-        width: 50px;
-    }
-
-    .select-loading-icon > .glyphicon {
-        font-size: 30px;
-    }
-
     .Select {
         -moz-box-flex: 1;         /* OLD - Firefox 19- */
         -ms-flex: 1;              /* IE 10 */
@@ -39,6 +29,14 @@ permissions and limitations under the License.
         border-radius: 0;
     }
 
+    .Select-placeholder {
+        line-height: 38px;
+    }
+
+    .Select-input {
+        height: 38px;
+    }
+
     .mw-select.has-error .Select-control {
         border-color: red;
     }
@@ -48,8 +46,13 @@ permissions and limitations under the License.
     }
 
     .select-wrapper .refresh-button {
+        border: 1px solid #cccccc;
         border-bottom-left-radius: 0;
+        border-left: 0;
         border-top-left-radius: 0;
+        box-shadow: none;
+        left: -1px;
+        position: relative;
     }
 
     .mw-select .outcome {

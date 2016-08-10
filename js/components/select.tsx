@@ -22,6 +22,8 @@ interface IDropDownState {
 
 class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
+    debouncedOnSearch = null;
+
     constructor(props) {
         super(props);
 
@@ -32,6 +34,8 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         this.onInputChange = this.onInputChange.bind(this);
         this.onOpen = this.onOpen.bind(this);
         this.isScrollLimit = this.isScrollLimit.bind(this);
+        this.onSearch = this.onSearch.bind(this);
+        this.debouncedOnSearch = manywho.utils.debounce(this.onSearch, 800);
     }
 
     getOptions(objectData) {
@@ -44,15 +48,39 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         });
     }
 
-    onChange(value, selectedValues) {
-        if (selectedValues && selectedValues.length > 0)
-            this.props.select(selectedValues[selectedValues.length -1].value);
+    onChange(selectedValues) {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+        if (model.isMultiSelect && selectedValues && selectedValues.length > 0)
+            this.props.select(selectedValues[selectedValues.length -1].value, true)
+        else if (!model.isMultiSelect && selectedValues)
+            this.props.select(selectedValues.value, true);
         else
-            this.props.clearSelection();
+            this.props.clearSelection(true);
+
+        manywho.component.handleEvent(this, model, this.props.flowKey);
+        
+        setTimeout(() => {
+            this.setState({ search: null, options: this.state.options })
+
+            if (!manywho.utils.isNullOrWhitespace(this.state.search) || model.objectDataRequest || model.fileDataRequest)
+                this.props.onSearch(null, false);
+        });
     }
 
     onInputChange(value) {
-    	this.props.onSearch(value, false);
+        this.setState({ options: this.state.options, search: value });
+
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+        if (model.objectDataRequest || model.fileDataRequest)
+            this.debouncedOnSearch(value);
+        else
+            setTimeout(() => this.onSearch(value));
+    }
+
+    onSearch(search: string) {
+        this.props.onSearch(search, false);
     }
 
     onOpen() {
@@ -76,18 +104,18 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         if (nextProps.objectData && !nextProps.isDesignTime) {
             if (this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: state.search });
+                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: this.state.search });
             else
-                this.setState({ options: this.getOptions(nextProps.objectData), search: state.search });
-
-            if (!manywho.utils.isNullOrWhitespace(state.search))
-               setTimeout(() => (this.refs['select'] as any).setState({ placeholder: null }));
+                this.setState({ options: this.getOptions(nextProps.objectData), search: this.state.search });
         }
+
+        if (this.props.isLoading && !nextProps.isLoading && !manywho.utils.isNullOrWhitespace(this.state.search))
+            setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
     }
 
     componentWillMount() {
         if (this.props.objectData && !this.props.isDesignTime)
-            this.setState({ options: this.getOptions(this.props.objectData ), search: null });
+            this.setState({ options: this.getOptions(this.props.objectData ), search: this.state.search });
     }
 
     render() {
@@ -104,36 +132,41 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         let props: any = {
             multi: model.isMultiSelect,
             disabled: !model.isEnabled || !model.isEditable || (state && state.loading) || this.props.isDesignTime,
-            placeholder: model.hintValue || 'Please select an option',
-            inputProps: {
-                value: this.state.search
-            },
-            isLoading: state.loading
+            placeholder: 'Please select an option'
         };
+
+        if (!manywho.utils.isNullOrWhitespace(model.hintValue))
+            props.placeholder = model.hintValue;
+
+        if (this.state.search)
+            props.placeholder = null;
 
         if (this.props.objectData && !this.props.isDesignTime) {
             props.onChange = this.onChange;
-            props.onInputChange = this.onInputChange;
             props.onFocus = this.onOpen;
+            props.isLoading = (state && (state.loading !== null && typeof state.loading !== 'undefined'))
+            props.onInputChange = this.onInputChange;
+            props.filterOptions = false;
+            props.inputProps = { value: this.state.search };
+            props.openOnFocus = false;
 
-            if (state && state.objectData)
-                value = state.objectData.map((item) => item.externalId);
+            if (state && state.objectData && state.objectData.length > 0)
+                value = this.getOptions(state.objectData);
             else
-                value = this.props.objectData.filter((item) => item.isSelected)
-                                        .map((item) => item.externalId);
+                value = this.getOptions(this.props.objectData.filter((item) => item.isSelected));
 
-            if (value && value.length > 0)
-                value = value.filter((item) => {
-                    return this.state.options.filter((option) => item == option.value).length > 0;
-                })
+            if (value && value.length > 0) {
+                if (!model.isMultiSelect)
+                    value = value[0];
+            }
+            else
+                value = null;
 
             props.options = this.state.options;
             props.value = value;
-        }
 
-        if (this.state.search && this.state.search !== "") {
-            props.placeholder = null;
-            props.inputProps.placeholder = null;
+            if (model.objectDataRequest || model.fileDataRequest)
+                props.openOnInputChange = false;
         }
         
         const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
