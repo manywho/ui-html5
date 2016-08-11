@@ -139,7 +139,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         }
 
         this.updateState(selectedItems, clearSearch);
-        this.forceUpdate();
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     selectAll(e, clearSearch: boolean) {
@@ -155,7 +155,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             });
 
             this.updateState(selectedItems, clearSearch);
-            this.forceUpdate();
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
         }
     }
 
@@ -166,7 +166,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             model.objectData.forEach((item) => { item.isSelected = false });
         
         this.updateState([], clearSearch);
-        this.forceUpdate();
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     onNext() {
