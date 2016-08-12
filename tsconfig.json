@@ -1,0 +1,11 @@
+{
+    "files": [
+        "typings/index.d.ts"
+    ],
+    "compilerOptions": {
+        "pretty": true,
+        "target": "es5",
+        "allowJs": true,
+        "jsx": "react"
+    }
+}

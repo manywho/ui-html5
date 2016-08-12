@@ -1,0 +1,73 @@
+﻿/*!
+Copyright 2015 ManyWho, Inc.
+Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+file except in compliance with the License.
+You may obtain a copy of the License at: http://manywho.com/sharedsource
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+*/
+
+.mw-bs {
+
+    .select-wrapper {
+        display: flex;
+        min-width: 300px;
+        width: 100%;
+    }
+
+    .select-loading-icon {
+        padding-left: 0.5em;
+        padding-top: 4px;
+        width: 50px;
+    }
+
+    .select-loading-icon > .glyphicon {
+        font-size: 30px;
+    }
+
+    .Select {
+        -moz-box-flex: 1;         /* OLD - Firefox 19- */
+        -ms-flex: 1;              /* IE 10 */
+        -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
+        -webkit-flex: 1;          /* Chrome */
+        flex: 1;                  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+    }
+
+    .Select-control {
+        border-radius: 0;
+    }
+
+    .mw-select.has-error .Select-control {
+        border-color: red;
+    }
+
+    .select-wrapper.input-group {
+        display: flex !important;
+    }
+
+    .select-wrapper .refresh-button {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+
+    .mw-select .outcome {
+      margin-right: 1em !important;
+      margin-top: 1em;
+    }
+
+}
+
+@media(max-width: 760px) {
+
+    .mw-bs {
+
+        .select {
+            min-width: 0;
+            width: calc(~"100% - 40px");
+        }
+
+    }
+
+}

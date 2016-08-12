@@ -1,0 +1,112 @@
+.mw-bs {
+
+    .mw-tiles > label {
+        font-size: 1.5em;
+    }
+
+    .mw-tiles-items {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .mw-tiles-item-container {
+        border: 1px solid #cccccc;
+        box-shadow: 8px 8px 19px -2px rgba(219, 215, 219, 1);
+        height: 300px;
+        margin-bottom: 1em;
+        margin-right: 1em;
+        perspective: 800px;
+        position: relative;
+        width: 300px;
+
+        & > div {
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            width: 100%;
+        }
+
+        .front,
+        .back {
+            backface-visibility: hidden;
+            background: transparent;
+            display: flex;
+            height: 100%;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+        }
+
+        .back {
+            flex-direction: column;
+            transform: rotateY(180deg);
+        }
+
+        .back .btn-group > .btn {
+            border-radius: 0;
+        }
+
+        .flipped {
+            transform: rotateY(180deg);
+        }
+    }
+
+    .mw-tiles-item {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .mw-tiles-item-header {
+        display: flex;
+        flex-direction: row;
+        padding: 1em 1em 0.5em 1em;
+
+        & > h3 {
+            flex-grow: 1;
+            margin-top: 0;
+            width: 0;
+        }
+
+        & > button {
+            align-self: flex-start;
+            margin-left: 0.5em;
+        }
+    }
+
+    .mw-tiles-item-content {
+        flex-grow: 1;
+        padding: 0 1em 1em 1em;
+    }
+
+    .mw-tiles-item-footer {
+        color: #777777;
+        margin: 0;
+        padding: 0 1em 1em 1em;
+    }
+
+    .mw-tiles-item-outcomes {
+        display: flex;
+        flex-direction: row;
+
+         .outcome {
+            border-radius: 0;
+            flex-grow: 1;
+            margin-bottom: 0 !important;
+            margin-right: 0;
+            width: 0;
+        }
+    }
+
+    .mw-tiles-next,
+    .mw-tiles-prev {
+        align-items: center;
+        color: #999999;
+        cursor: default;
+        display: flex;
+        font-size: 8em;
+        height: 100%;
+        justify-content: center;
+    }
+}

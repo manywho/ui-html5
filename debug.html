@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>ManyWho</title>
+    <style>
+        .mw-bs .wait-container {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+        /* outer */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #268AAF;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        /* middle */
+        .mw-bs .wait-spinner:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #31B2E2;
+            -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        /* inner */
+        .mw-bs .wait-spinner:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #154E62;
+            -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        @-webkit-keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+        @keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+    </style>
+</head>
+<body style="height: 100%">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="build/css/mw-bootstrap.css" />
+    <link rel="stylesheet" href="build/css/themes/mw-paper.css" id="theme" />
+
+    <link rel="stylesheet" href="build/css/lib/react-select.css" />
+    <link rel="stylesheet" href="build/css/lib/bootstrap-datetimepicker.css" />
+    <link rel="stylesheet" href="build/css/lib/jquery.textcomplete.css" />
+    <link rel="stylesheet" href="build/css/containers.css" />
+    <link rel="stylesheet" href="build/css/select.css" />
+    <link rel="stylesheet" href="build/css/textarea.css" />
+    <link rel="stylesheet" href="build/css/table.css" />
+    <link rel="stylesheet" href="build/css/input.css" />
+    <link rel="stylesheet" href="build/css/outcome.css" />
+    <link rel="stylesheet" href="build/css/loading.css" />
+    <link rel="stylesheet" href="build/css/modal.css" />
+    <link rel="stylesheet" href="build/css/group.css" />
+    <link rel="stylesheet" href="build/css/pagination.css" />
+    <link rel="stylesheet" href="build/css/notifications.css" />
+    <link rel="stylesheet" href="build/css/navigation.css" />
+    <link rel="stylesheet" href="build/css/feed.css" />
+    <link rel="stylesheet" href="build/css/files.css" />
+    <link rel="stylesheet" href="build/css/debug.css" />
+    <link rel="stylesheet" href="build/css/content.css" />
+    <link rel="stylesheet" href="build/css/status.css" />
+    <link rel="stylesheet" href="build/css/radio.css" />
+    <link rel="stylesheet" href="build/css/returnToParent.css" />
+    <link rel="stylesheet" href="build/css/history.css" />
+    <link rel="stylesheet" href="build/css/footer.css" />
+    <link rel="stylesheet" href="build/css/list.css" />
+    <link rel="stylesheet" href="build/css/flip.css" />
+    <link rel="stylesheet" href="build/css/tiles.css" />
+    <link rel="stylesheet" href="build/css/items.css" />
+    <link rel="stylesheet" href="build/css/toggle.css" />
+
+    <script src="js/vendor/jquery-2.1.4.min.js"></script>
+    <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
+    <script src="js/vendor/react-0.14.6.min.js"></script>
+    <script src="js/vendor/react-dom-0.14.6.min.js"></script>
+    <script src="js/vendor/socket.io-1.3.7.js"></script>
+    <script src="js/vendor/moment-with-locales-2.10.6.min.js"></script>
+    <script src="js/vendor/loglevel-1.4.0.min.js"></script>
+
+    <script>
+
+        var manywho = {
+            cdnUrl: '',
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    platform: {
+                         uri: 'https://flow.manywho.com'
+                    }
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    trackLocation: false,
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    history: queryParameters['history'],
+                    theme: queryParameters['theme']
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+
+                                    return path && path.length > 0;
+
+                                })[0];
+
+                }
+
+                manywho.log.enableAll();
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="build/js/lib/0-react-height.js"></script>
+    <script src="build/js/lib/1-react-motion.js"></script>
+    <script src="build/js/lib/2-react-collapse.js"></script>
+    <script src="build/js/lib/3-react-input-autosize.js"></script>
+    <script src="build/js/lib/4-react-dropzone.js"></script>
+    <script src="build/js/lib/5-classNames.js"></script>
+    <script src="build/js/lib/6-react-select.js"></script>
+    <script src="build/js/lib/7-datetimepicker.js"></script>
+    <script src="build/js/lib/8-jquery.plugins.js"></script>
+    <script src="build/js/lib/9-jquery.textcomplete.js"></script>
+
+    <script src="build/js/services/ajax.js"></script>
+    <script src="build/js/services/model.js"></script>
+    <script src="build/js/services/component.js"></script>
+    <script src="build/js/services/styling.js"></script>
+    <script src="build/js/services/collaboration.js"></script>
+    <script src="build/js/services/state.js"></script>
+    <script src="build/js/services/engine.js"></script>
+    <script src="build/js/services/theming.js"></script>
+    <script src="build/js/services/settings.js"></script>
+    <script src="build/js/services/json.js"></script>
+    <script src="build/js/services/utils.js"></script>
+    <script src="build/js/services/authorization.js"></script>
+    <script src="build/js/services/callbacks.js"></script>
+    <script src="build/js/services/social.js"></script>
+    <script src="build/js/services/log.js"></script>
+
+    <script src="build/js/components/container.js"></script>
+    <script src="build/js/components/mixins.js"></script>
+    <script src="build/js/components/main.js"></script>
+    <script src="build/js/components/navigation.js"></script>
+    <script src="build/js/components/group.js"></script>
+    <script src="build/js/components/inline.js"></script>
+    <script src="build/js/components/vertical.js"></script>
+    <script src="build/js/components/horizontal.js"></script>
+    <script src="build/js/components/presentation.js"></script>
+    <script src="build/js/components/input.js"></script>
+    <script src="build/js/components/textarea.js"></script>
+    <script src="build/js/components/content.js"></script>
+    <script src="build/js/components/outcome.js"></script>
+    <script src="build/js/components/select.js"></script>
+    <script src="build/js/components/table-container.js"></script>
+    <script src="build/js/components/table-large.js"></script>
+    <script src="build/js/components/table-small.js"></script>
+    <script src="build/js/components/table-input.js"></script>
+    <script src="build/js/components/feed.js"></script>
+    <script src="build/js/components/pagination.js"></script>
+    <script src="build/js/components/wait.js"></script>
+    <script src="build/js/components/modal.js"></script>
+    <script src="build/js/components/notifications.js"></script>
+    <script src="build/js/components/file-upload.js"></script>
+    <script src="build/js/components/debug.js"></script>
+    <script src="build/js/components/status.js"></script>
+    <script src="build/js/components/voting.js"></script>
+    <script src="build/js/components/image.js"></script>
+    <script src="build/js/components/returnToParent.js"></script>
+    <script src="build/js/components/radio.js"></script>
+    <script src="build/js/components/history.js"></script>
+    <script src="build/js/components/footer.js"></script>
+    <script src="build/js/components/hidden.js"></script>
+    <script src="build/js/components/list.js"></script>
+    <script src="build/js/components/iframe.js"></script>
+    <script src="build/js/components/flip.js"></script>
+    <script src="build/js/components/login.js"></script>
+    <script src="build/js/components/items-header.js"></script>
+    <script src="build/js/components/items-container.js"></script>
+    <script src="build/js/components/tiles.js"></script>
+    <script src="build/js/components/toggle.js"></script>
+
+    <script>
+        manywho.initialize();
+    </script>
+</body>
+</html>
