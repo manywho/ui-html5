@@ -123,7 +123,7 @@ gulp.task('offline', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-build-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-build-sequence', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib']);
 
 });
 
@@ -142,7 +142,7 @@ gulp.task('offline-build', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-build-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-build-sequence', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib']);
 
 });
 
@@ -161,7 +161,7 @@ gulp.task('offline-run', function() {
     console.log("                                           @@@@@@@");
     console.log("                                           @@@@@");
 
-    runSequence('offline-run-sequence', ['jshint', 'less', 'bootstrap', 'bootstrap-templates']);
+    runSequence('offline-run-sequence', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib']);
 
 });
 
@@ -277,7 +277,7 @@ gulp.task('offline-build-sequence', function() {
                                     if (res.phonegap == 'y') {
                                         console.log("Generating Cordova index.html");
 
-                                        path = '../../';
+                                        path = '../';
                                         var initializeCall = "";
                                         var enableDebugTools = false;
                                         var sourceFile = "default-offline.html";
@@ -316,7 +316,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", 'manywho/runtime/'))
+                                            .pipe(replace("{{directory}}", 'manywho/'))
                                             .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>\r<script src=\"js/manywho/log.js\"></script>"))
                                             .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'db'))
@@ -335,7 +335,7 @@ gulp.task('offline-build-sequence', function() {
                                             .pipe(replace("{{tenantId}}", tenantId))
                                             .pipe(replace("{{flowId}}", flows[0].id.id))
                                             .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", 'manywho/runtime/'))
+                                            .pipe(replace("{{directory}}", 'manywho/'))
                                             .pipe(replace("{{overrides}}", ""))
                                             .pipe(replace("{{extensions}}", extensions))
                                             .pipe(replace("{{storage}}", 'local'))
