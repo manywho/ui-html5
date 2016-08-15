@@ -17,7 +17,8 @@ declare var Select: any;
 
 interface IDropDownState {
     options: Array<any>,
-    search: string
+    search: string,
+    isFocused: boolean
 }
 
 class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
@@ -27,12 +28,13 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     constructor(props) {
         super(props);
 
-        this.state = { options: [], search: null }
+        this.state = { options: [], search: null, isFocused: false }
 
         this.getOptions = this.getOptions.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onInputChange = this.onInputChange.bind(this);
-        this.onOpen = this.onOpen.bind(this);
+        this.onFocus = this.onFocus.bind(this);
+        this.onBlur = this.onBlur.bind(this);
         this.isScrollLimit = this.isScrollLimit.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.debouncedOnSearch = manywho.utils.debounce(this.onSearch, 800);
@@ -61,7 +63,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         manywho.component.handleEvent(this, model, this.props.flowKey);
         
         setTimeout(() => {
-            this.setState({ search: null, options: this.state.options })
+            this.setState({ search: null, options: this.state.options, isFocused: this.state.isFocused })
 
             if (!manywho.utils.isNullOrWhitespace(this.state.search) || model.objectDataRequest || model.fileDataRequest)
                 this.props.onSearch(null, false);
@@ -69,7 +71,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     onInputChange(value) {
-        this.setState({ options: this.state.options, search: value });
+        this.setState({ options: this.state.options, search: value, isFocused: this.state.isFocused });
 
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
@@ -83,7 +85,9 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         this.props.onSearch(search, false);
     }
 
-    onOpen() {
+    onFocus(e) {
+        this.setState({ options: this.state.options, search: this.state.search, isFocused: true });
+
         setTimeout(() => {
             const selectMenu = ReactDOM.findDOMNode(this.refs['select']).querySelector('.Select-menu');
 
@@ -92,6 +96,10 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 selectMenu.addEventListener('scroll', this.isScrollLimit);
             }
         });
+    }
+
+    onBlur(e) {
+        this.setState({ options: this.state.options, search: this.state.search, isFocused: false });
     }
 
     isScrollLimit(e) {
@@ -104,18 +112,23 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         if (nextProps.objectData && !nextProps.isDesignTime) {
             if (this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: this.state.search });
+                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: this.state.search, isFocused: this.state.isFocused });
             else
-                this.setState({ options: this.getOptions(nextProps.objectData), search: this.state.search });
+                this.setState({ options: this.getOptions(nextProps.objectData), search: this.state.search, isFocused: this.state.isFocused });
         }
 
-        if (this.props.isLoading && !nextProps.isLoading && !manywho.utils.isNullOrWhitespace(this.state.search))
-            setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
+        if (this.props.isLoading && !nextProps.isLoading) {
+            if (!manywho.utils.isNullOrWhitespace(this.state.search))
+                setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
+
+            if (this.state.isFocused)
+                setTimeout(() => (this.refs['select'] as any).focus());
+        } 
     }
 
     componentWillMount() {
         if (this.props.objectData && !this.props.isDesignTime)
-            this.setState({ options: this.getOptions(this.props.objectData ), search: this.state.search });
+            this.setState({ options: this.getOptions(this.props.objectData ), search: this.state.search, isFocused: this.state.isFocused });
     }
 
     render() {
@@ -143,7 +156,8 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         if (this.props.objectData && !this.props.isDesignTime) {
             props.onChange = this.onChange;
-            props.onFocus = this.onOpen;
+            props.onFocus = this.onFocus;
+            props.onBlur = this.onBlur;
             props.isLoading = (state && (state.loading !== null && typeof state.loading !== 'undefined'))
             props.onInputChange = this.onInputChange;
             props.filterOptions = false;
