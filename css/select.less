@@ -37,8 +37,18 @@ permissions and limitations under the License.
         height: 38px;
     }
 
-    .Select-value {
+    .Select--single .Select-value {
         line-height: 38px !important;
+    }
+
+    .Select--multi { 
+        .Select-value {
+            margin-top: 8px !important;
+        }
+
+        .Select-input {
+            line-height: 38px;
+        }
     }
 
     .mw-select.has-error .Select-control {
