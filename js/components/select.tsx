@@ -118,8 +118,14 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         }
 
         if (this.props.isLoading && !nextProps.isLoading) {
-            if (!manywho.utils.isNullOrWhitespace(this.state.search))
-                setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
+            if (!manywho.utils.isNullOrWhitespace(this.state.search)) {
+                setTimeout(() => {
+                    (this.refs['select'] as any).setState({ isOpen: true });
+
+                    const inputElement: HTMLInputElement = ReactDOM.findDOMNode(this.refs['select'] as any).querySelector('input') as HTMLInputElement;
+                    inputElement.setSelectionRange(this.state.search.length, this.state.search.length);                
+                });
+            }
 
             if (this.state.isFocused)
                 setTimeout(() => (this.refs['select'] as any).focus());
