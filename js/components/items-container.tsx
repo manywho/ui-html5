@@ -116,12 +116,19 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.search(null, true);
     }
 
-    select(externalId: string, clearSearch: boolean) {
+    select(item: string | Object, clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         let selectedItems = (state.objectData || []).map((item) => item);
-        let selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, externalId, true))[0];
+        let selectedItem = null;
+                
+        if (typeof item === 'string')
+            selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, item, true))[0];
+        else if (typeof item === 'object')
+            selectedItem = item;
+
+        const externalId = selectedItem.externalId;
 
         selectedItem.isSelected = !selectedItem.isSelected;
 
@@ -206,6 +213,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         
         let hasMoreResults : boolean = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
         let objectData = null;
+        let limit = 0;
 
         if (!model.objectDataRequest && !model.fileDataRequest) {
 
@@ -227,8 +235,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
             if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true) && objectData) {
                 var page = (state.page - 1) || 0;
-                var limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
                 var paginationSize = parseInt(model.attributes.paginationSize);
+
+                limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
 
                 if (!isNaN(paginationSize))
                     limit = paginationSize;
@@ -241,6 +250,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         }
         else if (model.objectDataRequest || model.fileDataRequest) {
             objectData = model.objectData;
+            limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
         }
 
         let contentElement = null;

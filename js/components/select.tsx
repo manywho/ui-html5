@@ -31,6 +31,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         this.state = { options: [], search: null, isFocused: false }
 
         this.getOptions = this.getOptions.bind(this);
+        this.updateOptions = this.updateOptions.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onInputChange = this.onInputChange.bind(this);
         this.onFocus = this.onFocus.bind(this);
@@ -46,8 +47,17 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     
         return objectData.map((item) => {
             var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-            return { value: item.externalId, label: label.contentValue };
+            return { value: item, label: label.contentValue };
         });
+    }
+
+    updateOptions(objectData, limit, page, isDesignTime) {
+        if (objectData && !isDesignTime) {
+            if (this.state.options.length < limit * page)
+                this.setState({ options: this.state.options.concat(this.getOptions(objectData)), search: this.state.search, isFocused: this.state.isFocused });
+            else
+                this.setState({ options: this.getOptions(objectData), search: this.state.search, isFocused: this.state.isFocused });
+        }
     }
 
     onChange(selectedValues) {
@@ -103,21 +113,22 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     isScrollLimit(e) {
-        if (e.target.offsetHeight + e.target.scrollTop >= e.target.scrollHeight && this.props.hasMoreResults)
+        if (e.target.offsetHeight + e.target.scrollTop >= e.target.scrollHeight && this.props.hasMoreResults) {
             this.props.onNext();
+            (this.refs['select'] as any).setState({ isOpen: true });
+        }
     }
 
     componentWillReceiveProps(nextProps) {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        if (nextProps.objectData && !nextProps.isDesignTime) {
-            if (this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: this.state.search, isFocused: this.state.isFocused });
-            else
-                this.setState({ options: this.getOptions(nextProps.objectData), search: this.state.search, isFocused: this.state.isFocused });
-        }
+        if (!model.objectDataRequest && !model.fileDataRequest)
+            this.updateOptions(nextProps.objectData, nextProps.limit, nextProps.page, nextProps.isDesignTime);
 
         if (this.props.isLoading && !nextProps.isLoading) {
+            this.updateOptions(nextProps.objectData, nextProps.limit, nextProps.page, nextProps.isDesignTime);
+
             if (!manywho.utils.isNullOrWhitespace(this.state.search)) {
                 setTimeout(() => {
                     (this.refs['select'] as any).setState({ isOpen: true });
@@ -129,6 +140,8 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
             if (this.state.isFocused)
                 setTimeout(() => (this.refs['select'] as any).focus());
+
+            setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
         } 
     }
 
