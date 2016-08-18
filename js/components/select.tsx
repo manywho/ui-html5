@@ -53,7 +53,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
     updateOptions(objectData, limit, page, isDesignTime) {
         if (objectData && !isDesignTime) {
-            if (this.state.options.length < limit * page)
+            if (page > 1 && this.state.options.length < limit * page)
                 this.setState({ options: this.state.options.concat(this.getOptions(objectData)), search: this.state.search, isFocused: this.state.isFocused });
             else
                 this.setState({ options: this.getOptions(objectData), search: this.state.search, isFocused: this.state.isFocused });
@@ -138,10 +138,12 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 });
             }
 
-            if (this.state.isFocused)
-                setTimeout(() => (this.refs['select'] as any).focus());
-
-            setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }));
+            if (this.state.isFocused) {
+                setTimeout(() => {
+                    (this.refs['select'] as any).setState({ isOpen: true })
+                    (this.refs['select'] as any).focus()
+                });   
+            }
         } 
     }
 
