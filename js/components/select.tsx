@@ -110,6 +110,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
     onBlur(e) {
         this.setState({ options: this.state.options, search: this.state.search, isFocused: false });
+        setTimeout(() => (this.refs['select'] as any).setState({ isOpen: false }))
     }
 
     isScrollLimit(e) {
@@ -138,13 +139,15 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 });
             }
 
+            if (this.state.isFocused && state && (!state.objectData || state.objectData.length === 0))
+                setTimeout(() => (this.refs['select'] as any).setState({ isOpen: true }))
+
             if (this.state.isFocused) {
                 setTimeout(() => {
-                    (this.refs['select'] as any).setState({ isOpen: true })
                     (this.refs['select'] as any).focus()
                 });   
             }
-        } 
+        }
     }
 
     componentWillMount() {
