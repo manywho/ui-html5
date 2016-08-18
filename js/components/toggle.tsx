@@ -70,13 +70,13 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
                 background = model.attributes.background;
         }
 
-        const sliderClassName = `${shape} ${background}`;
+        const sliderClassName = `${shape} ${(background) ? background : ''}`;
         let style = null;
 
         if (backgrounds.indexOf(background) == -1)
             style = { background: background }
 
-        return <div className={className}>
+        return <div className={className} id={this.props.id}>
             <label>{model.label}</label>
             <div>
                 <label>

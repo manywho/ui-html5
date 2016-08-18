@@ -45,7 +45,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const objectData = manywho.component.getSelectedRows(model, [objectDataId]);
 
-        manywho.state.setComponent(model.id, { objectData:  objectData }, this.props.flowKey, true);
+        this.updateState(objectData, false);
 
         const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
 
@@ -71,6 +71,17 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             });
     }
 
+    updateState(objectData: Array<any>, clearSearch: boolean) {
+        const newState: any = {
+            objectData: objectData
+        }
+
+        if (clearSearch)
+            newState.search = null;
+
+        manywho.state.setComponent(this.props.id, newState, this.props.flowKey, true);
+    }
+
     load(model: any, state: any) {
         let limit : number = manywho.settings.global('paging.' + model.componentType.toLowerCase());
         const paginationSize : number = parseInt(model.attributes.paginationSize);
@@ -93,7 +104,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         if (clearSelection)
-            this.clearSelection();
+            this.clearSelection(false);
 
         state.search = search;
         state.page = 1;
@@ -105,12 +116,19 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.search(null, true);
     }
 
-    select(externalId: string) {
+    select(item: string | Object, clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         let selectedItems = (state.objectData || []).map((item) => item);
-        let selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, externalId, true))[0];
+        let selectedItem = null;
+                
+        if (typeof item === 'string')
+            selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, item, true))[0];
+        else if (typeof item === 'object')
+            selectedItem = item;
+
+        const externalId = selectedItem.externalId;
 
         selectedItem.isSelected = !selectedItem.isSelected;
 
@@ -127,35 +145,35 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
         }
 
-        manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-        this.forceUpdate();
+        this.updateState(selectedItems, clearSearch);
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
-    selectAll(e) {
+    selectAll(e, clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         let state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         if (state.objectData && state.objectData.length > 0)
-            this.clearSelection();
+            this.clearSelection(clearSearch);
         else {
             const selectedItems = model.objectData.map((item) => {
                 item.isSelected = true;
                 return item;
             });
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-            this.forceUpdate();
+            this.updateState(selectedItems, clearSearch);
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
         }
     }
 
-    clearSelection() {
+    clearSelection(clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
         if (model.objectData)
             model.objectData.forEach((item) => { item.isSelected = false });
         
-        manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
-        this.forceUpdate();
+        this.updateState([], clearSearch);
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     onNext() {
@@ -195,6 +213,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         
         let hasMoreResults : boolean = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
         let objectData = null;
+        let limit = 0;
 
         if (!model.objectDataRequest && !model.fileDataRequest) {
 
@@ -216,8 +235,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
             if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true) && objectData) {
                 var page = (state.page - 1) || 0;
-                var limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
                 var paginationSize = parseInt(model.attributes.paginationSize);
+
+                limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
 
                 if (!isNaN(paginationSize))
                     limit = paginationSize;
@@ -230,6 +250,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         }
         else if (model.objectDataRequest || model.fileDataRequest) {
             objectData = model.objectData;
+            limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
         }
 
         let contentElement = null;
@@ -263,7 +284,8 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             onNext: this.onNext,
             onPrev: this.onPrev,
             page: state.page || 1,
-            limit: limit
+            limit: limit,
+            isLoading: state.loading !== null && typeof state.loading !== 'undefined'
         }
 
         switch (model.componentType.toUpperCase()) {
