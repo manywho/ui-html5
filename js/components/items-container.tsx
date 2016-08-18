@@ -124,7 +124,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         let selectedItem = null;
                 
         if (typeof item === 'string')
-            selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, item, true))[0];
+            selectedItem = model.objectData.filter((objectData) => manywho.utils.isEqual(objectData.externalId, item, true))[0];
         else if (typeof item === 'object')
             selectedItem = item;
 
