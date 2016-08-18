@@ -62,10 +62,12 @@
         display: flex;
         flex-direction: row;
         padding: 1em 1em 0.5em 1em;
+        word-wrap: break-word;
 
         & > h3 {
             flex-grow: 1;
             margin-top: 0;
+            width: 0;
         }
 
         & > button {
@@ -79,6 +81,12 @@
         padding: 0 1em 1em 1em;
     }
 
+    .mw-tiles-item-footer {
+        color: #777777;
+        margin: 0;
+        padding: 0 1em 1em 1em !important;
+    }
+
     .mw-tiles-item-outcomes {
         display: flex;
         flex-direction: row;
@@ -87,6 +95,8 @@
             border-radius: 0;
             flex-grow: 1;
             margin-bottom: 0 !important;
+            margin-right: 0;
+            width: 0;
         }
     }
 

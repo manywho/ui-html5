@@ -43,15 +43,43 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             return;
 
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        manywho.state.setComponent(model.id, { objectData: manywho.component.getSelectedRows(model, [objectDataId]) }, this.props.flowKey, true);
+        const objectData = manywho.component.getSelectedRows(model, [objectDataId]);
+
+        this.updateState(objectData, false);
 
         const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
+
+        if (outcome.attributes) {
+            if (outcome.attributes.uri) {
+                window.open(outcome.attributes.uri, '_blank');
+                return;
+            }
+
+            if (outcome.attributes.uriTypeElementPropertyId) {
+                const property = objectData[0].properties.filter((prop) => manywho.utils.isEqual(prop.typeElementPropertyId, outcome.attributes.uriTypeElementPropertyId, true))[0];
+                if (property) {
+                    window.open(property.contentValue, '_blank');
+                    return;
+                }
+            }
+        }
 
         manywho.engine.move(outcome, this.props.flowKey)
             .then(() => {
                 if (outcome.isOut)
                     manywho.engine.flowOut(outcome, this.props.flowKey);
             });
+    }
+
+    updateState(objectData: Array<any>, clearSearch: boolean) {
+        const newState: any = {
+            objectData: objectData
+        }
+
+        if (clearSearch)
+            newState.search = null;
+
+        manywho.state.setComponent(this.props.id, newState, this.props.flowKey, true);
     }
 
     load(model: any, state: any) {
@@ -65,8 +93,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
         else if (model.fileDataRequest)
             manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
-        else 
+        else {
             manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
+            this.forceUpdate();
+        }
     }
 
     search(search: string, clearSelection : boolean) {
@@ -74,7 +104,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         if (clearSelection)
-            this.clearSelection();
+            this.clearSelection(false);
 
         state.search = search;
         state.page = 1;
@@ -86,12 +116,19 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.search(null, true);
     }
 
-    select(externalId: string) {
+    select(item: string | Object, clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         let selectedItems = (state.objectData || []).map((item) => item);
-        let selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, externalId, true))[0];
+        let selectedItem = null;
+                
+        if (typeof item === 'string')
+            selectedItem = model.objectData.filter((item) => manywho.utils.isEqual(item.externalId, item, true))[0];
+        else if (typeof item === 'object')
+            selectedItem = item;
+
+        const externalId = selectedItem.externalId;
 
         selectedItem.isSelected = !selectedItem.isSelected;
 
@@ -108,35 +145,35 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
         }
 
-        manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-        this.forceUpdate();
+        this.updateState(selectedItems, clearSearch);
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
-    selectAll(e) {
+    selectAll(e, clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         let state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         if (state.objectData && state.objectData.length > 0)
-            this.clearSelection();
+            this.clearSelection(clearSearch);
         else {
             const selectedItems = model.objectData.map((item) => {
                 item.isSelected = true;
                 return item;
             });
 
-            manywho.state.setComponent(this.props.id, { objectData: selectedItems }, this.props.flowKey, true);
-            this.forceUpdate();
+            this.updateState(selectedItems, clearSearch);
+            manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
         }
     }
 
-    clearSelection() {
+    clearSelection(clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
         if (model.objectData)
             model.objectData.forEach((item) => { item.isSelected = false });
         
-        manywho.state.setComponent(this.props.id, { objectData: [] }, this.props.flowKey, true);
-        this.forceUpdate();
+        this.updateState([], clearSearch);
+        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
     onNext() {
@@ -176,6 +213,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         
         let hasMoreResults : boolean = (model.objectDataRequest && model.objectDataRequest.hasMoreResults) || (model.fileDataRequest && model.fileDataRequest.hasMoreResults);
         let objectData = null;
+        let limit = 0;
 
         if (!model.objectDataRequest && !model.fileDataRequest) {
 
@@ -197,8 +235,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
             if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true) && objectData) {
                 var page = (state.page - 1) || 0;
-                var limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
                 var paginationSize = parseInt(model.attributes.paginationSize);
+
+                limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
 
                 if (!isNaN(paginationSize))
                     limit = paginationSize;
@@ -211,6 +250,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         }
         else if (model.objectDataRequest || model.fileDataRequest) {
             objectData = model.objectData;
+            limit = parseInt(manywho.settings.flow('paging.' + model.componentType.toLowerCase(), this.props.flowKey) || 10);
         }
 
         let contentElement = null;
@@ -223,6 +263,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         if (columns.length == 0)
             contentElement = <div className="mw-items-error"><p className="lead">No display columns have been defined</p></div>
 
+        if (!state.loading && (!objectData || objectData.length == 0))
+            contentElement = <div className="mw-items-empty"><p className="lead">{manywho.settings.global('localization.noResults', this.props.flowKey)}</p></div>
+
         const props = {
             id: this.props.id,
             parentId: this.props.parentId,
@@ -233,13 +276,16 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             onOutcome: this.onOutcome,
             select: this.select,
             selectAll: this.selectAll,
+            clearSelection: this.clearSelection,
             objectData: objectData,
             onSearch: this.search,
             outcomes: outcomes,
             refresh: this.refresh,
             onNext: this.onNext,
             onPrev: this.onPrev,
-            page: state.page || 1
+            page: state.page || 1,
+            limit: limit,
+            isLoading: state.loading !== null && typeof state.loading !== 'undefined'
         }
 
         switch (model.componentType.toUpperCase()) {
@@ -248,6 +294,8 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
                 return React.createElement(manywho.component.getByName('mw-table'), props);
             case 'TILES':
                 return React.createElement(manywho.component.getByName('mw-tiles'), props);
+            case 'SELECT':
+                return React.createElement(manywho.component.getByName('mw-select'), props);
         }
         
         return null;
@@ -255,4 +303,4 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
 }
 
-manywho.component.register("mw-items-container", ItemsContainer, ['table', 'files', 'tiles']);
+manywho.component.register("mw-items-container", ItemsContainer, ['table', 'files', 'tiles', 'select']);

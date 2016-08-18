@@ -27,6 +27,9 @@ gulp.task('dev-lib', function () {
     return gulp.src('css/lib/*.*').pipe(gulp.dest('./build/css/lib'));
 });
 
+gulp.task('dev-js-watch', ['dev-js'], browserSync.reload);
+gulp.task('dev-ts-watch', ['dev-ts'], browserSync.reload);
+
 gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib'], function () {
 
     browserSync.init({
@@ -43,8 +46,8 @@ gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-boot
 
     gulp.watch('css/*.less', ['dev-less', 'dev-bootstrap']);
     gulp.watch('css/themes/*.less', ['dev-bootstrap-themes'])
-    gulp.watch('js/**/*.js', ['dev-js']).on('change', browserSync.reload);
-    gulp.watch(['js/**/*.ts', 'js/**/*.tsx'], ['dev-ts']).on('change', browserSync.reload);
+    gulp.watch('js/**/*.js', ['dev-js-watch']);
+    gulp.watch(['js/**/*.ts', 'js/**/*.tsx'], ['dev-ts-watch']);
     gulp.watch('debug.html').on('change', browserSync.reload);
 
 });

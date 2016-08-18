@@ -9,8 +9,9 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+/// <reference path="../../typings/index.d.ts" />
+
 declare var manywho: any;
-declare var React: any;
 
 (function (manywho) {
 
@@ -102,19 +103,6 @@ declare var React: any;
         return null;
     }
 
-    function getSize(model, flowKey) {
-        if (model.attributes && model.attributes.size)
-            return 'btn-' + model.attributes.size;
-
-        if (!manywho.utils.isNullOrWhitespace(model.pageObjectBindingId)) {
-            var component = manywho.model.getComponent(model.pageObjectBindingId, flowKey);
-            if (component)
-                return 'btn-sm'
-        }
-
-        return '';
-    }
-
     var outcome = React.createClass({
 
         getContent: function (model, display: string) {
@@ -134,6 +122,22 @@ declare var React: any;
                 return model.label
         },
 
+        getSize: function(model) {
+            if (this.props.size)
+                return 'btn-' + this.props.size;
+
+            if (model.attributes && model.attributes.size)
+                return 'btn-' + model.attributes.size;
+
+            if (!manywho.utils.isNullOrWhitespace(model.pageObjectBindingId)) {
+                var component = manywho.model.getComponent(model.pageObjectBindingId, this.props.flowKey);
+                if (component)
+                    return 'btn-sm'
+            }
+
+            return '';
+        },
+
         onClick: function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -149,7 +153,7 @@ declare var React: any;
                 });
         },
 
-        shouldComponentUpdate(nextProps, nextState) {
+        shouldComponentUpdate(nextProps: any, nextState) {
             return this.props.id != nextProps.id;
         },
 
@@ -157,8 +161,9 @@ declare var React: any;
             manywho.log.info('Rendering Outcome: ' + this.props.id);
 
             const model = manywho.model.getOutcome(this.props.id, this.props.flowKey);
-            let className = `outcome btn ${getType(model)} ${getSize(model, this.props.flowKey)}`;
+            let className = `outcome btn ${getType(model)} ${this.getSize(model)}`;
             let content = this.getContent(model, manywho.settings.global('outcomes.display', this.props.flowKey));
+            let uri = null;
 
             if (model.attributes) {
                 if (model.attributes.classes)
@@ -169,14 +174,20 @@ declare var React: any;
 
                 if (manywho.utils.isEqual(model.attributes.display, 'ICONNOBACKGROUND', true)) {
                     className += ' btn-nobackground';
-                }                                     
+                }
+
+                if (model.attributes.uri)
+                    uri = model.attributes.uri;
             }
 
             // Back compat for existing "outcome" attribute on tables
             if (!manywho.utils.isNullOrWhitespace(this.props.display))
                 content = this.getContent(model, this.props.display);
 
-            return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
+            if (uri)
+                return <a id={this.props.id} className={className} title={model.label} href={uri} target="_blank">{content}</a>
+            else
+                return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
         }
 
     });

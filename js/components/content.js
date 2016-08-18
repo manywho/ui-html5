@@ -40,6 +40,9 @@ permissions and limitations under the License.
                 content_css: manywho.settings.global('richtext.content_css', this.props.flowKey, []),
                 importcss_append: manywho.settings.global('richtext.importcss_append', this.props.flowKey, false),
                 importcss_file_filter: manywho.settings.global('richtext.importcss_file_filter', this.props.flowKey, null),
+                nanospell_server: manywho.settings.global('richtext.nanospell_server', this.props.flowKey, null),
+                moxiemanager_title: manywho.settings.global('richtext.moxiemanager_title', this.props.flowKey, null),
+                moxiemanager_fullscreen:  manywho.settings.global('richtext.moxiemanager_fullscreen', this.props.flowKey, null),
 
                 setup: function (editor) {
 
@@ -143,7 +146,7 @@ permissions and limitations under the License.
         },
 
         componentWillUnmount: function () {
-            if (this.editor)
+            if (window.tinymce)
                 tinymce.remove('textarea#content-' + this.props.id);
         },
 

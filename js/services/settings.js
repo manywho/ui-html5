@@ -21,6 +21,7 @@ manywho.settings = (function (manywho, $) {
             joining: 'Joining',
             sending: 'Sending',
             returnToParent: 'Return To Parent',
+            noResults: 'No Results',
             status: null
         },
         paging: {
@@ -71,7 +72,11 @@ manywho.settings = (function (manywho, $) {
         },
         history: false,
         containerSelector: '#manywho',
-        syncOnUnload: true
+        syncOnUnload: true,
+        toggle: {
+            shape: 'round',
+            background: null
+        }
     };
 
     var flows = {};
