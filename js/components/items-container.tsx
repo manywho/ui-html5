@@ -295,6 +295,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             case 'TILES':
                 return React.createElement(manywho.component.getByName('mw-tiles'), props);
             case 'SELECT':
+            case 'SHARED_ELEMENT_SELECTOR':
                 return React.createElement(manywho.component.getByName('mw-select'), props);
         }
         
