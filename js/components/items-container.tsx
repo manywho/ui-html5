@@ -128,22 +128,17 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         else if (typeof item === 'object')
             selectedItem = item;
 
-        const externalId = selectedItem.externalId;
+        // Clone the selected item to remove references to it
+        selectedItem = JSON.parse(JSON.stringify(selectedItem));
 
-        selectedItem.isSelected = !selectedItem.isSelected;
+        const isSelected = selectedItems.filter(item => item.externalId === selectedItem.externalId).length > 0;
 
-        if (model.isMultiSelect) {
+        selectedItem.isSelected = !isSelected;
+
+        if (model.isMultiSelect)
             selectedItem.isSelected ? selectedItems.push(selectedItem) : selectedItems = selectedItems.filter((item) => !manywho.utils.isEqual(item.externalId, selectedItem.externalId, true));
-        }
-        else {
-            model.objectData
-                .filter((item) => !manywho.utils.isEqual(item.externalId, externalId, true))
-                .forEach((item) => {
-                    item.isSelected = false;
-                });
-
+        else
             selectedItem.isSelected ? selectedItems = [selectedItem] : selectedItems = [];
-        }
 
         this.updateState(selectedItems, clearSearch);
         manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
@@ -157,8 +152,9 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             this.clearSelection(clearSearch);
         else {
             const selectedItems = model.objectData.map((item) => {
-                item.isSelected = true;
-                return item;
+                const clone = JSON.parse(JSON.stringify(item));
+                clone.isSelected = true;
+                return clone;
             });
 
             this.updateState(selectedItems, clearSearch);
@@ -168,9 +164,6 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
     clearSelection(clearSearch: boolean) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
-        if (model.objectData)
-            model.objectData.forEach((item) => { item.isSelected = false });
         
         this.updateState([], clearSearch);
         manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
