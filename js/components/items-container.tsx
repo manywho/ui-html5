@@ -281,20 +281,13 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             isLoading: state.loading !== null && typeof state.loading !== 'undefined'
         }
 
-        switch (model.componentType.toUpperCase()) {
-            case 'TABLE':
-            case 'FILES':
-                return React.createElement(manywho.component.getByName('mw-table'), props);
-            case 'TILES':
-                return React.createElement(manywho.component.getByName('mw-tiles'), props);
-            case 'SELECT':
-            case 'SHARED_ELEMENT_SELECTOR':
-                return React.createElement(manywho.component.getByName('mw-select'), props);
-        }
+        const component = manywho.component.getByName('mw-' + model.componentType);
+        if (component)
+            return React.createElement(component, props);
         
         return null;
     }
 
 }
 
-manywho.component.register("mw-items-container", ItemsContainer, ['table', 'files', 'tiles', 'select']);
+manywho.component.register("mw-items-container", ItemsContainer);

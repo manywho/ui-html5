@@ -162,4 +162,4 @@ class Tiles extends React.Component<ITilesProps, any> {
 
 }
 
-manywho.component.register('mw-tiles', Tiles);
+manywho.component.registerItems('tiles', Tiles);
