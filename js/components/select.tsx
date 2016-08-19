@@ -54,14 +54,21 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     onValueChange(option) {
         if (!this.props.isLoading) {
             if (option)
-                this.props.select(option.value);
+                this.props.select(option.value, true);
             else
                 this.props.clearSelection();
         }
     }
 
-    onValuesChange(values) {
-        this.props.select(values);
+    onValuesChange(options) {
+        if (!this.props.isLoading) {
+            if (options.length > 0) {
+                const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                this.props.select(options[options.length -1].value, true);
+            }
+            else
+                this.props.clearSelection();
+        }
     }
 
     onSearchChange(search) {
@@ -150,7 +157,6 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             props.onFocus = this.onFocus;
 
             let externalIds = null;
-            let value = null;
 
             if (state && state.objectData)
                 externalIds = state.objectData.map((item) => item.externalId);
@@ -159,10 +165,15 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                                         .map((item) => item.externalId);
 
             if (externalIds && externalIds.length > 0)
-                value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1)[0];
+                props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
 
-            props.options = this.state.options;
-            props.value = value;
+            if (!model.isMultiSelect && props.value)
+                props.value = props.value[0];
+
+            if (externalIds && externalIds.length > 0 && model.isMultiSelect)
+                props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
+            else
+                props.options = this.state.options;
         }
 
         const selectElement = (model.isMultiSelect) ? <reactSelectize.MultiSelect {...props} /> : <reactSelectize.SimpleSelect {...props} /> 
