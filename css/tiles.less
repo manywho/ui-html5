@@ -46,10 +46,6 @@
         .back .btn-group > .btn {
             border-radius: 0;
         }
-
-        .flipped {
-            transform: rotateY(180deg);
-        }
     }
 
     .mw-tiles-item {
@@ -62,11 +58,13 @@
         display: flex;
         flex-direction: row;
         padding: 1em 1em 0.5em 1em;
-        word-wrap: break-word;
+        word-wrap: normal;
 
-        & > h3 {
+        & > h4 {
             flex-grow: 1;
             margin-top: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
             width: 0;
         }
 
