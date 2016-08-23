@@ -57,20 +57,22 @@
     .mw-tiles-item-header {
         display: flex;
         flex-direction: row;
-        padding: 1em 1em 0.5em 1em;
+        padding: 0.5em 1em 0.5em 1em;
         word-wrap: normal;
 
         & > h4 {
             flex-grow: 1;
-            margin-top: 0;
+            margin: 8px 0 0 0;
             overflow: hidden;
             text-overflow: ellipsis;
             width: 0;
         }
 
-        & > button {
+        & > button.btn.btn-nobackground {
             align-self: flex-start;
             margin-left: 0.5em;
+            margin-bottom: 0 !important;
+            padding: 10px 9px 4px 8px;
         }
     }
 
