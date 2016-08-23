@@ -72,7 +72,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     onSearchChange(search) {
-        if (!this.props.isLoading) {
+        if (!this.props.isLoading && this.state.search != search) {
             this.setState({ search: search });
             this.debouncedOnSearch(search);
         }
@@ -201,9 +201,12 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             className += ' has-error';
 
         let style: any = {}
+        let widthClassName = null;
+
         if (model.width && model.width > 0) {
             style.width = model.width + 'px';
             style.minWidth = style.width;
+            widthClassName = "width-specified";
         }
 
         return <div className={className} id={this.props.id}>
@@ -211,7 +214,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 {model.label}
                 {(model.isRequired) ? <span className="input-required"> * </span> : null}
             </label>
-            <div style={style}>
+            <div style={style} className={widthClassName}>
                 {selectElement}
                 {refreshButton}
             </div>
