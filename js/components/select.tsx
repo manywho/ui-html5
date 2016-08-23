@@ -225,4 +225,4 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 }
 
-manywho.component.register('mw-select', DropDown);
+manywho.component.registerItems('select', DropDown);
