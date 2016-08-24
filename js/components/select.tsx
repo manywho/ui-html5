@@ -54,9 +54,11 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     onValueChange(option) {
         if (!this.props.isLoading) {
             if (option)
-                this.props.select(option.value, true);
+                this.props.select(option.value);
             else
                 this.props.clearSelection();
+
+            this.setState({ isOpen: false });
         }
     }
 
@@ -64,7 +66,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         if (!this.props.isLoading) {
             if (options.length > 0) {
                 const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-                this.props.select(options[options.length -1].value, true);
+                this.props.select(options[options.length -1].value);
             }
             else
                 this.props.clearSelection();
@@ -148,32 +150,37 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             placeholder: model.hintValue || 'Please select an option'
         }
 
-        if (this.props.objectData && !this.props.isDesignTime) {
+        if (!this.props.isDesignTime) {
             props.onValueChange = this.onValueChange;
             props.onValuesChange = this.onValuesChange;
             props.onSearchChange = this.onSearchChange;
             props.onOpenChange = this.onOpenChange;
             props.onBlur = this.onBlur;
             props.onFocus = this.onFocus;
+            props.value = null;
+            props.options = null;
 
-            let externalIds = null;
+            if (this.props.objectData) {             
 
-            if (state && state.objectData)
-                externalIds = state.objectData.map((item) => item.externalId);
-            else
-                externalIds = this.props.objectData.filter((item) => item.isSelected)
-                                        .map((item) => item.externalId);
+                let externalIds = null;
 
-            if (externalIds && externalIds.length > 0)
-                props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
+                if (state && state.objectData)
+                    externalIds = state.objectData.map((item) => item.externalId);
+                else
+                    externalIds = this.props.objectData.filter((item) => item.isSelected)
+                                            .map((item) => item.externalId);
 
-            if (!model.isMultiSelect && props.value)
-                props.value = props.value[0];
+                if (externalIds && externalIds.length > 0)
+                    props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
 
-            if (externalIds && externalIds.length > 0 && model.isMultiSelect)
-                props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
-            else
-                props.options = this.state.options;
+                if (!model.isMultiSelect && props.value)
+                    props.value = props.value[0];
+
+                if (externalIds && externalIds.length > 0 && model.isMultiSelect)
+                    props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
+                else
+                    props.options = this.state.options;
+            }
         }
 
         const selectElement = (model.isMultiSelect) ? <reactSelectize.MultiSelect {...props} /> : <reactSelectize.SimpleSelect {...props} /> 
