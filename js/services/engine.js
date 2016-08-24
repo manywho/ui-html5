@@ -21,6 +21,9 @@ manywho.engine = (function (manywho) {
 
             var requestComponents = manywho.utils.convertToArray(components).filter(function (component) {
 
+                if (component.attributes && component.attributes.isExecuteRequestOnRenderDisabled)
+                    return false;
+
                 return component.objectDataRequest != null || component.fileDataRequest != null;
 
             });
