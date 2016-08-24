@@ -11,64 +11,34 @@ permissions and limitations under the License.
 
 .mw-bs {
 
-    .select-wrapper {
-        display: flex;
-        min-width: 300px;
-        width: 100%;
-    }
+    .mw-select {
 
-    .Select {
-        -moz-box-flex: 1;         /* OLD - Firefox 19- */
-        -ms-flex: 1;              /* IE 10 */
-        -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
-        -webkit-flex: 1;          /* Chrome */
-        flex: 1;                  /* NEW, Spec - Opera 12.1, Firefox 20+ */
-    }
-
-    .Select-control {
-        border-radius: 0;
-    }
-
-    .Select-placeholder {
-        line-height: 38px;
-    }
-
-    .Select-input {
-        height: 38px;
-        line-height: 38px;
-
-        input {
-            padding-bottom: 0;
-            padding-top: 0;
+        & > div {
+            display: flex;
         }
-    }
 
-    .Select--single .Select-value {
-        line-height: 38px !important;
-    }
-
-    .Select--multi { 
-        .Select-value {
-            margin-top: 8px !important;
+        .width-specified .react-selectize.default.root-node {
+            width: 100%;
         }
-    }
 
-    .mw-select.has-error .Select-control {
-        border-color: red;
-    }
+        .react-selectize.default.root-node .react-selectize-control {
+            border-radius: 0;
+        }
 
-    .select-wrapper.input-group {
-        display: flex !important;
-    }
+        .react-selectize.dropdown-menu.default:not(.flipped) {
+            border-radius: 0;
+        }
 
-    .select-wrapper .refresh-button {
-        border: 1px solid #cccccc;
-        border-bottom-left-radius: 0;
-        border-left: 0;
-        border-top-left-radius: 0;
-        box-shadow: none;
-        left: -1px;
-        position: relative;
+        .simple-select.react-selectize.default.root-node:not(.open) .react-selectize-control {
+            background: #ffffff;
+        }
+
+        .refresh-button {
+            border-bottom-left-radius: 0;
+            border-left: 0;
+            border-top-left-radius: 0;
+        }
+
     }
 
     .mw-select .outcome {
@@ -82,7 +52,7 @@ permissions and limitations under the License.
 
     .mw-bs {
 
-        .select {
+        .react-selectize.root-node {
             min-width: 0;
             width: calc(~"100% - 40px");
         }
