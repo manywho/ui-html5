@@ -108,9 +108,13 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     componentWillReceiveProps(nextProps) {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        if (this.props.isLoading && !nextProps.isLoading && nextProps.objectData && !nextProps.isDesignTime) {
+        const doneLoading = this.props.isLoading && !nextProps.isLoading;
+        const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
+
+        if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
             if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page)
                 this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), isOpen: true });
             else
