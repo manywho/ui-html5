@@ -122,12 +122,12 @@ declare var manywho: any;
                                 <p>Directory: <strong>{this.props.directoryName}</strong></p>
                                 <div className={usernameClassName}>
                                     <label>Username <span className="input-required"> *</span></label>
-                                    <input type="text" maxLength={255} size={60} className="form-control" ref="username" value={this.state.username} onChange={this.handleUsernameChange} />
+                                    <input type="text" maxLength={255} size={60} className="form-control" ref="username" value={this.state.username} onChange={this.handleUsernameChange} id="mw-username" />
                                     <span className="help-block">{this.state.usernameError}</span>
                                 </div>
                                 <div className={passwordClassName}>
                                     <label>Password <span className="input-required"> *</span></label>
-                                    <input type="password" maxLength={255} size={60} className="form-control" value={this.state.password} onChange={this.handlePasswordChange} />
+                                    <input type="password" maxLength={255} size={60} className="form-control" value={this.state.password} onChange={this.handlePasswordChange} id="mw-password" />
                                     <span className="help-block">{this.state.passwordError}</span>
                                 </div>
                             </div>
