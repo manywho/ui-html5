@@ -151,7 +151,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             search: this.state.search,
             open: this.state.isOpen,
             theme: 'default',
-            placeholder: model.hintValue || 'Please select an option'
+            placeholder: model.hintValue
         }
 
         if (!this.props.isDesignTime) {
