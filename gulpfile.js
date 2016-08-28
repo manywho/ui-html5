@@ -10,6 +10,7 @@ var requestPromise = require('request-promise');
 var gulpPrompt = require('gulp-prompt');
 var fs = require('fs');
 var replace = require('gulp-replace');
+var rename = require("gulp-rename");
 
 function getTask(task) {
     return require('./gulp-tasks/' + task)(gulp, plugins, browserSync, argv);
@@ -167,7 +168,7 @@ gulp.task('offline-run', function() {
 
 gulp.task('offline-build-sequence', function() {
 
-    gulp.src('js/config/snapshot.js')
+    gulp.src('js/services/offline.js')
         .pipe(gulpPrompt.prompt([{
             type: 'input',
             name: 'username',

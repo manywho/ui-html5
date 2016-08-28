@@ -60,35 +60,38 @@
 	</div>
 </div>
 
-<link rel="stylesheet" href="{{directory}}css/mw-bootstrap.css" />
-<link rel="stylesheet" href="{{directory}}css/themes/mw-sf1.css" id="theme" />
+<link rel="stylesheet" href="{{directory}}build/css/mw-bootstrap.css" />
+<link rel="stylesheet" href="{{directory}}build/css/themes/mw-paper.css" id="theme" />
 
-<link rel="stylesheet" href="{{directory}}css/lib/react-select.css" />
-<link rel="stylesheet" href="{{directory}}css/lib/bootstrap-datetimepicker.css" />
-<link rel="stylesheet" href="{{directory}}css/lib/jquery.textcomplete.css" />
-<link rel="stylesheet" href="{{directory}}css/containers.css" />
-<link rel="stylesheet" href="{{directory}}css/select.css" />
-<link rel="stylesheet" href="{{directory}}css/textarea.css" />
-<link rel="stylesheet" href="{{directory}}css/table.css" />
-<link rel="stylesheet" href="{{directory}}css/input.css" />
-<link rel="stylesheet" href="{{directory}}css/outcome.css" />
-<link rel="stylesheet" href="{{directory}}css/loading.css" />
-<link rel="stylesheet" href="{{directory}}css/modal.css" />
-<link rel="stylesheet" href="{{directory}}css/group.css" />
-<link rel="stylesheet" href="{{directory}}css/pagination.css" />
-<link rel="stylesheet" href="{{directory}}css/notifications.css" />
-<link rel="stylesheet" href="{{directory}}css/navigation.css" />
-<link rel="stylesheet" href="{{directory}}css/feed.css" />
-<link rel="stylesheet" href="{{directory}}css/files.css" />
-<link rel="stylesheet" href="{{directory}}css/debug.css" />
-<link rel="stylesheet" href="{{directory}}css/content.css" />
-<link rel="stylesheet" href="{{directory}}css/status.css" />
-<link rel="stylesheet" href="{{directory}}css/radio.css" />
-<link rel="stylesheet" href="{{directory}}css/returnToParent.css" />
-<link rel="stylesheet" href="{{directory}}css/history.css" />
-<link rel="stylesheet" href="{{directory}}css/footer.css" />
-<link rel="stylesheet" href="{{directory}}css/list.css" />
-<link rel="stylesheet" href="{{directory}}css/flip.css" />
+<link rel="stylesheet" href="{{directory}}build/css/lib/bootstrap-datetimepicker.css" />
+<link rel="stylesheet" href="{{directory}}build/css/lib/jquery.textcomplete.css" />
+<link rel="stylesheet" href="{{directory}}build/css/lib/react-selectize.css" />
+<link rel="stylesheet" href="{{directory}}build/css/containers.css" />
+<link rel="stylesheet" href="{{directory}}build/css/select.css" />
+<link rel="stylesheet" href="{{directory}}build/css/textarea.css" />
+<link rel="stylesheet" href="{{directory}}build/css/table.css" />
+<link rel="stylesheet" href="{{directory}}build/css/input.css" />
+<link rel="stylesheet" href="{{directory}}build/css/outcome.css" />
+<link rel="stylesheet" href="{{directory}}build/css/loading.css" />
+<link rel="stylesheet" href="{{directory}}build/css/modal.css" />
+<link rel="stylesheet" href="{{directory}}build/css/group.css" />
+<link rel="stylesheet" href="{{directory}}build/css/pagination.css" />
+<link rel="stylesheet" href="{{directory}}build/css/notifications.css" />
+<link rel="stylesheet" href="{{directory}}build/css/navigation.css" />
+<link rel="stylesheet" href="{{directory}}build/css/feed.css" />
+<link rel="stylesheet" href="{{directory}}build/css/files.css" />
+<link rel="stylesheet" href="{{directory}}build/css/debug.css" />
+<link rel="stylesheet" href="{{directory}}build/css/content.css" />
+<link rel="stylesheet" href="{{directory}}build/css/status.css" />
+<link rel="stylesheet" href="{{directory}}build/css/radio.css" />
+<link rel="stylesheet" href="{{directory}}build/css/returnToParent.css" />
+<link rel="stylesheet" href="{{directory}}build/css/history.css" />
+<link rel="stylesheet" href="{{directory}}build/css/footer.css" />
+<link rel="stylesheet" href="{{directory}}build/css/list.css" />
+<link rel="stylesheet" href="{{directory}}build/css/flip.css" />
+<link rel="stylesheet" href="{{directory}}build/css/tiles.css" />
+<link rel="stylesheet" href="{{directory}}build/css/items.css" />
+<link rel="stylesheet" href="{{directory}}build/css/toggle.css" />
 
 {{cordova}}
 
@@ -198,6 +201,7 @@
 
 			});
 
+			var backendUri = 'https://flow.manywho.com';
 			var manywhoAdminTenantId = 'da497693-4d02-45db-bc08-8ea16d2ccbdf';
 
 			// Values specific to the flow
@@ -391,74 +395,92 @@
 
 </script>
 
-<script src="{{directory}}js/lib/react-dropzone.js"></script>
-<script src="{{directory}}js/lib/datetimepicker.js"></script>
-<script src="{{directory}}js/lib/jquery.plugins.js"></script>
-<script src="{{directory}}js/lib/jquery.textcomplete.js"></script>
-<script src="{{directory}}js/lib/classNames.js"></script>
-<script src="{{directory}}js/lib/react-input-autosize.js"></script>
-<script src="{{directory}}js/lib/react-select.js"></script>
-<script src="{{directory}}js/services/ajax.js"></script>
-<script src="{{directory}}js/services/connection.js"></script>
-<script src="{{directory}}js/services/model.js"></script>
-<script src="{{directory}}js/services/component.js"></script>
-<script src="{{directory}}js/services/styling.js"></script>
-<script src="{{directory}}js/services/collaboration.js"></script>
-<script src="{{directory}}js/services/state.js"></script>
-<script src="{{directory}}js/services/engine.js"></script>
-<script src="{{directory}}js/services/theming.js"></script>
-<script src="{{directory}}js/services/settings.js"></script>
-<script src="{{directory}}js/services/json.js"></script>
-<script src="{{directory}}js/services/utils.js"></script>
-<script src="{{directory}}js/services/authorization.js"></script>
-<script src="{{directory}}js/services/callbacks.js"></script>
-<script src="{{directory}}js/services/social.js"></script>
-<script src="{{directory}}js/services/log.js"></script>
-<script src="{{directory}}js/services/graph.js"></script>
-<script src="{{directory}}js/services/offline.js"></script>
-<script src="{{directory}}js/services/recording.js"></script>
-<script src="{{directory}}js/services/responses.js"></script>
-<script src="{{directory}}js/services/simulation.js"></script>
-<script src="{{directory}}js/services/storage-{{storage}}.js"></script>
+<script src="{{directory}}build/js/lib/pollyfills.js"></script>
+<script src="{{directory}}build/js/lib/0-react-height.js"></script>
+<script src="{{directory}}build/js/lib/1-react-motion.js"></script>
+<script src="{{directory}}build/js/lib/2-react-collapse.js"></script>
+<script src="{{directory}}build/js/lib/3-react-input-autosize.js"></script>
+<script src="{{directory}}build/js/lib/4-react-dropzone.js"></script>
+<script src="{{directory}}build/js/lib/5-classNames.js"></script>
+<script src="{{directory}}build/js/lib/6-prelude-browser.js"></script>
+<script src="{{directory}}build/js/lib/6-prelude-extension.js"></script>
+<script src="{{directory}}build/js/lib/6-react-selectize.js"></script>
+<script src="{{directory}}build/js/lib/7-datetimepicker.js"></script>
+<script src="{{directory}}build/js/lib/8-jquery.plugins.js"></script>
+<script src="{{directory}}build/js/lib/9-jquery.textcomplete.js"></script>
 
-<script src="{{directory}}js/components/mixins.js"></script>
-<script src="{{directory}}js/components/main.js"></script>
-<script src="{{directory}}js/components/navigation.js"></script>
-<script src="{{directory}}js/components/group.js"></script>
-<script src="{{directory}}js/components/inline.js"></script>
-<script src="{{directory}}js/components/vertical.js"></script>
-<script src="{{directory}}js/components/horizontal.js"></script>
-<script src="{{directory}}js/components/presentation.js"></script>
-<script src="{{directory}}js/components/input.js"></script>
-<script src="{{directory}}js/components/textarea.js"></script>
-<script src="{{directory}}js/components/content.js"></script>
-<script src="{{directory}}js/components/outcome.js"></script>
-<script src="{{directory}}js/components/select.js"></script>
-<script src="{{directory}}js/components/table-container.js"></script>
-<script src="{{directory}}js/components/table-large.js"></script>
-<script src="{{directory}}js/components/table-small.js"></script>
-<script src="{{directory}}js/components/table-input.js"></script>
-<script src="{{directory}}js/components/feed.js"></script>
-<script src="{{directory}}js/components/pagination.js"></script>
-<script src="{{directory}}js/components/wait.js"></script>
-<script src="{{directory}}js/components/modal.js"></script>
-<script src="{{directory}}js/components/notifications.js"></script>
-<script src="{{directory}}js/components/file-upload.js"></script>
-<script src="{{directory}}js/components/debug.js"></script>
-<script src="{{directory}}js/components/status.js"></script>
-<script src="{{directory}}js/components/voting.js"></script>
-<script src="{{directory}}js/components/image.js"></script>
-<script src="{{directory}}js/components/returnToParent.js"></script>
-<script src="{{directory}}js/components/radio.js"></script>
-<script src="{{directory}}js/components/history.js"></script>
-<script src="{{directory}}js/components/footer.js"></script>
-<script src="{{directory}}js/components/hidden.js"></script>
-<script src="{{directory}}js/components/list.js"></script>
-<script src="{{directory}}js/components/iframe.js"></script>
-<script src="{{directory}}js/components/flip.js"></script>
-<script src="{{directory}}js/components/login.js"></script>
-<script src="{{directory}}js/components/recordings.js"></script>
-<script src="{{directory}}js/components/data-sync.js"></script>
+<script src="{{directory}}build/js/services/ajax.js"></script>
+<script src="{{directory}}build/js/services/model.js"></script>
+<script src="{{directory}}build/js/services/component.js"></script>
+<script src="{{directory}}build/js/services/styling.js"></script>
+<script src="{{directory}}build/js/services/collaboration.js"></script>
+<script src="{{directory}}build/js/services/state.js"></script>
+<script src="{{directory}}build/js/services/engine.js"></script>
+<script src="{{directory}}build/js/services/theming.js"></script>
+<script src="{{directory}}build/js/services/settings.js"></script>
+<script src="{{directory}}build/js/services/json.js"></script>
+<script src="{{directory}}build/js/services/utils.js"></script>
+<script src="{{directory}}build/js/services/authorization.js"></script>
+<script src="{{directory}}build/js/services/callbacks.js"></script>
+<script src="{{directory}}build/js/services/social.js"></script>
+<script src="{{directory}}build/js/services/log.js"></script>
+
+<!-- Extension services -->
+<script src="{{directory}}build/js/services/connection.js"></script>
+<script src="{{directory}}build/js/services/graph.js"></script>
+<script src="{{directory}}build/js/services/offline.js"></script>
+<script src="{{directory}}build/js/services/recording.js"></script>
+<script src="{{directory}}build/js/services/responses.js"></script>
+<script src="{{directory}}build/js/services/simulation.js"></script>
+<script src="{{directory}}build/js/services/storage-{{storage}}.js"></script>
+<!-- Extension services -->
+
+<script src="{{directory}}build/js/components/container.js"></script>
+<script src="{{directory}}build/js/components/mixins.js"></script>
+<script src="{{directory}}build/js/components/main.js"></script>
+<script src="{{directory}}build/js/components/navigation.js"></script>
+<script src="{{directory}}build/js/components/group.js"></script>
+<script src="{{directory}}build/js/components/inline.js"></script>
+<script src="{{directory}}build/js/components/vertical.js"></script>
+<script src="{{directory}}build/js/components/horizontal.js"></script>
+<script src="{{directory}}build/js/components/presentation.js"></script>
+<script src="{{directory}}build/js/components/input.js"></script>
+<script src="{{directory}}build/js/components/textarea.js"></script>
+<script src="{{directory}}build/js/components/content.js"></script>
+<script src="{{directory}}build/js/components/outcome.js"></script>
+<script src="{{directory}}build/js/components/select.js"></script>
+<script src="{{directory}}build/js/components/table-container.js"></script>
+<script src="{{directory}}build/js/components/table-large.js"></script>
+<script src="{{directory}}build/js/components/table-small.js"></script>
+<script src="{{directory}}build/js/components/table-input.js"></script>
+<script src="{{directory}}build/js/components/feed.js"></script>
+<script src="{{directory}}build/js/components/pagination.js"></script>
+<script src="{{directory}}build/js/components/wait.js"></script>
+<script src="{{directory}}build/js/components/modal.js"></script>
+<script src="{{directory}}build/js/components/notifications.js"></script>
+<script src="{{directory}}build/js/components/file-upload.js"></script>
+<script src="{{directory}}build/js/components/debug.js"></script>
+<script src="{{directory}}build/js/components/status.js"></script>
+<script src="{{directory}}build/js/components/voting.js"></script>
+<script src="{{directory}}build/js/components/image.js"></script>
+<script src="{{directory}}build/js/components/returnToParent.js"></script>
+<script src="{{directory}}build/js/components/radio.js"></script>
+<script src="{{directory}}build/js/components/history.js"></script>
+<script src="{{directory}}build/js/components/footer.js"></script>
+<script src="{{directory}}build/js/components/hidden.js"></script>
+<script src="{{directory}}build/js/components/list.js"></script>
+<script src="{{directory}}build/js/components/iframe.js"></script>
+<script src="{{directory}}build/js/components/flip.js"></script>
+<script src="{{directory}}build/js/components/login.js"></script>
+<script src="{{directory}}build/js/components/items-header.js"></script>
+<script src="{{directory}}build/js/components/items-container.js"></script>
+<script src="{{directory}}build/js/components/tiles.js"></script>
+<script src="{{directory}}build/js/components/toggle.js"></script>
+
+<!-- Extension components -->
+<script src="{{directory}}build/js/components/recordings.js"></script>
+<script src="{{directory}}build/js/components/data-sync.js"></script>
+<!-- Extension components -->
 
 <!-- Overrides -->
 {{overrides}}
