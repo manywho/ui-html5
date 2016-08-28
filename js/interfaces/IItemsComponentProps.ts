@@ -19,5 +19,6 @@ interface IItemsComponentProps extends IComponentProps {
     onNext: Function,
     onPrev: Function,
     page: number,
-    limit: number
+    limit: number,
+    isLoading: boolean
 }

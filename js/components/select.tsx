@@ -13,57 +13,93 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IItemsComponentProps.ts" />
 
 declare var manywho : any;
-declare var Select: any;
+declare var reactSelectize: any;
 
 interface IDropDownState {
-    options: Array<any>,
-    search: string
+    options?: Array<any>,
+    search?: string,
+    isOpen?: boolean
 }
 
 class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
+    debouncedOnSearch = null;
+
     constructor(props) {
         super(props);
-
-        this.state = { options: [], search: null }
+        this.state = { options: [], search: '', isOpen: false }
 
         this.getOptions = this.getOptions.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.onInputChange = this.onInputChange.bind(this);
-        this.onOpen = this.onOpen.bind(this);
+        this.onValueChange = this.onValueChange.bind(this);
+        this.onValuesChange = this.onValuesChange.bind(this);
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onOpenChange = this.onOpenChange.bind(this);
+        this.onFocus = this.onFocus.bind(this);
+        this.onBlur = this.onBlur.bind(this);
         this.isScrollLimit = this.isScrollLimit.bind(this);
+
+        this.debouncedOnSearch = manywho.utils.debounce(this.props.onSearch, 750);
     }
 
     getOptions(objectData) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
-    
+
         return objectData.map((item) => {
             var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-            return { value: item.externalId, label: label.contentValue };
+            return { value: item, label: label.contentValue };
         });
     }
 
-    onChange(value, selectedValues) {
-        if (selectedValues && selectedValues.length > 0)
-            this.props.select(selectedValues[selectedValues.length -1].value);
-        else
-            this.props.clearSelection();
+    onValueChange(option) {
+        if (!this.props.isLoading) {
+            if (option)
+                this.props.select(option.value);
+            else
+                this.props.clearSelection();
+
+            this.setState({ isOpen: false });
+        }
     }
 
-    onInputChange(value) {
-    	this.props.onSearch(value, false);
-    }
-
-    onOpen() {
-        setTimeout(() => {
-            const selectMenu = ReactDOM.findDOMNode(this.refs['select']).querySelector('.Select-menu');
-
-            if (selectMenu) {
-                selectMenu.removeEventListener('scroll', this.isScrollLimit);
-                selectMenu.addEventListener('scroll', this.isScrollLimit);
+    onValuesChange(options) {
+        if (!this.props.isLoading) {
+            if (options.length > 0) {
+                const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                this.props.select(options[options.length -1].value);
             }
-        });
+            else
+                this.props.clearSelection();
+        }
+    }
+
+    onSearchChange(search) {
+        if (!this.props.isLoading && this.state.search != search) {
+            this.setState({ search: search });
+            this.debouncedOnSearch(search);
+        }
+    }
+
+    onOpenChange(isOpen) {
+        if (!this.props.isLoading)
+            this.setState({ isOpen: isOpen });
+    }
+
+    onFocus() {
+        if (!this.props.isLoading)
+            this.setState({ isOpen: true });
+    }
+
+    onBlur() {
+        this.setState({ isOpen: false });
+    }
+
+    filterOptions(options, search) {
+        return options;
+    }
+
+    getUid(option) {
+        return option.value.externalId;
     }
 
     isScrollLimit(e) {
@@ -72,22 +108,35 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     componentWillReceiveProps(nextProps) {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        if (nextProps.objectData && !nextProps.isDesignTime) {
-            if (this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), search: state.search });
-            else
-                this.setState({ options: this.getOptions(nextProps.objectData), search: state.search });
+        const doneLoading = this.props.isLoading && !nextProps.isLoading;
+        const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
 
-            if (!manywho.utils.isNullOrWhitespace(state.search))
-               setTimeout(() => (this.refs['select'] as any).setState({ placeholder: null }));
+        if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
+            if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page)
+                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), isOpen: true });
+            else
+                this.setState({ options: this.getOptions(nextProps.objectData) });
         }
+
+        if (!this.props.isLoading && nextProps.isLoading)
+            this.setState({ isOpen: false });
+
+        if (this.props.isLoading && !nextProps.isLoading && !manywho.utils.isNullOrWhitespace(this.state.search))
+            this.setState({ isOpen: true });
     }
 
     componentWillMount() {
-        if (this.props.objectData && !this.props.isDesignTime)
-            this.setState({ options: this.getOptions(this.props.objectData ), search: null });
+        this.setState({ options: this.getOptions(this.props.objectData || [])});
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!prevState.isOpen && this.state.isOpen)
+            (ReactDOM.findDOMNode(this) as HTMLElement)
+                .querySelector('.dropdown-menu')
+                .addEventListener('scroll', this.isScrollLimit);
     }
 
     render() {
@@ -95,86 +144,89 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         manywho.log.info(`Rendering Select: ${this.props.id}, ${model.developerName}`);
         
-        const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
-
-        let options = null;
-        let value = null;
-        let refreshButton = null;
-
-        let props: any = {
-            multi: model.isMultiSelect,
-            disabled: !model.isEnabled || !model.isEditable || (state && state.loading) || this.props.isDesignTime,
-            placeholder: model.hintValue || 'Please select an option',
-            inputProps: {
-                value: this.state.search
-            },
-            isLoading: state.loading
-        };
-
-        if (this.props.objectData && !this.props.isDesignTime) {
-            props.onChange = this.onChange;
-            props.onInputChange = this.onInputChange;
-            props.onFocus = this.onOpen;
-
-            if (state && state.objectData)
-                value = state.objectData.map((item) => item.externalId);
-            else
-                value = this.props.objectData.filter((item) => item.isSelected)
-                                        .map((item) => item.externalId);
-
-            if (value && value.length > 0)
-                value = value.filter((item) => {
-                    return this.state.options.filter((option) => item == option.value).length > 0;
-                })
-
-            props.options = this.state.options;
-            props.value = value;
+        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+        const props: any = {
+            filterOptions: this.filterOptions,
+            uid: this.getUid,
+            search: this.state.search,
+            open: this.state.isOpen,
+            theme: 'default',
+            placeholder: model.hintValue
         }
 
-        if (this.state.search && this.state.search !== "") {
-            props.placeholder = null;
-            props.inputProps.placeholder = null;
+        if (!this.props.isDesignTime) {
+            props.onValueChange = this.onValueChange;
+            props.onValuesChange = this.onValuesChange;
+            props.onSearchChange = this.onSearchChange;
+            props.onOpenChange = this.onOpenChange;
+            props.onBlur = this.onBlur;
+            props.onFocus = this.onFocus;
+            props.value = null;
+            props.options = null;
+
+            if (this.props.objectData) {             
+
+                let externalIds = null;
+
+                if (state && state.objectData)
+                    externalIds = state.objectData.map((item) => item.externalId);
+                else
+                    externalIds = this.props.objectData.filter((item) => item.isSelected)
+                                            .map((item) => item.externalId);
+
+                if (externalIds && externalIds.length > 0)
+                    props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
+
+                if (!model.isMultiSelect && props.value)
+                    props.value = props.value[0];
+
+                if (externalIds && externalIds.length > 0 && model.isMultiSelect)
+                    props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
+                else
+                    props.options = this.state.options;
+            }
         }
+
+        const selectElement = (model.isMultiSelect) ? <reactSelectize.MultiSelect {...props} /> : <reactSelectize.SimpleSelect {...props} /> 
         
-        const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
-
-        let containerClassName = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey).join(' ');
-        containerClassName += ' form-group';
-
-        if (model.isVisible === false)
-            containerClassName += ' hidden';
-
-        if ((typeof model.isValid !== 'undefined' && model.isValid == false) || (state.error))
-            containerClassName += ' has-error';
-
-        let wrapperClassName = 'select-wrapper';
-
+        let refreshButton = null;
         if (model.objectDataRequest || model.fileDataRequest) {
-            wrapperClassName += ' input-group';
-            let iconClassName = 'glyphicon glyphicon-refresh';
+            let className = 'glyphicon glyphicon-refresh';
 
-            if (state.loading && !state.error)
-                iconClassName += ' spin';
+            if (this.props.isLoading)
+                className += ' spin';
 
-            refreshButton = <button className="btn btn-default refresh-button" onClick={this.props.refresh} disabled={!!state.loading}>
-                <span className={iconClassName}></span>
+            refreshButton = <button className="btn btn-default refresh-button" onClick={this.props.refresh} disabled={this.props.isLoading}>
+                <span className={className} />
             </button>
         }
 
+        const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, }));
+
+        let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey).join(' ');
+
+        if (model.isVisible === false)
+            className += ' hidden';
+
+        if ((typeof model.isValid !== 'undefined' && model.isValid === false) || state.error)
+            className += ' has-error';
+
         let style: any = {}
-        
+        let widthClassName = null;
+
         if (model.width && model.width > 0) {
             style.width = model.width + 'px';
             style.minWidth = style.width;
+            widthClassName = "width-specified";
         }
 
-        return <div className={containerClassName} id={this.props.id}>
+        return <div className={className} id={this.props.id}>
             <label>
                 {model.label}
-                {(model.isRequired) ? <span className="input-required"> *</span> : null}
+                {(model.isRequired) ? <span className="input-required"> * </span> : null}
             </label>
-            <div className={wrapperClassName} style={style}>
-                <Select {...props} ref="select"></Select>
+            <div style={style} className={widthClassName}>
+                {selectElement}
                 {refreshButton}
             </div>
             <span className="help-block">{state.error && state.error.message}</span>
@@ -184,4 +236,4 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 }
 
-manywho.component.register('mw-select', DropDown);
+manywho.component.registerItems('select', DropDown);

@@ -86,19 +86,14 @@ declare var manywho: any;
             return elements;
         },
 
-        onClick: function(e) {
-            e.preventDefault();
-
-            const navigation = manywho.model.getNavigation(this.props.id, this.props.flowKey);
-            const item = this.getItem(navigation.items, e.target.id);
-
+        onClick: function(item) {
             if (!item.isEnabled)
                 return false;
 
-            if (!manywho.utils.isEqual(window.getComputedStyle(this.refs.toggle).display, 'none', true))
+            if (this.refs.toggle && !manywho.utils.isEqual(window.getComputedStyle(this.refs.toggle).display, 'none', true))
                 this.refs.toggle.click();
 
-            manywho.engine.navigate(this.props.id, e.target.id, null, this.props.flowKey);
+            manywho.engine.navigate(this.props.id, item.id, null, this.props.flowKey);
         },
 
         render: function () {
@@ -115,25 +110,44 @@ declare var manywho: any;
 
                 const returnToParent = navigation.returnToParent || null;
 
-                let className = 'navbar navbar-default';
+                if (!manywho.settings.global('navigation.isWizard', this.props.flowKey, true)) {
+                    let innerClassName = '';
 
-                if (manywho.settings.global('navigation.isWizard', this.props.flowKey, true))
-                    className += ' navbar-wizard';
+                    if (!this.props.isFullWidth)
+                        innerClassName += ' container'
 
-                let innerClassName = '';
-
-                if (!this.props.isFullWidth)
-                    innerClassName += ' container'
-
-                return (<nav className={className} ref="navigationBar">
-                    <div className={innerClassName}>
-                        {this.getHeaderElement(this.props.id, navigation)}
-                        <div className="collapse navbar-collapse" id={this.props.id} ref="container">
-                            <ul className="nav navbar-nav">{navElements}</ul>
-                            {returnToParent}
+                    return (<nav className="navbar navbar-default" ref="navigationBar">
+                        <div className={innerClassName}>
+                            {this.getHeaderElement(this.props.id, navigation)}
+                            <div className="collapse navbar-collapse" id={this.props.id} ref="container">
+                                <ul className="nav navbar-nav">{navElements}</ul>
+                                {returnToParent}
+                            </div>
                         </div>
+                    </nav>);
+                }
+                else {
+                    return <div className="navbar-wizard">
+                        {(!manywho.utils.isNullOrWhitespace(navigation.label) ? <span className="navbar-brand">{navigation.label}</span> : null )}
+                        <ul className="steps">
+                            {manywho.utils.convertToArray(navigation.items).map(item => {
+                                let className = null;
+
+                                if (item.isCurrent)
+                                    className += ' active';
+
+                                if (item.isVisible === false)
+                                    className += ' hidden';
+
+                                if (item.isEnabled === false)
+                                    className += ' disabled';
+
+                                return <li onClick={this.onClick.bind(null, item)} id={item.id} className={className}><span className="indicator"/><span className="glyphicon glyphicon-ok" />{item.label}</li>
+                            })}
+                        </ul>
+                        {returnToParent}
                     </div>
-                </nav>);
+                }                
             }
 
             return null;

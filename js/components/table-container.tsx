@@ -236,6 +236,7 @@ declare var manywho : any;
 
     });
 
-    manywho.component.register("mw-table", table);
+    manywho.component.registerItems('table', table);
+    manywho.component.registerItems('files', table);
 
 }(manywho));

@@ -11,45 +11,34 @@ permissions and limitations under the License.
 
 .mw-bs {
 
-    .select-wrapper {
-        display: flex;
-        min-width: 300px;
-        width: 100%;
-    }
+    .mw-select {
 
-    .select-loading-icon {
-        padding-left: 0.5em;
-        padding-top: 4px;
-        width: 50px;
-    }
+        & > div {
+            display: flex;
+        }
 
-    .select-loading-icon > .glyphicon {
-        font-size: 30px;
-    }
+        .width-specified .react-selectize.default.root-node {
+            width: 100%;
+        }
 
-    .Select {
-        -moz-box-flex: 1;         /* OLD - Firefox 19- */
-        -ms-flex: 1;              /* IE 10 */
-        -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
-        -webkit-flex: 1;          /* Chrome */
-        flex: 1;                  /* NEW, Spec - Opera 12.1, Firefox 20+ */
-    }
+        .react-selectize.default.root-node .react-selectize-control {
+            border-radius: 0;
+        }
 
-    .Select-control {
-        border-radius: 0;
-    }
+        .react-selectize.dropdown-menu.default:not(.flipped) {
+            border-radius: 0;
+        }
 
-    .mw-select.has-error .Select-control {
-        border-color: red;
-    }
+        .simple-select.react-selectize.default.root-node:not(.open) .react-selectize-control {
+            background: #ffffff;
+        }
 
-    .select-wrapper.input-group {
-        display: flex !important;
-    }
+        .refresh-button {
+            border-bottom-left-radius: 0;
+            border-left: 0;
+            border-top-left-radius: 0;
+        }
 
-    .select-wrapper .refresh-button {
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
     }
 
     .mw-select .outcome {
@@ -63,7 +52,7 @@ permissions and limitations under the License.
 
     .mw-bs {
 
-        .select {
+        .react-selectize.root-node {
             min-width: 0;
             width: calc(~"100% - 40px");
         }
