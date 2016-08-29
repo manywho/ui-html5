@@ -43,12 +43,16 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
     getOptions(objectData) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        const columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
+        const columns = manywho.component.getDisplayColumns(model.columns);
 
-        return objectData.map((item) => {
-            var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-            return { value: item, label: label.contentValue };
-        });
+        if (columns && columns.length > 0) {
+            const columnTypeElementPropertyId = columns[0].typeElementPropertyId;
+
+            return objectData.map((item) => {
+                var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
+                return { value: item, label: label.contentValue };
+            });
+        }
     }
 
     onValueChange(option) {
