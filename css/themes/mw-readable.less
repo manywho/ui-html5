@@ -60,4 +60,49 @@
     .mw-toggle input:focus + div.danger {
         box-shadow: 0 0 1px #d9534f;
     }
+
+    .navbar-wizard .steps {
+        & > li {              
+            color: #3fad46;
+
+            & > .glyphicon {
+                background-color: #3fad46;
+            }
+
+            & > .indicator {
+                background-color: #3fad46;
+            }
+
+            & .indicator:before,
+            & .indicator:after {
+                background-color: #3fad46;
+            }
+        }
+
+        & > li.active {                
+            color: #4582ec;
+
+            & > .indicator {
+                background-color: #4582ec;
+            }
+
+            & .indicator:before,
+            & .indicator:after {
+                background-color: #4582ec;
+            }
+        }
+
+        & > li.active ~ li {
+            color: #888888;
+
+            & > .indicator {
+                background-color: #bbbbbb;
+            }
+
+            & .indicator:before,
+            & .indicator:after {
+                background-color: #bbbbbb;
+            }
+        }
+    }
 }

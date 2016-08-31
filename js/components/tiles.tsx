@@ -71,7 +71,7 @@ class Tiles extends React.Component<ITilesProps, any> {
 
         return (<div className={className} onClick={this.onSelect} id={item.externalId}>
             <div className="mw-tiles-item-header">
-                <h3>{header}</h3>
+                <h4 title={header}>{header}</h4>
                 {deleteOutcomeElement}
             </div>
             <div className="mw-tiles-item-content">{content}</div>
@@ -139,11 +139,12 @@ class Tiles extends React.Component<ITilesProps, any> {
                     return (<div className="mw-tiles-item-container" key={key} ref="items">
                         <ReactMotion.Motion defaultStyle={{ rotate: 0}} style={{ rotate: ReactMotion.spring(180, { stiffness: 65, damping: 9.5 }) }}>
                             {interpolatingStyle => {
-                                const transform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
+                                const frontTransform : string = `rotateY(${interpolatingStyle.rotate}deg)`;
+                                const backTransform : string = `rotateY(${180 - interpolatingStyle.rotate}deg)`;
 
-                                return (<div style={{ transform: transform }}>
-                                    <div className="front"></div>
-                                    <div className="back">{this.renderItem(item, columns, footerOutcomes, deleteOutcome)}</div>
+                                return (<div>
+                                    <div className="front" style={{ transform: frontTransform }}></div>
+                                    <div className="back" style={{ transform: backTransform }}>{this.renderItem(item, columns, footerOutcomes, deleteOutcome)}</div>
                                 </div>);
                             }}
                         </ReactMotion.Motion>
@@ -162,4 +163,4 @@ class Tiles extends React.Component<ITilesProps, any> {
 
 }
 
-manywho.component.register('mw-tiles', Tiles);
+manywho.component.registerItems('tiles', Tiles);
