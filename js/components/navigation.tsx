@@ -77,7 +77,7 @@ declare var manywho: any;
                 }
                 else
                     element = <li className={classNames.join(' ')}>
-                        <a href="#" onClick={this.onClick} id={item.id}>{item.label}</a>
+                        <a href="#" onClick={this.onClick.bind(null, item)} id={item.id}>{item.label}</a>
                     </li>
 
                 elements.push(element);
