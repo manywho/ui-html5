@@ -68,7 +68,7 @@ manywho.component = (function (manywho) {
         },
 
         registerAlias: function(alias, name) {
-            aliases[name.toLowerCase()] = name;
+            aliases[alias.toLowerCase()] = name;
         },
 
         registerContainer: function(name, component) {
