@@ -129,11 +129,11 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 options = this.getOptions(nextProps.objectData);
 
             if (state && state.objectData) {
-                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId))
-
+                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId));
                 options = (this.getOptions(selectedOptions) || []).concat(options);
-                this.setState({ options: options });
             }
+
+            this.setState({ options: options });
         }
 
         if (!this.props.isLoading && nextProps.isLoading)
