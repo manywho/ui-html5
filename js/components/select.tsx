@@ -119,10 +119,21 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
 
         if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
-            if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), isOpen: true });
+            let options = []
+
+            if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page) {
+                options = this.state.options.concat(this.getOptions(nextProps.objectData)),
+                this.setState({ isOpen: true });
+            }
             else
-                this.setState({ options: this.getOptions(nextProps.objectData) });
+                options = this.getOptions(nextProps.objectData);
+
+            if (state && state.objectData) {
+                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId))
+
+                options = (this.getOptions(selectedOptions) || []).concat(options);
+                this.setState({ options: options });
+            }
         }
 
         if (!this.props.isLoading && nextProps.isLoading)
