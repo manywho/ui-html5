@@ -1,56 +1,62 @@
 /* Stolen from: http://davidwalsh.name/css-flip */
 .mw-flip {
 
-	& > .flip-container {
-		perspective: 1000px;
-	}
-
-	& > .flip-container,
-	.front,
-	.back {
+	.flip-container {
 		height: 250px;
+		perspective: 1000px;
+		position: relative;
 		width: 250px;
 	}
 
-	& > .flip-container.rotateY .flipper {
-		transform: rotateY(180deg);
-	    transform-origin: 50% 100%;
-	}
-
-	& > .flip-container.rotateX .flipper {
-	  	transform: rotateX(-180deg);
-	    transform-origin: 100% 50%;
-	}
-
 	.flipper {
-	  	position: relative;
+		height: 100%;
+		position: absolute;
 		transform-style: preserve-3d;
-		transition: 0.6s;
+		width: 100%;
 	}
 
 	.front,
 	.back {
 		backface-visibility: hidden;
-		left: 0;
+		background: transparent;
+		height: 100%;
+		margin: 0;
 		position: absolute;
-		top: 0;
+		transition: 0.6s;
+		width: 100%;
+		border: 1px solid black;
 	}
 
-	.front-rotateY {
-		transform: rotateY(0deg);
+	.flip-container.rotateY {
+	    transform-origin: 50% 100%;
+
+		& .front {
+			transform: rotateY(180deg);
+		}
+
+		& .back {
+			transform: rotateY(0deg);
+		}
+	}
+
+	.flip-container.rotateX {
+	    transform-origin: 100% 50%;
+
+		& .front {
+			transform: rotateX(-180deg);
+		}
+
+		& .back {
+			transform: rotateX(0deg);
+		}
+	}
+
+	.front {
 		z-index: 2;
 	}
 
-	.back-rotateY {
+	.back {
 		transform: rotateY(180deg);
-	}
-
-	.front-rotateX {
-		z-index: 2;
-	}
-
-	.back-rotateX {
-	    transform: rotateX(180deg);
 	}
 
 	& > .outcome {

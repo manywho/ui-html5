@@ -41,10 +41,10 @@ declare var manywho: any;
 
             return <div className={className}>
                 <div className="flipper" onTouchEnd={this.toggleFlip} onClick={this.toggleFlip}>
-                    <div className={'front front-' + this.state.animationStyle}>
+                    <div className="front">
                         {childComponents[0]}
                     </div>
-                    <div className={'back back-' + this.state.animationStyle}>
+                    <div className="back">
                         {childComponents[1]}
                     </div> 
                 </div>
