@@ -17,6 +17,10 @@ permissions and limitations under the License.
             display: flex;
         }
 
+        &.has-error .resizable-input {
+            box-shadow: none;
+        }  
+
         .width-specified .react-selectize.default.root-node {
             width: 100%;
         }
@@ -39,6 +43,10 @@ permissions and limitations under the License.
             border-top-left-radius: 0;
         }
 
+    }
+
+    .mw-select.has-error > div {
+        border: 1px solid #a94442;
     }
 
     .mw-select .outcome {
