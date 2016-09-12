@@ -168,316 +168,288 @@ gulp.task('offline-run', function() {
 
 gulp.task('offline-build-sequence', function() {
 
-    gulp.src('js/services/offline.js')
-        .pipe(gulpPrompt.prompt([{
-            type: 'input',
-            name: 'username',
-            message: 'What is your ManyWho username?'
-        },
-            {
-                type: 'password',
-                name: 'password',
-                message: 'And your password?'
-            },
-            {
+    setTimeout(function() {
+        gulp.src('js/services/offline.js')
+            .pipe(gulpPrompt.prompt([{
                 type: 'input',
-                name: 'flow',
-                message: 'What is the name of the Flow you want to make offline?'
+                name: 'username',
+                message: 'What is your ManyWho username?'
             },
-            {
-                type: 'input',
-                name: 'build',
-                message: 'What is the name of this build?'
-            },
-            {
-                type: 'input',
-                name: 'phonegap',
-                message: 'Is this a Cordova build? (y/n)'
-            },
-            {
-                type: 'input',
-                name: 'debugging',
-                message: 'Is this a debug build? (y/n)'
-            }], function(res) {
-
-            // Authenticate the user to the draw API
-            requestPromise({
-                method: "POST",
-                uri: "https://flow.manywho.com/api/draw/1/authentication",
-                body: {
-                    "loginUrl": "https://flow.manywho.com/plugins/manywho/api/draw/1/authentication",
-                    "username": res.username,
-                    "password": res.password
+                {
+                    type: 'password',
+                    name: 'password',
+                    message: 'And your password?'
                 },
-                headers: {
-                    'ManyWhoTenant': 'da497693-4d02-45db-bc08-8ea16d2ccbdf'
+                {
+                    type: 'input',
+                    name: 'flow',
+                    message: 'What is the name of the Flow you want to make offline?'
                 },
-                json: true
-            })
-                .then(function (authenticationToken) {
+                {
+                    type: 'input',
+                    name: 'build',
+                    message: 'What is the name of this build?'
+                },
+                {
+                    type: 'input',
+                    name: 'phonegap',
+                    message: 'Is this a Cordova build? (y/n)'
+                },
+                {
+                    type: 'input',
+                    name: 'debugging',
+                    message: 'Is this a debug build? (y/n)'
+                }], function (res) {
 
-                    console.log("Successfully authenticated");
+                // Authenticate the user to the draw API
+                requestPromise({
+                    method: "POST",
+                    uri: "https://flow.manywho.com/api/draw/1/authentication",
+                    body: {
+                        "loginUrl": "https://flow.manywho.com/plugins/manywho/api/draw/1/authentication",
+                        "username": res.username,
+                        "password": res.password
+                    },
+                    headers: {
+                        'ManyWhoTenant': 'da497693-4d02-45db-bc08-8ea16d2ccbdf'
+                    },
+                    json: true
+                })
+                    .then(function (authenticationToken) {
 
-                    // Grab the tenant identifier from the response token
-                    var token = decodeURIComponent(authenticationToken);
-                    var tokens = token.split('&');
-                    var tenantId = null;
+                        console.log("Successfully authenticated");
 
-                    // Find the tenant token
-                    for (var i = 0; i < tokens.length; i++) {
+                        // Grab the tenant identifier from the response token
+                        var token = decodeURIComponent(authenticationToken);
+                        var tokens = token.split('&');
+                        var tenantId = null;
 
-                        if (tokens[i].indexOf('ManyWhoTenantId') >= 0) {
+                        // Find the tenant token
+                        for (var i = 0; i < tokens.length; i++) {
 
-                            tenantId = tokens[i].split('=')[1];
-                            break;
+                            if (tokens[i].indexOf('ManyWhoTenantId') >= 0) {
+
+                                tenantId = tokens[i].split('=')[1];
+                                break;
+
+                            }
 
                         }
 
-                    }
+                        // Get Flows for the matching name
+                        requestPromise({
+                            method: "GET",
+                            uri: "https://flow.manywho.com/api/run/1/flow?filter=substringof(developername, '" + res.flow + "')",
+                            headers: {
+                                'ManyWhoTenant': tenantId
+                            },
+                            json: true
+                        })
+                            .then(function (flows) {
 
-                    // Get Flows for the matching name
-                    requestPromise({
-                        method: "GET",
-                        uri: "https://flow.manywho.com/api/run/1/flow?filter=substringof(developername, '" + res.flow + "')",
-                        headers: {
-                            'ManyWhoTenant': tenantId
-                        },
-                        json: true
-                    })
-                        .then(function (flows) {
+                                console.log("Successfully queried Flows");
 
-                            console.log("Successfully queried Flows");
+                                if (flows != null &&
+                                    flows.length > 0) {
 
-                            if (flows != null &&
-                                flows.length > 0) {
+                                    if (flows.length > 1) {
+                                        console.log('More than Flow found for the provided name.');
+                                        return;
+                                    }
 
-                                if (flows.length > 1) {
-                                    console.log('More than Flow found for the provided name.');
+                                } else {
+                                    console.log('No Flows found with that name.');
                                     return;
                                 }
 
-                            } else {
-                                console.log('No Flows found with that name.');
-                                return;
-                            }
+                                // Get the snapshot for this name
+                                requestPromise({
+                                    method: "GET",
+                                    uri: "https://flow.manywho.com/api/draw/1/flow/snap/" + flows[0].id.id + "/" + flows[0].id.versionId,
+                                    headers: {
+                                        'Authorization': authenticationToken,
+                                        'ManyWhoTenant': tenantId
+                                    },
+                                    json: true
+                                })
+                                    .then(function (snapshot) {
 
-                            // Get the snapshot for this name
-                            requestPromise({
-                                method: "GET",
-                                uri: "https://flow.manywho.com/api/draw/1/flow/snap/" + flows[0].id.id + "/" + flows[0].id.versionId,
-                                headers: {
-                                    'Authorization': authenticationToken,
-                                    'ManyWhoTenant': tenantId
-                                },
-                                json: true
-                            })
-                                .then(function (snapshot) {
+                                        var path = '';
 
-                                    var path = '';
+                                        if (res.phonegap == 'y') {
+                                            console.log("Generating Cordova index.html");
 
-                                    if (res.phonegap == 'y') {
-                                        console.log("Generating Cordova index.html");
+                                            path = '../';
+                                            var initializeCall = "";
+                                            var enableDebugTools = false;
+                                            var sourceFile = "default-offline.html";
 
-                                        path = '../';
-                                        var initializeCall = "";
-                                        var enableDebugTools = false;
-                                        var sourceFile = "default-offline.html";
-
-                                        // Make sure the settings are correct depending on the debug configuration
-                                        if (res.debugging == 'y') {
-                                            sourceFile = "default-tools.html";
-                                            enableDebugTools = true;
-                                        }
-
-                                        // Read in any extensions
-                                        var extensions = getExtensions(path, res.build);
-
-                                        // We also need to switch over to the database implementation for initialize
-                                        initializeCall += "document.addEventListener('deviceready', function () {\r\r";
-                                        initializeCall += getExtraIndent(12) + "    try {\r";
-                                        initializeCall += getExtraIndent(12) + "        manywho.storage.setDatabase(window.sqlitePlugin.openDatabase(\r";
-                                        initializeCall += getExtraIndent(12) + "            {\r";
-                                        initializeCall += getExtraIndent(12) + "                name: 'manywho',\r";
-                                        initializeCall += getExtraIndent(12) + "                location: 'default'\r";
-                                        initializeCall += getExtraIndent(12) + "            },\r";
-                                        initializeCall += getExtraIndent(12) + "            function () {\r";
-                                        initializeCall += getExtraIndent(12) + "                " + getInitializeFunctionCall(16, enableDebugTools);
-                                        initializeCall += getExtraIndent(12) + "            },\r";
-                                        initializeCall += getExtraIndent(12) + "            function (error) {\r";
-                                        initializeCall += getExtraIndent(12) + "                alert(error.message);\r";
-                                        initializeCall += getExtraIndent(12) + "            }\r";
-                                        initializeCall += getExtraIndent(12) + "        ));\r";
-                                        initializeCall += getExtraIndent(12) + "    } catch (error) {\r";
-                                        initializeCall += getExtraIndent(12) + "        alert(error.message);\r";
-                                        initializeCall += getExtraIndent(12) + "    }\r";
-                                        initializeCall += getExtraIndent(12) + "}, false);\r";
-
-                                        // Create a new index.html file with the appropriate settings
-                                        gulp.src([sourceFile])
-                                            .pipe(replace("{{tenantId}}", tenantId))
-                                            .pipe(replace("{{flowId}}", flows[0].id.id))
-                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", 'manywho/'))
-                                            .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>\r<script src=\"js/manywho/log.js\"></script>"))
-                                            .pipe(replace("{{extensions}}", extensions))
-                                            .pipe(replace("{{storage}}", 'db'))
-                                            .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
-                                            .pipe(replace("{{isCordova}}", 'true'))
-                                            .pipe(replace("{{build}}", res.build))
-                                            .pipe(replace("{{playJoinUrl}}", "'index.html'"))
-                                            .pipe(replace("{{initializeCall}}", initializeCall))
-                                            .pipe(rename("index.html"))
-                                            .pipe(gulp.dest(path));
-
-                                        console.log("Generating Cordova tools.html");
-
-                                        // Create a new tools.html file with the appropriate settings
-                                        gulp.src(["default-tools.html"])
-                                            .pipe(replace("{{tenantId}}", tenantId))
-                                            .pipe(replace("{{flowId}}", flows[0].id.id))
-                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", 'manywho/'))
-                                            .pipe(replace("{{overrides}}", ""))
-                                            .pipe(replace("{{extensions}}", extensions))
-                                            .pipe(replace("{{storage}}", 'local'))
-                                            .pipe(replace("{{cordova}}", ''))
-                                            .pipe(replace("{{isCordova}}", 'false'))
-                                            .pipe(replace("{{playJoinUrl}}", "'http://localhost:3000/tools.html'"))
-                                            .pipe(replace("{{build}}", res.build))
-                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
-                                            .pipe(rename("tools.html"))
-                                            .pipe(gulp.dest(path));
-                                    } else {
-                                        console.log("Generating offline.html");
-
-                                        // Read in any extensions
-                                        var extensions = getExtensions(path, res.build);
-
-                                        // Create a new offline.html file with the appropriate settings
-                                        gulp.src(["default-offline.html"])
-                                            .pipe(replace("{{tenantId}}", tenantId))
-                                            .pipe(replace("{{flowId}}", flows[0].id.id))
-                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", ''))
-                                            .pipe(replace("{{overrides}}", ""))
-                                            .pipe(replace("{{extensions}}", extensions))
-                                            .pipe(replace("{{storage}}", 'local'))
-                                            .pipe(replace("{{cordova}}", ''))
-                                            .pipe(replace("{{isCordova}}", 'false'))
-                                            .pipe(replace("{{build}}", res.build))
-                                            .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
-                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, false)))
-                                            .pipe(rename("offline.html"))
-                                            .pipe(gulp.dest('.'));
-
-                                        console.log("Generating tools.html");
-
-                                        // Create a new tools.html file with the appropriate settings
-                                        gulp.src(["default-tools.html"])
-                                            .pipe(replace("{{tenantId}}", tenantId))
-                                            .pipe(replace("{{flowId}}", flows[0].id.id))
-                                            .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
-                                            .pipe(replace("{{directory}}", ''))
-                                            .pipe(replace("{{overrides}}", ""))
-                                            .pipe(replace("{{extensions}}", extensions))
-                                            .pipe(replace("{{storage}}", 'local'))
-                                            .pipe(replace("{{cordova}}", ''))
-                                            .pipe(replace("{{isCordova}}", 'false'))
-                                            .pipe(replace("{{build}}", res.build))
-                                            .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
-                                            .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
-                                            .pipe(rename("tools.html"))
-                                            .pipe(gulp.dest('.'));
-                                    }
-
-                                    // Write the snapshot file
-                                    console.log("Generating js/config/snapshot-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
-
-                                    if (res.debugging == 'y') {
-                                        // Write the responses file
-                                        console.log("Generating js/config/responses-" + res.build + ".js");
-                                        fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
-                                    } else {
-                                        // Don't override default responses for a non-debug build
-                                        console.log("Not generating js/config/responses-" + res.build + ".js");
-                                    }
-
-                                    if (overwriteDefaultResponses(path, res.build)) {
-                                        // Write the default responses file
-                                        console.log("Generating js/config/default-" + res.build + ".js");
-                                        fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
-                                    } else {
-                                        // Don't override default responses for a non-debug build
-                                        console.log("Not generating js/config/default-" + res.build + ".js");
-                                    }
-
-                                    if (overwriteSequences(path, res.build)) {
-                                        // Write the sequences file
-                                        console.log("Generating empty js/config/sequences-" + res.build + ".js");
-                                        fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
-                                    } else {
-                                        // Only generate the sequences file if it doesn't exist
-                                        console.log("Not generating js/config/sequences-" + res.build + ".js");
-                                    }
-
-                                    var dataSync = {
-                                        objectDataRequests: [],
-                                        fileDataRequests: []
-                                    };
-
-                                    var dataSyncOverrides = getDataSyncOverrides(path, res.build);
-
-                                    var uniqueDataSyncs = {};
-
-                                    // Find object data requests in the pages
-                                    if (snapshot.pageElements != null &&
-                                        snapshot.pageElements.length > 0) {
-
-                                        for (var i = 0; i < snapshot.pageElements.length; i++) {
-
-                                            var pageComponents = snapshot.pageElements[i].pageComponents;
-
-                                            if (pageComponents != null &&
-                                                pageComponents.length > 0) {
-
-                                                for (var j = 0; j < pageComponents.length; j++) {
-
-                                                    var objectDataRequest = createRuntimeObjectDataRequest(snapshot, pageComponents[j].objectDataRequest, dataSyncOverrides, true);
-
-                                                    if (objectDataRequest != null) {
-                                                        // Add it to the list of requests to sync
-                                                        uniqueDataSyncs[objectDataRequest.typeElementBindingId] = objectDataRequest;
-
-                                                    }
-
-                                                }
-
+                                            // Make sure the settings are correct depending on the debug configuration
+                                            if (res.debugging == 'y') {
+                                                sourceFile = "default-tools.html";
+                                                enableDebugTools = true;
                                             }
 
+                                            // Read in any extensions
+                                            var extensions = getExtensions(path, res.build);
+
+                                            // We also need to switch over to the database implementation for initialize
+                                            initializeCall += "document.addEventListener('deviceready', function () {\r\r";
+                                            initializeCall += getExtraIndent(12) + "    try {\r";
+                                            initializeCall += getExtraIndent(12) + "        manywho.storage.setDatabase(window.sqlitePlugin.openDatabase(\r";
+                                            initializeCall += getExtraIndent(12) + "            {\r";
+                                            initializeCall += getExtraIndent(12) + "                name: 'manywho',\r";
+                                            initializeCall += getExtraIndent(12) + "                location: 'default'\r";
+                                            initializeCall += getExtraIndent(12) + "            },\r";
+                                            initializeCall += getExtraIndent(12) + "            function () {\r";
+                                            initializeCall += getExtraIndent(12) + "                " + getInitializeFunctionCall(16, enableDebugTools);
+                                            initializeCall += getExtraIndent(12) + "            },\r";
+                                            initializeCall += getExtraIndent(12) + "            function (error) {\r";
+                                            initializeCall += getExtraIndent(12) + "                alert(error.message);\r";
+                                            initializeCall += getExtraIndent(12) + "            }\r";
+                                            initializeCall += getExtraIndent(12) + "        ));\r";
+                                            initializeCall += getExtraIndent(12) + "    } catch (error) {\r";
+                                            initializeCall += getExtraIndent(12) + "        alert(error.message);\r";
+                                            initializeCall += getExtraIndent(12) + "    }\r";
+                                            initializeCall += getExtraIndent(12) + "}, false);\r";
+
+                                            // Create a new index.html file with the appropriate settings
+                                            gulp.src([sourceFile])
+                                                .pipe(replace("{{tenantId}}", tenantId))
+                                                .pipe(replace("{{flowId}}", flows[0].id.id))
+                                                .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
+                                                .pipe(replace("{{directory}}", 'manywho/'))
+                                                .pipe(replace("{{overrides}}", "<script src=\"js/manywho/authorization.js\"></script>\r<script src=\"js/manywho/log.js\"></script>"))
+                                                .pipe(replace("{{extensions}}", extensions))
+                                                .pipe(replace("{{storage}}", 'db'))
+                                                .pipe(replace("{{cordova}}", '<script type="text/javascript" src="cordova.js"></script>'))
+                                                .pipe(replace("{{isCordova}}", 'true'))
+                                                .pipe(replace("{{build}}", res.build))
+                                                .pipe(replace("{{playJoinUrl}}", "'index.html'"))
+                                                .pipe(replace("{{initializeCall}}", initializeCall))
+                                                .pipe(rename("index.html"))
+                                                .pipe(gulp.dest(path));
+
+                                            console.log("Generating Cordova tools.html");
+
+                                            // Create a new tools.html file with the appropriate settings
+                                            gulp.src(["default-tools.html"])
+                                                .pipe(replace("{{tenantId}}", tenantId))
+                                                .pipe(replace("{{flowId}}", flows[0].id.id))
+                                                .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
+                                                .pipe(replace("{{directory}}", 'manywho/'))
+                                                .pipe(replace("{{overrides}}", ""))
+                                                .pipe(replace("{{extensions}}", extensions))
+                                                .pipe(replace("{{storage}}", 'local'))
+                                                .pipe(replace("{{cordova}}", ''))
+                                                .pipe(replace("{{isCordova}}", 'false'))
+                                                .pipe(replace("{{playJoinUrl}}", "'http://localhost:3000/tools.html'"))
+                                                .pipe(replace("{{build}}", res.build))
+                                                .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
+                                                .pipe(rename("tools.html"))
+                                                .pipe(gulp.dest(path));
+                                        } else {
+                                            console.log("Generating offline.html");
+
+                                            // Read in any extensions
+                                            var extensions = getExtensions(path, res.build);
+
+                                            // Create a new offline.html file with the appropriate settings
+                                            gulp.src(["default-offline.html"])
+                                                .pipe(replace("{{tenantId}}", tenantId))
+                                                .pipe(replace("{{flowId}}", flows[0].id.id))
+                                                .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
+                                                .pipe(replace("{{directory}}", ''))
+                                                .pipe(replace("{{overrides}}", ""))
+                                                .pipe(replace("{{extensions}}", extensions))
+                                                .pipe(replace("{{storage}}", 'local'))
+                                                .pipe(replace("{{cordova}}", ''))
+                                                .pipe(replace("{{isCordova}}", 'false'))
+                                                .pipe(replace("{{build}}", res.build))
+                                                .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
+                                                .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, false)))
+                                                .pipe(rename("offline.html"))
+                                                .pipe(gulp.dest('.'));
+
+                                            console.log("Generating tools.html");
+
+                                            // Create a new tools.html file with the appropriate settings
+                                            gulp.src(["default-tools.html"])
+                                                .pipe(replace("{{tenantId}}", tenantId))
+                                                .pipe(replace("{{flowId}}", flows[0].id.id))
+                                                .pipe(replace("{{flowVersionId}}", flows[0].id.versionId))
+                                                .pipe(replace("{{directory}}", ''))
+                                                .pipe(replace("{{overrides}}", ""))
+                                                .pipe(replace("{{extensions}}", extensions))
+                                                .pipe(replace("{{storage}}", 'local'))
+                                                .pipe(replace("{{cordova}}", ''))
+                                                .pipe(replace("{{isCordova}}", 'false'))
+                                                .pipe(replace("{{build}}", res.build))
+                                                .pipe(replace("{{playJoinUrl}}", "backendUri + '/' + tenantId + '/play/default'"))
+                                                .pipe(replace("{{initializeCall}}", getInitializeFunctionCall(0, true)))
+                                                .pipe(rename("tools.html"))
+                                                .pipe(gulp.dest('.'));
                                         }
 
-                                    }
+                                        // Write the snapshot file
+                                        console.log("Generating js/config/snapshot-" + res.build + ".js");
+                                        fs.writeFileSync(path + "js/config/snapshot-" + res.build + ".js", "offline.snapshot = " + JSON.stringify(snapshot, null, 4) + ";");
 
-                                    // Find the object data requests in the map elements
-                                    if (snapshot.mapElements != null &&
-                                        snapshot.mapElements.length > 0) {
+                                        if (res.debugging == 'y') {
+                                            // Write the responses file
+                                            console.log("Generating js/config/responses-" + res.build + ".js");
+                                            fs.writeFileSync(path + "js/config/responses-" + res.build + ".js", "offline.responses = null;");
+                                        } else {
+                                            // Don't override default responses for a non-debug build
+                                            console.log("Not generating js/config/responses-" + res.build + ".js");
+                                        }
 
-                                        for (var i = 0; i < snapshot.mapElements.length; i++) {
+                                        if (overwriteDefaultResponses(path, res.build)) {
+                                            // Write the default responses file
+                                            console.log("Generating js/config/default-" + res.build + ".js");
+                                            fs.writeFileSync(path + "js/config/default-" + res.build + ".js", "offline.defaultResponses = " + JSON.stringify(createDefaultUncachedResponses(snapshot), null, 4) + ";");
+                                        } else {
+                                            // Don't override default responses for a non-debug build
+                                            console.log("Not generating js/config/default-" + res.build + ".js");
+                                        }
 
-                                            if (snapshot.mapElements[i].dataActions != null &&
-                                                snapshot.mapElements[i].dataActions.length > 0) {
+                                        if (overwriteSequences(path, res.build)) {
+                                            // Write the sequences file
+                                            console.log("Generating empty js/config/sequences-" + res.build + ".js");
+                                            fs.writeFileSync(path + "js/config/sequences-" + res.build + ".js", "offline.sequences = [];");
+                                        } else {
+                                            // Only generate the sequences file if it doesn't exist
+                                            console.log("Not generating js/config/sequences-" + res.build + ".js");
+                                        }
 
-                                                for (var j = 0; j < snapshot.mapElements[i].dataActions.length; j++) {
+                                        var dataSync = {
+                                            objectDataRequests: [],
+                                            fileDataRequests: []
+                                        };
 
-                                                    // Only sync data load data actions
-                                                    if (snapshot.mapElements[i].dataActions[j].crudOperationType.toLowerCase() == "load") {
+                                        var dataSyncOverrides = getDataSyncOverrides(path, res.build);
 
-                                                        var objectDataRequest = createRuntimeObjectDataRequest(snapshot, snapshot.mapElements[i].dataActions[j].objectDataRequest, dataSyncOverrides, true);
+                                        var uniqueDataSyncs = {};
+
+                                        // Find object data requests in the pages
+                                        if (snapshot.pageElements != null &&
+                                            snapshot.pageElements.length > 0) {
+
+                                            for (var i = 0; i < snapshot.pageElements.length; i++) {
+
+                                                var pageComponents = snapshot.pageElements[i].pageComponents;
+
+                                                if (pageComponents != null &&
+                                                    pageComponents.length > 0) {
+
+                                                    for (var j = 0; j < pageComponents.length; j++) {
+
+                                                        var objectDataRequest = createRuntimeObjectDataRequest(snapshot, pageComponents[j].objectDataRequest, dataSyncOverrides, true);
 
                                                         if (objectDataRequest != null) {
                                                             // Add it to the list of requests to sync
                                                             uniqueDataSyncs[objectDataRequest.typeElementBindingId] = objectDataRequest;
+
                                                         }
 
                                                     }
@@ -488,68 +460,97 @@ gulp.task('offline-build-sequence', function() {
 
                                         }
 
-                                    }
+                                        // Find the object data requests in the map elements
+                                        if (snapshot.mapElements != null &&
+                                            snapshot.mapElements.length > 0) {
 
-                                    // Go through all of the unique data syncs and add to the standard format
-                                    for (var property in uniqueDataSyncs) {
+                                            for (var i = 0; i < snapshot.mapElements.length; i++) {
 
-                                        if (uniqueDataSyncs.hasOwnProperty(property)) {
+                                                if (snapshot.mapElements[i].dataActions != null &&
+                                                    snapshot.mapElements[i].dataActions.length > 0) {
 
-                                            dataSync.objectDataRequests.push(uniqueDataSyncs[property]);
+                                                    for (var j = 0; j < snapshot.mapElements[i].dataActions.length; j++) {
+
+                                                        // Only sync data load data actions
+                                                        if (snapshot.mapElements[i].dataActions[j].crudOperationType.toLowerCase() == "load") {
+
+                                                            var objectDataRequest = createRuntimeObjectDataRequest(snapshot, snapshot.mapElements[i].dataActions[j].objectDataRequest, dataSyncOverrides, true);
+
+                                                            if (objectDataRequest != null) {
+                                                                // Add it to the list of requests to sync
+                                                                uniqueDataSyncs[objectDataRequest.typeElementBindingId] = objectDataRequest;
+                                                            }
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                            }
 
                                         }
 
-                                    }
+                                        // Go through all of the unique data syncs and add to the standard format
+                                        for (var property in uniqueDataSyncs) {
 
-                                    // Write the data sync file
-                                    console.log("Generating js/config/data-sync-" + res.build + ".js");
-                                    fs.writeFileSync(path + "js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
+                                            if (uniqueDataSyncs.hasOwnProperty(property)) {
 
-                                    console.log("Done!");
+                                                dataSync.objectDataRequests.push(uniqueDataSyncs[property]);
 
-                                    var files = [
-                                        '*.html',
-                                        'css/**/*.css',
-                                        'img/**/*.png',
-                                        'js/**/*.js'
-                                    ];
-
-                                    var baseDirectory = '.';
-
-                                    if (path != null &&
-                                        path.length > 0) {
-                                        baseDirectory = path;
-                                    }
-
-                                    return browserSync.init(files, {
-                                        server: {
-                                            baseDir: baseDirectory,
-                                            index: 'tools.html',
-                                            middleware: function (req, res, next) {
-                                                res.setHeader('Access-Control-Allow-Origin', '*');
-                                                next();
                                             }
-                                        },
-                                        ghostMode: false
+
+                                        }
+
+                                        // Write the data sync file
+                                        console.log("Generating js/config/data-sync-" + res.build + ".js");
+                                        fs.writeFileSync(path + "js/config/data-sync-" + res.build + ".js", "offline.dataSync = " + JSON.stringify(dataSync, null, 4) + ";");
+
+                                        console.log("Done!");
+
+                                        var files = [
+                                            '*.html',
+                                            'css/**/*.css',
+                                            'img/**/*.png',
+                                            'js/**/*.js'
+                                        ];
+
+                                        var baseDirectory = '.';
+
+                                        if (path != null &&
+                                            path.length > 0) {
+                                            baseDirectory = path;
+                                        }
+
+                                        return browserSync.init(files, {
+                                            server: {
+                                                baseDir: baseDirectory,
+                                                index: 'tools.html',
+                                                middleware: function (req, res, next) {
+                                                    res.setHeader('Access-Control-Allow-Origin', '*');
+                                                    next();
+                                                }
+                                            },
+                                            ghostMode: false
+                                        });
+
+                                    })
+                                    .catch(function (err) {
+                                        console.log('SnapShot Error: ' + err);
                                     });
 
-                                })
-                                .catch(function (err) {
-                                    console.log('SnapShot Error: ' + err);
-                                });
+                            })
+                            .catch(function (err) {
+                                console.log('Flow Query: ' + err);
+                            });
 
-                        })
-                        .catch(function (err) {
-                            console.log('Flow Query: ' + err);
-                        });
+                    })
+                    .catch(function (err) {
+                        console.log('Login Error: ' + err);
+                    });
 
-                })
-                .catch(function (err) {
-                    console.log('Login Error: ' + err);
-                });
-
-        }));
-
+            }));
+    }, 8000);
 });
 
 gulp.task('offline-run-sequence', function() {
