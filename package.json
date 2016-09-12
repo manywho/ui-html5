@@ -37,7 +37,7 @@
     "request-promise": "^2.0.1",
     "fs": "^0.0.2",
     "tslint": "^3.10.2",
-    "typescript": "^1.8.10",
+    "typescript": "^2.0.2",
     "yargs": "^2.3.0"
   },
   "scripts": {
