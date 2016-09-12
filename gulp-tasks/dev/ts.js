@@ -1,6 +1,8 @@
 module.exports = function(gulp, plugins) {
     return function() {
-        var tsProject = plugins.typescript.createProject('tsconfig.json');
+        var tsProject = plugins.typescript.createProject('tsconfig.json', {
+            typescript: require('typescript')
+        });
 
         return gulp.src(['js/**/*.ts', 'js/**/*.tsx'])
             .pipe(plugins.tslint())

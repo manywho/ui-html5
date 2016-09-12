@@ -112,7 +112,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.load(model, state);
     }
 
-    refresh() {        
+    refresh(e) {        
         this.search(null, true);
     }
 
@@ -257,7 +257,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         if (state.error)
             contentElement = (<div className="mw-items-error">
                 <p className="lead">{state.error.message}</p>
-                <button className="btn btn-danger" onClick={this.search}>Retry</button>
+                <button className="btn btn-danger" onClick={this.refresh}>Retry</button>
             </div>);
 
         const props = {
