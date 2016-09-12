@@ -257,7 +257,8 @@ permissions and limitations under the License.
                 return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
             }, this);
 
-            if (contentType.toUpperCase() == manywho.component.contentTypes.boolean) {
+            if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.boolean, true) 
+                || manywho.utils.isEqual(model.componentType, 'checkbox', true)) {
 
                 if ((typeof contentValue == "string" && manywho.utils.isEqual(contentValue, "true", true)) || contentValue === true) {
                     attributes.checked = 'checked';
@@ -266,6 +267,8 @@ permissions and limitations under the License.
                 if (!model.isEditable) {
                     attributes.disabled = 'disabled';
                 }
+
+                attributes.type = 'checkbox';
 
                 return React.DOM.div({ className: containerClassNames},
                     [

@@ -43,12 +43,16 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
     getOptions(objectData) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        const columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
+        const columns = manywho.component.getDisplayColumns(model.columns);
 
-        return objectData.map((item) => {
-            var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-            return { value: item, label: label.contentValue };
-        });
+        if (columns && columns.length > 0) {
+            const columnTypeElementPropertyId = columns[0].typeElementPropertyId;
+
+            return objectData.map((item) => {
+                var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
+                return { value: item, label: label.contentValue };
+            });
+        }
     }
 
     onValueChange(option) {
@@ -115,10 +119,21 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
 
         if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
-            if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page)
-                this.setState({ options: this.state.options.concat(this.getOptions(nextProps.objectData)), isOpen: true });
+            let options = []
+
+            if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page) {
+                options = this.state.options.concat(this.getOptions(nextProps.objectData)),
+                this.setState({ isOpen: true });
+            }
             else
-                this.setState({ options: this.getOptions(nextProps.objectData) });
+                options = this.getOptions(nextProps.objectData);
+
+            if (state && state.objectData) {
+                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId));
+                options = (this.getOptions(selectedOptions) || []).concat(options);
+            }
+
+            this.setState({ options: options });
         }
 
         if (!this.props.isLoading && nextProps.isLoading)
@@ -133,10 +148,20 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (!prevState.isOpen && this.state.isOpen)
-            (ReactDOM.findDOMNode(this) as HTMLElement)
-                .querySelector('.dropdown-menu')
-                .addEventListener('scroll', this.isScrollLimit);
+        if (!prevState.isOpen && this.state.isOpen) {
+            const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            const element = (ReactDOM.findDOMNode(this) as HTMLElement);
+
+            if (model.attributes && manywho.utils.isEqual(model.attributes.isTethered, 'true', true)) {
+                const dropdown : HTMLElement = document.querySelector('.tether-element .dropdown-menu') as HTMLElement;
+                const selectize : HTMLElement = element.querySelector('.react-selectize') as HTMLElement;
+
+                dropdown.addEventListener('scroll', this.isScrollLimit);
+                dropdown.style.setProperty('width', selectize.offsetWidth + 'px');
+            }
+            else
+                element.querySelector('.dropdown-menu').addEventListener('scroll', this.isScrollLimit);
+        }
     }
 
     render() {
@@ -163,6 +188,9 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             props.onFocus = this.onFocus;
             props.value = null;
             props.options = null;
+            
+            if (model.attributes && manywho.utils.isEqual(model.attributes.isTethered, 'true', true))
+                props.tether = true;
 
             if (this.props.objectData) {             
 

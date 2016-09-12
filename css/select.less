@@ -17,8 +17,21 @@ permissions and limitations under the License.
             display: flex;
         }
 
+        &.has-error .resizable-input {
+            box-shadow: none;
+        }  
+
         .width-specified .react-selectize.default.root-node {
             width: 100%;
+        }
+
+        .react-selectize.default.root-node {
+            width: auto;
+            min-width: 300px;
+        }
+
+        .react-selectize.root-node .react-selectize-control .react-selectize-reset-button-container {
+            margin-left: 1em;
         }
 
         .react-selectize.default.root-node .react-selectize-control {
@@ -41,11 +54,19 @@ permissions and limitations under the License.
 
     }
 
+    .mw-select.has-error > div {
+        border: 1px solid #a94442;
+    }
+
     .mw-select .outcome {
       margin-right: 1em !important;
       margin-top: 1em;
     }
 
+}
+
+.tether-element {
+    z-index: 100;
 }
 
 @media(max-width: 760px) {
