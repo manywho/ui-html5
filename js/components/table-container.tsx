@@ -24,13 +24,14 @@ declare var manywho : any;
         return displayColumns;
     }
 
-    function renderFooter(pageIndex: number, hasMoreResults: boolean, onNext: Function, onPrev: Function, isDesignTime: boolean) {
+    function renderFooter(pageIndex: number, hasMoreResults: boolean, onNext: Function, onPrev: Function, onFirstPage: Function, isDesignTime: boolean) {
         if (pageIndex > 1 || hasMoreResults)
             return React.createElement(manywho.component.getByName('mw-pagination'), {
                 pageIndex: pageIndex,
                 hasMoreResults: hasMoreResults,
                 onNext: onNext,
                 onPrev: onPrev,
+                onFirstPage: onFirstPage,
                 isDesignTime: isDesignTime
             });
 
@@ -230,7 +231,7 @@ declare var manywho : any;
                     {fileUpload}
                     {headerElement}
                     {contentElement}
-                    {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.isDesignTime)}                    
+                    {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.onFirstPage, this.props.isDesignTime)}                    
                     {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)}
                 </div>
             </div>;
