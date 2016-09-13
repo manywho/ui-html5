@@ -142,20 +142,22 @@ declare var manywho : any;
 
             manywho.log.info('Rendering Table: ' + this.props.id);
 
-            var isValid = true;
+            let isValid = true;
 
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+            const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+            const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             
-            var props = {
+            const selectedRows = (state.objectData || []).filter(objectData => objectData.isSelected);
+
+            let props = {
                 id: this.props.id,
                 model: model,
                 objectData: this.props.objectData,
                 totalObjectData: (!model.objectDataRequest && model.objectData) ? model.objectData.length : null,
                 outcomes: outcomes.filter((outcome) => !outcome.isBulkAction),
                 displayColumns: getDisplayColumns(model.columns, outcomes),
-                selectedRows: state.objectData || [],
+                selectedRows: selectedRows,
                 flowKey: this.props.flowKey,
                 lastSortedBy: this.state.lastSortedBy,
                 sortByOrder: this.state.sortByOrder,

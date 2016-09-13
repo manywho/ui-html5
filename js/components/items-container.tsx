@@ -120,7 +120,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        let selectedItems = (state.objectData || []).map((item) => item);
+        let selectedItems = (state.objectData || [])
+            .filter(item => item.isSelected)
+            .map(item => item);
+
         let selectedItem = null;
                 
         if (typeof item === 'string')
