@@ -77,8 +77,10 @@ manywho.settings = (function (manywho, $) {
             shape: 'round',
             background: null
         },
-        chart: {
-            backgroundColors: ['#42a5f5', '#66bb6a', '#ef5350', '#ab47bc', '#ffa726', '#78909c', '#5c6bc0']
+        charts: {
+            backgroundColors: ['#42a5f5', '#66bb6a', '#ef5350', '#ab47bc', '#ffa726', '#78909c', '#5c6bc0'],
+            borderColors: ['#42a5f5', '#66bb6a', '#ef5350', '#ab47bc', '#ffa726', '#78909c', '#5c6bc0'],
+            options: {}
         }
     };
 

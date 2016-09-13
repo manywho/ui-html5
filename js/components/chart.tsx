@@ -38,11 +38,8 @@ class ChartBase extends React.Component<IChartComponentProps, any> {
 
         const columns: Array<any> = manywho.component.getDisplayColumns(model.columns) || [];
 		const node = ReactDOM.findDOMNode(this.refs['canvas']);
-
-        if (manywho.utils.isNullOrWhitespace(this.props.type))
-            manywho.log.error(`Chart type attribute not defined for chart: ${model.developerName}, ${this.props.id}`)
-
-        const backgroundColors = manywho.settings.global('chart.backgroundColors', this.props.flowKey);
+        const backgroundColors = manywho.settings.global('charts.backgroundColors', this.props.flowKey);
+        const borderColors = manywho.settings.global('charts.borderColors', this.props.flowKey);
 
         const data: any = {
             labels: [],
@@ -79,7 +76,7 @@ class ChartBase extends React.Component<IChartComponentProps, any> {
                         case 3:
                             let borderColor = property.contentValue;
                             if (manywho.utils.isNullOrWhitespace(property.contentValue))
-                                borderColor = backgroundColors[rowIndex % backgroundColors.length]
+                                borderColor = borderColors[rowIndex % borderColors.length]
 
                             data.datasets[0].borderColor.push(borderColor);
                             break;
@@ -92,7 +89,7 @@ class ChartBase extends React.Component<IChartComponentProps, any> {
             data.datasets[0].borderColor = data.datasets[0].backgroundColor;
         }
 
-        const options = $.extend({}, manywho.settings.global('chart.options', this.props.flowKey, {}), this.props.options)
+        const options = $.extend({}, manywho.settings.global('charts.options', this.props.flowKey, {}), this.props.options)
 
 		this.chart = new Chart(node, {
 			type: this.props.type,
