@@ -5,7 +5,7 @@ declare var manywho: any;
 
 class ChartBar extends React.Component<IItemsComponentProps, any> {
 
-    displayName = 'Chart-Bar'
+    displayName = 'ChartBar'
 
     constructor(props: any){
         super(props);
@@ -33,7 +33,7 @@ class ChartBar extends React.Component<IItemsComponentProps, any> {
             }
         }
 
-        return React.createElement(manywho.component.getByName('mw-chart-base'), props, null)
+        return React.createElement(manywho.component.getByName('mw-chart'), props, null)
     }
 
 }

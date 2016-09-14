@@ -2,100 +2,24 @@
 /// <reference path="../interfaces/IChartComponentProps.ts" />
 
 declare var manywho: any;
-declare var reactChart: any;
 declare var Chart: any;
 declare var $: any;
 
-class ChartBase extends React.Component<IChartComponentProps, any> {
+class ChartComponent extends React.Component<IChartComponentProps, any> {
 
     chart = null
-    displayName = 'ChartBase'
+    displayName = 'Chart'
 
     constructor(props: any){
         super(props);
         this.onClick = this.onClick.bind(this);
     }
 
-    onClick(e) {
-        const element = this.chart.getElementAtEvent(e);
-		if (element && element.length > 0) {
-            const outcome = this.props.outcomes.filter(item => !item.isBulkAction)[0];
-           
-            if (outcome)
-                this.props.onOutcome(this.props.objectData[element[0]._index].externalId, outcome.id);            
-		}
-    }
-
-    componentWillUnmount() {
-		this.chart.destroy();
-	}
-
-    componentDidMount() {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-
-        if (model.isVisible == false)
-            return
-
-        const columns: Array<any> = manywho.component.getDisplayColumns(model.columns) || [];
-		const node = ReactDOM.findDOMNode(this.refs['canvas']);
-        const backgroundColors = manywho.settings.global('charts.backgroundColors', this.props.flowKey);
-        const borderColors = manywho.settings.global('charts.borderColors', this.props.flowKey);
-
-        const data: any = {
-            labels: [],
-            datasets: [{
-                data: [],
-                fill: false,
-                backgroundColor: [],
-                borderColor: []
-            }]
-        };
-
-        this.props.objectData.forEach((objectData, rowIndex) => {
-            columns.forEach((column, index) => {
-                let property = objectData.properties.find(prop => manywho.utils.isEqual(prop.typeElementPropertyId, column.typeElementPropertyId));
-
-                if (property )
-                    switch (index) {
-                        case 0:
-                            data.labels.push(property.contentValue);
-                            break;
-
-                        case 1:
-                            data.datasets[0].data.push(property.contentValue);
-                            break;
-
-                        case 2:
-                            let backgroundColor = property.contentValue;
-                            if (manywho.utils.isNullOrWhitespace(property.contentValue))
-                                backgroundColor = backgroundColors[rowIndex % backgroundColors.length]
-
-                            data.datasets[0].backgroundColor.push(backgroundColor);
-                            break;
-
-                        case 3:
-                            let borderColor = property.contentValue;
-                            if (manywho.utils.isNullOrWhitespace(property.contentValue))
-                                borderColor = borderColors[rowIndex % borderColors.length]
-
-                            data.datasets[0].borderColor.push(borderColor);
-                            break;
-                    }
-            });
-        });
-
-        if (manywho.utils.isEqual(this.props.type, 'line', true)) {
-            data.datasets[0].backgroundColor = backgroundColors[0];
-            data.datasets[0].borderColor = data.datasets[0].backgroundColor;
-        }
-
-        const options = $.extend({}, manywho.settings.global('charts.options', this.props.flowKey, {}), this.props.options)
-
-		this.chart = new Chart(node, {
-			type: this.props.type,
-			data: data,
-            options: options
-        });
+    onClick(externalId) {
+        const outcome = this.props.outcomes.filter(item => !item.isBulkAction)[0];
+        
+        if (outcome)
+            this.props.onOutcome(externalId, outcome.id);            
     }
 
     render() {
@@ -130,7 +54,16 @@ class ChartBase extends React.Component<IChartComponentProps, any> {
 
         let contentElement = this.props.contentElement;
         if (!contentElement)
-            contentElement = <canvas onClick={this.onClick} ref="canvas" />;
+            //contentElement = <canvas onClick={this.onClick} ref="canvas" />;
+            contentElement = React.createElement(manywho.component.getByName('mw-chart-base'), {
+                isVisible: model.isVisible,
+                objectData: [this.props.objectData],
+                columns: manywho.component.getDisplayColumns(model.columns) || [],
+                flowKey: this.props.flowKey,
+                type: this.props.type,
+                options: this.props.options,
+                onClick: this.onClick
+            }, null);
        
         let validationElement = null;
         if (typeof model.isValid !== 'undefined' && model.isValid == false)
@@ -149,4 +82,4 @@ class ChartBase extends React.Component<IChartComponentProps, any> {
 
 }
 
-manywho.component.register('mw-chart-base', ChartBase);
+manywho.component.register('mw-chart', ChartComponent);
