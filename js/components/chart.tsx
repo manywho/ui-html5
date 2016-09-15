@@ -31,7 +31,8 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
             return null;
 
         const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-        
+        const columns = manywho.component.getDisplayColumns(model.columns) || [];
+
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'chart', this.props.flowKey).join(' ');
 
         if (model.isVisible == false)
@@ -44,25 +45,40 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
         if (!manywho.utils.isNullOrWhitespace(model.label))
             labelElement = <label>{model.label}</label>;
 
-        const headerElement = React.createElement(manywho.component.getByName('mw-items-header'), {
-            flowKey: this.props.flowKey,
-            isSearchable: false,
-            isRefreshable: (model.objectDataRequest || model.fileDataRequest),
-            outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowKey),
-            refresh: this.props.refresh
-        });
+        let headerElement = null;
+        if (!this.props.isDesignTime)
+            headerElement = React.createElement(manywho.component.getByName('mw-items-header'), {
+                flowKey: this.props.flowKey,
+                isSearchable: false,
+                isRefreshable: (model.objectDataRequest || model.fileDataRequest),
+                outcomes: manywho.model.getOutcomes(this.props.id, this.props.flowKey),
+                refresh: this.props.refresh
+            });
 
         let contentElement = this.props.contentElement;
-        if (!contentElement)
+        if (!contentElement) {
+            let objectData = [this.props.objectData];
+            
+            if (this.props.isDesignTime)
+                objectData =[[10, 15, 50, 25].map(item => {
+                    return {
+                        properties: [
+                            { contentValue: columns[0].label, typeElementPropertyId: columns[0].typeElementPropertyId },
+                            { contentValue: item, typeElementPropertyId: columns[1].typeElementPropertyId }
+                        ]
+                    }
+                })];
+
             contentElement = React.createElement(manywho.component.getByName('mw-chart-base'), {
                 isVisible: model.isVisible,
-                objectData: [this.props.objectData],
-                columns: manywho.component.getDisplayColumns(model.columns) || [],
+                objectData: objectData,
+                columns: columns,
                 flowKey: this.props.flowKey,
                 type: this.props.type,
                 options: this.props.options,
-                onClick: this.onClick
+                onClick: !this.props.isDesignTime ? this.onClick : null
             }, null);
+        }
        
         let validationElement = null;
         if (typeof model.isValid !== 'undefined' && model.isValid == false)

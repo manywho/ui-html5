@@ -63,7 +63,7 @@ class ChartContainer extends React.Component<any, any> {
 
         const models = children.map(item => manywho.model.getComponent(item.id, this.props.flowKey));
         const states = children.map(item => manywho.state.getComponent(item.id, this.props.flowKey));
-
+        const columns = manywho.component.getDisplayColumns(models[0].columns) || [];
         const isLoading = states.filter(state => state.loading).length > 0;
         const types = {
             'chart-bar': 'bar',
@@ -83,22 +83,35 @@ class ChartContainer extends React.Component<any, any> {
             }
         }
 
-        let refreshButton = (model.objectDataRequest || model.fileDataRequest) ? 
+        let refreshButton = ((model.objectDataRequest || model.fileDataRequest) && !this.props.isDesignTime) ? 
             <button className="btn btn-sm btn-default pull-right" onClick={this.onRefresh}><span className="glyphicon glyphicon-refresh"/></button>
             : null;
+
+        let objectData = models.map(item => item.objectData);
+        if (this.props.isDesignTime)
+            objectData = models.map(item => {
+                return [Math.random() * 10, Math.random() * 15, Math.random() * 50, Math.random() * 25].map(data => {
+                    return {
+                        properties: [
+                            { contentValue: columns[0].label, typeElementPropertyId: columns[0].typeElementPropertyId },
+                            { contentValue: data, typeElementPropertyId: columns[1].typeElementPropertyId }
+                        ]
+                    }
+                })
+            })
 
         return <div>
             {refreshButton}
             {
                 React.createElement(manywho.component.getByName('mw-chart-base'), {
                     isVisible: model.isVisible,
-                    objectData: models.map(item => item.objectData),
-                    columns: manywho.component.getDisplayColumns(models[0].columns) || [],
+                    objectData: objectData,
+                    columns: columns,
                     labels: models.map(item => item.label),
                     flowKey: this.props.flowKey,
                     type: types[models[0].componentType],
                     options: options,
-                    onClick: this.onClick
+                    onClick: !this.props.isDesignTime ? this.onClick : null
                 }, null)
             }
             {React.createElement(manywho.component.getByName('wait'), { isVisible: isLoading, isSmall: true }, null)}

@@ -17,7 +17,7 @@ class ChartBase extends React.Component<IChartBaseProps, any> {
 
     onClick(e) {
         const element = this.chart.getElementAtEvent(e);
-		if (element && element.length > 0)
+		if (element && element.length > 0 && this.props.onClick)
             this.props.onClick(this.props.objectData[element[0]._datasetIndex][element[0]._index].externalId, element[0]._datasetIndex);            
     }
 
