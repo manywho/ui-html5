@@ -54,7 +54,6 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
 
         let contentElement = this.props.contentElement;
         if (!contentElement)
-            //contentElement = <canvas onClick={this.onClick} ref="canvas" />;
             contentElement = React.createElement(manywho.component.getByName('mw-chart-base'), {
                 isVisible: model.isVisible,
                 objectData: [this.props.objectData],

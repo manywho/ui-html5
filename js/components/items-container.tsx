@@ -48,27 +48,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.updateState(objectData, false);
 
         const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
-
-        if (outcome.attributes) {
-            if (outcome.attributes.uri) {
-                window.open(outcome.attributes.uri, '_blank');
-                return;
-            }
-
-            if (outcome.attributes.uriTypeElementPropertyId) {
-                const property = objectData[0].properties.filter((prop) => manywho.utils.isEqual(prop.typeElementPropertyId, outcome.attributes.uriTypeElementPropertyId, true))[0];
-                if (property) {
-                    window.open(property.contentValue, '_blank');
-                    return;
-                }
-            }
-        }
-
-        manywho.engine.move(outcome, this.props.flowKey)
-            .then(() => {
-                if (outcome.isOut)
-                    manywho.engine.flowOut(outcome, this.props.flowKey);
-            });
+        manywho.component.onOutcome(outcome, objectData, this.props.flowKey);
     }
 
     updateState(objectData: Array<any>, clearSearch: boolean) {

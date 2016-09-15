@@ -90,7 +90,8 @@ class ChartBase extends React.Component<IChartBaseProps, any> {
                         }
                 });
 
-                if (this.props.objectData.length > 1) {
+                if (this.props.objectData.length > 1
+                    && (this.props.type === 'bar' || this.props.type === 'line')) {
                     if (dataset.backgroundColor.length - 1 < rowIndex)
                         dataset.backgroundColor.push(backgroundColors[index % backgroundColors.length]);
 
