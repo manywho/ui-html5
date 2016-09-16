@@ -76,7 +76,9 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
                 flowKey: this.props.flowKey,
                 type: this.props.type,
                 options: this.props.options,
-                onClick: !this.props.isDesignTime ? this.onClick : null
+                onClick: !this.props.isDesignTime ? this.onClick : null,
+                width: model.width > 0 ? model.width : undefined,
+                height: model.height > 0 ? model.height : undefined
             }, null);
         }
        

@@ -8,5 +8,7 @@ interface IChartBaseProps {
     onClick: Function,
     flowKey: string,
     type: string,
-    options: any
+    options: any,
+    width: number,
+    height: number
 }

@@ -131,7 +131,7 @@ class ChartBase extends React.Component<IChartBaseProps, any> {
     }
 
     render() {
-		return <canvas onClick={this.onClick} ref="canvas" />
+		return <canvas onClick={this.onClick} ref="canvas" width={this.props.width} height={this.props.height} />
     }
 
 }

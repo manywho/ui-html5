@@ -104,7 +104,9 @@ class ChartContainer extends React.Component<any, any> {
                     flowKey: this.props.flowKey,
                     type: types[models[0].componentType],
                     options: options,
-                    onClick: !this.props.isDesignTime ? this.onClick : null
+                    onClick: !this.props.isDesignTime ? this.onClick : null,
+                    width: models[0].width > 0 ? models[0].width : undefined,
+                    height: models[0].height > 0 ? models[0].height : undefined
                 }, null)
             }
             {React.createElement(manywho.component.getByName('wait'), { isVisible: isLoading, isSmall: true }, null)}
