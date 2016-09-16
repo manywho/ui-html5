@@ -23,13 +23,6 @@ class ChartLine extends React.Component<IItemsComponentProps, any> {
         props.options = {
             legend: {
                 display: !manywho.utils.isNullOrWhitespace(label)
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
             }
         }
 

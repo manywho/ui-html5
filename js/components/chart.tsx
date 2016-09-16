@@ -60,7 +60,7 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
             let objectData = [this.props.objectData];
             
             if (this.props.isDesignTime)
-                objectData =[[10, 15, 50, 25].map(item => {
+                objectData =[[Math.random() * 10, Math.random() * 15, Math.random() * 50, Math.random() * 25].map(item => {
                     return {
                         properties: [
                             { contentValue: columns[0].label, typeElementPropertyId: columns[0].typeElementPropertyId },

@@ -74,13 +74,6 @@ class ChartContainer extends React.Component<any, any> {
         }
 
         let options = {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
-            }
         }
 
         let refreshButton = ((model.objectDataRequest || model.fileDataRequest) && !this.props.isDesignTime) ? 

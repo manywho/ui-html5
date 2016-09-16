@@ -118,7 +118,10 @@ class ChartBase extends React.Component<IChartBaseProps, any> {
             });
         }
 
-        const options = $.extend({}, manywho.settings.global('charts.options', this.props.flowKey, {}), this.props.options)
+        const options = $.extend({}, 
+            manywho.settings.global('charts.options', this.props.flowKey, {}),
+            (chartSettings && chartSettings.options) ? chartSettings.options : {},
+            this.props.options)
 
 		this.chart = new Chart(canvas, {
 			type: this.props.type,
