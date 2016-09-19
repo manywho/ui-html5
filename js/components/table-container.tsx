@@ -230,7 +230,7 @@ declare var manywho : any;
                     {headerElement}
                     {contentElement}
                     {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.onFirstPage, this.props.isDesignTime)}                    
-                    {React.createElement(manywho.component.getByName('wait'), { isVisible: true, message: state.loading && state.loading.message, isSmall: true }, null)}
+                    {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)}
                 </div>
             </div>;
         }
