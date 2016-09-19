@@ -143,8 +143,6 @@ declare var manywho : any;
 
             manywho.log.info('Rendering Table: ' + this.props.id);
 
-            let isValid = true;
-
             const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
             const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
@@ -163,7 +161,7 @@ declare var manywho : any;
                 lastSortedBy: this.state.lastSortedBy,
                 sortByOrder: this.state.sortByOrder,
                 isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
-                isValid: isValid,
+                isValid: !(model.isValid === false || state.isValid === false || state.error),
                 isDesignTime: this.props.isDesignTime
             };
 
@@ -212,8 +210,8 @@ declare var manywho : any;
                 labelElement = <label>{model.label}</label>;
 
             let validationElement = null;
-            if (typeof model.isValid !== 'undefined' && model.isValid == false)
-                validationElement = <div className="has-error"><span className="help-block">{model.validationMessage}</span></div>;
+            if (!props.isValid)
+                validationElement = <div className="has-error"><span className="help-block">{model.validationMessage || state.validationMessage}</span></div>;
 
             const headerElement = React.createElement(manywho.component.getByName('mw-items-header'), {
                 flowKey: this.props.flowKey,
@@ -232,7 +230,7 @@ declare var manywho : any;
                     {headerElement}
                     {contentElement}
                     {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.onFirstPage, this.props.isDesignTime)}                    
-                    {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)}
+                    {React.createElement(manywho.component.getByName('wait'), { isVisible: true, message: state.loading && state.loading.message, isSmall: true }, null)}
                 </div>
             </div>;
         }

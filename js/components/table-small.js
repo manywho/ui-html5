@@ -176,11 +176,9 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Table-Small');
 
-            var isValid = (this.props.model.isValid !== undefined) ? this.props.model.isValid : this.props.isDesignTime && true;
-
             var classNames = [
                 'list-group',
-                (isValid) ? '' : 'table-invalid'
+                (this.props.isValid) ? '' : 'table-invalid'
             ].join(' ');
 
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);

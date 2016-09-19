@@ -215,6 +215,46 @@ manywho.state = (function (manywho) {
 
         },
 
+        isAllValid: function(flowKey) {
+            var components = manywho.model.getComponents(flowKey);
+            var isValid = true;
+
+            if (components)
+                for (var id in components) {
+                    var result = manywho.state.isValid(id, flowKey);
+
+                    if (result.isValid === false) {
+                        manywho.state.setComponent(id, result, flowKey, true);
+                        isValid = false;
+                    }
+                }
+
+            return isValid;
+        },
+
+        isValid: function(id, flowKey) {
+            var result = { isValid: false, validationMessage: manywho.settings.global('localization.validation.required', flowKey) };
+            var model = manywho.model.getComponent(id, flowKey);
+            
+            if (model.isValid === false)
+                return result;
+
+            var state = manywho.state.getComponent(id, flowKey);
+            
+            if (state && state.isValid === false) {
+                result.validationMessage = manywho.utils.isNullOrWhitespace(state.validationMessage) ? result.validationMessage : state.validationMessage
+                return result;
+            }
+
+            if (state && model.isRequired 
+                && (manywho.utils.isNullOrUndefined(state.contentValue) 
+                    && (manywho.utils.isNullOrUndefined(state.objectData) || state.objectData.length === 0)))
+                return result;
+
+            result.isValid = true;
+            return result;
+        },
+
         setState: function(id, token, mapElementId, flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);

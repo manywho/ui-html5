@@ -244,7 +244,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         if (model.isVisible === false)
             className += ' hidden';
 
-        if ((typeof model.isValid !== 'undefined' && model.isValid === false) || state.error)
+        if (model.isValid === false || state.isValid === false || state.error)
             className += ' has-error';
 
         let style: any = {}
@@ -265,7 +265,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 {selectElement}
                 {refreshButton}
             </div>
-            <span className="help-block">{state.error && state.error.message}</span>
+            <span className="help-block">{(state.error && state.error.message) || model.validationMessage || state.validationMessage}</span>
             <span className="help-block">{model.helpInfo}</span>
             {outcomeButtons}
         </div>

@@ -607,6 +607,13 @@ manywho.engine = (function (manywho) {
             // In the model.js, there are componentInputResponseRequests entries for each component
             // that needs to be validated. If a component does not validate correctly, it should
             // prevent the 'move' and also indicate in the UI which component has failed validation
+            var isValid = manywho.state.isAllValid(flowKey);
+            if (!isValid) {
+                manywho.engine.render(flowKey);
+                var deferred = jQuery.Deferred();
+                deferred.fail();
+                return deferred;
+            }
 
             if (outcome && !outcome.isOut) {
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);

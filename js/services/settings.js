@@ -22,7 +22,10 @@ manywho.settings = (function (manywho, $) {
             sending: 'Sending',
             returnToParent: 'Return To Parent',
             noResults: 'No Results',
-            status: null
+            status: null,
+            validation: {
+                required: 'This field is required'
+            }
         },
         paging: {
             table: 10,
