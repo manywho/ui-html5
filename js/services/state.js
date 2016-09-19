@@ -171,6 +171,17 @@ manywho.state = (function (manywho) {
 
             }
 
+            if (typeof values.isValid === 'undefined' && components[lookUpKey][id].isValid === false) {
+                var model = manywho.model.getComponent(id, flowKey);
+                
+                if (model.isRequired &&
+                    (!manywho.utils.isNullOrUndefined(values.contentValue)  || (values.objectData && values.objectData.length > 0))) {
+                    
+                    components[lookUpKey][id].isValid = true;
+                    components[lookUpKey][id].validationMessage = null;
+                }
+            }
+
             if (push) {
                 manywho.collaboration.push(id, values, flowKey);
             }

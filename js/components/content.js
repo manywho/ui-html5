@@ -153,6 +153,7 @@ permissions and limitations under the License.
         handleChange: function (e) {
             var content = this.editor.getContent();
             manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
+            this.forceUpdate();
         },
 
         handleEvent: function (e) {
