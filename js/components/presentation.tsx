@@ -55,7 +55,7 @@ declare var manywho: any;
             return <div className={className} id={this.props.id}>
                 <label>{model.label}</label>
                 <div ref="content" dangerouslySetInnerHTML={{__html: html}} />
-                <span className="help-block">{model.validationMessage}</span>
+                <span className="help-block">{model.validationMessage || state.validationMessage}</span>
                 <span className="help-block">{model.helpInfo}</span>
                 {outcomeElements}
             </div>

@@ -201,7 +201,6 @@ permissions and limitations under the License.
 
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey, callback);
 
-
         },
 
         render: function () {
@@ -212,7 +211,7 @@ permissions and limitations under the License.
             var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-            var isValid = true;
+            var isValid = !(model.isValid === false || state.isValid === false);
             var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
             var contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
@@ -240,9 +239,6 @@ permissions and limitations under the License.
 
             if (model.isRequired)
                 attributes.required = '';
-
-            if (typeof model.isValid !== 'undefined' && model.isValid == false)
-                isValid = false;
 
             var containerClassNames = [
                 (isValid) ? '' : 'has-error',
@@ -278,7 +274,7 @@ permissions and limitations under the License.
                                 model.label
                             ])
                         ),
-                        React.DOM.span({className: 'help-block'}, model.validationMessage),
+                        React.DOM.span({className: 'help-block'}, model.validationMessage || state.validationMessage),
                         React.DOM.span({ className: 'help-block' }, model.helpInfo),
                         outcomeButtons
                     ]);
@@ -314,7 +310,7 @@ permissions and limitations under the License.
                             (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                         ]),
                         React.DOM.input(attributes, null),
-                        React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                        React.DOM.span({ className: 'help-block' }, model.validationMessage || state.validationMessage),
                         React.DOM.span({ className: 'help-block' }, model.helpInfo),
                         outcomeButtons
                     ]);
