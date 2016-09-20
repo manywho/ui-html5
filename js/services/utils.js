@@ -202,7 +202,7 @@ manywho.utils = (function (manywho, $) {
         },
 
         isNullOrWhitespace: function (value) {
-            if (manywho.state.isNullOrUndefined(value))
+            if (manywho.utils.isNullOrUndefined(value))
                 return true;
 
             return value.replace(/\s/g, '').length < 1;
@@ -213,7 +213,7 @@ manywho.utils = (function (manywho, $) {
         },
 
         isNullOrEmpty: function(value) {
-            return manywho.state.isNullOrUndefined(value) || value === '';
+            return manywho.utils.isNullOrUndefined(value) || value === '';
         },
 
         isEqual: function (value1, value2, ignoreCase) {
