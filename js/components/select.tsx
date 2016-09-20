@@ -177,7 +177,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         manywho.log.info(`Rendering Select: ${this.props.id}, ${model.developerName}`);
         
-        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const props: any = {
             filterOptions: this.filterOptions,
             uid: this.getUid,

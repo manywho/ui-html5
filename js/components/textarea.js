@@ -32,7 +32,7 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Textarea: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var isValid = !(model.isValid === false || state.isValid === false);
 

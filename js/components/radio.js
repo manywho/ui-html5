@@ -158,7 +158,7 @@
             var options = [];
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var attributes = {
