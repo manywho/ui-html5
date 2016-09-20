@@ -217,6 +217,10 @@ manywho.utils = (function (manywho, $) {
             return typeof value === 'undefined' || value === null
         },
 
+        isNullOrEmpty: function(value) {
+            return typeof value === 'undefined' || value === null || value === '';
+        },
+
         isEqual: function (value1, value2, ignoreCase) {
 
             if (!value1 && !value2) {

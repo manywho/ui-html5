@@ -175,7 +175,7 @@ manywho.state = (function (manywho) {
                 var model = manywho.model.getComponent(id, flowKey);
                 
                 if (model.isRequired &&
-                    (!manywho.utils.isNullOrUndefined(values.contentValue)  || (values.objectData && values.objectData.length > 0))) {
+                    (!manywho.utils.isNullOrEmpty(values.contentValue)  || (values.objectData && values.objectData.length > 0))) {
                     
                     components[lookUpKey][id].isValid = true;
                     components[lookUpKey][id].validationMessage = null;
@@ -258,7 +258,7 @@ manywho.state = (function (manywho) {
             }
 
             if (state && model.isRequired 
-                && (manywho.utils.isNullOrUndefined(state.contentValue) 
+                && (manywho.utils.isNullOrEmpty(state.contentValue) 
                     && (manywho.utils.isNullOrUndefined(state.objectData) || state.objectData.length === 0)))
                 return result;
 
