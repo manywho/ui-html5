@@ -181,10 +181,9 @@ manywho.component = (function (manywho) {
 
                         })
                         .map(function (item) {
-
-                            item.isSelected = true;
-                            return item;
-
+                            var clone = JSON.parse(JSON.stringify(item));
+                            clone.isSelected = true;
+                            return clone;
                         }));
 
                     }
@@ -290,6 +289,32 @@ manywho.component = (function (manywho) {
 
             }
 
+        },
+
+        onOutcome: function(outcome, objectData, flowKey) {
+            if (outcome.attributes) {
+                if (outcome.attributes.uri) {
+                    window.open(outcome.attributes.uri, '_blank');
+                    return;
+                }
+
+                if (outcome.attributes.uriTypeElementPropertyId && objectData) {
+                    var property = objectData[0].properties.filter(function (prop) {
+                        return manywho.utils.isEqual(prop.typeElementPropertyId, outcome.attributes.uriTypeElementPropertyId, true);
+                    })[0];
+
+                    if (property) {
+                        window.open(property.contentValue, '_blank');
+                        return;
+                    }
+                }
+            }
+
+            manywho.engine.move(outcome, flowKey)
+                .then(function() {
+                    if (outcome.isOut)
+                        manywho.engine.flowOut(outcome, flowKey);
+                });
         }
 
     }
