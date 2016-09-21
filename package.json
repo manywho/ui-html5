@@ -32,7 +32,7 @@
     "gulp-util": "^3.0.4",
     "run-sequence": "^1.2.1",
     "tslint": "^3.10.2",
-    "typescript": "^1.8.10",
+    "typescript": "^2.0.2",
     "yargs": "^2.3.0"
   },
   "scripts": {

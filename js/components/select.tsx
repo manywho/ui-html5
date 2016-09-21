@@ -124,6 +124,14 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page) {
                 options = this.state.options.concat(this.getOptions(nextProps.objectData)),
                 this.setState({ isOpen: true });
+
+                const index = this.state.options.length + 1;
+
+                setTimeout(() => {
+                    const dropdown = ReactDOM.findDOMNode(this).querySelector('.dropdown-menu') as HTMLDivElement;
+                    const scrollTarget = dropdown.children.item(index) as HTMLElement;
+                    dropdown.scrollTop = scrollTarget.offsetTop;
+                });
             }
             else
                 options = this.getOptions(nextProps.objectData);
@@ -169,7 +177,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         manywho.log.info(`Rendering Select: ${this.props.id}, ${model.developerName}`);
         
-        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const props: any = {
             filterOptions: this.filterOptions,
             uid: this.getUid,
@@ -236,7 +244,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         if (model.isVisible === false)
             className += ' hidden';
 
-        if ((typeof model.isValid !== 'undefined' && model.isValid === false) || state.error)
+        if (model.isValid === false || state.isValid === false || state.error)
             className += ' has-error';
 
         let style: any = {}
@@ -257,7 +265,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 {selectElement}
                 {refreshButton}
             </div>
-            <span className="help-block">{state.error && state.error.message}</span>
+            <span className="help-block">{(state.error && state.error.message) || model.validationMessage || state.validationMessage}</span>
             <span className="help-block">{model.helpInfo}</span>
             {outcomeButtons}
         </div>

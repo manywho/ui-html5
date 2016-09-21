@@ -202,15 +202,18 @@ manywho.utils = (function (manywho, $) {
         },
 
         isNullOrWhitespace: function (value) {
-
-            if (typeof value === 'undefined' || value == null) {
-
+            if (manywho.utils.isNullOrUndefined(value))
                 return true;
 
-            }
-
             return value.replace(/\s/g, '').length < 1;
+        },
 
+        isNullOrUndefined: function(value) {
+            return typeof value === 'undefined' || value === null
+        },
+
+        isNullOrEmpty: function(value) {
+            return manywho.utils.isNullOrUndefined(value) || value === '';
         },
 
         isEqual: function (value1, value2, ignoreCase) {

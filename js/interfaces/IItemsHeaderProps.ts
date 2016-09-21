@@ -7,5 +7,5 @@ interface IItemsHeaderProps extends IComponentProps {
     onSearchChanged: Function,
     onSearch: Function,
     outcomes: Array<any>,
-    refresh: Function
+    refresh: (MouseEvent) => void
 }

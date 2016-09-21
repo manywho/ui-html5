@@ -24,13 +24,14 @@ declare var manywho : any;
         return displayColumns;
     }
 
-    function renderFooter(pageIndex: number, hasMoreResults: boolean, onNext: Function, onPrev: Function, isDesignTime: boolean) {
+    function renderFooter(pageIndex: number, hasMoreResults: boolean, onNext: Function, onPrev: Function, onFirstPage: Function, isDesignTime: boolean) {
         if (pageIndex > 1 || hasMoreResults)
             return React.createElement(manywho.component.getByName('mw-pagination'), {
                 pageIndex: pageIndex,
                 hasMoreResults: hasMoreResults,
                 onNext: onNext,
                 onPrev: onPrev,
+                onFirstPage: onFirstPage,
                 isDesignTime: isDesignTime
             });
 
@@ -142,25 +143,25 @@ declare var manywho : any;
 
             manywho.log.info('Rendering Table: ' + this.props.id);
 
-            var isValid = true;
-
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-            var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+            const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+            const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             
-            var props = {
+            const selectedRows = (state.objectData || []).filter(objectData => objectData.isSelected);
+
+            let props = {
                 id: this.props.id,
                 model: model,
                 objectData: this.props.objectData,
                 totalObjectData: (!model.objectDataRequest && model.objectData) ? model.objectData.length : null,
                 outcomes: outcomes.filter((outcome) => !outcome.isBulkAction),
                 displayColumns: getDisplayColumns(model.columns, outcomes),
-                selectedRows: state.objectData || [],
+                selectedRows: selectedRows,
                 flowKey: this.props.flowKey,
                 lastSortedBy: this.state.lastSortedBy,
                 sortByOrder: this.state.sortByOrder,
                 isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
-                isValid: isValid,
+                isValid: !(model.isValid === false || state.isValid === false || state.error),
                 isDesignTime: this.props.isDesignTime
             };
 
@@ -209,8 +210,8 @@ declare var manywho : any;
                 labelElement = <label>{model.label}</label>;
 
             let validationElement = null;
-            if (typeof model.isValid !== 'undefined' && model.isValid == false)
-                validationElement = <div className="has-error"><span className="help-block">{model.validationMessage}</span></div>;
+            if (!props.isValid)
+                validationElement = <div className="has-error"><span className="help-block">{model.validationMessage || state.validationMessage}</span></div>;
 
             const headerElement = React.createElement(manywho.component.getByName('mw-items-header'), {
                 flowKey: this.props.flowKey,
@@ -228,7 +229,7 @@ declare var manywho : any;
                     {fileUpload}
                     {headerElement}
                     {contentElement}
-                    {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.isDesignTime)}                    
+                    {renderFooter(this.props.page, this.props.hasMoreResults, this.props.onNext, this.props.onPrev, this.props.onFirstPage, this.props.isDesignTime)}                    
                     {React.createElement(manywho.component.getByName('wait'), { isVisible: state.loading, message: state.loading && state.loading.message, isSmall: true }, null)}
                 </div>
             </div>;

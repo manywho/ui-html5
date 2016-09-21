@@ -15,9 +15,10 @@ interface IItemsComponentProps extends IComponentProps {
     objectData: Array<any>,
     onSearch: Function,
     outcomes: Array<any>,
-    refresh: Function,
+    refresh: (MouseEvent) => void,
     onNext: Function,
     onPrev: Function,
+    onFirstPage: Function,
     page: number,
     limit: number,
     isLoading: boolean

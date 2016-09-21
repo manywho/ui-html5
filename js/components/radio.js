@@ -158,7 +158,7 @@
             var options = [];
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
             var attributes = {
@@ -218,7 +218,7 @@
 
             var containerClassNames = ['form-group'];
 
-            if ((typeof model.isValid !== 'undefined' && model.isValid == false) || state.error)
+            if (model.isValid === false || state.isValid === false || state.error)
                 containerClassNames.push('has-error');
 
             if (model.isVisible == false)
@@ -244,7 +244,7 @@
                     options
                 ]),
                 React.DOM.div({ className: iconClassNames.join(' ') }, React.DOM.span({ className: 'glyphicon glyphicon-refresh spin'}, null)),
-                React.DOM.span({ className: 'help-block' }, state.error && state.error.message),
+                React.DOM.span({ className: 'help-block' }, (state.error && state.error.message) || model.validationMessage || state.validationMessage),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo),
                 outcomeButtons
             ]);

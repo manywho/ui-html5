@@ -27,8 +27,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.select = this.select.bind(this);
         this.selectAll = this.selectAll.bind(this);
         this.clearSelection = this.clearSelection.bind(this);
+        this.onPaginate = this.onPaginate.bind(this);
         this.onNext = this.onNext.bind(this);
         this.onPrev = this.onPrev.bind(this);
+        this.onFirstPage = this.onFirstPage.bind(this);
     }
 
     areBulkActionsDefined(outcomes) : boolean {
@@ -48,27 +50,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.updateState(objectData, false);
 
         const outcome = manywho.model.getOutcome(outcomeId, this.props.flowKey);
-
-        if (outcome.attributes) {
-            if (outcome.attributes.uri) {
-                window.open(outcome.attributes.uri, '_blank');
-                return;
-            }
-
-            if (outcome.attributes.uriTypeElementPropertyId) {
-                const property = objectData[0].properties.filter((prop) => manywho.utils.isEqual(prop.typeElementPropertyId, outcome.attributes.uriTypeElementPropertyId, true))[0];
-                if (property) {
-                    window.open(property.contentValue, '_blank');
-                    return;
-                }
-            }
-        }
-
-        manywho.engine.move(outcome, this.props.flowKey)
-            .then(() => {
-                if (outcome.isOut)
-                    manywho.engine.flowOut(outcome, this.props.flowKey);
-            });
+        manywho.component.onOutcome(outcome, objectData, this.props.flowKey);
     }
 
     updateState(objectData: Array<any>, clearSearch: boolean) {
@@ -112,7 +94,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         this.load(model, state);
     }
 
-    refresh() {        
+    refresh(e) {        
         this.search(null, true);
     }
 
@@ -120,7 +102,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        let selectedItems = (state.objectData || []).map((item) => item);
+        let selectedItems = (state.objectData || [])
+            .filter(item => item.isSelected)
+            .map(item => item);
+
         let selectedItem = null;
                 
         if (typeof item === 'string')
@@ -169,14 +154,11 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey);
     }
 
-    onNext() {
+    onPaginate(page) {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        let state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+        const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
-        if (!state.page)
-            state.page = 1;
-
-        state.page++;
+        state.page = page;
         manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
         if (model.objectDataRequest || model.fileDataRequest)
@@ -185,17 +167,20 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             this.forceUpdate();
     }
 
+    onNext() {
+        let page = manywho.state.getComponent(this.props.id, this.props.flowKey).page || 1;
+        page++;
+        this.onPaginate(page);
+    }
+
     onPrev() {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        let state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-        state.page--;
+        let page = manywho.state.getComponent(this.props.id, this.props.flowKey).page || 1;
+        page--;
+        this.onPaginate(Math.max(1, page));
+    }
 
-        manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
-
-        if (model.objectDataRequest || model.fileDataRequest)
-            this.load(model, state);
-        else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true))
-            this.forceUpdate();
+    onFirstPage() {
+        this.onPaginate(1);
     }
 
     render() {        
@@ -257,7 +242,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         if (state.error)
             contentElement = (<div className="mw-items-error">
                 <p className="lead">{state.error.message}</p>
-                <button className="btn btn-danger" onClick={this.search}>Retry</button>
+                <button className="btn btn-danger" onClick={this.refresh}>Retry</button>
             </div>);
 
         const props = {
@@ -277,6 +262,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             refresh: this.refresh,
             onNext: this.onNext,
             onPrev: this.onPrev,
+            onFirstPage: this.onFirstPage,
             page: state.page || 1,
             limit: limit,
             isLoading: state.loading !== null && typeof state.loading !== 'undefined'

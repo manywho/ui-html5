@@ -279,14 +279,12 @@ permissions and limitations under the License.
 
             manywho.log.info('Rendering Table-Large');
 
-            var isValid = (this.props.model.isValid !== undefined) ? this.props.model.isValid : this.props.isDesignTime && true;
-
             var tableClassNames = [
                 'table',
                 (this.props.model.attributes.borderless && manywho.utils.isEqual(this.props.model.attributes.borderless, "true", true)) ? '' : 'table-bordered',
                 (this.props.model.attributes.striped && manywho.utils.isEqual(this.props.model.attributes.striped, "true", true)) ? 'table-striped' : '',
                 (this.props.isSelectionEnabled) ? 'table-hover' : '',
-                (isValid) ? '' : 'table-invalid'
+                (this.props.isValid) ? '' : 'table-invalid'
             ].join(' ');
 
             var rows = [this.renderHeaderRow(this.props.displayColumns)];

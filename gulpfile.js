@@ -92,8 +92,9 @@ gulp.task('dist-hashes', function() {
 
 gulp.task('dist', function () {
     runSequence('dist-clean',              
-                ['dist-js', 'dist-less', 'dist-bootstrap', 'dist-loader', 'dist-bootstrap-themes', 'dist-fonts', 'dist-vendor'],
-                'dist-html');
+                ['dist-js', 'dist-loader'],
+                ['dist-less', 'dist-bootstrap', 'dist-bootstrap-themes'],
+                ['dist-fonts', 'dist-vendor', 'dist-html']);
 });
 
 // Deploy

@@ -147,10 +147,7 @@ declare var manywho: any;
             if (this.props.onClick)
                 this.props.onClick(e, model, this.props.flowKey);
             else
-                manywho.engine.move(model, this.props.flowKey).then(() => {
-                    if (model.isOut)
-                        manywho.engine.flowOut(model, this.props.flowKey);
-                });
+                manywho.component.onOutcome(model, null, this.props.flowKey);
         },
 
         shouldComponentUpdate(nextProps: any, nextState) {
