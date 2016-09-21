@@ -603,7 +603,10 @@ manywho.engine = (function (manywho) {
 
         move: function(outcome, flowKey) {
 
-            if (outcome && manywho.utils.isEqual(outcome.pageActionBindingType, 'SAVE', true)) {
+            if (outcome 
+                && manywho.utils.isEqual(outcome.pageActionBindingType, 'SAVE', true)
+                && manywho.settings.global('validation.isEnabled', flowKey)) {
+                    
                 var isValid = manywho.state.isAllValid(flowKey);
                 if (!isValid) {
                     manywho.engine.render(flowKey);

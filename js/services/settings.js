@@ -109,6 +109,9 @@ manywho.settings = (function (manywho, $) {
             polarArea: {
                 backgroundColors: ['rgba(66, 165, 245, 0.4)', 'rgba(102, 187, 106, 0.4)', 'rgba(239, 83, 80, 0.4)', 'rgba(171, 71, 188, 0.4)', 'rgba(255, 167, 38, 0.4)', 'rgba(120, 144, 156, 0.4)', 'rgba(92, 107, 192, 0.4)']
             }
+        },
+        validation: {
+            isEnabled: false
         }
     };
 
