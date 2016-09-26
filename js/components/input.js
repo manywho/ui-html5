@@ -107,10 +107,12 @@ permissions and limitations under the License.
 
             if (value != null) {
 
-                value = value.replace(/^\s+|\s+$/g, '');
+                if (typeof value === 'string') {
+                    value = value.replace(/^\s+|\s+$/g, '');
 
-                if (manywho.utils.isNullOrWhitespace(value))
-                    return isNaN(value);
+                    if (manywho.utils.isNullOrWhitespace(value))
+                        return isNaN(value);
+                }
 
                 var max = (Math.pow(10, maxSize)) - 1;
                 var min = (Math.pow(10, maxSize) * - 1) + 1;
@@ -201,6 +203,21 @@ permissions and limitations under the License.
 
             manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey, callback);
 
+        },
+
+        componentWillReceiveProps: function(nextProps) {
+            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+            var contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
+            var contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
+
+            if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.datetime, true))
+                this.setState({ value: contentValue });
+            else if (manywho.utils.isEqual(contentType, manywho.component.contentTypes.number, true)) {
+                var value = this.parseNumberInput(contentValue, model.maxSize);
+                if (value)
+                    this.setState({ value: value});
+            }
         },
 
         render: function () {
