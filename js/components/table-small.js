@@ -70,7 +70,6 @@ permissions and limitations under the License.
 
                 var attributes = {
                     className: classNames.join(' '),
-                    href: '#',
                     id: item.externalId,
                     'data-item': item.externalId
                 };
@@ -98,7 +97,7 @@ permissions and limitations under the License.
 
                 }
 
-                return React.DOM.a(attributes, [
+                return React.DOM.li(attributes, [
                     React.DOM.table({ className: 'table table-small-item' },
                         React.DOM.tbody(null,
                              displayColumns.map(function (column) {
@@ -182,7 +181,7 @@ permissions and limitations under the License.
             ].join(' ');
 
             var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
-            return React.DOM.div({ className: classNames }, items);
+            return React.DOM.ul({ className: classNames }, items);
 
         }
 
@@ -191,3 +190,4 @@ permissions and limitations under the License.
     manywho.component.register("mw-table-small", tableSmall);
 
 }(manywho));
+
