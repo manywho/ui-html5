@@ -288,7 +288,8 @@ permissions and limitations under the License.
                         React.DOM.div({ className: 'checkbox ' },
                             React.DOM.label(null, [
                                 React.DOM.input(attributes, null),
-                                model.label
+                                model.label,
+                                (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                             ])
                         ),
                         React.DOM.span({className: 'help-block'}, model.validationMessage || state.validationMessage),
