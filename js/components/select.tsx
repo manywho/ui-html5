@@ -240,6 +240,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, }));
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey).join(' ');
+        className += ' form-group';
 
         if (model.isVisible === false)
             className += ' hidden';
