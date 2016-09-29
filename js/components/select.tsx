@@ -119,7 +119,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
 
         if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
-            let options = this.state.options || [];
+            let options = [];
 
             if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page) {
                 options = this.state.options.concat(this.getOptions(nextProps.objectData)),
@@ -133,11 +133,11 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                     dropdown.scrollTop = scrollTarget.offsetTop;
                 });
             }
-            else if (nextProps.objectData && this.state.options.length <= nextProps.objectData.length)
+            else
                 options = this.getOptions(nextProps.objectData);
 
             if (state && state.objectData) {
-                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId));
+                const selectedOptions = state.objectData.filter(item => options.find(option => option.value.externalId === item.externalId));
                 if (selectedOptions.length === 0)
                     options = (this.getOptions(state.objectData) || []).concat(options);
             }
