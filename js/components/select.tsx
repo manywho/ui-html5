@@ -218,7 +218,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
                 if (values)
                     if (!model.isMultiSelect)
-                        props.value = props.values[0];
+                        props.value = values[0];
                     else {
                         props.values = values;
                         props.anchor = values[values.length - 1];
