@@ -50,7 +50,10 @@ permissions and limitations under the License.
 
         onChange: function(e) {
 
-            this.setState({ value: e.currentTarget.value })
+            if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.boolean, true))
+                this.setState({ value: !this.state.value });
+            else
+                this.setState({ value: e.currentTarget.value });
 
         },
 
@@ -161,6 +164,9 @@ permissions and limitations under the License.
                 onBlur: this.onBlur,
                 ref: 'input'
             }
+
+            if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.boolean, true))
+                props.checked = this.state.value;
             
             if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.string, true)) {
                 props.rows = 1;

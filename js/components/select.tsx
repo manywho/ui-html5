@@ -138,7 +138,8 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
             if (state && state.objectData) {
                 const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId));
-                options = (this.getOptions(selectedOptions) || []).concat(options);
+                if (selectedOptions.length === 0)
+                    options = (this.getOptions(state.objectData) || []).concat(options);
             }
 
             this.setState({ options: options });
@@ -195,7 +196,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             props.onBlur = this.onBlur;
             props.onFocus = this.onFocus;
             props.value = null;
-            props.options = null;
+            props.options = this.state.options;
             
             if (model.attributes && manywho.utils.isEqual(model.attributes.isTethered, 'true', true))
                 props.tether = true;
@@ -210,16 +211,18 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                     externalIds = this.props.objectData.filter((item) => item.isSelected)
                                             .map((item) => item.externalId);
 
+                let values = null; 
+
                 if (externalIds && externalIds.length > 0)
-                    props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
+                    values = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
 
-                if (!model.isMultiSelect && props.value)
-                    props.value = props.value[0];
-
-                if (externalIds && externalIds.length > 0 && model.isMultiSelect)
-                    props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
-                else
-                    props.options = this.state.options;
+                if (values)
+                    if (!model.isMultiSelect)
+                        props.value = props.values[0];
+                    else {
+                        props.values = values;
+                        props.anchor = values[values.length - 1];
+                    }                
             }
         }
 
@@ -240,6 +243,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, }));
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey).join(' ');
+        className += ' form-group';
 
         if (model.isVisible === false)
             className += ' hidden';

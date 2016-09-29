@@ -130,19 +130,24 @@ declare var manywho: any;
                     return <div className="navbar-wizard">
                         {(!manywho.utils.isNullOrWhitespace(navigation.label) ? <span className="navbar-brand">{navigation.label}</span> : null )}
                         <ul className="steps">
-                            {manywho.utils.convertToArray(navigation.items).map(item => {
-                                let className = null;
+                            {manywho.utils.convertToArray(navigation.items)
+                                .filter(item => item.isVisible)
+                                .map(item => {
+                                    let className = null;
 
-                                if (item.isCurrent)
-                                    className += ' active';
+                                    if (item.isCurrent)
+                                        className += ' active';
 
-                                if (item.isVisible === false)
-                                    className += ' hidden';
+                                    if (item.isEnabled === false)
+                                        className += ' disabled';
 
-                                if (item.isEnabled === false)
-                                    className += ' disabled';
+                                    if (item.tags) {
+                                        const tag = item.tags.find(tag => manywho.utils.isEqual(tag.developerName, 'isComplete', true));
+                                        if (tag && manywho.utils.isEqual(tag.contentValue, 'false', true))
+                                            className += ' active';
+                                    }
 
-                                return <li onClick={this.onClick.bind(null, item)} id={item.id} className={className}><span className="indicator"/><span className="glyphicon glyphicon-ok" />{item.label}</li>
+                                    return <li onClick={this.onClick.bind(null, item)} id={item.id} className={className}><span className="indicator"/><span className="glyphicon glyphicon-ok" />{item.label}</li>
                             })}
                         </ul>
                         {returnToParent}
