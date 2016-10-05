@@ -177,14 +177,17 @@ declare var manywho: any;
                     uri = model.attributes.uri;
             }
 
+            if (!manywho.utils.isNullOrWhitespace(this.props.className))
+                className += ' ' + this.props.className;
+
             // Back compat for existing "outcome" attribute on tables
             if (!manywho.utils.isNullOrWhitespace(this.props.display))
                 content = this.getContent(model, this.props.display);
 
             if (uri)
-                return <a id={this.props.id} className={className} title={model.label} href={uri} target="_blank">{content}</a>
+                return <a id={this.props.id} className={className} title={model.label} href={uri} target="_blank" disabled={this.props.disabled}>{content}</a>
             else
-                return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label}>{content}</button>
+                return <button id={this.props.id} className={className} onClick={this.onClick} title={model.label} disabled={this.props.disabled}>{content}</button>
         }
 
     });
