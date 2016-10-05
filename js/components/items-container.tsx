@@ -185,7 +185,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
     render() {        
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
         const columns = manywho.component.getDisplayColumns(model.columns) || [];
         
