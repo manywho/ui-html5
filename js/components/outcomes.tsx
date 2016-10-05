@@ -1,3 +1,14 @@
+/*!
+ Copyright 2016 ManyWho, Inc.
+ Licensed under the ManyWho License, Version 1.0 (the "License"); you may not use this
+ file except in compliance with the License.
+ You may obtain a copy of the License at: http://manywho.com/sharedsource
+ Unless required by applicable law or agreed to in writing, software distributed under
+ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the specific language governing
+ permissions and limitations under the License.
+ */
+
 /// <reference path="../../typings/index.d.ts" />
 /// <reference path="../interfaces/IComponentProps.ts" />
 
@@ -10,6 +21,8 @@ interface IOutcomesState {
 }
 
 class Outcomes extends React.Component<IOutcomesProps, IOutcomesState> {
+
+    displayName: 'Outcomes'
 
     constructor(props: IOutcomesProps){
         super(props);
@@ -33,7 +46,7 @@ class Outcomes extends React.Component<IOutcomesProps, IOutcomesState> {
         if (model.isValid === false || state.isValid === false)
             className += ' has-error';
 
-        if (!model.isVisible)
+        if (model.isVisible === false)
             className += ' hidden';
 
         let rowClassName = 'row';
@@ -64,6 +77,13 @@ class Outcomes extends React.Component<IOutcomesProps, IOutcomesState> {
                 disabled: !model.isEnabled,
                 flowKey: this.props.flowKey
             }));
+
+        if (this.props.isDesignTime)
+            outcomeElements =[
+                <button className="btn btn-primary outcome" key="outcome1">Outcome 1</button>,
+                <button className="btn btn-success outcome" key="outcome2">Outcome 2</button>,
+                <button className="btn btn-danger outcome" key="outcome3">Outcome 3</button>
+            ];
 
         if (!manywho.utils.isNullOrWhitespace(model.attributes.group))
             outcomeElements = [<div className={groupClassName}>{outcomeElements}</div>];
