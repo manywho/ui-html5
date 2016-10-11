@@ -655,7 +655,7 @@ manywho.engine = (function (manywho) {
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
 
-                        var options = manywho.settings.getGlobals(flowKey);
+                        var options = manywho.state.getOptions(flowKey);
 
                         var subFlowKey = manywho.utils.getFlowKey(tenantId, null, null, response.stateId, manywho.utils.extractElement(flowKey));
 
@@ -674,7 +674,7 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-            var options = manywho.settings.getGlobals(flowKey);
+            var options = manywho.state.getOptions(flowKey);
 
             manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
             this.render(flowKey);
@@ -905,7 +905,7 @@ manywho.engine = (function (manywho) {
 
                         if (response)
                         {
-                            var options = manywho.settings.getGlobals(flowKey);
+                            var options = manywho.state.getOptions(flowKey);
 
                             self.join(manywho.utils.extractTenantId(flowKey),
                                         manywho.utils.extractFlowId(flowKey),

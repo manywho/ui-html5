@@ -190,14 +190,6 @@ manywho.settings = (function (manywho, $) {
 
         },
 
-        getGlobals: function (flowKey) {
-
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
-            return manywho.utils.extend(globals, flows[lookUpKey], true);
-
-        },
-
         flow: function(path, flowKey) {
 
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
