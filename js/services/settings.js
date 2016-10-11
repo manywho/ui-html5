@@ -112,6 +112,9 @@ manywho.settings = (function (manywho, $) {
         },
         validation: {
             isEnabled: false
+        },
+        location: {
+            isTrackingEnabled: false
         }
     };
 
