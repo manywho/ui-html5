@@ -112,6 +112,9 @@ manywho.settings = (function (manywho, $) {
         },
         validation: {
             isEnabled: false
+        },
+        location: {
+            isTrackingEnabled: false
         }
     };
 
@@ -184,14 +187,6 @@ manywho.settings = (function (manywho, $) {
             }
 
             return globalValue;
-
-        },
-
-        getGlobals: function (flowKey) {
-
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
-            return manywho.utils.extend(globals, flows[lookUpKey], true);
 
         },
 

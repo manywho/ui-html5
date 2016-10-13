@@ -21,31 +21,6 @@ manywho.state = (function (manywho) {
     var options = {};
     var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-    function assignGeoLocation(position) {
-
-        if (position != null &&
-            position.coords != null) {
-
-            geoLocation = {
-                latitude: manywho.utils.getNumber(position.coords.latitude),
-                longitude: manywho.utils.getNumber(position.coords.longitude),
-                accuracy: manywho.utils.getNumber(position.coords.accuracy),
-                altitude: manywho.utils.getNumber(position.coords.altitude),
-                altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
-                heading: manywho.utils.getNumber(position.coords.heading),
-                speed: manywho.utils.getNumber(position.coords.speed)
-            }
-
-        }
-
-    }
-
-    function trackUserPosition() {
-
-
-
-    }
-
     function isEmptyObjectData(model) {
 
         if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
@@ -113,7 +88,8 @@ manywho.state = (function (manywho) {
 
         setLocation: function(flowKey) {
 
-            if ("geolocation" in navigator && manywho.settings.global('trackLocation', flowKey, false)) {
+            if ("geolocation" in navigator && 
+                (manywho.settings.global('trackLocation', flowKey, false) || manywho.settings.global('location.isTrackingEnabled', flowKey, false))) {
 
                 var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 

@@ -202,9 +202,12 @@ manywho.component = (function (manywho) {
             if (columns) {
 
                 displayColumns = columns.filter(function (column) {
-
-                    return column.isDisplayValue;
-
+                    if (column.properties) {
+                        var property = manywho.utils.getObjectDataProperty(column.properties, 'isDisplayValue');
+                        return property ? manywho.utils.isEqual(property.contentValue, 'true', true) : false;
+                    }
+                    else
+                        return column.isDisplayValue;
                 });
 
             }

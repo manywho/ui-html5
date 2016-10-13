@@ -27,11 +27,8 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
 
         manywho.log.info(`Rendering Chart: ${model.developerName}, ${this.props.id}`);
 
-        if (this.props.isDesignTime)
-            return null;
-
         const state = this.props.isDesignTime ? { error: null, loading: false } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-        const columns = manywho.component.getDisplayColumns(model.columns) || [];
+        let columns = manywho.component.getDisplayColumns(model.columns) || [];
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'chart', this.props.flowKey).join(' ');
 
@@ -56,19 +53,22 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
             });
 
         let contentElement = this.props.contentElement;
-        if (!contentElement) {
-            let objectData = [this.props.objectData];
-            
-            if (this.props.isDesignTime)
-                objectData =[[Math.random() * 10, Math.random() * 15, Math.random() * 50, Math.random() * 25].map(item => {
-                    return {
-                        properties: [
-                            { contentValue: columns[0].label, typeElementPropertyId: columns[0].typeElementPropertyId },
-                            { contentValue: item, typeElementPropertyId: columns[1].typeElementPropertyId }
-                        ]
-                    }
-                })];
+        let objectData = [this.props.objectData];
+        
+        if (this.props.isDesignTime) {
+            objectData =[[Math.random() * 10, Math.random() * 15, Math.random() * 50, Math.random() * 25].map((item, index) => {
+                return {
+                    properties: [
+                        { contentValue: 'Label ' + index, typeElementPropertyId: 'id' },
+                        { contentValue: item, typeElementPropertyId: 'id1' }
+                    ]
+                }
+            })];
 
+            columns = [{ typeElementPropertyId: 'id' }, { typeElementPropertyId: 'id1' }];
+        }
+
+        if (!contentElement || this.props.isDesignTime)
             contentElement = React.createElement(manywho.component.getByName('mw-chart-base'), {
                 isVisible: model.isVisible,
                 objectData: objectData,
@@ -80,7 +80,6 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
                 width: model.width > 0 ? model.width : undefined,
                 height: model.height > 0 ? model.height : undefined
             }, null);
-        }
        
         let validationElement = null;
         if (typeof model.isValid !== 'undefined' && model.isValid == false)

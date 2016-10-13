@@ -2,6 +2,7 @@
 /// <reference path="../interfaces/IItemsComponentProps.ts" />
 
 declare var manywho: any;
+declare var $: any;
 
 class ChartPolar extends React.Component<IItemsComponentProps, any> {
 
@@ -12,8 +13,10 @@ class ChartPolar extends React.Component<IItemsComponentProps, any> {
     }
 
     render() {
-        const props: any = this.props;
-        props.type = 'polarArea'; 
+        const props: any = $.extend({}, this.props, {
+            type : 'polarArea'
+        });
+
         return React.createElement(manywho.component.getByName('mw-chart'), props, null)
     }
 

@@ -39,7 +39,7 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
         if (model.isValid === false || state.isValid === false)
             className += ' has-error';
 
-        if (!model.isVisible)
+        if (model.isVisible === false)
             className += ' hidden';
 
         const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;

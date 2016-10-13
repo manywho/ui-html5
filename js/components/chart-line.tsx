@@ -2,6 +2,7 @@
 /// <reference path="../interfaces/IItemsComponentProps.ts" />
 
 declare var manywho: any;
+declare var $: any;
 
 class ChartLine extends React.Component<IItemsComponentProps, any> {
 
@@ -18,13 +19,14 @@ class ChartLine extends React.Component<IItemsComponentProps, any> {
         if (model.attributes)
             label = model.attributes.label;
 
-        const props: any = this.props;
-        props.type = 'line'; 
-        props.options = {
-            legend: {
-                display: !manywho.utils.isNullOrWhitespace(label)
+        const props: any = $.extend({}, this.props, {
+            type : 'line', 
+            options: {
+                legend: {
+                    display: !manywho.utils.isNullOrWhitespace(label)
+                }
             }
-        }
+        });
 
         return React.createElement(manywho.component.getByName('mw-chart'), props, null)
     }
