@@ -78,7 +78,8 @@ class ChartComponent extends React.Component<IChartComponentProps, any> {
                 options: this.props.options,
                 onClick: !this.props.isDesignTime ? this.onClick : null,
                 width: model.width > 0 ? model.width : undefined,
-                height: model.height > 0 ? model.height : undefined
+                height: model.height > 0 ? model.height : undefined,
+                isLoading: this.props.isLoading
             }, null);
        
         let validationElement = null;
