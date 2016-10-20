@@ -10,5 +10,6 @@ interface IChartBaseProps {
     type: string,
     options: any,
     width: number,
-    height: number
+    height: number,
+    isLoading: boolean
 }
