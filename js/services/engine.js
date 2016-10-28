@@ -542,7 +542,19 @@ manywho.engine = (function (manywho) {
                     moveResponse = null;
                 }
 
-            });
+            })
+            .always(function() {
+
+                var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+                var container = document.getElementById(lookUpKey);
+
+                if (container) {
+                    var scroller = container.querySelector('.main-scroller');
+                    if (scroller)
+                        scroller.scrollTop = 0; 
+                }
+                
+            })
 
     }
 
