@@ -61,8 +61,20 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
         const style = { width: 30 + (15 * model.size) + "px !important" };
-        const max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
-        const min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
+        let max = (Math.pow(10, Math.min(model.maxSize, 17))) - 1;
+        let min = (Math.pow(10, Math.min(model.maxSize, 17)) * -1) + 1;
+        let step = 1;
+
+        if (model.attributes) {
+            if (!manywho.utils.isNullOrUndefined(model.attributes.minimum))
+                min = model.attributes.minimum;
+
+            if (!manywho.utils.isNullOrUndefined(model.attributes.maximum))
+                max = model.attributes.maximum;
+
+            if (!manywho.utils.isNullOrUndefined(model.attributes.step))
+                step = model.attributes.step;
+        }
 
         return <input id={this.props.id}
                     value={this.state.value}
@@ -71,6 +83,7 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
                     style={style}
                     max={max}
                     min={min}
+                    step={step}
                     readOnly={this.props.readOnly}
                     disabled={this.props.disabled}
                     required={this.props.required}
