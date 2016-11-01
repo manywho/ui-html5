@@ -233,11 +233,21 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
         let contentElement = null;
 
-        if (columns.length == 0)
-            contentElement = <div className="mw-items-error"><p className="lead">No display columns have been defined</p></div>
-
         if (!state.loading && (!objectData || objectData.length == 0))
             contentElement = <div className="mw-items-empty"><p className="lead">{manywho.settings.global('localization.noResults', this.props.flowKey)}</p></div>
+
+        if (model.attributes
+            && (manywho.utils.isEqual(model.attributes.onlyDisplaySearchResults, 'true', true) || model.attributes.onlyDisplaySearchResults === true)
+            && model.isSearchable
+            && manywho.utils.isNullOrWhitespace(state.search)
+            && manywho.utils.isNullOrUndefined(objectData)
+            && !state.loading)
+            contentElement = <div className="mw-items-search-first">
+                <p className="lead">{manywho.utils.isNullOrWhitespace() ? manywho.settings.global('localization.searchFirst', this.props.flowKey) : model.attributes.onDisplaySearchResultsCaption}</p>
+            </div>
+
+        if (columns.length == 0)
+            contentElement = <div className="mw-items-error"><p className="lead">No display columns have been defined</p></div>
 
         if (state.error)
             contentElement = (<div className="mw-items-error">
