@@ -40,13 +40,22 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
         if (manywho.utils.isNullOrWhitespace(value))
             this.props.onChange(null);
         else if (!isNaN(value)) {
-            const max = (Math.pow(10, model.maxSize)) - 1;
-            const min = (Math.pow(10, model.maxSize) * - 1) + 1;
+            let max = (Math.pow(10, model.maxSize)) - 1;
+            let min = (Math.pow(10, model.maxSize) * - 1) + 1;
+
+            if (model.attributes) {
+                if (!manywho.utils.isNullOrUndefined(model.attributes.minimum))
+                    min = parseFloat(model.attributes.minimum);
+
+                if (!manywho.utils.isNullOrUndefined(model.attributes.maximum))
+                    max = parseFloat(model.attributes.maximum);
+            }
 
             parsedValue = Math.min(parsedValue, max);
             parsedValue = Math.max(parsedValue, min);
             
             manywho.state.setComponent(this.props.id, { isValid: true }, this.props.flowKey, true);
+            this.setState({ value: parsedValue.toString() });
             this.props.onChange(parsedValue);
         }
         else if (isNaN(value) && !manywho.utils.isNullOrWhitespace(value))
