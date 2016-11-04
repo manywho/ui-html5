@@ -66,6 +66,10 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
         this.setState({ value: this.props.value ? this.props.value.toString() : null });
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({ value: nextProps.value ? nextProps.value.toString() : null });
+    }
+
     render() {   
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
