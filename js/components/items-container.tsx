@@ -243,7 +243,13 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             && manywho.utils.isNullOrUndefined(objectData)
             && !state.loading)
             contentElement = <div className="mw-items-search-first">
-                <p className="lead">{manywho.utils.isNullOrWhitespace() ? manywho.settings.global('localization.searchFirst', this.props.flowKey) : model.attributes.onDisplaySearchResultsCaption}</p>
+                <p className="lead">
+                    {
+                        manywho.utils.isNullOrWhitespace(model.attributes.onDisplaySearchResultsCaption) ? 
+                            manywho.settings.global('localization.searchFirst', this.props.flowKey) : 
+                            model.attributes.onDisplaySearchResultsCaption
+                    }
+                </p>
             </div>
 
         if (columns.length == 0)
