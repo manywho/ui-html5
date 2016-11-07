@@ -63,11 +63,11 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
     }
 
     componentWillMount() {
-        this.setState({ value: this.props.value ? this.props.value.toString() : null });
+        this.setState({ value: !manywho.utils.isNullOrUndefined(this.props.value) ? this.props.value.toString() : null });
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ value: nextProps.value ? nextProps.value.toString() : null });
+        this.setState({ value: !manywho.utils.isNullOrUndefined(nextProps.value) ? nextProps.value.toString() : null });
     }
 
     render() {   
