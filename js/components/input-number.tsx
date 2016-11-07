@@ -38,7 +38,7 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
         let parsedValue = parseFloat(value);
         
         if (manywho.utils.isNullOrWhitespace(value))
-            this.props.onChange(null);
+            this.props.onChange("");
         else if (!isNaN(value)) {
             let max = (Math.pow(10, model.maxSize)) - 1;
             let min = (Math.pow(10, model.maxSize) * - 1) + 1;
