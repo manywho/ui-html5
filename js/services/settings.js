@@ -25,7 +25,8 @@ manywho.settings = (function (manywho, $) {
             status: null,
             validation: {
                 required: 'This field is required'
-            }
+            },
+            searchFirst: 'Perform a search to display results here'
         },
         paging: {
             table: 10,
