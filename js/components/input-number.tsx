@@ -38,7 +38,7 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
         let parsedValue = parseFloat(value);
         
         if (manywho.utils.isNullOrWhitespace(value))
-            this.props.onChange(null);
+            this.props.onChange("");
         else if (!isNaN(value)) {
             let max = (Math.pow(10, model.maxSize)) - 1;
             let min = (Math.pow(10, model.maxSize) * - 1) + 1;
@@ -63,11 +63,11 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
     }
 
     componentWillMount() {
-        this.setState({ value: this.props.value ? this.props.value.toString() : null });
+        this.setState({ value: !manywho.utils.isNullOrUndefined(this.props.value) ? this.props.value.toString() : null });
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ value: nextProps.value ? nextProps.value.toString() : null });
+        this.setState({ value: !manywho.utils.isNullOrUndefined(nextProps.value) ? nextProps.value.toString() : null });
     }
 
     render() {   
