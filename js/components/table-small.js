@@ -142,7 +142,7 @@ permissions and limitations under the License.
 
                                     if (selectedProperty) {
 
-                                        var element = React.DOM.span(null, selectedProperty.contentValue);
+                                        var element = React.DOM.span(null, manywho.formatting.format(selectedProperty));
 
                                         if (this.props.isFiles &&
                                             (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)

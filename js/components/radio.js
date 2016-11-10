@@ -47,7 +47,7 @@
 
             return React.DOM.label({ className: type }, [
                     React.DOM.input(optionAttributes),
-                    label.contentValue
+                    manywho.formatting.format(label)
             ]);
 
         }
