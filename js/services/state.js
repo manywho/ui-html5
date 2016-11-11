@@ -104,10 +104,10 @@ manywho.state = (function (manywho) {
                             altitude: manywho.utils.getNumber(position.coords.altitude),
                             altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
                             heading: manywho.utils.getNumber(position.coords.heading),
-                            speed: manywho.utils.getNumber(position.coords.speed),
-                            time: moment().format()
+                            speed: manywho.utils.getNumber(position.coords.speed)
                         }
 
+                        manywho.state.setUserTime(flowKey);
                     }
 
                 }, null, { timeout: 60000 });
@@ -124,9 +124,9 @@ manywho.state = (function (manywho) {
                 now.utcOffset(manywho.settings.global('globalization.timezoneOffset', flowKey));
 
             if (location[lookUpKey])
-                location[lookUpKey].time = moment().format();
+                location[lookUpKey].time = now.format();
             else
-                location[lookUpKey] = { time: moment().format() };
+                location[lookUpKey] = { time: now.format() };
         },
 
         getComponent: function(id, flowKey) {
