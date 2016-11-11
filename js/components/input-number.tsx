@@ -55,8 +55,11 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
             parsedValue = Math.max(parsedValue, min);
             
             manywho.state.setComponent(this.props.id, { isValid: true }, this.props.flowKey, true);
-            this.setState({ value: parsedValue.toString() });
-            this.props.onChange(parsedValue);
+
+            if (parseFloat(value) !== parsedValue)
+                this.setState({ value: parsedValue.toString() });
+
+            setTimeout(() => this.props.onChange(parsedValue));
         }
         else if (isNaN(value) && !manywho.utils.isNullOrWhitespace(value))
             manywho.state.setComponent(this.props.id, { isValid: false }, this.props.flowKey, true);
@@ -67,7 +70,8 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ value: !manywho.utils.isNullOrUndefined(nextProps.value) ? nextProps.value.toString() : null });
+        if (!manywho.utils.isNullOrUndefined(nextProps.value) && parseFloat(this.state.value) !== nextProps.value)
+            this.setState({ value: nextProps.value.toString() });
     }
 
     render() {   
