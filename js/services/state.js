@@ -97,8 +97,6 @@ manywho.state = (function (manywho) {
 
                     if (position != null && position.coords != null) {
 
-                        var nowTime = moment();
-
                         location[lookUpKey] = {
                             latitude: manywho.utils.getNumber(position.coords.latitude),
                             longitude: manywho.utils.getNumber(position.coords.longitude),
@@ -107,8 +105,7 @@ manywho.state = (function (manywho) {
                             altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
                             heading: manywho.utils.getNumber(position.coords.heading),
                             speed: manywho.utils.getNumber(position.coords.speed),
-                            time: nowTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-
+                            time: moment().format()
                         }
 
                     }
@@ -117,6 +114,19 @@ manywho.state = (function (manywho) {
 
             }
 
+        },
+
+        setUserTime: function(flowKey) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            var now = moment();
+
+            if (!manywho.utils.isNullOrUndefined(manywho.settings.global('globalization.timezoneOffset', flowKey)))
+                now.utcOffset(manywho.settings.global('globalization.timezoneOffset', flowKey));
+
+            if (location[lookUpKey])
+                location[lookUpKey].time = moment().format();
+            else
+                location[lookUpKey] = { time: moment().format() };
         },
 
         getComponent: function(id, flowKey) {

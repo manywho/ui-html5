@@ -28,6 +28,9 @@ manywho.settings = (function (manywho, $) {
             },
             searchFirst: 'Perform a search to display results here'
         },
+        globalization: {
+            timezoneOffset: null
+        },
         paging: {
             table: 10,
             files: 10,
