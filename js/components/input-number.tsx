@@ -63,7 +63,7 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
     }
 
     componentWillMount() {
-        this.setState({ value: !manywho.utils.isNullOrUndefined(this.props.value) ? this.props.value.toString() : null });
+        this.setState({ value: !manywho.utils.isNullOrUndefined(this.props.value) ? manywho.formatting.number(this.props.value, this.props.format) : null });
     }
 
     componentWillReceiveProps(nextProps) {

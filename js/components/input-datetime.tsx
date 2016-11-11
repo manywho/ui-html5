@@ -64,7 +64,7 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
 
         $(datepickerElement).datetimepicker({
             locale: model.attributes.dateTimeLocale || 'en-us',
-            format: model.attributes.dateTimeFormat || 'MM/DD/YYYY'
+            format: model.attributes.dateTimeFormat || manywho.formatting.toMomentFormat(model.contentFormat) || 'MM/DD/YYYY'
         })
         .on('dp.change', this.onChange);
 

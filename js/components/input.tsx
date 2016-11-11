@@ -72,7 +72,8 @@ class Input extends React.Component<IComponentProps, IInputState> {
             required: model.isRequired === true,
             onChange: this.onChange,
             onBlur: this.onBlur,
-            flowKey: this.props.flowKey
+            flowKey: this.props.flowKey,
+            format: model.contentFormat
         };
 
         if (this.props.isDesignTime) {

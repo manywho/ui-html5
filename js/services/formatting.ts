@@ -82,28 +82,39 @@ manywho.formatting = (function (manywho, moment) {
             return value;
         },
 
+        toMomentFormat(format: string) {
+            if (!manywho.utils.isNullOrEmpty(format)) {
+                const parts = format.split(dateTimeFormatRegex);
+
+                if (parts) {
+                    let parsedFormat = format;
+
+                    parts.forEach(part => {
+                        const mapping = dateTimeFormatMappings.find(item => item.key === part);
+                        parsedFormat = mapping ? parsedFormat.replace(part, mapping.value) : parsedFormat;
+                    })
+
+                    return parsedFormat;
+                }
+            }
+
+            return null;
+        },
+
         dateTime: function(dateTime, format: string) {
             if (manywho.utils.isNullOrWhitespace(format))
                 return dateTime;
 
             const parsedDateTime = moment(dateTime);
-            const parts = format.split(dateTimeFormatRegex);
+            const momentFormat = manywho.formatting.toMomentFormat(format);
 
-            if (parts) {
-                let parsedFormat = JSON.parse(JSON.stringify(format));
-
-                parts.forEach(part => {
-                    const mapping = dateTimeFormatMappings.find(item => item.key === part);
-                    parsedFormat = mapping ? parsedFormat.replace(part, mapping.value) : parsedFormat;
-                })
-
-                return parsedDateTime.format(parsedFormat);
-            }
+            if (momentFormat)
+                return parsedDateTime.format(momentFormat);
 
             return dateTime;
         },
 
-        number: function(number: Number, format: string): string {
+        number: function(number: number | string, format: string): string {
             if (manywho.utils.isNullOrWhitespace(format))
                 return number.toString();
 
