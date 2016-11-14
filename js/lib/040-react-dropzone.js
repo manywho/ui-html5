@@ -141,7 +141,8 @@ var Dropzone = React.createClass({
                     className: className,
                     style: style,
                     onClick: this.onClick,
-                    onTouchEnd: this.onClick,
+                    // Remove this event handler as it causes the file picker to be displayed twice on mobile
+                    //onTouchEnd: this.onClick,
                     onDragLeave: this.onDragLeave,
                     onDragOver: this.onDragOver,
                     onDrop: this.onDrop
