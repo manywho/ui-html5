@@ -61,6 +61,9 @@ class Outcomes extends React.Component<IOutcomesProps, IOutcomesState> {
 
             if (manywho.utils.isEqual(model.attributes.group, 'vertical', true))
                 groupClassName += ' btn-group-vertical';
+
+            if (!manywho.utils.isNullOrWhitespace(model.attributes.columns))
+                rowClassName += ' block';
         }
 
         const outcomes: Array<any> = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
