@@ -70,13 +70,20 @@ class Outcomes extends React.Component<IOutcomesProps, IOutcomesState> {
             size = model.attributes.size;
 
         let outcomeElements: Array<JSX.Element> = outcomes && outcomes
-            .map((outcome) => React.createElement(manywho.component.getByName('outcome'), { 
-                id: outcome.id,
-                size: size,
-                className: model.attributes.outcomeClasses,
-                disabled: !model.isEnabled,
-                flowKey: this.props.flowKey
-            }));
+            .map((outcome) => { 
+                const element = React.createElement(manywho.component.getByName('outcome'), { 
+                    id: outcome.id,
+                    size: size,
+                    className: model.attributes.outcomeClasses,
+                    disabled: !model.isEnabled,
+                    flowKey: this.props.flowKey
+                });
+
+                if (model.attributes && !manywho.utils.isNullOrWhitespace(model.attributes.columns))
+                    return <div className={'column col-' + model.attributes.columns}>{element}</div>;
+                else
+                    return element;
+            });
 
         if (this.props.isDesignTime)
             outcomeElements =[
