@@ -53,6 +53,7 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'y', value: 'YY' },
         { key: 'yy', value: 'YY' },
         { key: 'yyy', value: 'YYYY' },
+        { key: 'yyyy', value: 'YYYY' },
         { key: 'z', value: 'ZZ' },
         { key: 'zz', value: 'ZZ' },
         { key: 'zzz', value: 'ZZ' }
@@ -84,6 +85,36 @@ manywho.formatting = (function (manywho, moment) {
 
         toMomentFormat(format: string) {
             if (!manywho.utils.isNullOrEmpty(format)) {
+
+                if (format === 'd')
+                    return 'l';
+                else if (format === 'D')
+                    return 'dddd, MMMM, YYYY';
+                else if (format === 'f')
+                    return 'LLLL';
+                else if (format === 'F')
+                    return 'dddd, LL LTS';
+                else if (format === 'g')
+                    return 'L LT';
+                else if (format === 'G')
+                    return 'L LTS';
+                else if (format == 'm')
+                    return 'MMMM D';
+                else if (format == 'r')
+                    return 'ddd, DD MMM YYYY HH:mm:ss [GMT]';
+                else if (format == 's')
+                    return 'YYYY-MM-DD[T]HH:mm:ss';
+                else if (format === 't')
+                    return 'LT';
+                else if (format === 'T')
+                    return 'LTS';
+                else if (format === 'u')
+                    return 'L HH:mm:ss[Z]';
+                else if (format === 'U')
+                    return 'dddd, LL LTS';
+                else if (format == 'y')
+                    return 'MMMM YYYY';
+
                 const parts = format.split(dateTimeFormatRegex);
 
                 if (parts) {
@@ -105,7 +136,11 @@ manywho.formatting = (function (manywho, moment) {
             if (manywho.utils.isNullOrWhitespace(format))
                 return dateTime;
 
-            const parsedDateTime = moment(dateTime);
+            const parsedDateTime = moment(dateTime, moment.ISO_8601);
+
+            if (!parsedDateTime.isValid())
+                return dateTime;
+
             const momentFormat = manywho.formatting.toMomentFormat(format);
 
             if (momentFormat)
