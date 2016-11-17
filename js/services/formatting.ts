@@ -59,7 +59,7 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'zzz', value: 'ZZ' }
     ]
 
-    numbro.language(window.navigator.language);
+    numbro.culture(window.navigator.language);
 
     return {
         format(value, format, contentType) {
@@ -136,15 +136,20 @@ manywho.formatting = (function (manywho, moment) {
             if (manywho.utils.isNullOrWhitespace(format))
                 return dateTime;
 
-            const parsedDateTime = moment(dateTime, moment.ISO_8601);
+            try {
+                const parsedDateTime = moment(dateTime, moment.ISO_8601);
 
-            if (!parsedDateTime.isValid())
-                return dateTime;
+                if (!parsedDateTime.isValid())
+                    return dateTime;
 
-            const momentFormat = manywho.formatting.toMomentFormat(format);
+                const momentFormat = manywho.formatting.toMomentFormat(format);
 
-            if (momentFormat)
-                return parsedDateTime.format(momentFormat);
+                if (momentFormat)
+                    return parsedDateTime.format(momentFormat);
+            }
+            catch (ex) {
+                manywho.log.error(ex);
+            }
 
             return dateTime;
         },
@@ -153,39 +158,46 @@ manywho.formatting = (function (manywho, moment) {
             if (manywho.utils.isNullOrWhitespace(format))
                 return number.toString();
 
-            if (format.indexOf('e') !== -1 || format.indexOf('E') !== -1)
-                return (new Number(number)).toExponential();
+            try {
+                if (format.indexOf('e') !== -1 || format.indexOf('E') !== -1)
+                    return (new Number(number)).toExponential();
 
-            if (format.indexOf('c') !== -1 || format.indexOf('C') !== -1)
-                return numbro(number).formatCurrency('0[.]00', (value) => {
-                    return value;
-                });
+                if (format.indexOf('c') !== -1 || format.indexOf('C') !== -1)
+                    return numbro(number).formatCurrency('0[.]00', (value) => {
+                        return value;
+                    });
 
-            format = format.replace(/^#+\./, match => match.replace(/#/g, '0'));
+                format = format.replace(/^#+\./, match => match.replace(/#/g, '0'));
 
-            if (format.indexOf('.') !== -1) {
-                const numberString = number.toString();
-                const decimals = numberString.substring(numberString.indexOf('.') + 1);
-                const decimalsFormat = format.substring(format.indexOf('.') + 1);
+                if (format.indexOf('.') !== -1) {
+                    const numberString = number.toString();
+                    const decimals = numberString.substring(numberString.indexOf('.') + 1);
+                    const decimalsFormat = format.substring(format.indexOf('.') + 1);
 
-                format = format.substring(0, format.indexOf('.') + 1);
+                    format = format.substring(0, format.indexOf('.') + 1);
 
-                decimalsFormat.split('').forEach((part, index) => {
-                    switch (part.toUpperCase()) {
-                        case '#':
-                            if (index < decimals.length)
-                                format += 0;
-                            break;
+                    decimalsFormat.split('').forEach((part, index) => {
+                        switch (part.toUpperCase()) {
+                            case '#':
+                                if (index < decimals.length)
+                                    format += 0;
+                                break;
 
-                        case '0':
-                            format += '0';
-                            break;
-                    }
-                });
+                            case '0':
+                                format += '0';
+                                break;
+                        }
+                    });
+                }
+
+                return numbro(number).format(format);
+            }
+            catch (ex) {
+                manywho.log.error(ex);
             }
 
-            return numbro(number).format(format);
-        }
+            return number.toString();
+        }        
     }
 
 })(manywho, moment);
