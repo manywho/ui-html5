@@ -120,6 +120,9 @@ manywho.settings = (function (manywho, $) {
         },
         location: {
             isTrackingEnabled: false
+        },
+        formatting: {
+            isEnabled: false
         }
     };
 

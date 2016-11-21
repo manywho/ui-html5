@@ -63,6 +63,9 @@ manywho.formatting = (function (manywho, moment) {
 
     return {
         format(value, format, contentType, flowKey) {
+            if (!manywho.settings.global('formatting.isEnabled', flowKey, false))
+                return value;
+
             switch (contentType.toUpperCase()) {
                 case manywho.component.contentTypes.datetime:
                     return manywho.formatting.dateTime(value, format, flowKey);
@@ -124,6 +127,9 @@ manywho.formatting = (function (manywho, moment) {
         },
 
         dateTime: function(dateTime, format: string, flowKey: string) {
+            if (!manywho.settings.global('formatting.isEnabled', flowKey, false))
+                return dateTime;
+
             let offset = null;
 
             if (manywho.settings.global('globalization.overrideTimezoneOffset', flowKey)
@@ -156,7 +162,7 @@ manywho.formatting = (function (manywho, moment) {
         },
 
         number: function(number: number | string, format: string, flowKey: string): string {
-            if (manywho.utils.isNullOrWhitespace(format))
+            if (manywho.utils.isNullOrWhitespace(format) || !manywho.settings.global('formatting.isEnabled', flowKey, false))
                 return number.toString();
 
             try {
