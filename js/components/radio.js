@@ -197,7 +197,7 @@
 
                     options = model.objectData.map(function (item) {
                         return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName, selectedItems, this.props.flowKey);
-                    });
+                    }, this);
 
                 }
 
