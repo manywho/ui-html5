@@ -29,7 +29,7 @@ manywho.settings = (function (manywho, $) {
             searchFirst: 'Perform a search to display results here'
         },
         globalization: {
-            overrideTimezoneOffset: true,
+            overrideTimezoneOffset: false,
             timezoneOffset: null
         },
         paging: {

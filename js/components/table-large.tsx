@@ -185,7 +185,7 @@ declare var manywho: any;
                                     }
                                 </td>
                             else {
-                                let contentValue = manywho.formatting.format(selectedProperty);
+                                let contentValue = manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, flowKey);
                                 
                                 return <td id={column.typeElementPropertyId} key={column.typeElementPropertyId} onClick={column.isEditable && this.onCellClick}>
                                     <span>{contentValue}</span>

@@ -62,22 +62,13 @@ manywho.formatting = (function (manywho, moment) {
     numbro.culture(window.navigator.language);
 
     return {
-        format(value, format, contentType) {
-            if (typeof value === 'object') {
-                format = value.contentFormat;
-                contentType = value.contentType;                
-                value = value.contentValue;
-            }
-
-            if (manywho.utils.isNullOrWhitespace(format))
-                return value;
-
+        format(value, format, contentType, flowKey) {
             switch (contentType.toUpperCase()) {
                 case manywho.component.contentTypes.datetime:
-                    return manywho.formatting.dateTime(value, format);
+                    return manywho.formatting.dateTime(value, format, flowKey);
 
                 case manywho.component.contentTypes.number:
-                    return manywho.formatting.number(value, format);
+                    return manywho.formatting.number(value, format, flowKey);
             }
 
             return value;
@@ -89,7 +80,7 @@ manywho.formatting = (function (manywho, moment) {
                 if (format === 'd')
                     return 'l';
                 else if (format === 'D')
-                    return 'dddd, MMMM, YYYY';
+                    return 'dddd, MMMM DD, YYYY';
                 else if (format === 'f')
                     return 'LLLL';
                 else if (format === 'F')
@@ -109,7 +100,7 @@ manywho.formatting = (function (manywho, moment) {
                 else if (format === 'T')
                     return 'LTS';
                 else if (format === 'u')
-                    return 'L HH:mm:ss[Z]';
+                    return 'YYYY-MM-DD HH:mm:ss[Z]';
                 else if (format === 'U')
                     return 'dddd, LL LTS';
                 else if (format == 'y')
@@ -132,20 +123,30 @@ manywho.formatting = (function (manywho, moment) {
             return null;
         },
 
-        dateTime: function(dateTime, format: string) {
-            if (manywho.utils.isNullOrWhitespace(format))
+        dateTime: function(dateTime, format: string, flowKey: string) {
+            let offset = null;
+
+            if (manywho.settings.global('globalization.overrideTimezoneOffset', flowKey)
+                && !manywho.utils.isNullOrUndefined(manywho.settings.global('globalization.timezoneOffset', flowKey)))
+                offset = manywho.settings.global('globalization.timezoneOffset', flowKey);
+
+            if (manywho.utils.isNullOrUndefined(offset) && manywho.utils.isNullOrWhitespace(format))
                 return dateTime;
 
             try {
-                const parsedDateTime = moment(dateTime, moment.ISO_8601);
+                const momentFormat = manywho.formatting.toMomentFormat(format);
+                const formats = [moment.ISO_8601];
+
+                if (momentFormat)
+                    formats.unshift(momentFormat);
+
+                let parsedDateTime = moment(dateTime, formats);
 
                 if (!parsedDateTime.isValid())
                     return dateTime;
 
-                const momentFormat = manywho.formatting.toMomentFormat(format);
-
-                if (momentFormat)
-                    return parsedDateTime.format(momentFormat);
+                parsedDateTime.utcOffset(offset);
+                return parsedDateTime.format(momentFormat);
             }
             catch (ex) {
                 manywho.log.error(ex);
@@ -154,7 +155,7 @@ manywho.formatting = (function (manywho, moment) {
             return dateTime;
         },
 
-        number: function(number: number | string, format: string): string {
+        number: function(number: number | string, format: string, flowKey: string): string {
             if (manywho.utils.isNullOrWhitespace(format))
                 return number.toString();
 

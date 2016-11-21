@@ -44,7 +44,7 @@ class List extends React.Component<IComponentProps, any> {
             
             elements = model.objectData.map(element => {
                 const property = element.properties.find(prop => manywho.utils.isEqual(prop.typeElementPropertyId, columnTypeElementPropertyId, true));
-                return <li id={element.externalId} key={element.externalId}>{manywho.formatting.format(property)}</li>;
+                return <li id={element.externalId} key={element.externalId}>{manywho.formatting.format(property.contentValue, property.contentFormat, property.contentType, this.props.flowKey)}</li>;
             });
         }
         else if (this.props.isDesignTime)

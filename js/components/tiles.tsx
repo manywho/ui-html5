@@ -50,15 +50,18 @@ class Tiles extends React.Component<ITilesProps, any> {
         if (item.isSelected)
             className += ' bg-info';
 
-        const header: string = manywho.formatting.format(item.properties.find((property) => property.typeElementPropertyId == columns[0].typeElementPropertyId));
+        const selectedProperty = item.properties.find(property => property.typeElementPropertyId == columns[0].typeElementPropertyId);
+        const header: string = manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey);
         
         let deleteOutcomeElement = null;
         if (deleteOutcome)
             deleteOutcomeElement = React.createElement(manywho.component.getByName('outcome'), { id: deleteOutcome.id, flowKey: this.props.flowKey, onClick: this.onOutcome, size: 'sm' });
 
         let content: string = null;
-        if (columns.length > 1)
-            content = manywho.formatting.format(item.properties.find((property) => property.typeElementPropertyId == columns[1].typeElementPropertyId));
+        if (columns.length > 1) {
+            const selectedProperty = item.properties.find(property => property.typeElementPropertyId == columns[1].typeElementPropertyId);
+            content = manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey);
+        }
         
         let footer: Array<JSX.Element> = null;
         if (columns.length > 2)
