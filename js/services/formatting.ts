@@ -149,7 +149,9 @@ manywho.formatting = (function (manywho, moment) {
                 if (!parsedDateTime.isValid())
                     return dateTime;
 
-                parsedDateTime.utcOffset(offset);
+                if (format != 'r' && format !== 'u')
+                    parsedDateTime.utcOffset(offset);
+
                 return parsedDateTime.format(momentFormat);
             }
             catch (ex) {
