@@ -59,8 +59,6 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'zzz', value: 'ZZ' }
     ]
 
-    numbro.culture(window.navigator.language);
-
     return {
         format(value, format, contentType, flowKey) {
             if (!manywho.settings.global('formatting.isEnabled', flowKey, false))
@@ -151,7 +149,9 @@ manywho.formatting = (function (manywho, moment) {
                 if (!parsedDateTime.isValid())
                     return dateTime;
 
-                parsedDateTime.utcOffset(offset);
+                if (format != 'r' && format !== 'u')
+                    parsedDateTime.utcOffset(offset);
+
                 return parsedDateTime.format(momentFormat);
             }
             catch (ex) {
