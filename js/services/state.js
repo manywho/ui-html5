@@ -120,8 +120,8 @@ manywho.state = (function (manywho) {
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
             var now = moment();
 
-            if (!manywho.utils.isNullOrUndefined(manywho.settings.global('globalization.timezoneOffset', flowKey)))
-                now.utcOffset(manywho.settings.global('globalization.timezoneOffset', flowKey));
+            if (!manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
+                now.utcOffset(manywho.settings.global('i18n.timezoneOffset', flowKey));
 
             if (location[lookUpKey])
                 location[lookUpKey].time = now.format();

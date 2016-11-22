@@ -132,9 +132,9 @@ manywho.formatting = (function (manywho, moment) {
 
             let offset = null;
 
-            if (manywho.settings.global('globalization.overrideTimezoneOffset', flowKey)
-                && !manywho.utils.isNullOrUndefined(manywho.settings.global('globalization.timezoneOffset', flowKey)))
-                offset = manywho.settings.global('globalization.timezoneOffset', flowKey);
+            if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey)
+                && !manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
+                offset = manywho.settings.global('i18n.timezoneOffset', flowKey);
 
             if (manywho.utils.isNullOrUndefined(offset) && manywho.utils.isNullOrWhitespace(format))
                 return dateTime;

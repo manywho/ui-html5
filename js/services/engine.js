@@ -249,7 +249,7 @@ manywho.engine = (function (manywho) {
             }, onInitializeFailed)
             .then(function (response) {
 
-                if (manywho.settings.global('globalization.overrideTimezoneOffset', flowKey))
+                if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
                     manywho.state.setUserTime(flowKey);
 
                 var invokeRequest = manywho.json.generateInvokeRequest(
@@ -351,7 +351,7 @@ manywho.engine = (function (manywho) {
         manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.joining') }, flowKey);
         self.render(flowKey);
 
-        if (manywho.settings.global('globalization.overrideTimezoneOffset', flowKey))
+        if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
             manywho.state.setUserTime(flowKey);
 
         return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
