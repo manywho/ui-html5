@@ -41,16 +41,10 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
     }
 
     onChange(e) {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-        const formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
-
-        if (model.attributes && model.attributes.dateTimeFormat)
-            formats.push(model.attributes.dateTimeFormat);
-
-        const date = moment(e.target.value, formats);
-
-        if (date.isValid())
-            this.props.onChange(date.format());
+        if (!e.date)
+            this.props.onChange(null)
+        else if (e.date.isValid())
+            this.props.onChange(e.date.format());
         else
             this.props.onChange(e.target.value);
     }
@@ -64,14 +58,16 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
 
         $(datepickerElement).datetimepicker({
             locale: model.attributes.dateTimeLocale || 'en-us',
-            format: model.attributes.dateTimeFormat || 'MM/DD/YYYY'
+            format: model.attributes.dateTimeFormat || manywho.formatting.toMomentFormat(model.contentFormat) || 'MM/DD/YYYY'
         })
         .on('dp.change', this.onChange);
 
         if (this.isEmptyDate(state.contentValue))
             manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
         else {
-            stateDate = moment(state.contentValue, ["MM/DD/YYYY hh:mm:ss A ZZ", moment.ISO_8601]);
+            stateDate = moment(state.contentValue, ['MM/DD/YYYY hh:mm:ss A ZZ', 'YYYY-MM-DDTHH:mm:ss.SSSSSSSZ', moment.ISO_8601]);
+            stateDate.utcOffset(state.contentValue);
+
             manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
             $(datepickerElement).data("DateTimePicker").date(stateDate);
         }
@@ -83,6 +79,11 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.value === null) {
+            this.setState({ value: null });
+            return;
+        }
+
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const formats = [moment.ISO_8601, 'MM/DD/YYYY hh:mm:ss A ZZ'];
         let customFormat = null;
@@ -93,6 +94,7 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
         }        
 
         const dateTime = moment(nextProps.value, formats);
+        dateTime.utcOffset(nextProps.value);
 
         if (dateTime.isValid())
             this.setState({ value: dateTime.format(customFormat || 'MM/DD/YYYY') });

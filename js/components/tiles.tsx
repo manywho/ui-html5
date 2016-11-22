@@ -50,22 +50,25 @@ class Tiles extends React.Component<ITilesProps, any> {
         if (item.isSelected)
             className += ' bg-info';
 
-        const header: string = item.properties.find((property) => property.typeElementPropertyId == columns[0].typeElementPropertyId).contentValue;
+        const selectedProperty = item.properties.find(property => property.typeElementPropertyId == columns[0].typeElementPropertyId);
+        const header: string = manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey);
         
         let deleteOutcomeElement = null;
         if (deleteOutcome)
             deleteOutcomeElement = React.createElement(manywho.component.getByName('outcome'), { id: deleteOutcome.id, flowKey: this.props.flowKey, onClick: this.onOutcome, size: 'sm' });
 
         let content: string = null;
-        if (columns.length > 1)
-            content = item.properties.find((property) => property.typeElementPropertyId == columns[1].typeElementPropertyId).contentValue;
+        if (columns.length > 1) {
+            const selectedProperty = item.properties.find(property => property.typeElementPropertyId == columns[1].typeElementPropertyId);
+            content = manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey);
+        }
         
         let footer: Array<JSX.Element> = null;
         if (columns.length > 2)
             footer = columns.map((column, index) => {
                 if (index > 1) {
                     const property = item.properties.find((property) => property.typeElementPropertyId == column.typeElementPropertyId);
-                    return <li><strong>{property.developerName}</strong>: {property.contentValue}</li>
+                    return <li><strong>{property.developerName}</strong>: {manywho.formatting.format(property)}</li>
                 }
             });
 

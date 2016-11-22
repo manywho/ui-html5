@@ -11,7 +11,7 @@
 
 (function (manywho) {
 
-    function renderOption (item, attributes, column, developerName, selectedItems) {
+    function renderOption (item, attributes, column, developerName, selectedItems, flowKey) {
 
         var optionAttributes = {};
 
@@ -47,7 +47,7 @@
 
             return React.DOM.label({ className: type }, [
                     React.DOM.input(optionAttributes),
-                    label.contentValue
+                    manywho.formatting.format(label.contentValue, label.contentFormat, label.contentType, flowKey)
             ]);
 
         }
@@ -196,8 +196,8 @@
                     }
 
                     options = model.objectData.map(function (item) {
-                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName, selectedItems);
-                    });
+                        return renderOption(item, attributes, columnTypeElementPropertyId, model.developerName, selectedItems, this.props.flowKey);
+                    }, this);
 
                 }
 

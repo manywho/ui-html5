@@ -249,12 +249,17 @@ manywho.engine = (function (manywho) {
             }, onInitializeFailed)
             .then(function (response) {
 
+                if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
+                    manywho.state.setUserTime(flowKey);
+
                 var invokeRequest = manywho.json.generateInvokeRequest(
                     manywho.state.getState(flowKey),
                     'FORWARD',
                     null,
                     null,
+                    null,
                     navigationId,
+                    null,
                     manywho.settings.flow('annotations', flowKey),
                     manywho.state.getLocation(flowKey),
                     manywho.settings.flow('mode', flowKey)
@@ -345,6 +350,9 @@ manywho.engine = (function (manywho) {
 
         manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.joining') }, flowKey);
         self.render(flowKey);
+
+        if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
+            manywho.state.setUserTime(flowKey);
 
         return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
@@ -588,6 +596,8 @@ manywho.engine = (function (manywho) {
 
             }
 
+            numbro.culture(window.navigator.language);
+
             if (stateId && !isInitializing) {
 
                 this.join(config.tenantId, config.flowId, config.flowVersionId, config.container, stateId, authenticationToken, config.options);
@@ -712,6 +722,7 @@ manywho.engine = (function (manywho) {
                 null,
                 null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
+                null,
                 null,
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey),

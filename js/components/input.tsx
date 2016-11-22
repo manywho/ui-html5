@@ -59,7 +59,7 @@ class Input extends React.Component<IComponentProps, IInputState> {
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-        const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
+        const contentValue = state && state.contentValue !== undefined ?  state.contentValue : model.contentValue;
 
         const props: any = {
             placeholder: model.hintValue,
@@ -72,7 +72,8 @@ class Input extends React.Component<IComponentProps, IInputState> {
             required: model.isRequired === true,
             onChange: this.onChange,
             onBlur: this.onBlur,
-            flowKey: this.props.flowKey
+            flowKey: this.props.flowKey,
+            format: model.contentFormat
         };
 
         if (this.props.isDesignTime) {

@@ -45,12 +45,14 @@ declare var manywho: any;
             if (model.isVisible === false)
                 className += ' hidden';
 
-            const html = model.content
-                .replace(/&quot;/g, '\"')
-                .replace(/&#39;/g, '\'')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&amp;/g, '&');
+            let html = model.content
+
+            if (!manywho.utils.isNullOrUndefined(html))
+                html = html.replace(/&quot;/g, '\"')
+                    .replace(/&#39;/g, '\'')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&');
 
             return <div className={className} id={this.props.id}>
                 <label>{model.label}</label>

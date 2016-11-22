@@ -50,7 +50,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
             return objectData.map((item) => {
                 var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-                return { value: item, label: label.contentValue };
+                return { value: item, label: manywho.formatting.format(label.contentValue, label.contentFormat, label.contentType, this.props.flowKey) };
             });
         }
     }
