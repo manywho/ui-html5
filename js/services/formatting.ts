@@ -59,8 +59,6 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'zzz', value: 'ZZ' }
     ]
 
-    numbro.culture(window.navigator.language);
-
     return {
         format(value, format, contentType, flowKey) {
             if (!manywho.settings.global('formatting.isEnabled', flowKey, false))

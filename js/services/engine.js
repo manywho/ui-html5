@@ -596,6 +596,8 @@ manywho.engine = (function (manywho) {
 
             }
 
+            numbro.culture(window.navigator.language);
+
             if (stateId && !isInitializing) {
 
                 this.join(config.tenantId, config.flowId, config.flowVersionId, config.container, stateId, authenticationToken, config.options);
