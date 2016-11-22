@@ -28,6 +28,10 @@ manywho.settings = (function (manywho, $) {
             },
             searchFirst: 'Perform a search to display results here'
         },
+        i18n: {
+            overrideTimezoneOffset: false,
+            timezoneOffset: null
+        },
         paging: {
             table: 10,
             files: 10,
@@ -116,6 +120,9 @@ manywho.settings = (function (manywho, $) {
         },
         location: {
             isTrackingEnabled: false
+        },
+        formatting: {
+            isEnabled: false
         }
     };
 

@@ -43,8 +43,8 @@ class List extends React.Component<IComponentProps, any> {
             const columnTypeElementPropertyId = manywho.component.getDisplayColumns(model.columns)[0].typeElementPropertyId;
             
             elements = model.objectData.map(element => {
-                const label = element.properties.find(prop => manywho.utils.isEqual(prop.typeElementPropertyId, columnTypeElementPropertyId, true)).contentValue;
-                return <li id={element.externalId} key={element.externalId}>{label}</li>;
+                const property = element.properties.find(prop => manywho.utils.isEqual(prop.typeElementPropertyId, columnTypeElementPropertyId, true));
+                return <li id={element.externalId} key={element.externalId}>{manywho.formatting.format(property.contentValue, property.contentFormat, property.contentType, this.props.flowKey)}</li>;
             });
         }
         else if (this.props.isDesignTime)

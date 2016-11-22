@@ -97,8 +97,6 @@ manywho.state = (function (manywho) {
 
                     if (position != null && position.coords != null) {
 
-                        var nowTime = moment();
-
                         location[lookUpKey] = {
                             latitude: manywho.utils.getNumber(position.coords.latitude),
                             longitude: manywho.utils.getNumber(position.coords.longitude),
@@ -106,17 +104,29 @@ manywho.state = (function (manywho) {
                             altitude: manywho.utils.getNumber(position.coords.altitude),
                             altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
                             heading: manywho.utils.getNumber(position.coords.heading),
-                            speed: manywho.utils.getNumber(position.coords.speed),
-                            time: nowTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-
+                            speed: manywho.utils.getNumber(position.coords.speed)
                         }
 
+                        manywho.state.setUserTime(flowKey);
                     }
 
                 }, null, { timeout: 60000 });
 
             }
 
+        },
+
+        setUserTime: function(flowKey) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            var now = moment();
+
+            if (!manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
+                now.utcOffset(manywho.settings.global('i18n.timezoneOffset', flowKey));
+
+            if (location[lookUpKey])
+                location[lookUpKey].time = now.format();
+            else
+                location[lookUpKey] = { time: now.format() };
         },
 
         getComponent: function(id, flowKey) {

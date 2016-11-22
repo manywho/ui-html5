@@ -8,5 +8,6 @@ interface IInputProps extends IComponentProps {
     required: boolean,
     disabled: boolean,
     readOnly: boolean,
-    size: number
+    size: number,
+    format: string
 }
