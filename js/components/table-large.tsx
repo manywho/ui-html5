@@ -123,7 +123,7 @@ declare var manywho: any;
                 columns = columns.concat(displayColumns.map(column => {
 
                     if (column == 'mw-outcomes')
-                        return <td className="table-outcome-column" key={item.externalId + column} dataItem={item.externalId}>
+                        return <td className="table-outcome-column" key={item.externalId + column} data-item={item.externalId}>
                             {outcomes.map(outcome => React.createElement(outcomeComponent, { id: outcome.id, key: outcome.id, onClick: this.onOutcomeClick, flowKey: flowKey, display: outcomeDisplay.outcomes }, null))}
                         </td>
                     else {
