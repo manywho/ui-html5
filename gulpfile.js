@@ -555,51 +555,53 @@ gulp.task('offline-build-sequence', function() {
 
 gulp.task('offline-run-sequence', function() {
 
-    gulp.src('js/config/snapshot.js')
-        .pipe(gulpPrompt.prompt([{
-            type: 'input',
-            name: 'phonegap',
-            message: 'Was this a Cordova build? (y/n)'
-        },
-            {
+    setTimeout(function() {
+        gulp.src('js/services/offline.js')
+            .pipe(gulpPrompt.prompt([{
                 type: 'input',
-                name: 'debugging',
-                message: 'Was this a debug build? (y/n)'
-            }], function(res) {
+                name: 'phonegap',
+                message: 'Was this a Cordova build? (y/n)'
+            },
+                {
+                    type: 'input',
+                    name: 'debugging',
+                    message: 'Was this a debug build? (y/n)'
+                }], function(res) {
 
-            var path = '';
+                var path = '';
 
-            if (res.phonegap == 'y') {
-                path = '../../';
-            }
+                if (res.phonegap == 'y') {
+                    path = '../';
+                }
 
-            var files = [
-                '*.html',
-                'css/**/*.css',
-                'img/**/*.png',
-                'js/**/*.js'
-            ];
+                var files = [
+                    '*.html',
+                    'css/**/*.css',
+                    'img/**/*.png',
+                    'js/**/*.js'
+                ];
 
-            var baseDirectory = '.';
+                var baseDirectory = '.';
 
-            if (path != null &&
-                path.length > 0) {
-                baseDirectory = path;
-            }
+                if (path != null &&
+                    path.length > 0) {
+                    baseDirectory = path;
+                }
 
-            return browserSync.init(files, {
-                server: {
-                    baseDir: baseDirectory,
-                    index: 'tools.html',
-                    middleware: function (req, res, next) {
-                        res.setHeader('Access-Control-Allow-Origin', '*');
-                        next();
-                    }
-                },
-                ghostMode: false
-            });
+                return browserSync.init(files, {
+                    server: {
+                        baseDir: baseDirectory,
+                        index: 'tools.html',
+                        middleware: function (req, res, next) {
+                            res.setHeader('Access-Control-Allow-Origin', '*');
+                            next();
+                        }
+                    },
+                    ghostMode: false
+                });
 
-        }));
+            }));
+    }, 8000);
 
 });
 
