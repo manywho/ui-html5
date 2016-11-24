@@ -43,40 +43,7 @@ declare var manywho : any;
         mixins: [manywho.component.mixins.collapse],
 
         onHeaderClick: function (e) {
-
-            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
-
-            var request = model.objectDataRequest;
-
-            if (request) {
-
-                var sortByOrder;
-
-                if (!manywho.utils.isEqual(this.state.lastSortedBy, e.currentTarget.id, true)) {
-
-                    sortByOrder = 'ASC';
-
-                } else {
-
-                    sortByOrder = manywho.utils.isEqual(this.state.sortByOrder, 'ASC', true) ? 'DESC' : 'ASC';
-
-                }
-
-                manywho.engine.objectDataRequest(this.props.id, request, this.props.flowKey, manywho.settings.global('paging.table'), state.search, e.currentTarget.id, sortByOrder, state.page);
-
-                this.setState({
-                    sortByOrder: sortByOrder,
-                    lastSortedBy: e.currentTarget.id
-                })
-
-            }
-            else {
-
-                manywho.log.error('ObjectDataRequest is null for table: ' + model.developerName + '. A request object is required to search');
-
-            }
-
+            this.props.sort(e.currentTarget.id);
         },
 
         onRowClicked: function(e) {
@@ -162,7 +129,9 @@ declare var manywho : any;
                 sortByOrder: this.state.sortByOrder,
                 isFiles: manywho.utils.isEqual(model.componentType, 'files', true),
                 isValid: !(model.isValid === false || state.isValid === false || state.error),
-                isDesignTime: this.props.isDesignTime
+                isDesignTime: this.props.isDesignTime,
+                sortedBy: this.props.sortedBy,
+                sortedIsAscending: this.props.sortedIsAscending
             };
 
             if (!this.props.isDesignTime) {

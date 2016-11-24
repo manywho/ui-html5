@@ -18,11 +18,12 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
     constructor(props: IComponentProps){
         super(props);
-        this.state = { search: null };
+        this.state = { search: null, sortedBy: null, sortedIsAscending: null };
 
         this.onOutcome = this.onOutcome.bind(this);
         this.load = this.load.bind(this);
         this.search = this.search.bind(this);
+        this.sort = this.sort.bind(this);
         this.refresh = this.refresh.bind(this);
         this.select = this.select.bind(this);
         this.selectAll = this.selectAll.bind(this);
@@ -64,15 +65,22 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         manywho.state.setComponent(this.props.id, newState, this.props.flowKey, true);
     }
 
-    load(model: any, state: any) {
+    load() {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+        const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
         let limit : number = manywho.settings.global('paging.' + model.componentType.toLowerCase());
         const paginationSize : number = parseInt(model.attributes.paginationSize);
 
         if (!isNaN(paginationSize))
             limit = paginationSize;
 
+        let orderByDirection = null;
+        if (!manywho.utils.isNullOrUndefined(this.state.sortedIsAscending))
+            orderByDirection = this.state.sortedIsAscending ? 'ASC' : 'DESC';
+
         if (model.objectDataRequest)
-            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
+            manywho.engine.objectDataRequest(this.props.id, model.objectDataRequest, this.props.flowKey, limit, state.search, this.state.sortedBy, orderByDirection, state.page);
         else if (model.fileDataRequest)
             manywho.engine.fileDataRequest(this.props.id, model.fileDataRequest, this.props.flowKey, limit, state.search, null, null, state.page);
         else {
@@ -82,7 +90,6 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
     }
 
     search(search: string, clearSelection : boolean) {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
 
         if (clearSelection)
@@ -91,7 +98,34 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         state.search = search;
         state.page = 1;
 
-        this.load(model, state);
+        this.setState({
+            sortedBy: null,
+            sortedIsAscending: null
+        });
+
+        setTimeout(() => this.load());
+    }
+
+    sort(by) {
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+        if (model.objectDataRequest) {
+            const state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+
+            let isAscending = true;
+            
+            if (manywho.utils.isEqual(this.state.sortedBy, by, true))
+                isAscending = !this.state.sortedIsAscending;
+
+            this.setState({
+                sortedIsAscending: isAscending,
+                sortedBy: by
+            });
+
+            setTimeout(() => this.load());
+        }
+        else
+            manywho.log.error('');
     }
 
     refresh(e) {        
@@ -162,7 +196,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
         manywho.state.setComponent(this.props.id, state, this.props.flowKey, true);
 
         if (model.objectDataRequest || model.fileDataRequest)
-            this.load(model, state);
+            this.load();
         else if (model.attributes.pagination && manywho.utils.isEqual(model.attributes.pagination, 'true', true))
             this.forceUpdate();
     }
@@ -281,7 +315,10 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             onFirstPage: this.onFirstPage,
             page: state.page || 1,
             limit: limit,
-            isLoading: state.loading !== null && typeof state.loading !== 'undefined'
+            isLoading: state.loading !== null && typeof state.loading !== 'undefined',
+            sort: this.sort,
+            sortedBy: this.state.sortedBy,
+            sortedIsAscending: this.state.sortedIsAscending
         }
 
         const component = manywho.component.getByName('mw-' + model.componentType);

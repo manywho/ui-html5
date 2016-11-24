@@ -21,5 +21,8 @@ interface IItemsComponentProps extends IComponentProps {
     onFirstPage: Function,
     page: number,
     limit: number,
-    isLoading: boolean
+    isLoading: boolean,
+    sort: Function,
+    sortedBy: boolean,
+    sortedIsAscending: string
 }

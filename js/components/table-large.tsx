@@ -76,10 +76,10 @@ declare var manywho: any;
 
                     const headerChildren = [ column.label ];
 
-                    if (!manywho.utils.isNullOrWhitespace(this.props.lastSortedBy) && this.props.lastSortedBy == column.developerName) {
+                    if (manywho.utils.isEqual(this.props.sortedBy, column.developerName, true)) {
 
                         let iconClassName = 'table-header-icon glyphicon ';
-                        iconClassName += this.props.sortByOrder == 'ASC' ? 'glyphicon-menu-down' : 'glyphicon-menu-up';
+                        iconClassName += this.props.sortedIsAscending ? 'glyphicon-menu-down' : 'glyphicon-menu-up';
 
                         headerChildren.push(<span className={iconClassName}></span>);
                     }
