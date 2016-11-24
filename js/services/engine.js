@@ -249,12 +249,17 @@ manywho.engine = (function (manywho) {
             }, onInitializeFailed)
             .then(function (response) {
 
+                if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
+                    manywho.state.setUserTime(flowKey);
+
                 var invokeRequest = manywho.json.generateInvokeRequest(
                     manywho.state.getState(flowKey),
                     'FORWARD',
                     null,
                     null,
+                    null,
                     navigationId,
+                    null,
                     manywho.settings.flow('annotations', flowKey),
                     manywho.state.getLocation(flowKey),
                     manywho.settings.flow('mode', flowKey)
@@ -345,6 +350,9 @@ manywho.engine = (function (manywho) {
 
         manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.joining') }, flowKey);
         self.render(flowKey);
+
+        if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
+            manywho.state.setUserTime(flowKey);
 
         return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
@@ -542,7 +550,19 @@ manywho.engine = (function (manywho) {
                     moveResponse = null;
                 }
 
-            });
+            })
+            .always(function() {
+
+                var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+                var container = document.getElementById(lookUpKey);
+
+                if (container) {
+                    var scroller = container.querySelector('.main-scroller');
+                    if (scroller)
+                        scroller.scrollTop = 0; 
+                }
+                
+            })
 
     }
 
@@ -576,6 +596,8 @@ manywho.engine = (function (manywho) {
 
             }
 
+            numbro.culture(window.navigator.language);
+
             if (stateId && !isInitializing) {
 
                 this.join(config.tenantId, config.flowId, config.flowVersionId, config.container, stateId, authenticationToken, config.options);
@@ -603,10 +625,18 @@ manywho.engine = (function (manywho) {
 
         move: function(outcome, flowKey) {
 
-            // Validate all of the components on the page here...
-            // In the model.js, there are componentInputResponseRequests entries for each component
-            // that needs to be validated. If a component does not validate correctly, it should
-            // prevent the 'move' and also indicate in the UI which component has failed validation
+            if (outcome 
+                && manywho.utils.isEqual(outcome.pageActionBindingType, 'SAVE', true)
+                && manywho.settings.global('validation.isEnabled', flowKey)) {
+                    
+                var isValid = manywho.state.isAllValid(flowKey);
+                if (!isValid) {
+                    manywho.engine.render(flowKey);
+                    var deferred = jQuery.Deferred();
+                    deferred.fail();
+                    return deferred;
+                }
+            }
 
             if (outcome && !outcome.isOut) {
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), { message: manywho.settings.global('localization.executing') }, flowKey);
@@ -647,7 +677,7 @@ manywho.engine = (function (manywho) {
             return manywho.ajax.flowOut(manywho.utils.extractStateId(flowKey), tenantId, outcome.id, authenticationToken)
                     .then(function(response) {
 
-                        var options = manywho.settings.getGlobals(flowKey);
+                        var options = manywho.state.getOptions(flowKey);
 
                         var subFlowKey = manywho.utils.getFlowKey(tenantId, null, null, response.stateId, manywho.utils.extractElement(flowKey));
 
@@ -666,7 +696,7 @@ manywho.engine = (function (manywho) {
             var tenantId = manywho.utils.extractTenantId(flowKey);
             var authenticationToken = manywho.state.getAuthenticationToken(flowKey);
 
-            var options = manywho.settings.getGlobals(flowKey);
+            var options = manywho.state.getOptions(flowKey);
 
             manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
             this.render(flowKey);
@@ -692,6 +722,7 @@ manywho.engine = (function (manywho) {
                 null,
                 null,
                 manywho.state.getPageComponentInputResponseRequests(flowKey),
+                null,
                 null,
                 manywho.settings.flow('annotations', flowKey),
                 manywho.state.getLocation(flowKey),
@@ -897,7 +928,7 @@ manywho.engine = (function (manywho) {
 
                         if (response)
                         {
-                            var options = manywho.settings.getGlobals(flowKey);
+                            var options = manywho.state.getOptions(flowKey);
 
                             self.join(manywho.utils.extractTenantId(flowKey),
                                         manywho.utils.extractFlowId(flowKey),

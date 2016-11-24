@@ -36,11 +36,11 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
 
         let className = (manywho.styling.getClasses(this.props.parentId, this.props.id, 'toggle', this.props.flowKey)).join(' ');
 
-        if (typeof model.isValid !== 'undefined' && model.isValid == false)
-            className += 'has-error';
+        if (model.isValid === false || state.isValid === false)
+            className += ' has-error';
 
-        if (!model.isVisible)
-            className += 'hidden';
+        if (model.isVisible === false)
+            className += ' hidden';
 
         const contentValue = state && state.contentValue != null ?  state.contentValue : model.contentValue;
 
@@ -84,7 +84,7 @@ class Toggle extends React.Component<IComponentProps, IToggleState> {
                     <div className={sliderClassName} style={style}></div>
                 </label>
             </div>
-            <span className="help-block">{model.validationMessage}</span>
+            <span className="help-block">{model.validationMessage || state.validationMessage}</span>
             <span className="help-block">{model.helpInfo}</span>
             {outcomeElements}
         </div>

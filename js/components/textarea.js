@@ -32,9 +32,9 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Textarea: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = this.props.isDesignTime ? { contentValue: '' } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
-            var isValid = true;
+            var isValid = !(model.isValid === false || state.isValid === false);
 
             var attributes = {
                 id: this.props.id,
@@ -64,10 +64,6 @@ permissions and limitations under the License.
                 }
             }
 
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
-                isValid = false;
-            }
-
             var classNames = [
                 'form-group',
                 (model.isVisible == false) ? 'hidden' : '',
@@ -86,7 +82,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                React.DOM.span({ className: 'help-block' }, model.validationMessage || state.validationMessage),
                 React.DOM.span({ className: 'help-block' }, model.helpInfo),
                 outcomeButtons
             ]);

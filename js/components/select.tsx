@@ -50,7 +50,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
             return objectData.map((item) => {
                 var label = item.properties.filter(function (value) { return manywho.utils.isEqual(value.typeElementPropertyId, columnTypeElementPropertyId, true) })[0];
-                return { value: item, label: label.contentValue };
+                return { value: item, label: manywho.formatting.format(label.contentValue, label.contentFormat, label.contentType, this.props.flowKey) };
             });
         }
     }
@@ -119,18 +119,27 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const hasRequest = model.objectDataRequest !== null || model.fileDataRequest !== null;
 
         if ((doneLoading || !hasRequest) && nextProps.objectData && !nextProps.isDesignTime) {
-            let options = []
+            let options = [];
 
             if (nextProps.page > 1 && this.state.options.length < nextProps.limit * nextProps.page) {
                 options = this.state.options.concat(this.getOptions(nextProps.objectData)),
                 this.setState({ isOpen: true });
+
+                const index = this.state.options.length + 1;
+
+                setTimeout(() => {
+                    const dropdown = ReactDOM.findDOMNode(this).querySelector('.dropdown-menu') as HTMLDivElement;
+                    const scrollTarget = dropdown.children.item(index) as HTMLElement;
+                    dropdown.scrollTop = scrollTarget.offsetTop;
+                });
             }
             else
                 options = this.getOptions(nextProps.objectData);
 
             if (state && state.objectData) {
-                const selectedOptions = state.objectData.filter(item => !options.find(option => option.value === item.externalId));
-                options = (this.getOptions(selectedOptions) || []).concat(options);
+                const selectedOptions = state.objectData.filter(item => options.find(option => option.value.externalId === item.externalId));
+                if (selectedOptions.length === 0)
+                    options = (this.getOptions(state.objectData) || []).concat(options);
             }
 
             this.setState({ options: options });
@@ -169,7 +178,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
 
         manywho.log.info(`Rendering Select: ${this.props.id}, ${model.developerName}`);
         
-        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey);
+        const state = this.props.isDesignTime ? { error: null, loading: null } : manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
         const props: any = {
             filterOptions: this.filterOptions,
             uid: this.getUid,
@@ -187,7 +196,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
             props.onBlur = this.onBlur;
             props.onFocus = this.onFocus;
             props.value = null;
-            props.options = null;
+            props.options = this.state.options;
             
             if (model.attributes && manywho.utils.isEqual(model.attributes.isTethered, 'true', true))
                 props.tether = true;
@@ -202,16 +211,18 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                     externalIds = this.props.objectData.filter((item) => item.isSelected)
                                             .map((item) => item.externalId);
 
+                let values = null; 
+
                 if (externalIds && externalIds.length > 0)
-                    props.value = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
+                    values = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) !== -1);
 
-                if (!model.isMultiSelect && props.value)
-                    props.value = props.value[0];
-
-                if (externalIds && externalIds.length > 0 && model.isMultiSelect)
-                    props.options = this.state.options.filter(option => externalIds.indexOf(option.value.externalId) === -1);
-                else
-                    props.options = this.state.options;
+                if (values)
+                    if (!model.isMultiSelect)
+                        props.value = values[0];
+                    else {
+                        props.values = values;
+                        props.anchor = values[values.length - 1];
+                    }                
             }
         }
 
@@ -232,11 +243,12 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
         const outcomeButtons = this.props.outcomes && this.props.outcomes.map((outcome) => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey, }));
 
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'select', this.props.flowKey).join(' ');
+        className += ' form-group';
 
         if (model.isVisible === false)
             className += ' hidden';
 
-        if ((typeof model.isValid !== 'undefined' && model.isValid === false) || state.error)
+        if (model.isValid === false || state.isValid === false || state.error)
             className += ' has-error';
 
         let style: any = {}
@@ -257,7 +269,7 @@ class DropDown extends React.Component<IItemsComponentProps, IDropDownState> {
                 {selectElement}
                 {refreshButton}
             </div>
-            <span className="help-block">{state.error && state.error.message}</span>
+            <span className="help-block">{(state.error && state.error.message) || model.validationMessage || state.validationMessage}</span>
             <span className="help-block">{model.helpInfo}</span>
             {outcomeButtons}
         </div>

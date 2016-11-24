@@ -94,6 +94,11 @@
         box-shadow: 0 0 1px #d32a0e;
     }
 
+    .mw-toggle.has-error > div > label,
+    .mw-content.has-error > .mce-container {
+        border: 1px solid #f04124;
+    }
+
     .navbar-wizard .steps {
         & > li {              
             color: #43ac6a;
@@ -141,5 +146,10 @@
 
     .react-selectize .dropdown-menu {
         font-size: 15px;
+    }
+
+    .react-selectize.bootstrap3,
+    .react-selectize.default {
+        font-family: "Gill Sans", "Gill Sans MT", Candara, Segoe, "Segoe UI", Arial, sans-serif;
     }
 }

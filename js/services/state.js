@@ -21,31 +21,6 @@ manywho.state = (function (manywho) {
     var options = {};
     var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-    function assignGeoLocation(position) {
-
-        if (position != null &&
-            position.coords != null) {
-
-            geoLocation = {
-                latitude: manywho.utils.getNumber(position.coords.latitude),
-                longitude: manywho.utils.getNumber(position.coords.longitude),
-                accuracy: manywho.utils.getNumber(position.coords.accuracy),
-                altitude: manywho.utils.getNumber(position.coords.altitude),
-                altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
-                heading: manywho.utils.getNumber(position.coords.heading),
-                speed: manywho.utils.getNumber(position.coords.speed)
-            }
-
-        }
-
-    }
-
-    function trackUserPosition() {
-
-
-
-    }
-
     function isEmptyObjectData(model) {
 
         if (model.objectDataRequest && model.objectData && model.objectData.length == 1) {
@@ -113,15 +88,14 @@ manywho.state = (function (manywho) {
 
         setLocation: function(flowKey) {
 
-            if ("geolocation" in navigator && manywho.settings.global('trackLocation', flowKey, false)) {
+            if ("geolocation" in navigator && 
+                (manywho.settings.global('trackLocation', flowKey, false) || manywho.settings.global('location.isTrackingEnabled', flowKey, false))) {
 
                 var lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
                 navigator.geolocation.getCurrentPosition(function (position) {
 
                     if (position != null && position.coords != null) {
-
-                        var nowTime = moment();
 
                         location[lookUpKey] = {
                             latitude: manywho.utils.getNumber(position.coords.latitude),
@@ -130,17 +104,29 @@ manywho.state = (function (manywho) {
                             altitude: manywho.utils.getNumber(position.coords.altitude),
                             altitudeAccuracy: manywho.utils.getNumber(position.coords.altitudeAccuracy),
                             heading: manywho.utils.getNumber(position.coords.heading),
-                            speed: manywho.utils.getNumber(position.coords.speed),
-                            time: nowTime.format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-
+                            speed: manywho.utils.getNumber(position.coords.speed)
                         }
 
+                        manywho.state.setUserTime(flowKey);
                     }
 
                 }, null, { timeout: 60000 });
 
             }
 
+        },
+
+        setUserTime: function(flowKey) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            var now = moment();
+
+            if (!manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
+                now.utcOffset(manywho.settings.global('i18n.timezoneOffset', flowKey));
+
+            if (location[lookUpKey])
+                location[lookUpKey].time = now.format();
+            else
+                location[lookUpKey] = { time: now.format() };
         },
 
         getComponent: function(id, flowKey) {
@@ -169,6 +155,17 @@ manywho.state = (function (manywho) {
 
                 components[lookUpKey][id].objectData = values.objectData;
 
+            }
+
+            if (typeof values.isValid === 'undefined' && components[lookUpKey][id].isValid === false) {
+                var model = manywho.model.getComponent(id, flowKey);
+                
+                if (model.isRequired &&
+                    (!manywho.utils.isNullOrEmpty(values.contentValue)  || (values.objectData && values.objectData.length > 0))) {
+                    
+                    components[lookUpKey][id].isValid = true;
+                    components[lookUpKey][id].validationMessage = null;
+                }
             }
 
             if (push) {
@@ -213,6 +210,46 @@ manywho.state = (function (manywho) {
 
             return pageComponentInputResponseRequests;
 
+        },
+
+        isAllValid: function(flowKey) {
+            var components = manywho.model.getComponents(flowKey);
+            var isValid = true;
+
+            if (components)
+                for (var id in components) {
+                    var result = manywho.state.isValid(id, flowKey);
+
+                    if (result.isValid === false) {
+                        manywho.state.setComponent(id, result, flowKey, true);
+                        isValid = false;
+                    }
+                }
+
+            return isValid;
+        },
+
+        isValid: function(id, flowKey) {
+            var result = { isValid: false, validationMessage: manywho.settings.global('localization.validation.required', flowKey) };
+            var model = manywho.model.getComponent(id, flowKey);
+            
+            if (model.isValid === false)
+                return result;
+
+            var state = manywho.state.getComponent(id, flowKey);
+            
+            if (state && state.isValid === false) {
+                result.validationMessage = manywho.utils.isNullOrWhitespace(state.validationMessage) ? result.validationMessage : state.validationMessage
+                return result;
+            }
+
+            if (state && model.isRequired 
+                && (manywho.utils.isNullOrEmpty(state.contentValue) 
+                    && (manywho.utils.isNullOrUndefined(state.objectData) || state.objectData.length === 0)))
+                return result;
+
+            result.isValid = true;
+            return result;
         },
 
         setState: function(id, token, mapElementId, flowKey) {

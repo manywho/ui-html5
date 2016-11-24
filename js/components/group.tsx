@@ -17,8 +17,8 @@ declare var $: any;
 (function (manywho) {
 
     function childContainsInvalidItems(child, flowKey) {
-        if (!manywho.model.isContainer(child) && !child.isValid)
-            return true;
+        if (!manywho.model.isContainer(child))
+            return !manywho.state.isValid(child.id, flowKey).isValid;
         else {
             var items = manywho.model.getChildren(child.id, flowKey)
             for (var i = 0; i < items.length; i++) {
@@ -76,7 +76,7 @@ declare var $: any;
                 let className = null;
 
                 if (!this.props.isDesignTime && childContainsInvalidItems(child, this.props.flowKey))
-                    className += 'has-error';
+                    className += ' has-error';
 
                 return <li className={className}>
                     <a href={'#' + child.id} className="control-label" onClick={this.onTabSelected.bind(null, index)} data-toggle="tab">{child.label}</a>

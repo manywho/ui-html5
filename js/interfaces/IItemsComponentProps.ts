@@ -18,6 +18,7 @@ interface IItemsComponentProps extends IComponentProps {
     refresh: (MouseEvent) => void,
     onNext: Function,
     onPrev: Function,
+    onFirstPage: Function,
     page: number,
     limit: number,
     isLoading: boolean

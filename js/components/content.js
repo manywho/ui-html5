@@ -153,6 +153,7 @@ permissions and limitations under the License.
         handleChange: function (e) {
             var content = this.editor.getContent();
             manywho.state.setComponent(this.props.id, { contentValue: content }, this.props.flowKey, true);
+            this.forceUpdate();
         },
 
         handleEvent: function (e) {
@@ -252,14 +253,10 @@ permissions and limitations under the License.
             manywho.log.info('Rendering Content: ' + this.props.id);
 
             var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
-            var state = manywho.state.getComponent(this.props.id, this.props.flowKey);
+            var state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
             var outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
             var value = (state) ? state.contentValue : model.contentValue;
-            var isValid = true;
-
-            if (typeof model.isValid !== 'undefined' && model.isValid == false) {
-                isValid = false;
-            }
+            var isValid = !(model.isValid === false || state.isValid === false);
 
             var attributes = {
                 id: 'content-' + this.props.id,
@@ -297,7 +294,7 @@ permissions and limitations under the License.
                     (model.isRequired) ? React.DOM.span({ className: 'input-required' }, ' *') : null
                 ]),
                 React.DOM.textarea(attributes, null),
-                React.DOM.span({ className: 'help-block' }, model.validationMessage),
+                React.DOM.span({ className: 'help-block' }, model.validationMessage || state.validationMessage),
                 outcomes && outcomes.map(function (outcome) {
                     return React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey });
                 }, this)];

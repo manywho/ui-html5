@@ -7,7 +7,7 @@
     <title>ManyWho</title>
     <style>
         .mw-bs .wait-container {
-            position: relative;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -139,12 +139,14 @@
     <link rel="stylesheet" href="build/css/tiles.css" />
     <link rel="stylesheet" href="build/css/items.css" />
     <link rel="stylesheet" href="build/css/toggle.css" />
+    <link rel="stylesheet" href="build/css/outcomes.css" />
+    <link rel="stylesheet" href="build/css/chart.css" />
 
     <script src="js/vendor/jquery-2.1.4.min.js"></script>
     <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
     <script src="js/vendor/react-0.14.6.min.js"></script>
     <script src="js/vendor/react-dom-0.14.6.min.js"></script>
-    <script src="js/vendor/socket.io-1.3.7.js"></script>
+    <script src="js/vendor/socket.io-1.4.5.js"></script>
     <script src="js/vendor/moment-with-locales-2.10.6.min.js"></script>
     <script src="js/vendor/loglevel-1.4.0.min.js"></script>
 
@@ -172,7 +174,6 @@
                     navigationElementId: queryParameters['navigation-element-id'],
                     mode: queryParameters['mode'],
                     reportingMode: queryParameters['reporting-mode'],
-                    trackLocation: false,
                     replaceUrl: false,
                     collaboration: {
                         isEnabled: false
@@ -220,6 +221,7 @@
 
     <script src="build/js/lib/000-react-height.js"></script>
     <script src="build/js/lib/010-pollyfills.js"></script>
+    <script src="build/js/lib/015-chart.js"></script>
     <script src="build/js/lib/020-jquery.plugins.js"></script>
     <script src="build/js/lib/030-react-input-autosize.js"></script>
     <script src="build/js/lib/040-react-dropzone.js"></script>
@@ -232,6 +234,9 @@
     <script src="build/js/lib/110-react-motion.js"></script>
     <script src="build/js/lib/120-react-collapse.js"></script>
     <script src="build/js/lib/130-jquery.textcomplete.js"></script>
+    <script src="build/js/lib/140-numbro.js"></script>
+    <script src="build/js/lib/150-numbro-languages.js"></script>
+    
 
     <script src="build/js/services/ajax.js"></script>
     <script src="build/js/services/model.js"></script>
@@ -248,6 +253,7 @@
     <script src="build/js/services/callbacks.js"></script>
     <script src="build/js/services/social.js"></script>
     <script src="build/js/services/log.js"></script>
+    <script src="build/js/services/formatting.js"></script>
 
     <script src="build/js/components/container.js"></script>
     <script src="build/js/components/mixins.js"></script>
@@ -290,6 +296,18 @@
     <script src="build/js/components/items-container.js"></script>
     <script src="build/js/components/tiles.js"></script>
     <script src="build/js/components/toggle.js"></script>
+    <script src="build/js/components/chart.js"></script>
+    <script src="build/js/components/chart-base.js"></script>
+    <script src="build/js/components/chart-bar.js"></script>
+    <script src="build/js/components/chart-line.js"></script>
+    <script src="build/js/components/chart-pie.js"></script>
+    <script src="build/js/components/chart-polar.js"></script>
+    <script src="build/js/components/chart-doughnut.js"></script>
+    <script src="build/js/components/chart-container.js"></script>
+    <script src="build/js/components/outcomes.js"></script>
+    <script src="build/js/components/input-datetime.js"></script>
+    <script src="build/js/components/input-boolean.js"></script>
+    <script src="build/js/components/input-number.js"></script>
 
     <script>
         manywho.initialize();
