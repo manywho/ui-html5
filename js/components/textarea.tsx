@@ -30,7 +30,7 @@ class Textarea extends React.Component<IComponentProps, any> {
     }
 
     onKeyUp(e) {
-        if (e.keyCode === 13 && e.shiftKey === true)
+        if (e.keyCode === 13)
             e.stopPropagation();
     }
 
