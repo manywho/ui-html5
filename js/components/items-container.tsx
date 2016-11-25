@@ -125,7 +125,7 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
             setTimeout(() => this.load());
         }
         else
-            manywho.log.error('');
+            manywho.log.error(`Sorting is only supported with ObjectDataRequests, attempting to sort component ${model.developerName}, ${this.props.id}`);
     }
 
     refresh(e) {        
