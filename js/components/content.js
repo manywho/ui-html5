@@ -146,8 +146,14 @@ permissions and limitations under the License.
         },
 
         componentWillUnmount: function () {
-            if (window.tinymce)
-                tinymce.remove('textarea#content-' + this.props.id);
+            if (this.editor) {
+                try {
+                    this.editor.remove();
+                }
+                catch (ex) {
+                    manywho.log.error(ex);
+                }
+            }
         },
 
         handleChange: function (e) {
