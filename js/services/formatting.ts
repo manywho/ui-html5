@@ -144,7 +144,7 @@ manywho.formatting = (function (manywho, moment) {
                 if (momentFormat)
                     formats.unshift(momentFormat);
 
-                let parsedDateTime = moment(dateTime, formats);
+                let parsedDateTime = offset !== null ? moment.utc(dateTime, formats) : moment(dateTime, formats);
 
                 if (!parsedDateTime.isValid())
                     return dateTime;
