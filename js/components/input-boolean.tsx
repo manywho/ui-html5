@@ -43,7 +43,7 @@ class InputBoolean extends React.Component<IInputProps, IInputBooleanState> {
                         type="checkbox"
                         disabled={this.props.disabled || this.props.readOnly}
                         required={this.props.required}
-                        onChange={this.onChange} />
+                        onChange={!this.props.isDesignTime && this.onChange} />
                 {model.label}
                 {model.isRequired ? <span className="input-required"> *</span> : null}
             </label>

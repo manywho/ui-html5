@@ -78,7 +78,8 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
         if (this.props.isDesignTime) {
            props.onChange = null,
-           props.onBlur = null
+           props.onBlur = null,
+           props.isDesignTime = true
         }
         
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey).join(' ');
