@@ -596,7 +596,13 @@ manywho.engine = (function (manywho) {
 
             }
 
-            numbro.culture(window.navigator.language);
+            if (window.navigator.language) {
+                var language = window.navigator.language.split('-');
+                if (language.length == 2)
+                    // Upper case the culture suffix here as safari will report them as lowercase and numbro requires uppercase
+                    numbro.culture(language[0] + '-' + language[1].toUpperCase());
+            }
+            
 
             if (stateId && !isInitializing) {
 
