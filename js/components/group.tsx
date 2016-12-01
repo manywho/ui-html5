@@ -12,7 +12,6 @@ permissions and limitations under the License.
 /// <reference path="../../typings/index.d.ts" />
 
 declare var manywho: any;
-declare var $: any;
 
 (function (manywho) {
 

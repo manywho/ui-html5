@@ -13,7 +13,6 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IInputProps.ts" />
 
 declare var manywho: any;
-declare var $: any;
 declare var moment: any;
 
 interface IInputDateTimeState {

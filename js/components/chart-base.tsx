@@ -3,7 +3,6 @@
 
 declare var manywho: any;
 declare var Chart: any;
-declare var $: any;
 
 class ChartBase extends React.Component<IChartBaseProps, any> {
 

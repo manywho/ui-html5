@@ -9,9 +9,13 @@ KIND, either express or implied. See the License for the specific language gover
 permissions and limitations under the License.
 */
 
+/// <reference path="../../typings/index.d.ts" />
+
+declare var manywho: any;
+
 manywho.settings = (function (manywho, $) {
 
-    var globals = {
+    let globals = {
         localization: {
             initializing: '',
             executing: '',
@@ -126,13 +130,13 @@ manywho.settings = (function (manywho, $) {
         }
     };
 
-    var flows = {};
+    let flows = {};
 
-    var themes = {
+    let themes = {
         url: '/css/themes'
     };
 
-    var events = {
+    let events = {
         initialization: {},
         invoke: {},
         sync: {},
@@ -150,118 +154,68 @@ manywho.settings = (function (manywho, $) {
     };
 
     return {
-
-        initialize: function(custom, handlers) {
-
-            globals = manywho.utils.extend(globals, custom, true);
-            events = manywho.utils.extend(events, handlers, true);
-
+        initialize(custom, handlers) {
+            globals = $.extend(true, {}, globals, custom);
+            events = $.extend(true, {}, events, handlers);
         },
 
-        initializeFlow: function(settings, flowKey) {
-
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
+        initializeFlow(settings, flowKey) {
+            const lookUpKey = manywho.utils.getLookUpKey(flowKey);
             flows[lookUpKey] = $.extend(true, {}, globals, settings);
-
         },
 
-        global: function (path, flowKey, defaultValue) {
-
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
-            var globalValue = manywho.utils.getValueByPath(globals, path.toLowerCase());
+        global(path, flowKey, defaultValue) {
+            const lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            const globalValue = manywho.utils.getValueByPath(globals, path.toLowerCase());
 
             if (flowKey) {
+                const flowValue = manywho.utils.getValueByPath(flows[lookUpKey] || {}, path.toLowerCase());
 
-                var flowValue = manywho.utils.getValueByPath(flows[lookUpKey] || {}, path.toLowerCase());
-
-                if (typeof flowValue != 'undefined') {
-
+                if (typeof flowValue !== 'undefined')
                     return flowValue
-
-                }
-                else if (typeof globalValue != 'undefined') {
-
+                else if (typeof globalValue !== 'undefined')
                     return globalValue;
-
-                }
-                else if (typeof defaultValue != 'undefined') {
-
+                else if (typeof defaultValue !== 'undefined')
                     return defaultValue;
-
-                }
-
             }
 
             return globalValue;
-
         },
 
-        flow: function(path, flowKey) {
+        flow(path, flowKey) {
+            const lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
-            if (manywho.utils.isNullOrWhitespace(path)) {
-
+            if (manywho.utils.isNullOrWhitespace(path))
                 return flows[lookUpKey];
-
-            }
-            else {
-
+            else
                 return manywho.utils.getValueByPath(flows[lookUpKey] || {}, path.toLowerCase());
-
-            }
-
         },
 
-        event: function (path) {
-
+        event(path) {
             return manywho.utils.getValueByPath(events, path.toLowerCase());
-
         },
 
-        theme: function (path) {
-
+        theme(path) {
             return manywho.utils.getValueByPath(themes, path.toLowerCase());
-
         },
 
-        isDebugEnabled: function (flowKey, value) {
+        isDebugEnabled(flowKey, value) {
+            const lookUpKey = manywho.utils.getLookUpKey(flowKey);
 
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
-            if (typeof value == 'undefined') {
-
+            if (typeof value == 'undefined')
                 return manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug', true) || manywho.utils.isEqual(this.flow('mode', flowKey), 'Debug_StepThrough', true);
-
-            }
-            else {
-
-                if (value) {
-
+            else
+                if (value)
                     flows[lookUpKey].mode = 'Debug';
-
-                }
-                else {
-
+                else
                     flows[lookUpKey].mode = '';
-
-                }
-
-            }
-
         },
 
-        remove: function(flowKey) {
-
-            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-
+        remove(flowKey) {
+            const lookUpKey = manywho.utils.getLookUpKey(flowKey);
             flows[lookUpKey] == null;
             delete flows[lookUpKey];
-
         }
-
     }
 
 })(manywho, jQuery);
