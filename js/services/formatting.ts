@@ -165,12 +165,15 @@ manywho.formatting = (function (manywho, moment) {
             if (manywho.utils.isNullOrWhitespace(format) || !manywho.settings.global('formatting.isEnabled', flowKey, false))
                 return number.toString();
 
+            if (typeof number === 'string' && manywho.utils.isNullOrWhitespace(number))
+                return number;
+
             try {
                 if (format.indexOf('e') !== -1 || format.indexOf('E') !== -1)
                     return (new Number(number)).toExponential();
 
                 if (format.indexOf('c') !== -1 || format.indexOf('C') !== -1)
-                    return numbro(number).formatCurrency('0[.]00', (value) => {
+                    return numbro(number).formatCurrency(manywho.settings.global('formatting.currency', flowKey, '0[.]00'), (value) => {
                         return value;
                     });
 

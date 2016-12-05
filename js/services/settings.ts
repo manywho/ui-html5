@@ -126,7 +126,8 @@ manywho.settings = (function (manywho, $) {
             isTrackingEnabled: false
         },
         formatting: {
-            isEnabled: false
+            isEnabled: false,
+            currency: '0.00'
         }
     };
 
