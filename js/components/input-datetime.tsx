@@ -13,7 +13,6 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IInputProps.ts" />
 
 declare var manywho: any;
-declare var $: any;
 declare var moment: any;
 
 interface IInputDateTimeState {
@@ -41,12 +40,14 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
     }
 
     onChange(e) {
-        if (!e.date)
-            this.props.onChange(null)
-        else if (e.date.isValid())
-            this.props.onChange(e.date.format());
-        else
-            this.props.onChange(e.target.value);
+        if (!this.props.isDesignTime) {
+            if (!e.date)
+                this.props.onChange(null)
+            else if (e.date.isValid())
+                this.props.onChange(e.date.format());
+            else
+                this.props.onChange(e.target.value);
+        }
     }
 
     componentDidMount() {
@@ -60,16 +61,18 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
             locale: model.attributes.dateTimeLocale || 'en-us',
             format: model.attributes.dateTimeFormat || manywho.formatting.toMomentFormat(model.contentFormat) || 'MM/DD/YYYY'
         })
-        .on('dp.change', this.onChange);
+        .on('dp.change', !this.props.isDesignTime && this.onChange);
 
-        if (this.isEmptyDate(state.contentValue))
-            manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
-        else {
-            stateDate = moment(state.contentValue, ['MM/DD/YYYY hh:mm:ss A ZZ', 'YYYY-MM-DDTHH:mm:ss.SSSSSSSZ', moment.ISO_8601]);
-            stateDate.utcOffset(state.contentValue);
+        if (!this.props.isDesignTime) {
+            if (this.isEmptyDate(state.contentValue))
+                manywho.state.setComponent(this.props.id, { contentValue: null }, this.props.flowKey, true);
+            else {
+                stateDate = moment(state.contentValue, ['MM/DD/YYYY hh:mm:ss A ZZ', 'YYYY-MM-DDTHH:mm:ss.SSSSSSSZ', moment.ISO_8601]);
+                stateDate.utcOffset(state.contentValue);
 
-            manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
-            $(datepickerElement).data("DateTimePicker").date(stateDate);
+                manywho.state.setComponent(this.props.id, { contentValue: stateDate.format() }, this.props.flowKey, true);
+                $(datepickerElement).data("DateTimePicker").date(stateDate);
+            }
         }
     }
 

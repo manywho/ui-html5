@@ -9,8 +9,9 @@
  permissions and limitations under the License.
  */
 
-manywho.log = (function (manywho, $) {
+declare var manywho: any;
+declare var log: any;
 
+manywho.log = (function (manywho) {
     return log.noConflict();
-
-})(manywho, jQuery);
+})(manywho);

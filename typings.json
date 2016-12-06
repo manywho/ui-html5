@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "react": "registry:dt/react#0.14.0+20160630100702",
     "react-addons-create-fragment": "registry:dt/react-addons-create-fragment#0.14.0+20160316155526",
     "react-addons-css-transition-group": "registry:dt/react-addons-css-transition-group#0.14.0+20160316155526",

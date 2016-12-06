@@ -78,7 +78,8 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
         if (this.props.isDesignTime) {
            props.onChange = null,
-           props.onBlur = null
+           props.onBlur = null,
+           props.isDesignTime = true
         }
         
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey).join(' ');
@@ -94,7 +95,12 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
         className += ' form-group';
 
-        const contentType = model.contentType || (model.valueElementValueBindingReferenceId && model.valueElementValueBindingReferenceId.contentType) || 'ContentString';
+        let contentType = model.contentType || 'ContentString';
+        if (model.valueElementValueBindingReferenceId)
+            if (model.valueElementValueBindingReferenceId.contentType)
+                contentType = model.valueElementValueBindingReferenceId.contentType
+            else if (Array.isArray(model.valueElementValueBindingReferenceId) && model.valueElementValueBindingReferenceId.length > 0 && model.valueElementValueBindingReferenceId[0].properties)
+                contentType = (manywho.utils.getObjectDataProperty(model.valueElementValueBindingReferenceId[0].properties, 'ContentType') || {}).contentValue;
         
         let label = <label>{model.label}{model.isRequired ? <span className="input-required"> *</span> : null}</label>;
         let inputElement = null;

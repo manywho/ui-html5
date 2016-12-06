@@ -9,5 +9,6 @@ interface IInputProps extends IComponentProps {
     disabled: boolean,
     readOnly: boolean,
     size: number,
-    format: string
+    format: string,
+    isDesignTime: boolean
 }

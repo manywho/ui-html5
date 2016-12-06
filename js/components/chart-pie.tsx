@@ -2,7 +2,6 @@
 /// <reference path="../interfaces/IItemsComponentProps.ts" />
 
 declare var manywho: any;
-declare var $: any;
 
 class ChartPie extends React.Component<IItemsComponentProps, any> {
 

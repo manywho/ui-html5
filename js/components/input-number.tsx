@@ -13,7 +13,6 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IInputProps.ts" />
 
 declare var manywho: any;
-declare var $: any;
 declare var moment: any;
 
 interface IInputNumberState {
@@ -104,7 +103,7 @@ class InputNumber extends React.Component<IInputProps, IInputNumberState> {
                     readOnly={this.props.readOnly}
                     disabled={this.props.disabled}
                     required={this.props.required}
-                    onChange={this.onChange}
+                    onChange={!this.props.isDesignTime && this.onChange}
                     onBlur={this.props.onBlur} />
     }
 
