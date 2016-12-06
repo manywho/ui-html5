@@ -61,7 +61,7 @@ manywho.formatting = (function (manywho, moment) {
 
     return {
         format(value, format, contentType, flowKey) {
-            if (!manywho.settings.global('formatting.isEnabled', flowKey, false))
+            if (!manywho.settings.global('formatting.isEnabled', flowKey, false) || manywho.utils.isNullOrWhitespace(contentType))
                 return value;
 
             switch (contentType.toUpperCase()) {
