@@ -24,7 +24,7 @@ declare var manywho: any;
             if (isVisible) {
                 manywho.log.info('Rendering Status');
 
-                const message: string = manywho.settings.global('localization.status', this.props.flowKey, null) || manywho.model.getWaitMessage(this.props.flowKey);
+                const message: string = manywho.settings.global('localization.status', this.props.flowKey, null) || manywho.model.getWaitMessage(this.props.flowKey) || '';
                 let content = <p className="lead status-message status-content">{message}</p>;
 
                 if (message.indexOf('<') != -1 && message.indexOf('>') != -1)
