@@ -50,8 +50,10 @@ permissions and limitations under the License.
 
         onChange: function(e) {
 
-            if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.boolean, true))
-                this.setState({ value: !this.state.value });
+            if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.boolean, true)) {
+                var checked = typeof this.state.value === 'string' && manywho.utils.isEqual(this.state.value, 'false', true) ? false : (new Boolean(this.state.value)).valueOf();
+                this.setState({ value: !checked });
+            } 
             else
                 this.setState({ value: e.currentTarget.value });
 
@@ -166,7 +168,7 @@ permissions and limitations under the License.
             }
 
             if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.boolean, true))
-                props.checked = this.state.value;
+                props.checked = this.state.value === true || manywho.utils.isEqual(this.state.value, 'true', true);
             
             if (manywho.utils.isEqual(this.props.contentType, manywho.component.contentTypes.string, true)) {
                 props.rows = 1;
