@@ -894,6 +894,14 @@ permissions and limitations under the License.
 
             flowModel[lookUpKey].attributes = attributes;
 
+        },
+
+        isStatusVisible: function(flowKey) {
+            var lookUpKey = manywho.utils.getLookUpKey(flowKey);
+            return (manywho.utils.isEqual(flowModel[lookUpKey].invokeType, 'wait', true)
+                || manywho.utils.isEqual(flowModel[lookUpKey].invokeType, 'status', true))
+                && flowModel[lookUpKey].components == null
+                && flowModel[lookUpKey].containers == null
         }
 
     }
