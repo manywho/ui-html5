@@ -898,10 +898,12 @@ permissions and limitations under the License.
 
         isStatusVisible: function(flowKey) {
             var lookUpKey = manywho.utils.getLookUpKey(flowKey);
-            return (manywho.utils.isEqual(flowModel[lookUpKey].invokeType, 'wait', true)
-                || manywho.utils.isEqual(flowModel[lookUpKey].invokeType, 'status', true))
-                && flowModel[lookUpKey].components == null
-                && flowModel[lookUpKey].containers == null
+            var model = flowModel[lookUpKey];
+
+            return (manywho.utils.isEqual(model.invokeType, 'wait', true)
+                || manywho.utils.isEqual(model.invokeType, 'status', true))
+                && (model.components == null || Object.keys(model.components).length === 0)
+                && (model.containers == null || Object.keys(model.containers).length === 0)
         }
 
     }
