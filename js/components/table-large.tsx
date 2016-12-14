@@ -172,7 +172,7 @@ declare var manywho: any;
                                     }
                                 </td>
                             else if (column.isEditable)
-                                return <td id={column.typeElementPropertyId} key={column.typeElementPropertyId}>
+                                return <td id={column.typeElementPropertyId} key={column.typeElementPropertyId} className="editable">
                                     {
                                         React.createElement(manywho.component.getByName('table-input'), {
                                             id: item.externalId,
