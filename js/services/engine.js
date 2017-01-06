@@ -551,6 +551,9 @@ manywho.engine = (function (manywho) {
                 }
 
             })
+			.then(function() {
+				manywho.tours.refresh();
+			})
             .always(function() {
 
                 var lookUpKey = manywho.utils.getLookUpKey(flowKey);

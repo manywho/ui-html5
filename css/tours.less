@@ -1,17 +1,100 @@
-.mw-tours {
-    position: absolute;
+.mw-bs.mw-tours {
+    background-color: transparent;
     bottom: 0;
     left: 0;
+    pointer-events: none;
+    position: absolute;
     right: 0;
     top: 0;
-    background: transparent;
-    pointer-events: none;
+
+	.mw-tour-step-appear {
+		opacity: 0.01;
+	}
+
+	.mw-tour-step-appear.mw-tour-step-appear-active {
+		opacity: 1;
+		transition: opacity 0.3s ease-in;
+	}
+
+	.mw-tour-step-leave {
+		opacity: 1;
+	}
+
+	.mw-tour-step-leave.mw-tour-step-leave-active {
+		opacity: 0.01;
+		transition: opacity 0.3s ease-in;
+	}
 }
 
 .mw-bs .mw-tour-step.popover {
-    min-width: 100px;
-    max-width: 400px;
-    z-index: 1000000;
+	background: #ffffff;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     display: block;
+    max-width: 400px;
+    min-width: 100px;
     position: relative;
+    z-index: 1000000;
+
+	.popover-title {
+		background-color: #f7f7f7;
+		border-bottom: 1px solid #ebebeb;
+		border-radius: 5px 5px 0 0;
+		color: black;
+		font-size: 18px;
+		margin: 0;
+		padding: 8px 14px;
+	}
+
+	.popover-content {
+		background: white;
+		color: black;
+		font-size: 16px;
+
+		button {
+			pointer-events: all;
+		}
+	}
+
+	.popover-buttons {
+		display: flex;
+		justify-content: flex-end;
+
+		& > button:fist-child {
+			margin-right: 0.5em;
+		}
+	}
+
+	&.left > .arrow {
+		border-left-color: rgba(0, 0, 0, 0.25);
+
+		&:after {
+			border-left-color: #ffffff;
+		}
+	}
+
+	&.top > .arrow {
+		border-top-color: rgba(0, 0, 0, 0.25);
+
+		&:after {
+			border-top-color: #ffffff;
+		}
+	}
+
+	&.right > .arrow {
+		border-right-color: rgba(0, 0, 0, 0.25);
+
+		&:after {
+			border-right-color: #ffffff;
+		}
+	}
+
+	&.bottom > .arrow {
+		border-bottom-color: rgba(0, 0, 0, 0.25);
+
+		&:after {
+			border-bottom-color: #ffffff;
+		}
+	}
 }
