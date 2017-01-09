@@ -326,7 +326,19 @@ manywho.engine = (function (manywho) {
                 processObjectDataRequests(manywho.model.getComponents(flowKey), flowKey);
 
             })
-            .always(function() {
+			.then(function() {
+
+				var autoStart = manywho.settings.global('tours.autoStart', flowKey, false);
+				var containerSelector = manywho.settings.global('tours.container', flowKey, null);
+
+				if (autoStart)
+					if (typeof autoStart === 'string')
+						manywho.tours.start(autoStart, containerSelector, flowKey);
+					else if (typeof autoStart === 'boolean')
+						manywho.tours.start(null, containerSelector, flowKey);
+
+			})
+			.always(function() {
 
                 manywho.state.setComponentLoading(manywho.utils.extractElement(flowKey), null, flowKey);
                 self.render(flowKey);

@@ -6,6 +6,24 @@ interface ITourState {
 }
 
 interface ITourProps {
-	tour: any,
+	tour: ITour,
 	stepIndex: number
+}
+
+interface ITour {
+	id: string,
+	steps: Array<ITourStep>,
+	currentStep: number
+}
+
+interface ITourStep {
+	target: string,
+	title: string,
+	content: string,
+	placement: string,
+	showNext: boolean,
+	showBack: boolean,
+	offset: number,
+	align: string,
+	order: number
 }
