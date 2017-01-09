@@ -76,7 +76,7 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
 		const contentValue = state && state.contentValue !== undefined ? state.contentValue : model.contentValue;
 
-		let mask = '1111 1111 1111 1111';
+		let mask = null;
 		if (model.attributes && model.attributes.mask)
 			mask = model.attributes.mask;
 
