@@ -187,9 +187,25 @@ permissions and limitations under the License.
         loadScripts(parsed.scripts, callback);
     }
 
+	function loadTours(url, callback) {
+		if (url) {
+			var request = new XMLHttpRequest();
+
+			request.onreadystatechange = function() {
+				if (request.readyState == 4 && request.status == 200 && request.responseText)
+					manywho.tours.addTours(JSON.parse(request.responseText));
+			}
+
+			request.open('GET', url, true);
+			request.send(null);
+		}
+		else
+			callback();
+	}
+
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme) {
+        initialize: function(callback, cdnUrl, vendorHashesUrl, hashes, customResources, initialTheme, toursUrl) {
 
             if (!window.React) {
 
@@ -206,7 +222,9 @@ permissions and limitations under the License.
                             loadFromHashes([hashes[0]], cdnUrl, initialTheme, function() {
                                 hashes.splice(0, 1);
                                 loadFromHashes(hashes, cdnUrl, initialTheme, function() {
-                                    loadCustomResources(customResources, callback);
+                                    loadCustomResources(customResources, function() {
+										loadTours(toursUrl, callback);
+									});
                                 });
                             });
 
@@ -224,7 +242,9 @@ permissions and limitations under the License.
                 loadFromHashes([hashes[0]], cdnUrl, initialTheme, function() {
                     hashes.splice(0, 1);
                     loadFromHashes(hashes, cdnUrl, initialTheme, function() {
-                        loadCustomResources(customResources, callback);
+                        loadCustomResources(customResources, function() {
+							loadTours(toursUrl, callback);
+						});
                     });
                 });
 
@@ -240,6 +260,6 @@ permissions and limitations under the License.
                         return hash != undefined && hash != null;
                     });
 
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', hashes, manywho.customResources, manywho.initialTheme);
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', hashes, manywho.customResources, manywho.initialTheme, manywho.toursUrl);
 
 }(manywho, window));

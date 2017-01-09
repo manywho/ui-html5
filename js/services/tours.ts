@@ -48,65 +48,11 @@ manywho.tours = (function (manywho) {
     return {    
         current: null,
 
-        loadConfigs() {
-            configs['test'] = {
-                id: 'test',
-                steps: [
-                    {
-                        target: '95b5a2e3-f802-43e1-81a3-391e4f32f82b',
-                        title: 'title',
-                        content: 'content',
-                        placement: 'left',
-						showNext: false,
-						showBack: false
-                    },
-                    {
-                        target: '33f9d00a-c705-44d6-8122-fb33634d1319',
-                        content: 'content',
-                        placement: 'bottom',
-                        center: false,
-						showNext: true
-                    },
-					{
-                        target: '50e73534-7833-4427-9d15-2af1a88eb893',
-                        content: 'content',
-                        placement: 'top',
-                        center: false,
-						showBack: true,
-						offset: '16'
-					},
-					{
-                        target: 'step',
-                        content: 'put a step on the canvas',
-                        placement: 'right',
-						showNext: false,
-						showBack: false
-					},
-					{
-						target: '223a4f66-2027-486e-a2b8-4b731ceef6fe',
-						content: 'enter a name here',
-                        placement: 'left',
-						showNext: true,
-						showBack: false
-					},
-					{
-						target: 'f0d230ea-65e1-451a-a32a-73270df19045',
-						content: 'content goes here',
-                        placement: 'left',
-						showNext: true,
-						showBack: true
-					},
-					{
-						target: '47f697b5-12ee-4aa6-8b82-90ba4a16f4c4',
-						content: 'hit this button',
-                        placement: 'top',
-						showNext: false,
-						showBack: true,
-						align: 'right'
-					}			
-                ]
-            }
-        },
+		addTours(tours) {
+			tours.forEach(tour => {
+				configs[tour.id] = tour
+			});
+		},
 
         start(id: string, containerSelector: string, flowKey: string) {
             const container = document.querySelector(containerSelector);
