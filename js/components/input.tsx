@@ -13,6 +13,7 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IComponentProps.ts" />
 
 declare var manywho: any;
+declare var MaskedInput: any;
 
 interface IInputState {
     
@@ -28,12 +29,26 @@ class Input extends React.Component<IComponentProps, IInputState> {
     }
 
     onChange(e: React.FormEvent | string | boolean | number | null) {
-        if (typeof e === 'string' || typeof e === 'boolean' || typeof e === 'number' || e === null)
+        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+		
+		if (typeof e === 'string' || typeof e === 'boolean' || typeof e === 'number' || e === null)
             manywho.state.setComponent(this.props.id, { contentValue: e }, this.props.flowKey, true);
         else
             manywho.state.setComponent(this.props.id, { contentValue: (e.target as HTMLInputElement).value }, this.props.flowKey, true);
+		
+		const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
 
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+		if (model.attributes && model.attributes.validation && manywho.settings.global('validation.isenabled', this.props.flowKey, false)) {
+			try {
+				const regex = new RegExp(model.attributes.validation);
+
+				if (!regex.test(state.contentValue)) 
+					manywho.state.setComponent(this.props.id, { isValid: false, validationMessage: model.attributes.validationMessage || `Value is invalid` }, this.props.flowKey, true);
+			}
+			catch (ex) {
+				manywho.log.error(ex.toString());
+			}
+		}
 
         if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean)
             this.onBlur(e);
@@ -61,19 +76,23 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
         const contentValue = state && state.contentValue !== undefined ?  state.contentValue : model.contentValue;
 
+		let mask = '1111 1111 1111 1111';
+		if (model.attributes && model.attributes.mask)
+			mask = model.attributes.mask;
+
         const props: any = {
-            placeholder: model.hintValue,
             value: contentValue,
             id: this.props.id,
             maxLength: model.maxSize,
-            size: model.size,
+            size: mask ? mask.length : model.size,
             readOnly: model.isEditable === false,
             disabled: model.isEnabled === false,
             required: model.isRequired === true,
             onChange: this.onChange,
             onBlur: this.onBlur,
             flowKey: this.props.flowKey,
-            format: model.contentFormat
+            format: model.contentFormat,
+			mask: mask
         };
 
         if (this.props.isDesignTime) {
@@ -81,6 +100,9 @@ class Input extends React.Component<IComponentProps, IInputState> {
            props.onBlur = null,
            props.isDesignTime = true
         }
+
+		if (!manywho.utils.isNullOrWhitespace(model.hintValue))
+			props.placeholder = model.hintValue;
         
         let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey).join(' ');
 
@@ -120,11 +142,11 @@ class Input extends React.Component<IComponentProps, IInputState> {
                 break;
 
             case manywho.component.contentTypes.password:
-                 inputElement = <input {...props} className="form-control" type="password" />
+                 inputElement = <MaskedInput {...props} className="form-control" type="password" />
                 break;
 
             default:
-                inputElement = <input {...props} className="form-control" type="text" />
+                inputElement = <MaskedInput {...props} className="form-control" type="text" />
                 break;
         }
 
