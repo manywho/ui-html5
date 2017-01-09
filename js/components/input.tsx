@@ -76,7 +76,7 @@ class Input extends React.Component<IComponentProps, IInputState> {
 
 		const contentValue = state && state.contentValue !== undefined ? state.contentValue : model.contentValue;
 
-		let mask = '';
+		let mask = null;
 		if (model.attributes && model.attributes.mask)
 			mask = model.attributes.mask;
 
@@ -142,11 +142,14 @@ class Input extends React.Component<IComponentProps, IInputState> {
 				break;
 
 			case manywho.component.contentTypes.password:
-				inputElement = <MaskedInput {...props} className="form-control" type="password" />
+				inputElement = <input {...props} className="form-control" type="password" />
 				break;
 
 			default:
-				inputElement = <MaskedInput {...props} className="form-control" type="text" />
+				if (manywho.utils.isNullOrEmpty(mask))
+					inputElement = <input {...props} className="form-control" type="text" />
+				else
+					inputElement = <MaskedInput {...props} className="form-control" type="text" />
 				break;
 		}
 
