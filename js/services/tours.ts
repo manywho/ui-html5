@@ -16,10 +16,10 @@ declare var manywho: any;
 
 manywho.tours = (function (manywho) {
 
-    let configs = {};
+	let configs = {};
 	let domWatcher = null;
 
-	const onInterval = function(tour, nextTarget, previousTarget) {
+	const onInterval = function (tour, nextTarget, previousTarget) {
 		if (nextTarget && document.getElementById(nextTarget)) {
 			clearInterval(domWatcher)
 			manywho.tours.next(tour);
@@ -30,7 +30,7 @@ manywho.tours = (function (manywho) {
 		}
 	};
 
-	const watchForStep = function(tour: ITour) {
+	const watchForStep = function (tour: ITour) {
 		const step = tour.steps[tour.currentStep];
 
 		let nextTarget = null;
@@ -40,13 +40,13 @@ manywho.tours = (function (manywho) {
 		let previousTarget = null;
 		if (step.showBack === false && tour.currentStep > 0)
 			previousTarget = tour.steps[tour.currentStep - 1].target;
-		
+
 		if ((step.showNext === false && step.showBack === false) && (nextTarget || previousTarget))
 			domWatcher = setInterval(() => onInterval(tour, nextTarget, previousTarget), 1000);
 	}
 
-    return {    
-        current: null,
+	return {
+		current: null,
 
 		addTours(tours) {
 			tours.forEach(tour => {
@@ -54,71 +54,71 @@ manywho.tours = (function (manywho) {
 			});
 		},
 
-        start(id: string, containerSelector: string, flowKey: string) {
-            const container = document.querySelector(containerSelector);
-            
-            if (container) {
-                let tourContainer = container.querySelector('.mw-tours');
-                if (!tourContainer) {
-                    tourContainer = document.createElement('div');
-                    tourContainer.className = 'mw-tours mw-bs';
-                    container.appendChild(tourContainer);
-                }
+		start(id: string, containerSelector: string, flowKey: string) {
+			const container = document.querySelector(containerSelector);
+
+			if (container) {
+				let tourContainer = container.querySelector('.mw-tours');
+				if (!tourContainer) {
+					tourContainer = document.createElement('div');
+					tourContainer.className = 'mw-tours mw-bs';
+					container.appendChild(tourContainer);
+				}
 
 				if (manywho.utils.isNullOrWhitespace(id))
 					id = Object.keys(configs)[0];
 
-                if (!configs[id]) {
-                    manywho.log.error(`A Tour with the id ${id} could not be found`);
-                    return;
-                }
+				if (!configs[id]) {
+					manywho.log.error(`A Tour with the id ${id} could not be found`);
+					return;
+				}
 
 				if (!configs[id].steps || configs[id].steps.length === 0) {
 					manywho.log.error(`The Tour ${id} contains zero Steps`);
 					return;
 				}
 
-                this.current = JSON.parse(JSON.stringify(configs[id])) as ITour;
+				this.current = JSON.parse(JSON.stringify(configs[id])) as ITour;
 				this.current.steps = (this.current.steps || []).map((step, index) => Object.assign({}, manywho.settings.global('tours.defaults', flowKey, {}), { order: index }, step));
-                
+
 				this.current.currentStep = 0;
 
 				ReactDOM.render(React.createElement(manywho.component.getByName('mw-tour'), { tour: this.current, stepIndex: 0 }), tourContainer);
-                return this.current;
-            }
-            else
-                manywho.log.error(`A Container matching the selector ${containerSelector} could not be found when attempting to start a Tour`);
-        },
+				return this.current;
+			}
+			else
+				manywho.log.error(`A Container matching the selector ${containerSelector} could not be found when attempting to start a Tour`);
+		},
 
-        next(tour = this.current) {
+		next(tour = this.current) {
 			if (!tour)
 				return;
 
-            if (tour.currentStep + 1 >= tour.steps.length)
-                manywho.tours.done(tour);
-            else
-                tour.currentStep++;
+			if (tour.currentStep + 1 >= tour.steps.length)
+				manywho.tours.done(tour);
+			else
+				tour.currentStep++;
 
 			watchForStep(tour);
-            this.render();
-        },
+			this.render();
+		},
 
-        previous(tour = this.current) {
+		previous(tour = this.current) {
 			if (!tour)
 				return;
 
 			tour.currentStep = Math.max(0, tour.currentStep - 1);
 
 			watchForStep(tour);
-            this.render();
-        },
+			this.render();
+		},
 
 		refresh(tour = this.current) {
 			if (!tour)
 				return;
 
 			const targets = tour.steps.map(step => step.target);
-			
+
 			if (!document.getElementById(targets[tour.currentStep]))
 				for (let i = 0; i < targets.length; i++) {
 					if (document.getElementById(targets[i])) {
@@ -127,22 +127,22 @@ manywho.tours = (function (manywho) {
 						break;
 					}
 				}
-				
+
 			watchForStep(tour);
 			this.render(tour);
 		},
 
-        done(tour = this.current) {
-            this.current = null;
-            ReactDOM.unmountComponentAtNode(document.querySelector('.mw-tours'));
-        },
+		done(tour = this.current) {
+			this.current = null;
+			ReactDOM.unmountComponentAtNode(document.querySelector('.mw-tours'));
+		},
 
-        render(tour = this.current) {
+		render(tour = this.current) {
 			if (!tour)
 				return;
 
 			ReactDOM.render(React.createElement(manywho.component.getByName('mw-tour'), { tour: tour, stepIndex: tour.currentStep }), document.querySelector('.mw-tours'));
-        }
-    }
+		}
+	}
 
 })(manywho);

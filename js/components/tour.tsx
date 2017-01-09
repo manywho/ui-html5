@@ -52,7 +52,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 			this.domWatcher = setInterval(() => { this.onInterval(this.props.stepIndex) }, 500);
 		}
 	}
-	
+
 	componentDidMount() {
 		this.domWatcher = setInterval(() => { this.onInterval(this.props.stepIndex) }, 500);
 	}
@@ -133,7 +133,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 		manywho.log.info(`Rendering Tour ${this.props.tour.id}, Step ${this.props.stepIndex}`);
 
 		const step = this.props.tour.steps[this.props.tour.currentStep] as ITourStep;
-		const className = "mw-tour-step popover " + step.placement;          
+		const className = "mw-tour-step popover " + step.placement;
 
 		let arrowStyle = null;
 		let offset = manywho.utils.isNullOrUndefined(step.offset) ? 16 : step.offset;
@@ -147,9 +147,9 @@ class Tour extends React.Component<ITourProps, ITourState> {
 				else if (manywho.utils.isEqual(step.align, 'top', true))
 					top = `calc(100% - ${offset.toString()}px)`;
 
-				arrowStyle= { top: top }
+				arrowStyle = { top: top }
 				break;
-			
+
 			case 'TOP':
 			case 'BOTTOM':
 				let left = '50%';
@@ -158,7 +158,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 				else if (manywho.utils.isEqual(step.align, 'right', true))
 					left = `calc(100% - ${offset.toString()}px)`;
 
-				arrowStyle= { left: left }
+				arrowStyle = { left: left }
 				break;
 		}
 
@@ -167,16 +167,16 @@ class Tour extends React.Component<ITourProps, ITourState> {
 												transitionAppearTimeout={500}
 												transitionEnter={false}
 												transitionLeave={true}
-												transitionLeaveTimeout={250}>			
+												transitionLeaveTimeout={250}>
 			<div className={className} ref="step" style={this.state.style} key={this.props.stepIndex}>
 				<div className="arrow" style={arrowStyle} />
-				{manywho.utils.isNullOrWhitespace(step.title) ? null :  <div className="popover-title">{step.title}</div>}
+				{manywho.utils.isNullOrWhitespace(step.title) ? null : <div className="popover-title">{step.title}</div>}
 				<div className="popover-content">
 					<p>{step.content}</p>
 					<div className="popover-buttons">
 						{step.showBack ? <button className="btn btn-default btn-sm" onClick={this.onBack}>Back</button> : null}
 						{step.showNext ? <button className="btn btn-primary btn-sm" onClick={this.onNext}>Next</button> : null}
-					</div>					
+					</div>
 				</div>
 			</div>
 		</React.addons.CSSTransitionGroup>
