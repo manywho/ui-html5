@@ -135,7 +135,6 @@ manywho.settings = (function (manywho, $) {
 				title: null,
 				content: null,
 				placement: 'bottom',
-				center: true,
 				showNext: true,
 				showBack: true,
 				offset: null,
