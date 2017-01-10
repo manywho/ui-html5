@@ -29,10 +29,21 @@ manywho.tours = (function (manywho) {
 					return step;
 				}
 			});
+			if (stepIndex)
+				manywho.tours.move(tour, stepIndex);
 		}
 	};
 
+	const onDoneInterval = function(tour, target) {
+		if (target && !document.getElementById(target)) {
+			clearInterval(domWatcher);
+			manywho.tours.done(tour);
+		}
+	}
+
 	const watchForStep = function (tour: ITour) {
+		clearInterval(domWatcher);
+
 		const step = tour.steps[tour.currentStep];
 
 		let nextTarget = null;
@@ -41,6 +52,9 @@ manywho.tours = (function (manywho) {
 
 		if (step.showNext === false && nextTarget)
 			domWatcher = setInterval(() => onInterval(tour, nextTarget), 500);
+
+		if (tour.currentStep == tour.steps.length - 1)
+			domWatcher = setInterval(() => onDoneInterval(tour, step.target), 500);
 	}
 
 	return {
@@ -81,6 +95,7 @@ manywho.tours = (function (manywho) {
 
 				this.current.currentStep = 0;
 
+				watchForStep(this.current);
 				ReactDOM.render(React.createElement(manywho.component.getByName('mw-tour'), { tour: this.current, stepIndex: 0 }), tourContainer);
 				return this.current;
 			}
@@ -122,7 +137,6 @@ manywho.tours = (function (manywho) {
 
 			tour.currentStep = index;
 
-			clearInterval(domWatcher);
 			watchForStep(tour);
 			this.render();
 		},
@@ -134,7 +148,7 @@ manywho.tours = (function (manywho) {
 			const targets = tour.steps.map(step => step.target);
 
 			if (!document.getElementById(targets[tour.currentStep]))
-				for (let i = 0; i < targets.length; i++) {
+				for (let i = tour.currentStep; i < targets.length; i++) {
 					if (document.getElementById(targets[i])) {
 						this.move(tour, i);
 						break;
