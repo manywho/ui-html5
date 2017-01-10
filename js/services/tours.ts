@@ -147,13 +147,18 @@ manywho.tours = (function (manywho) {
 
 			const targets = tour.steps.map(step => step.target);
 
-			if (!document.getElementById(targets[tour.currentStep]))
+			if (!document.getElementById(targets[tour.currentStep])) {
 				for (let i = tour.currentStep; i < targets.length; i++) {
 					if (document.getElementById(targets[i])) {
 						this.move(tour, i);
-						break;
+						return;
 					}
 				}
+
+				ReactDOM.unmountComponentAtNode(document.querySelector('.mw-tours'));
+			}
+			else
+				this.render(tour);
 		},
 
 		done(tour = this.current) {
