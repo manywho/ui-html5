@@ -28,6 +28,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 
 		this.onNext = this.onNext.bind(this);
 		this.onBack = this.onBack.bind(this);
+		this.onDone = this.onDone.bind(this);
 	}
 
 	onInterval(stepIndex) {
@@ -43,6 +44,10 @@ class Tour extends React.Component<ITourProps, ITourState> {
 
 	onBack() {
 		manywho.tours.previous(this.props.tour);
+	}
+
+	onDone() {
+		manywho.tours.done(this.props.tour);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -170,7 +175,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 												transitionLeaveTimeout={250}>
 			<div className={className} ref="step" style={this.state.style} key={this.props.stepIndex} id={`tour-${this.props.tour.id}-step${this.props.stepIndex}`}>
 				<div className="arrow" style={arrowStyle} />
-				{manywho.utils.isNullOrWhitespace(step.title) ? null : <div className="popover-title">{step.title}</div>}
+				{manywho.utils.isNullOrWhitespace(step.title) ? null : <div className="popover-title">{step.title}<button className="close" onClick={this.onDone}><span>&times;</span></button></div>}
 				<div className="popover-content">
 					<p>{step.content}</p>
 					<div className="popover-buttons">

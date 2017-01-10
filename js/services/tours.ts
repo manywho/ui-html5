@@ -19,8 +19,10 @@ manywho.tours = (function (manywho) {
 	let configs = {};
 	let domWatcher = null;
 
-	const onInterval = function (tour, nextTarget) {
-		if (nextTarget && document.getElementById(nextTarget)) {
+	const onInterval = function (tour, step, nextTarget: string, moveImmediately: boolean) {
+		if (nextTarget && document.getElementById(nextTarget) 
+			&& (moveImmediately || (step.target && !document.getElementById(step.target)))) {
+
 			clearInterval(domWatcher)
 			let stepIndex = null;
 			tour.steps.find((step, index) => {
@@ -51,7 +53,7 @@ manywho.tours = (function (manywho) {
 			nextTarget = tour.steps[tour.currentStep + 1].target;
 
 		if (step.showNext === false && nextTarget)
-			domWatcher = setInterval(() => onInterval(tour, nextTarget), 500);
+			domWatcher = setInterval(() => onInterval(tour, step, nextTarget, !step.showNext && !step.showBack), 500);
 
 		if (tour.currentStep == tour.steps.length - 1)
 			domWatcher = setInterval(() => onDoneInterval(tour, step.target), 500);
