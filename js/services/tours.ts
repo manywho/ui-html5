@@ -19,14 +19,16 @@ manywho.tours = (function (manywho) {
 	let configs = {};
 	let domWatcher = null;
 
-	const onInterval = function (tour, nextTarget, previousTarget) {
+	const onInterval = function (tour, nextTarget) {
 		if (nextTarget && document.getElementById(nextTarget)) {
 			clearInterval(domWatcher)
-			manywho.tours.next(tour);
-		}
-		else if (previousTarget && document.getElementById(previousTarget)) {
-			clearInterval(domWatcher);
-			manywho.tours.back(tour);
+			let stepIndex = null;
+			tour.steps.find((step, index) => {
+				if (step.target === nextTarget) {
+					stepIndex = index;
+					return step;
+				}
+			});
 		}
 	};
 
@@ -37,12 +39,8 @@ manywho.tours = (function (manywho) {
 		if (step.showNext === false && tour.currentStep < tour.steps.length - 1)
 			nextTarget = tour.steps[tour.currentStep + 1].target;
 
-		let previousTarget = null;
-		if (step.showBack === false && tour.currentStep > 0)
-			previousTarget = tour.steps[tour.currentStep - 1].target;
-
-		if ((step.showNext === false && step.showBack === false) && (nextTarget || previousTarget))
-			domWatcher = setInterval(() => onInterval(tour, nextTarget, previousTarget), 1000);
+		if (step.showNext === false && nextTarget)
+			domWatcher = setInterval(() => onInterval(tour, nextTarget), 500);
 	}
 
 	return {
@@ -113,6 +111,22 @@ manywho.tours = (function (manywho) {
 			this.render();
 		},
 
+		move(tour = this.current, index) {
+			if (!tour)
+				return;
+
+			if (index >= tour.steps.length) {
+				manywho.log.warning(`Cannot move Tour ${tour.id} to Step ${index} as it is out of bounds`);
+				return;
+			}
+
+			tour.currentStep = index;
+
+			clearInterval(domWatcher);
+			watchForStep(tour);
+			this.render();
+		},
+
 		refresh(tour = this.current) {
 			if (!tour)
 				return;
@@ -122,14 +136,10 @@ manywho.tours = (function (manywho) {
 			if (!document.getElementById(targets[tour.currentStep]))
 				for (let i = 0; i < targets.length; i++) {
 					if (document.getElementById(targets[i])) {
-						tour.currentStep = i;
-						clearInterval(domWatcher);
+						this.move(tour, i);
 						break;
 					}
 				}
-
-			watchForStep(tour);
-			this.render(tour);
 		},
 
 		done(tour = this.current) {
