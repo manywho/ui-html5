@@ -168,7 +168,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 												transitionEnter={false}
 												transitionLeave={true}
 												transitionLeaveTimeout={250}>
-			<div className={className} ref="step" style={this.state.style} key={this.props.stepIndex}>
+			<div className={className} ref="step" style={this.state.style} key={this.props.stepIndex} id={`tour-${this.props.tour.id}-step${this.props.stepIndex}`}>
 				<div className="arrow" style={arrowStyle} />
 				{manywho.utils.isNullOrWhitespace(step.title) ? null : <div className="popover-title">{step.title}</div>}
 				<div className="popover-content">
