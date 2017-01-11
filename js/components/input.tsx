@@ -13,131 +13,156 @@ permissions and limitations under the License.
 /// <reference path="../interfaces/IComponentProps.ts" />
 
 declare var manywho: any;
+declare var MaskedInput: any;
 
 interface IInputState {
-    
+
 }
 
 class Input extends React.Component<IComponentProps, IInputState> {
 
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.onChange = this.onChange.bind(this);
-        this.onBlur = this.onBlur.bind(this);
-    }
+		this.onChange = this.onChange.bind(this);
+		this.onBlur = this.onBlur.bind(this);
+	}
 
-    onChange(e: React.FormEvent | string | boolean | number | null) {
-        if (typeof e === 'string' || typeof e === 'boolean' || typeof e === 'number' || e === null)
-            manywho.state.setComponent(this.props.id, { contentValue: e }, this.props.flowKey, true);
-        else
-            manywho.state.setComponent(this.props.id, { contentValue: (e.target as HTMLInputElement).value }, this.props.flowKey, true);
+	onChange(e: React.FormEvent | string | boolean | number | null) {
+		const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+		if (typeof e === 'string' || typeof e === 'boolean' || typeof e === 'number' || e === null)
+			manywho.state.setComponent(this.props.id, { contentValue: e }, this.props.flowKey, true);
+		else
+			manywho.state.setComponent(this.props.id, { contentValue: (e.target as HTMLInputElement).value }, this.props.flowKey, true);
 
-        if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean)
-            this.onBlur(e);
+		const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
 
-        this.forceUpdate();
-    }
+		if (model.attributes && model.attributes.validation && manywho.settings.global('validation.isenabled', this.props.flowKey, false)) {
+			try {
+				const regex = new RegExp(model.attributes.validation);
 
-    onBlur(e) {
-        let callback = null;
-        const relatedElement = e.relatedTarget;
+				if (!regex.test(state.contentValue))
+					manywho.state.setComponent(this.props.id, { isValid: false, validationMessage: model.attributes.validationMessage || `Value is invalid` }, this.props.flowKey, true);
+			}
+			catch (ex) {
+				manywho.log.error(ex.toString());
+			}
+		}
 
-        if (relatedElement && (relatedElement.classList.contains('outcome') || relatedElement.classList.contains('control-label')))
-            callback = () => relatedElement.click()
+		if (model.contentType.toUpperCase() == manywho.component.contentTypes.boolean)
+			this.onBlur(e);
 
-        manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey, callback);
-    }
+		this.forceUpdate();
+	}
 
-    render() {
-        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+	onBlur(e) {
+		let callback = null;
+		const relatedElement = e.relatedTarget;
 
-        manywho.log.info(`Rendering Input: ${model.developerName}, ${this.props.id}`);
-        
-        const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
-        const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
+		if (relatedElement && (relatedElement.classList.contains('outcome') || relatedElement.classList.contains('control-label')))
+			callback = () => relatedElement.click()
 
-        const contentValue = state && state.contentValue !== undefined ?  state.contentValue : model.contentValue;
+		manywho.component.handleEvent(this, manywho.model.getComponent(this.props.id, this.props.flowKey), this.props.flowKey, callback);
+	}
 
-        const props: any = {
-            placeholder: model.hintValue,
-            value: contentValue,
-            id: this.props.id,
-            maxLength: model.maxSize,
-            size: model.size,
-            readOnly: model.isEditable === false,
-            disabled: model.isEnabled === false,
-            required: model.isRequired === true,
-            onChange: this.onChange,
-            onBlur: this.onBlur,
-            flowKey: this.props.flowKey,
-            format: model.contentFormat
-        };
+	render() {
+		const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
 
-        if (this.props.isDesignTime) {
-           props.onChange = null,
-           props.onBlur = null,
-           props.isDesignTime = true
-        }
-        
-        let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey).join(' ');
+		manywho.log.info(`Rendering Input: ${model.developerName}, ${this.props.id}`);
 
-        if (model.isValid === false || state.isValid === false)
-            className += ' has-error';
+		const state = manywho.state.getComponent(this.props.id, this.props.flowKey) || {};
+		const outcomes = manywho.model.getOutcomes(this.props.id, this.props.flowKey);
 
-        if (model.isVisible === false)
-            className += ' hidden';
+		const contentValue = state && state.contentValue !== undefined ? state.contentValue : model.contentValue;
 
-        if (outcomes)
-            className += ' has-outcomes';
+		let mask = null;
+		if (model.attributes && model.attributes.mask)
+			mask = model.attributes.mask;
 
-        className += ' form-group';
+		const props: any = {
+			value: contentValue,
+			id: this.props.id,
+			maxLength: model.maxSize,
+			size: mask ? mask.length : model.size,
+			readOnly: model.isEditable === false,
+			disabled: model.isEnabled === false,
+			required: model.isRequired === true,
+			onChange: this.onChange,
+			onBlur: this.onBlur,
+			flowKey: this.props.flowKey,
+			format: model.contentFormat,
+			mask: mask
+		};
 
-        let contentType = model.contentType || 'ContentString';
-        if (model.valueElementValueBindingReferenceId)
-            if (model.valueElementValueBindingReferenceId.contentType)
-                contentType = model.valueElementValueBindingReferenceId.contentType
-            else if (Array.isArray(model.valueElementValueBindingReferenceId) && model.valueElementValueBindingReferenceId.length > 0 && model.valueElementValueBindingReferenceId[0].properties)
-                contentType = (manywho.utils.getObjectDataProperty(model.valueElementValueBindingReferenceId[0].properties, 'ContentType') || {}).contentValue;
-        
-        let label = <label>{model.label}{model.isRequired ? <span className="input-required"> *</span> : null}</label>;
-        let inputElement = null;
+		if (this.props.isDesignTime) {
+			props.onChange = null,
+				props.onBlur = null,
+				props.isDesignTime = true
+		}
 
-        switch (contentType.toUpperCase()) {
-            case manywho.component.contentTypes.datetime:
-                inputElement = React.createElement(manywho.component.getByName('input-datetime'), props);
-                break;
+		if (!manywho.utils.isNullOrWhitespace(model.hintValue))
+			props.placeholder = model.hintValue;
 
-            case manywho.component.contentTypes.boolean:
-                label = null;
-                inputElement = React.createElement(manywho.component.getByName('input-boolean'), props);
-                break;
+		let className = manywho.styling.getClasses(this.props.parentId, this.props.id, 'input', this.props.flowKey).join(' ');
 
-            case manywho.component.contentTypes.number:
-                inputElement = React.createElement(manywho.component.getByName('input-number'), props);
-                break;
+		if (model.isValid === false || state.isValid === false)
+			className += ' has-error';
 
-            case manywho.component.contentTypes.password:
-                 inputElement = <input {...props} className="form-control" type="password" />
-                break;
+		if (model.isVisible === false)
+			className += ' hidden';
 
-            default:
-                inputElement = <input {...props} className="form-control" type="text" />
-                break;
-        }
+		if (outcomes)
+			className += ' has-outcomes';
 
-        const outcomeButtons = outcomes && outcomes.map(outcome => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
+		className += ' form-group';
 
-        return <div className={className}>
-            {label}
-            {inputElement}
-            <span className="help-block">{model.validationMessage || state.validationMessage}</span>
-            <span className="help-block">{model.helpInfo}</span>
-            {outcomeButtons}
-        </div>
-    }
+		let contentType = model.contentType || 'ContentString';
+		if (model.valueElementValueBindingReferenceId)
+			if (model.valueElementValueBindingReferenceId.contentType)
+				contentType = model.valueElementValueBindingReferenceId.contentType
+			else if (Array.isArray(model.valueElementValueBindingReferenceId) && model.valueElementValueBindingReferenceId.length > 0 && model.valueElementValueBindingReferenceId[0].properties)
+				contentType = (manywho.utils.getObjectDataProperty(model.valueElementValueBindingReferenceId[0].properties, 'ContentType') || {}).contentValue;
+
+		let label = <label>{model.label}{model.isRequired ? <span className="input-required"> *</span> : null}</label>;
+		let inputElement = null;
+
+		switch (contentType.toUpperCase()) {
+			case manywho.component.contentTypes.datetime:
+				inputElement = React.createElement(manywho.component.getByName('input-datetime'), props);
+				break;
+
+			case manywho.component.contentTypes.boolean:
+				label = null;
+				inputElement = React.createElement(manywho.component.getByName('input-boolean'), props);
+				break;
+
+			case manywho.component.contentTypes.number:
+				inputElement = React.createElement(manywho.component.getByName('input-number'), props);
+				break;
+
+			case manywho.component.contentTypes.password:
+				inputElement = <input {...props} className="form-control" type="password" />
+				break;
+
+			default:
+				if (manywho.utils.isNullOrEmpty(mask))
+					inputElement = <input {...props} className="form-control" type="text" />
+				else
+					inputElement = <MaskedInput {...props} className="form-control" type="text" />
+				break;
+		}
+
+		const outcomeButtons = outcomes && outcomes.map(outcome => React.createElement(manywho.component.getByName('outcome'), { id: outcome.id, flowKey: this.props.flowKey }));
+
+		return <div className={className}>
+			{label}
+			{inputElement}
+			<span className="help-block">{model.validationMessage || state.validationMessage}</span>
+			<span className="help-block">{model.helpInfo}</span>
+			{outcomeButtons}
+		</div>
+	}
 }
 
 manywho.component.register('input', Input, ['checkbox']);
