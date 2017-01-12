@@ -66,7 +66,7 @@ declare var manywho: any;
                     classNames.push('dropdown');
 
                     element = <li className={classNames.join(' ')}>
-                        <a href="#" id={item.id} data-toggle="dropdown">
+                        <a id={item.id} data-toggle="dropdown">
                             {item.label}
                             <span className="caret" />
                         </a>
@@ -77,7 +77,7 @@ declare var manywho: any;
                 }
                 else
                     element = <li className={classNames.join(' ')}>
-                        <a href="#" onClick={this.onClick.bind(null, item)} id={item.id}>{item.label}</a>
+                        <a onClick={this.onClick.bind(null, item)} id={item.id}>{item.label}</a>
                     </li>
 
                 elements.push(element);
@@ -86,7 +86,10 @@ declare var manywho: any;
             return elements;
         },
 
-        onClick: function(item) {
+        onClick: function(item, e) {
+			e.preventDefault();
+			e.stopPropagation();
+
             if (!item.isEnabled)
                 return false;
 
