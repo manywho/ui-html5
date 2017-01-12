@@ -57,7 +57,18 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'z', value: 'ZZ' },
         { key: 'zz', value: 'ZZ' },
         { key: 'zzz', value: 'ZZ' }
-    ]
+    ];
+
+	if (window.navigator && window.navigator.language && window.navigator.language.indexOf('-') !== -1) {
+		const parts = window.navigator.language.split('-');
+		const culture = `${parts[0].toLowerCase()}-${parts[1].toUpperCase()}`;
+		if (numbro.cultures()[culture])
+			numbro.setCulture(culture);
+		else
+			numbro.setCulture('en-US');
+	}
+	else
+		numbro.culture('en-US');
 
     return {
         format(value, format, contentType, flowKey) {
