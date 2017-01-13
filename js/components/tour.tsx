@@ -32,7 +32,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 	}
 
 	onInterval(stepIndex) {
-		if (document.getElementById(this.props.tour.steps[stepIndex].target)) {
+		if (manywho.tours.getTargetElement(this.props.tour.steps[stepIndex])) {
 			clearInterval(this.domWatcher);
 			this.setState({ foundTarget: true, style: this.state.style });
 		}
@@ -67,7 +67,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
 			const step = this.props.tour.steps[this.props.tour.currentStep];
 			const stepRect = (this.refs['step'] as HTMLElement).getBoundingClientRect();
 
-			const target = document.getElementById(step.target);
+			const target = manywho.tours.getTargetElement(step);
 			const targetRect = target.getBoundingClientRect();
 
 			let style = {

@@ -25,5 +25,6 @@ interface ITourStep {
 	showBack: boolean,
 	offset: number,
 	align: string,
-	order: number
+	order: number,
+	querySelector: boolean
 }

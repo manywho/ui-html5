@@ -140,7 +140,8 @@ manywho.settings = (function (manywho, $) {
 				showBack: true,
 				offset: null,
 				align: 'center',
-				order: null
+				order: null,
+				querySelector: false
 			},
 			autoStart: false,
 			container: '.mw-bs'
