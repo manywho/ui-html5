@@ -252,7 +252,7 @@ manywho.engine = (function (manywho) {
                 if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
                     manywho.state.setUserTime(flowKey);
 
-				manywho.formatting.initialize(flowKey);
+                manywho.formatting.initialize(flowKey);
 
                 var invokeRequest = manywho.json.generateInvokeRequest(
                     manywho.state.getState(flowKey),
@@ -368,7 +368,7 @@ manywho.engine = (function (manywho) {
         if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey))
             manywho.state.setUserTime(flowKey);
 
-		manywho.formatting.initialize(flowKey);
+        manywho.formatting.initialize(flowKey);
 
         return manywho.ajax.join(state.id, manywho.utils.extractTenantId(flowKey), authenticationToken)
             .then(function (response) {
