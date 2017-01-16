@@ -162,13 +162,7 @@ manywho.tours = (function (manywho) {
 		},
 
 		getTargetElement(step: ITourStep) {
-			if (!step)
-				return null;
-
-			if (step.querySelector)
-				return document.querySelector(step.target);
-			else
-				return document.getElementById(step.target);
+			return null;
 		}
 	}
 

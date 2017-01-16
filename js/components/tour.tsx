@@ -32,10 +32,12 @@ class Tour extends React.Component<ITourProps, ITourState> {
 	}
 
 	onInterval(stepIndex) {
-		if (manywho.tours.getTargetElement(this.props.tour.steps[stepIndex])) {
-			clearInterval(this.domWatcher);
+		const targetElement = manywho.tours.getTargetElement(this.props.tour.steps[stepIndex]);
+
+		if (targetElement && !this.state.foundTarget)
 			this.setState({ foundTarget: true, style: this.state.style });
-		}
+		else if (!targetElement && this.state.foundTarget)
+			this.setState({ foundTarget: false, style: this.state.style });
 	}
 
 	onNext() {
@@ -52,7 +54,6 @@ class Tour extends React.Component<ITourProps, ITourState> {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.stepIndex !== nextProps.stepIndex) {
-			clearInterval(this.domWatcher);
 			this.setState({ foundTarget: false, style: this.state.style });
 			this.domWatcher = setInterval(() => { this.onInterval(this.props.stepIndex) }, 500);
 		}
@@ -189,3 +190,13 @@ class Tour extends React.Component<ITourProps, ITourState> {
 }
 
 manywho.component.register('mw-tour', Tour);
+
+manywho.tours.getTargetElement = function(step: ITourStep) {
+	if (!step)
+		return null;
+
+	if (step.querySelector)
+		return document.querySelector(step.target);
+	else
+		return document.getElementById(step.target);
+}
