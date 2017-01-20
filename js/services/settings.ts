@@ -34,7 +34,8 @@ manywho.settings = (function (manywho, $) {
         },
         i18n: {
             overrideTimezoneOffset: false,
-            timezoneOffset: null
+            timezoneOffset: null,
+            culture: null
         },
         paging: {
             table: 10,
@@ -139,7 +140,8 @@ manywho.settings = (function (manywho, $) {
 				showBack: true,
 				offset: null,
 				align: 'center',
-				order: null
+				order: null,
+				querySelector: false
 			},
 			autoStart: false,
 			container: '.mw-bs'

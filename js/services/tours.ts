@@ -19,25 +19,17 @@ manywho.tours = (function (manywho) {
 	let configs = {};
 	let domWatcher = null;
 
-	const onInterval = function (tour, step, nextTarget: string, moveImmediately: boolean) {
-		if (nextTarget && document.getElementById(nextTarget) 
-			&& (moveImmediately || (step.target && !document.getElementById(step.target)))) {
+	const onInterval = function (tour, step, nextStep, moveImmediately: boolean) {
+		if (manywho.tours.getTargetElement(nextStep) 
+			&& (moveImmediately || !manywho.tours.getTargetElement)) {
 
 			clearInterval(domWatcher)
-			let stepIndex = null;
-			tour.steps.find((step, index) => {
-				if (step.target === nextTarget) {
-					stepIndex = index;
-					return step;
-				}
-			});
-			if (stepIndex)
-				manywho.tours.move(tour, stepIndex);
+			manywho.tours.move(tour, tour.steps.indexOf(nextStep));
 		}
 	};
 
-	const onDoneInterval = function(tour, target) {
-		if (target && !document.getElementById(target)) {
+	const onDoneInterval = function(tour, step) {
+		if (!manywho.tours.getTargetElement(step)) {
 			clearInterval(domWatcher);
 			manywho.tours.done(tour);
 		}
@@ -48,15 +40,11 @@ manywho.tours = (function (manywho) {
 
 		const step = tour.steps[tour.currentStep];
 
-		let nextTarget = null;
 		if (step.showNext === false && tour.currentStep < tour.steps.length - 1)
-			nextTarget = tour.steps[tour.currentStep + 1].target;
+			domWatcher = setInterval(() => onInterval(tour, step, tour.steps[tour.currentStep + 1], !step.showNext && !step.showBack), 500);		
 
-		if (step.showNext === false && nextTarget)
-			domWatcher = setInterval(() => onInterval(tour, step, nextTarget, !step.showNext && !step.showBack), 500);
-
-		if (tour.currentStep == tour.steps.length - 1)
-			domWatcher = setInterval(() => onDoneInterval(tour, step.target), 500);
+		if (tour.currentStep === tour.steps.length - 1)
+			domWatcher = setInterval(() => onDoneInterval(tour, tour.steps[tour.currentStep]), 500);
 	}
 
 	return {
@@ -147,11 +135,9 @@ manywho.tours = (function (manywho) {
 			if (!tour)
 				return;
 
-			const targets = tour.steps.map(step => step.target);
-
-			if (!document.getElementById(targets[tour.currentStep])) {
-				for (let i = tour.currentStep; i < targets.length; i++) {
-					if (document.getElementById(targets[i])) {
+			if (!this.getTargetElement(tour.steps[tour.currentStep])) {
+				for (let i = tour.currentStep; i < tour.steps.length; i++) {
+					if (this.getTargetElement(tour.steps[i])) {
 						this.move(tour, i);
 						return;
 					}
@@ -173,6 +159,10 @@ manywho.tours = (function (manywho) {
 				return;
 
 			ReactDOM.render(React.createElement(manywho.component.getByName('mw-tour'), { tour: tour, stepIndex: tour.currentStep }), document.querySelector('.mw-tours'));
+		},
+
+		getTargetElement(step: ITourStep) {
+			return null;
 		}
 	}
 

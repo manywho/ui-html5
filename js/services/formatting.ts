@@ -57,9 +57,27 @@ manywho.formatting = (function (manywho, moment) {
         { key: 'z', value: 'ZZ' },
         { key: 'zz', value: 'ZZ' },
         { key: 'zzz', value: 'ZZ' }
-    ]
+    ];
+
+    let culture = 'en-US';
 
     return {
+        initialize(flowKey) {
+            if (manywho.settings.global('i18n.culture', flowKey) && numbro) {
+                culture = manywho.settings.global('i18n.culture', flowKey);
+            }
+            else if (window.navigator && window.navigator.language && window.navigator.language.includes('-')) {
+                const parts = window.navigator.language.split('-');
+                const userCulture = `${parts[0].toLowerCase()}-${parts[1].toUpperCase()}`;
+                if (numbro.cultures()[userCulture])
+                    culture = userCulture;
+                else
+                    culture = 'en-US';
+            }
+            else
+                culture = 'en-US';
+        },
+
         format(value, format, contentType, flowKey) {
             if (!manywho.settings.global('formatting.isEnabled', flowKey, false) || manywho.utils.isNullOrWhitespace(contentType))
                 return value;
@@ -172,10 +190,15 @@ manywho.formatting = (function (manywho, moment) {
                 if (format.indexOf('e') !== -1 || format.indexOf('E') !== -1)
                     return (new Number(number)).toExponential();
 
-                if (format.indexOf('c') !== -1 || format.indexOf('C') !== -1)
-                    return numbro(number).formatCurrency(manywho.settings.global('formatting.currency', flowKey, '0[.]00'), (value) => {
-                        return value;
-                    });
+                if (format.indexOf('c') !== -1 || format.indexOf('C') !== -1) {
+                    let formattedNumber = numbro(number);
+                    numbro.culture(culture);   
+                    
+                    formattedNumber = formattedNumber.formatCurrency(manywho.settings.global('formatting.currency', flowKey, '0[.]00'));
+                    numbro.culture('en-US');
+                    
+                    return formattedNumber;
+                }
 
                 format = format.replace(/^#+\./, match => match.replace(/#/g, '0'));
 
@@ -200,7 +223,13 @@ manywho.formatting = (function (manywho, moment) {
                     });
                 }
 
-                return numbro(number).format(format);
+                let formattedNumber = numbro(number)
+                numbro.culture(culture);
+
+                formattedNumber = formattedNumber.format(format);
+                numbro.culture('en-US');
+                
+                return formattedNumber;
             }
             catch (ex) {
                 manywho.log.error(ex);
