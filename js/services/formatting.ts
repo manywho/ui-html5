@@ -66,7 +66,7 @@ manywho.formatting = (function (manywho, moment) {
             if (manywho.settings.global('i18n.culture', flowKey) && numbro) {
                 culture = manywho.settings.global('i18n.culture', flowKey);
             }
-            else if (window.navigator && window.navigator.language && window.navigator.language.includes('-')) {
+            else if (window.navigator && window.navigator.language && window.navigator.language.indexOf('-') !== -1) {
                 const parts = window.navigator.language.split('-');
                 const userCulture = `${parts[0].toLowerCase()}-${parts[1].toUpperCase()}`;
                 if (numbro.cultures()[userCulture])
