@@ -43,8 +43,12 @@ class InputDateTime extends React.Component<IInputProps, IInputDateTimeState> {
         if (!this.props.isDesignTime) {
             if (!e.date)
                 this.props.onChange(null)
-            else if (e.date.isValid())
-                this.props.onChange(e.date.format());
+            else if (e.date.isValid()) {
+                if (manywho.settings.global('i18n.overrideTimezoneOffset', this.props.flowKey))
+                    this.props.onChange(e.date.format());
+                else
+                    this.props.onChange(e.date.utc().format());
+            }
             else
                 this.props.onChange(e.target.value);
         }
