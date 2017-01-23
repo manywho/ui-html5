@@ -146,31 +146,34 @@ manywho.formatting = (function (manywho, moment) {
             if (!manywho.settings.global('formatting.isEnabled', flowKey, false))
                 return dateTime;
 
-            let offset = null;
+            let offset = moment().utcOffset();
+            const overrideTimezoneOffset = manywho.settings.global('i18n.overrideTimezoneOffset', flowKey);
 
-            if (manywho.settings.global('i18n.overrideTimezoneOffset', flowKey)
-                && !manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
+            if (overrideTimezoneOffset && !manywho.utils.isNullOrUndefined(manywho.settings.global('i18n.timezoneOffset', flowKey)))
                 offset = manywho.settings.global('i18n.timezoneOffset', flowKey);
 
-            if (manywho.utils.isNullOrUndefined(offset) && manywho.utils.isNullOrWhitespace(format))
+            if ((manywho.utils.isNullOrUndefined(offset) || offset === 0) && manywho.utils.isNullOrWhitespace(format) && !overrideTimezoneOffset)
                 return dateTime;
 
             try {
-                const momentFormat = manywho.formatting.toMomentFormat(format);
+                const momentFormat = manywho.utils.isNullOrWhitespace(format) ? null : manywho.formatting.toMomentFormat(format);
                 const formats = [moment.ISO_8601];
 
                 if (momentFormat)
                     formats.unshift(momentFormat);
 
-                let parsedDateTime = offset !== null ? moment.utc(dateTime, formats) : moment(dateTime, formats);
+                let parsedDateTime = moment.utc(dateTime, formats);
 
                 if (!parsedDateTime.isValid())
                     return dateTime;
 
-                if (format != 'r' && format !== 'u')
+                if (format != 'r' && format !== 'u' && overrideTimezoneOffset)
                     parsedDateTime.utcOffset(offset);
 
-                return parsedDateTime.format(momentFormat);
+                if (overrideTimezoneOffset)
+                    return parsedDateTime.format(momentFormat);
+                else
+                    return parsedDateTime.utc().format(momentFormat);
             }
             catch (ex) {
                 manywho.log.error(ex);
