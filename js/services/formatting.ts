@@ -222,6 +222,10 @@ manywho.formatting = (function (manywho, moment) {
                             case '0':
                                 format += '0';
                                 break;
+
+                            default:
+                                format += part;
+                                break;
                         }
                     });
                 }
