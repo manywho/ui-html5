@@ -40,12 +40,14 @@ manywho.ajax = (function (manywho) {
         if (limit == null || limit == undefined)
             request.listFilter.limit = manywho.settings.global('paging.files');
 
-        request.listFilter.orderByPropertyDeveloperName = orderBy;
-        request.listFilter.orderByDirectionType = orderByDirection;
+        if (orderBy)
+            request.listFilter.orderByPropertyDeveloperName = orderBy;
+
+        if (orderByDirection)
+            request.listFilter.orderByDirectionType = orderByDirection;
         
-        if (page > 0) {
+        if (page > 0)
             request.listFilter.offset = (page - 1) * request.listFilter.limit;
-        }
 
         return $.ajax({
             url: manywho.settings.global('platform.uri') + url,
