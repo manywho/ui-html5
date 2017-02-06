@@ -267,8 +267,14 @@ class ItemsContainer extends React.Component<IComponentProps, any> {
 
         let contentElement = null;
 
-        if (!state.loading && (!objectData || objectData.length == 0))
-            contentElement = <div className="mw-items-empty"><p className="lead">{manywho.settings.global('localization.noResults', this.props.flowKey)}</p></div>
+        if (!state.loading && (!objectData || objectData.length == 0)) {
+            let noResultsCaption = manywho.settings.global('localization.noResults', this.props.flowKey);
+            
+            if (model.attributes && !manywho.utils.isNullOrUndefined(model.attributes.noResults))
+                noResultsCaption = model.attributes.noResults;
+
+            contentElement = <div className="mw-items-empty"><p className="lead">{noResultsCaption}</p></div>
+        }
 
         if (model.attributes
             && (manywho.utils.isEqual(model.attributes.onlyDisplaySearchResults, 'true', true) || model.attributes.onlyDisplaySearchResults === true)
