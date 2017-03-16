@@ -1,25 +1,20 @@
-var awspublish = require('gulp-awspublish');
-
-module.exports = function(gulp, plugins) {
+module.exports = function(gulp, plugins, argv, cacheControl, src) {
     return function() {
         var distribution = {
-            key: process.env.BAMBOO_AWSKEY,
-            secret: process.env.BAMBOO_AWSSECRET,
-            bucket: process.env.BAMBOO_CDNBUCKET,
-            region: process.env.BAMBOO_CDNREGION,
-            distributionId: process.env.BAMBOO_CDNDISTRIBUTIONID
+            region: argv.region,
+            params: {
+                Bucket: argv.bucket,
+            },
+            accessKeyId: argv.key,
+            secretAccessKey: argv.secret
         };
 
-        var publisher = awspublish.create(distribution);
-        var headers = { 'Cache-Control': 'max-age=315360000, no-transform, public' };
+        var publisher = plugins.awspublish.create(distribution);
+        var headers = { 'Cache-Control': cacheControl };
 
-        if (process.env.BAMBOO_CDNDISTRIBUTIONID == "staging") {
-            headers = null;
-        }
-
-        return gulp.src(['dist/**/*.*', '!dist/hashes.json', '!dist/js/vendor/vendor.json', '!dist/js/loader.min.js', '!dist/default.html', '!dist/css/compiled.css', '!dist/css/mw-bootstrap.css', '!dist/js/compiled.js', '!dist/js/compiled.js.map'])
-            .pipe(awspublish.gzip())
+        return gulp.src(src, { base: './dist' })
+            .pipe(plugins.awspublish.gzip())
             .pipe(publisher.publish(headers, { force: true }))
-            .pipe(awspublish.reporter());
+            .pipe(plugins.awspublish.reporter());
     }
 }

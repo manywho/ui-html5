@@ -1,37 +1,16 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
-var runSequence = require('run-sequence');
-var del = require('del');
 var argv = require('yargs').argv;
 var fs = require('fs');
 var glob = require("glob");
 
-function getTask(task) {
-    return require('./gulp-tasks/' + task)(gulp, plugins, browserSync, argv);
+function getDeployTask(task, cacheControl, src) {
+    return require('./gulp-tasks/deploy/' + task)(gulp, plugins, argv, cacheControl, src);
 }
 
 // Dev
-
-gulp.task('dev-less', getTask('dev/less'));
-gulp.task('dev-js', getTask('dev/js'));
-gulp.task('dev-ts', getTask('dev/ts'));
-gulp.task('dev-bootstrap', getTask('dev/bootstrap'));
-gulp.task('dev-bootstrap-themes', getTask('dev/bootstrap-themes'));
-
-gulp.task('dev-fonts', function () {
-    return gulp.src('css/fonts/*.*').pipe(gulp.dest('./build/css/fonts'));
-});
-
-gulp.task('dev-lib', function () {
-    return gulp.src('css/lib/*.*').pipe(gulp.dest('./build/css/lib'));
-});
-
-gulp.task('dev-js-watch', ['dev-js'], browserSync.reload);
-gulp.task('dev-ts-watch', ['dev-ts'], browserSync.reload);
-
-gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-bootstrap-themes', 'dev-fonts', 'dev-lib'], function () {
-
+gulp.task('refresh', function () {
     browserSync.init({
         server: {
             baseDir: './',
@@ -44,28 +23,18 @@ gulp.task('refresh', ['dev-less', 'dev-js', 'dev-ts', 'dev-bootstrap', 'dev-boot
         ghostMode: false
     });
 
-    gulp.watch('css/*.less', ['dev-less', 'dev-bootstrap']);
-    gulp.watch('css/themes/*.less', ['dev-bootstrap-themes'])
-    gulp.watch('js/**/*.js', ['dev-js-watch']);
-    gulp.watch(['js/**/*.ts', 'js/**/*.tsx'], ['dev-ts-watch']);
-    gulp.watch('debug.html').on('change', browserSync.reload);
-
+    gulp.watch(['ui-core/build/**/*.*', 'debug.html']).on('change', browserSync.reload);
+    gulp.watch(['ui-bootstrap/build/**/*.*', 'debug.html']).on('change', browserSync.reload);
+    gulp.watch(['ui-offline/build/**/*.*', 'debug.html']).on('change', browserSync.reload);
 });
 
 // Dist
 
-gulp.task('dist-less', getTask('dist/less'));
-gulp.task('dist-bootstrap', getTask('dist/bootstrap'));
-gulp.task('dist-bootstrap-themes', getTask('dist/bootstrap-themes'));
-gulp.task('dist-js', getTask('dist/js'));
-gulp.task('dist-loader', getTask('dist/loader'));
-
-gulp.task('dist-clean', function (cb) {
-    del(['dist'], cb);
-});
-
-gulp.task('dist-fonts', function () {
-    return gulp.src('css/fonts/*.*').pipe(gulp.dest('./dist/css/fonts'));
+gulp.task('dist-loader', function() {
+    return gulp.src('js/loader.js')
+        .pipe(plugins.uglify())
+        .pipe(plugins.rename('loader.min.js'))
+        .pipe(gulp.dest('./dist/js'));
 });
 
 gulp.task('dist-vendor', function () {
@@ -76,31 +45,23 @@ gulp.task('dist-html', function () {
     return gulp.src('default.html').pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('dist-hashes', function() {
-    
-    var css = glob.sync('dist/css/compiled-*.css')[0];
-    var js = glob.sync('dist/js/compiled-*.js')[0];
-    var bootstrap = glob.sync('dist/css/mw-bootstrap-*.css')[0];
-        
-    fs.writeFileSync('dist/hashes.json', JSON.stringify({
-        css: css.replace('dist', ''),
-        js: js.replace('dist', ''),
-        bootstrap: bootstrap.replace('dist', '')
-    }), 'utf8');
-    
+gulp.task('dist-hashes', function() { 
+    var resources = glob.sync('./dist/**/ui-*.*', {
+        ignore: ['./dist/**/*.json', './dist/**/loader.min.js']
+    });
+
+    var css = glob.sync('./dist/**/+(ui|mw)-*.css', { ignore: ['./dist/**/themes/*.*'] });
+    var js = glob.sync('./dist/**/*-ui-*.js', { ignore: ['./dist/**/loader.min.js'] });
+     
+    var replacer = function(item) { return item.replace('./dist/', '/')}
+
+    fs.writeFileSync('dist/hashes.json', JSON.stringify([].concat(css, js).map(replacer), null, 4), 'utf8');    
 });
 
-gulp.task('dist', function () {
-    runSequence('dist-clean',              
-                ['dist-js', 'dist-loader'],
-                ['dist-less', 'dist-bootstrap', 'dist-bootstrap-themes'],
-                ['dist-fonts', 'dist-vendor', 'dist-html']);
-});
+gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-hashes']);
 
 // Deploy
-
-gulp.task('deploy-cdn', getTask('deploy/cdn'));
-gulp.task('deploy-short-cache', getTask('deploy/short-cache'));
-gulp.task('deploy-no-cache', getTask('deploy/no-cache'));
-gulp.task('invalidate', getTask('deploy/invalidate'));
-gulp.task('deploy-player', getTask('deploy/player'));
+gulp.task('deploy-assets', getDeployTask('cdn', 'max-age=315360000, no-transform, public', ['dist/js/*.js', 'dist/js/*.js.map', 'dist/css/*.css', 'dist/css/*.css.map', '!dist/js/loader.min.js']));
+gulp.task('deploy-loader', getDeployTask('cdn', 'no-cache', ['dist/js/loader.min.js']));
+gulp.task('deploy-hashes', getDeployTask('cdn', 'no-cache', ['dist/hashes.json', 'dist/js/vendor/vendor.json']));
+gulp.task('deploy-players', getDeployTask('player'));

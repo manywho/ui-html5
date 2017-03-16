@@ -1,6 +1,6 @@
-# ManyWho HTML5 Player
+# ManyWho UI HTML5
 
-HTML5 framework that renders [ManyWho](https://manywho.com) Flows in the browser. The framework is built upon some standard 
+The HTML5 framework bundles the ui-core & ui-bootstrap to render [ManyWho](https://manywho.com) Flows in the browser. The framework is built upon some standard 
 front end technologies including:
 
 | Library ||
@@ -10,6 +10,7 @@ front end technologies including:
 | [Bootswatch](https://bootswatch.com/) | Themes |
 | [LogLevel](https://github.com/pimterry/loglevel) | Logging |
 | [Moment](https://momentjs.com/) | Date & Time manipulation |
+| [Numbro](https://numbrojs.com/) | Number formatting |
 | [Socket.io](http://socket.io/) | Real-time collaboration |
 
 ## Usage
@@ -18,34 +19,49 @@ front end technologies including:
 
 To build the HTML5 player you will need to have [nodejs](http://nodejs.org/), [gulp](http://gulpjs.com/) and [typings](https://github.com/typings/typings) installed.
 
-Then install dependencies:
+Install Dependecies:
 
 ```
 npm install
-typings install
+cd ui-core
+npm install
+cd ../ui-bootstrap
+npm install
 ```
 
 ### Running
 
-You can start the dev server by running `npm start`, this will auto refresh the browser when any changes are made to the static resource files (js, css, html, etc).
+You will need to start the watchers in the `ui-core` & `ui-bootstrap` directories with:
 
-You can then initialize a flow with:
+```
+gulp watch
+```
+
+You can start the dev server by running:
+
+```
+npm start
+```
+
+This will auto refresh the browser when any changes are made to the static resource files (JS, CSS, HTML, etc).
+
+You can then initialize a Flow with:
 ```
 http://localhost:3000?tenant-id=<tenant-id>&flow-id=<flow-id>&flow-version-id=<flow-version-id>
 ```
 
-Or join a flow with:
+Or join a Flow with:
 ```
 http://localhost:3000?tenant-id=<tenant-id>&join=<state-id>
 ```
 
-If you don't have a state id you can get it entering `manywho.state.getState().id` in the browser console once the flow is running.
+If you don't have a State ID you can get it entering `manywho.state.getState().id` in the browser console once the Flow is running.
 
 ## Contributing
 
-Contribution are welcome to the project - whether they are feature requests, improvements or bug fixes! Refer to 
+Contributions are welcome to the project - whether they are feature requests, improvements or bug fixes! Refer to 
 [CONTRIBUTING.md](CONTRIBUTING.md) for our contribution requirements.
 
 ## License
 
-The HTML5 player is released under our shared source license: [https://manywho.com/sharedsource](https://manywho.com/sharedsource)
+This framework is released under the [MIT license](https://opensource.org/licenses/MIT).
