@@ -64,4 +64,4 @@ Contributions are welcome to the project - whether they are feature requests, im
 
 ## License
 
-This framework is released under the [MIT license](https://opensource.org/licenses/MIT).
+The UI framework is released under our shared source license: https://manywho.com/sharedsource
