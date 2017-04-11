@@ -61,7 +61,7 @@ gulp.task('dist-hashes', function() {
 gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-hashes']);
 
 // Deploy
-gulp.task('deploy-assets', getDeployTask('cdn', 'max-age=315360000, no-transform, public', ['dist/js/*.js', 'dist/js/*.js.map', 'dist/css/*.css', 'dist/css/*.css.map', '!dist/js/loader.min.js']));
+gulp.task('deploy-assets', getDeployTask('cdn', 'max-age=315360000, no-transform, public', ['dist/js/*.js', 'dist/js/*.js.map', 'dist/css/*.css', 'dist/css/*.css.map', 'dist/css/themes/*.css', 'dist/css/fonts/*.*', '!dist/js/loader.min.js']));
 gulp.task('deploy-loader', getDeployTask('cdn', 'no-cache', ['dist/js/loader.min.js']));
 gulp.task('deploy-hashes', getDeployTask('cdn', 'no-cache', ['dist/hashes.json', 'dist/js/vendor/vendor.json']));
 gulp.task('deploy-players', getDeployTask('player'));
