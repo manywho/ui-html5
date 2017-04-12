@@ -1,20 +1,21 @@
-module.exports = function(gulp, plugins, browserSync, argv) {
+module.exports = function(gulp, plugins, argv, cacheControl, src) {
     return function() {
         var distribution = {
-            key: process.env.BAMBOO_AWSKEY,
-            secret: process.env.BAMBOO_AWSSECRET,
-            bucket: process.env.BAMBOO_PLAYERSBUCKET,
-            region: process.env.BAMBOO_CDNREGION
+            region: argv.region,
+            params: {
+                Bucket: argv.bucket,
+            },
+            accessKeyId: argv.key,
+            secretAccessKey: argv.secret
         };
 
-        var tenantId = argv.tenant;
         var publisher = plugins.awspublish.create(distribution);
         var headers = {};
 
         return gulp.src(['dist/default.html'])
-                    .pipe(plugins.replace('{{cdnurl}}', process.env.BAMBOO_CDNURL))
-                    .pipe(plugins.replace('{{baseurl}}', process.env.BAMBOO_BASEURL))
-                    .pipe(plugins.rename(tenantId + '.' + argv.player))
+                    .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
+                    .pipe(plugins.replace('{{baseurl}}', argv.baseurl))
+                    .pipe(plugins.rename(argv.tenant + '.' + argv.player))
                     .pipe(publisher.publish(headers, { force: true }))
                     .pipe(plugins.awspublish.reporter())
     }

@@ -146,15 +146,11 @@
 
                 var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
-
                     tenantId = window.location.pathname
                                 .split('/')
                                 .filter(function (path) {
-
                                     return path && path.length > 0;
-
                                 })[0];
-
                 }
 
                 manywho.engine.initialize(
@@ -173,6 +169,5 @@
     </script>
 
     <script src="{{cdnurl}}/js/loader.min.js"></script>
-
 </body>
 </html>
