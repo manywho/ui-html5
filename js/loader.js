@@ -100,11 +100,10 @@
         }
     }
 
-    var urls = [manywho.cdnUrl + '/hashes.json']
-                    .concat(manywho.customHashes)
-                    .filter(function(hash) {
-                        return !!hash;
-                    });
+    var urls = (manywho.customHashes ? manywho.customHashes : [manywho.cdnUrl + '/hashes.json'])
+                .filter(function(hash) {
+                    return !!hash;
+                });
 
     manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', urls, manywho.customResources, manywho.initialTheme);
 
