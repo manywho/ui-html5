@@ -1,6 +1,0 @@
-[submodule "ui-core"]
-	path = ui-core
-	url = git@github.com:manywho/ui-core.git
-[submodule "ui-bootstrap"]
-	path = ui-bootstrap
-	url = git@github.com:manywho/ui-bootstrap.git
