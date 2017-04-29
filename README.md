@@ -34,8 +34,10 @@ npm install
 You will need to start the watchers in the `ui-core` & `ui-bootstrap` directories with:
 
 ```
-gulp watch
+gulp watch --build="../ui-html5/build"
 ```
+
+Alternatively if you don't require the UI to listen for changes to the assets you can run the `dev-*` tasks in `ui-core` & `ui-bootstrap` once instead.
 
 You can start the dev server by running:
 
