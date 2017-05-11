@@ -100,7 +100,8 @@
         }
     }
 
-    var urls = (manywho.customHashes ? manywho.customHashes : [manywho.cdnUrl + '/hashes.json'])
+    var urls = (manywho.systemHashes ? manywho.systemHashes : [manywho.cdnUrl + '/hashes.json'])
+                .concat(manywho.customHashes || [])
                 .filter(function(hash) {
                     return !!hash;
                 });
