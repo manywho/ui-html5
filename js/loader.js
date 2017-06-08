@@ -50,7 +50,7 @@
         if (!index)
             index = 0;
 
-        if (urls && index < urls.length) {
+        if (urls && index < urls.length && urls[index]) {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function() {
 
