@@ -46,7 +46,7 @@
         return parsed;
     }
 
-    function loadHashes(urls, cdnUrl, callback, parsed, index) {
+    function loadHashes(parsed, urls, cdnUrl, callback, index) {
         if (!index)
             index = 0;
 
@@ -56,7 +56,7 @@
 
                 if (request.readyState == 4 && request.status == 200) {
                     parsed = parseHashes(parsed, JSON.parse(request.responseText), cdnUrl);
-                    loadHashes(urls, cdnUrl, callback, parsed, index + 1);
+                    loadHashes(parsed, urls, cdnUrl, callback, index + 1);
                 }
             }
 
@@ -95,30 +95,29 @@
     manywho.loader = {
 
         initialize: function(callback, cdnUrl, vendorHashesUrl, requires, customHashes, customResources, initialTheme) {
-
-            if (!window.React)
-                urls.unshift(vendorHashesUrl);
-
             var parsed = {
                 scripts: [],
                 stylesheets: []
             }
 
-            loadRequires(parsed, cdnUrl, requires, function(parsed) {
-                var hashes = !requires ? [cdnUrl + '/hashes.json'].concat(customHashes) : customHashes;
+            loadHashes(parsed, window.React ? null : [vendorHashesUrl], cdnUrl, function(parsed) {
 
-                loadHashes(hashes, cdnUrl, function(parsed) {
-                    if (customResources)
-                        parsed = parseHashes(parsed, customResources, cdnUrl);
+                loadRequires(parsed, cdnUrl, requires, function(parsed) {
+                    var hashes = !requires ? [cdnUrl + '/hashes.json'].concat(customHashes) : customHashes;
 
-                    if (!document.getElementById('theme'))
-                        parsed.stylesheets.splice(1, 0, initialTheme ? { href: initialTheme, id: 'theme' } : { href: cdnUrl + '/css/themes/mw-paper.css', id: 'theme' });
+                    loadHashes(parsed, hashes, cdnUrl, function(parsed) {
+                        if (customResources)
+                            parsed = parseHashes(parsed, customResources, cdnUrl);
 
-                    manywho.waitingToLoad = parsed.scripts.length;
+                        if (!document.getElementById('theme'))
+                            parsed.stylesheets.splice(1, 0, initialTheme ? { href: initialTheme, id: 'theme' } : { href: cdnUrl + '/css/themes/mw-paper.css', id: 'theme' });
 
-                    parsed.stylesheets.forEach(appendStylesheet);
-                    parsed.scripts.forEach(appendScript);
-                    requestAnimationFrame(function() { isManyWhoReady(callback) });
+                        manywho.waitingToLoad = parsed.scripts.length;
+
+                        parsed.stylesheets.forEach(appendStylesheet);
+                        parsed.scripts.forEach(appendScript);
+                        requestAnimationFrame(function() { isManyWhoReady(callback) });
+                    });
                 });
             });
         }
