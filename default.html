@@ -112,10 +112,7 @@
     <script>
         var manywho = {
             cdnUrl: '{{cdnurl}}',
-            systemHashes: [
-                '{{cdnurl}}/ui-core-hashes.json',
-                '{{cdnurl}}/ui-bootstrap-hashes.json'
-            ],
+            requires: ['core', 'bootstrap3'],
             initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
