@@ -46,23 +46,17 @@
         return parsed;
     }
 
-    function loadHashes(urls, cdnUrl, callback, parsed, index) {
+    function loadHashes(parsed, urls, cdnUrl, callback, index) {
         if (!index)
             index = 0;
 
-        if (!parsed)
-            var parsed = {
-                scripts: [],
-                stylesheets: []
-            }
-
-        if (urls && index < urls.length) {
+        if (urls && index < urls.length && urls[index]) {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function() {
 
                 if (request.readyState == 4 && request.status == 200) {
                     parsed = parseHashes(parsed, JSON.parse(request.responseText), cdnUrl);
-                    loadHashes(urls, cdnUrl, callback, parsed, index + 1);
+                    loadHashes(parsed, urls, cdnUrl, callback, index + 1);
                 }
             }
 
@@ -73,39 +67,62 @@
             callback(parsed);
     }
 
+    function loadRequires(parsed, cdnUrl, requires, callback) {
+        if (requires && requires.length > 0) {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+
+                if (request.readyState == 4 && request.status == 200) {
+                    var bundles = JSON.parse(request.responseText);
+                    for (var i = 0; i < requires.length; i++) {
+                        parsed = parseHashes(parsed, bundles[requires[i]], cdnUrl);
+                    }
+                    callback(parsed)               
+                }
+            }
+
+            request.open('GET', cdnUrl + '/bundles.json', true);
+            request.send(null);
+        }
+        else
+            callback(parsed);
+    }
+
     function isManyWhoReady(callback) {
         (manywho.waitingToLoad === 0) ? callback() : requestAnimationFrame(function() { isManyWhoReady(callback) });
     }
 
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, vendorHashesUrl, urls, customResources, initialTheme) {
+        initialize: function(callback, cdnUrl, vendorHashesUrl, requires, customHashes, customResources, initialTheme) {
+            var parsed = {
+                scripts: [],
+                stylesheets: []
+            }
 
-            if (!window.React)
-                urls.unshift(vendorHashesUrl);
+            loadHashes(parsed, window.React ? null : [vendorHashesUrl], cdnUrl, function(parsed) {
 
-            loadHashes(urls, cdnUrl, function(parsed) {
-                if (customResources)
-                    parsed = parseHashes(parsed, customResources, cdnUrl);
+                loadRequires(parsed, cdnUrl, requires, function(parsed) {
+                    var hashes = !requires ? [cdnUrl + '/hashes.json'].concat(customHashes) : customHashes;
 
-                if (!document.getElementById('theme'))
-                    parsed.stylesheets.splice(1, 0, initialTheme ? { href: initialTheme, id: 'theme' } : { href: cdnUrl + '/css/themes/mw-paper.css', id: 'theme' });
+                    loadHashes(parsed, hashes, cdnUrl, function(parsed) {
+                        if (customResources)
+                            parsed = parseHashes(parsed, customResources, cdnUrl);
 
-                manywho.waitingToLoad = parsed.scripts.length;
+                        if (!document.getElementById('theme'))
+                            parsed.stylesheets.splice(1, 0, initialTheme ? { href: initialTheme, id: 'theme' } : { href: cdnUrl + '/css/themes/mw-paper.css', id: 'theme' });
 
-                parsed.stylesheets.forEach(appendStylesheet);
-                parsed.scripts.forEach(appendScript);
-                requestAnimationFrame(function() { isManyWhoReady(callback) });
+                        manywho.waitingToLoad = parsed.scripts.length;
+
+                        parsed.stylesheets.forEach(appendStylesheet);
+                        parsed.scripts.forEach(appendScript);
+                        requestAnimationFrame(function() { isManyWhoReady(callback) });
+                    });
+                });
             });
         }
     }
 
-    var urls = [manywho.cdnUrl + '/hashes.json']
-                    .concat(manywho.customHashes)
-                    .filter(function(hash) {
-                        return !!hash;
-                    });
-
-    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', urls, manywho.customResources, manywho.initialTheme);
+    manywho.loader.initialize(manywho.initialize, manywho.cdnUrl, manywho.cdnUrl + '/js/vendor/vendor.json', manywho.requires, manywho.customHashes, manywho.customResources, manywho.initialTheme);
 
 }(manywho, window));
