@@ -43,7 +43,11 @@ gulp.task('dist-html', function () {
     return gulp.src('default.html').pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html']);
+gulp.task('dist-img', function() {
+    return gulp.src('img/*.*').pipe(gulp.dest('./dist/img'));
+});
+
+gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-img']);
 
 // Deploy
 gulp.task('deploy-loader', getDeployTask('cdn', 'no-cache', ['dist/js/loader.min.js']));
