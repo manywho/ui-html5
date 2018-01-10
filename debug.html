@@ -114,8 +114,10 @@
 
     <script src="js/vendor/jquery-2.1.4.min.js"></script>
     <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
-    <script src="js/vendor/react-0.14.6.min.js"></script>
-    <script src="js/vendor/react-dom-0.14.6.min.js"></script>
+    <!-- <script src="js/vendor/react-0.14.6.min.js"></script>
+    <script src="js/vendor/react-dom-0.14.6.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react-with-addons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react-dom.js"></script>
     <script src="js/vendor/socket.io-1.4.5.js"></script>
     <script src="js/vendor/moment-with-locales-2.10.6.min.js"></script>
     <script src="js/vendor/loglevel-1.4.0.min.js"></script>
@@ -131,7 +133,7 @@
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
-                         uri: 'https://flow.manywho.com'
+                         uri: 'https://staging.manywho.com'
                     }
                 });
 
