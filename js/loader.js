@@ -8,9 +8,13 @@
         script.async = false;
         script.defer = true;
         script.src = url;
-        script.onload = function() { 
-            manywho.waitingToLoad--; 
+        script.onload = function () {
+            manywho.waitingToLoad--;
         };
+        script.onerror = function () {
+            manywho.waitingToLoad--;
+        };
+
         document.head.appendChild(script);
     }
 
@@ -40,7 +44,7 @@
             if (hashes[i].match('\.css$'))
                 parsed.stylesheets.push({ href: getUrl(cdnUrl, hashes[i]) });
             else if (hashes[i].match('\.js$'))
-                parsed.scripts.push(getUrl(cdnUrl, hashes[i]));    
+                parsed.scripts.push(getUrl(cdnUrl, hashes[i]));
         }
 
         return parsed;
@@ -52,7 +56,7 @@
 
         if (urls && index < urls.length && urls[index]) {
             var request = new XMLHttpRequest();
-            request.onreadystatechange = function() {
+            request.onreadystatechange = function () {
 
                 if (request.readyState == 4 && request.status == 200) {
                     parsed = parseHashes(parsed, JSON.parse(request.responseText), cdnUrl);
@@ -70,14 +74,14 @@
     function loadRequires(parsed, cdnUrl, requires, callback) {
         if (requires && requires.length > 0) {
             var request = new XMLHttpRequest();
-            request.onreadystatechange = function() {
+            request.onreadystatechange = function () {
 
                 if (request.readyState == 4 && request.status == 200) {
                     var bundles = JSON.parse(request.responseText);
                     for (var i = 0; i < requires.length; i++) {
                         parsed = parseHashes(parsed, bundles[requires[i]], cdnUrl);
                     }
-                    callback(parsed)               
+                    callback(parsed)
                 }
             }
 
@@ -89,23 +93,23 @@
     }
 
     function isManyWhoReady(callback) {
-        (manywho.waitingToLoad === 0) ? callback() : requestAnimationFrame(function() { isManyWhoReady(callback) });
+        (manywho.waitingToLoad === 0) ? callback() : requestAnimationFrame(function () { isManyWhoReady(callback) });
     }
 
     manywho.loader = {
 
-        initialize: function(callback, cdnUrl, vendorHashesUrl, requires, customHashes, customResources, initialTheme) {
+        initialize: function (callback, cdnUrl, vendorHashesUrl, requires, customHashes, customResources, initialTheme) {
             var parsed = {
                 scripts: [],
                 stylesheets: []
             }
 
-            loadHashes(parsed, window.React ? null : [vendorHashesUrl], cdnUrl, function(parsed) {
+            loadHashes(parsed, window.React ? null : [vendorHashesUrl], cdnUrl, function (parsed) {
 
-                loadRequires(parsed, cdnUrl, requires, function(parsed) {
+                loadRequires(parsed, cdnUrl, requires, function (parsed) {
                     var hashes = !requires ? [cdnUrl + '/hashes.json'].concat(customHashes) : customHashes;
 
-                    loadHashes(parsed, hashes, cdnUrl, function(parsed) {
+                    loadHashes(parsed, hashes, cdnUrl, function (parsed) {
                         if (customResources)
                             parsed = parseHashes(parsed, customResources, cdnUrl);
 
@@ -116,7 +120,7 @@
 
                         parsed.stylesheets.forEach(appendStylesheet);
                         parsed.scripts.forEach(appendScript);
-                        requestAnimationFrame(function() { isManyWhoReady(callback) });
+                        requestAnimationFrame(function () { isManyWhoReady(callback) });
                     });
                 });
             });
