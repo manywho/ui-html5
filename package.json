@@ -20,6 +20,8 @@
     "yargs": "^2.3.0"
   },
   "scripts": {
-    "start": "gulp refresh"
+    "start": "gulp refresh",
+    "dev": "develop.sh",
+    "build": "build.sh"
   }
 }
