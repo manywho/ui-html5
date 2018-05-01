@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "gulp refresh",
-    "dev": "develop.sh",
-    "build": "build.sh"
+    "dev": "./develop.sh || develop.sh",
+    "build": "./build.sh || build.sh"
   }
 }
