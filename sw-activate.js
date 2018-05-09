@@ -1,5 +1,12 @@
+/**
+ * A service worker primarily used to cache all
+ * engine requests and responses as a user goes
+ * through a flow.
+ */
+
 importScripts('./build/js/localforage-1.5.0.min.js');
 
+// Caching some static files to load
 self.addEventListener('install', function(event) {   
     event.waitUntil(
         caches.open('STATIC').then(function(cache) {
@@ -20,78 +27,46 @@ self.addEventListener('activate', function (event) {
     event.waitUntil(self.clients.claim());
 });
 
+// Intercepting api calls to the engine
 self.addEventListener('fetch', function(event) {
 
     const requestPayload = event.request.clone();
 
     requestPayload.json().then(function(data) {
         if(data) {
-            let responseKey = null;
+            let requestResponseKey = guid();
+            enqueueRequest(requestResponseKey, data);
 
-            if(data.navigationElementId) {
-                responseKey = data.navigationElementId
-            }
-
-            if(data.currentMapElementId) {
-                responseKey = data.currentMapElementId
-            }
-
-            if(data.typeElementBindingId) {
-                responseKey = data.typeElementBindingId
-            }
             console.log('Attempting request to ' + event.request.url + ' method is ' + event.request.method);
             
             fetch(event.request).then(function(response) {
-        
-                // If all is good then cache the response
                 response.json().then(function(data) {
                     if(data) {
-                        enqueueResponse(responseKey, data);
+                        if (data.invokeType !== 'WAIT') {
+                            enqueueResponse(requestResponseKey, data);
+                        }
                     }
                 })
                 .catch(function(){
+                    console.log('No response payload so do not cache response');
                     return
                 });
         
             })
             .catch(function(){
-        
                 console.log('No network');
-        
-                // We also want to start caching requests to 
-                // be synced with the server once reconnected
-                /*requestPayload.json().then(function(data) {
-                    if(data) {
-                        enqueueRequest(data);
-                    }
-                })
-                .catch(function(){
-                    return
-                })*/
             })
 
             
         }
     })
     .catch(function(){
+        console.log('No request payload so do not cache request');
         return
     })
-
-
-    /*caches.match(event.request).then(function(response) {
-        if (response) {
-            // console.log('Found ', event.request.url, ' in cache');
-            return response;
-        }
-        return fetch(event.request).then(function(response) {
-            if (response) {
-                // console.log('Network request for ', event.request.url);
-                // console.log(response.status);
-            }
-        })
-    })*/
 });
 
+// Caching engine responses
 function enqueueResponse(responseKey, response) {
     return localforage.getItem('responses').then(function(queue) {
         queue = queue || [];
@@ -102,12 +77,21 @@ function enqueueResponse(responseKey, response) {
     });
 }
 
-function enqueueRequest(request) {
+// Caching requests to the engine
+function enqueueRequest(requestResponseKey, request) {
     return localforage.getItem('requests').then(function(queue) {
         queue = queue || [];
-        queue.push(JSON.stringify(request));
+        queue.push({'key': requestResponseKey, 'response': JSON.stringify(request)});
         return localforage.setItem('requests', queue).then(function() {
             console.log('Request enqueued!');
         });
     });
 }
+
+// We need guids to relate cached requests to their responses
+function guid() {
+    const s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    };
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+};
