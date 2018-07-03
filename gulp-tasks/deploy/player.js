@@ -1,3 +1,4 @@
+// Note: The default player is cached in-memory inside the Engine, so changes to the default player won't apply for at most 60 minutes after deployment
 module.exports = function(gulp, plugins, argv, cacheControl, src) {
     return function() {
         var distribution = {

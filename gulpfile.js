@@ -20,7 +20,8 @@ gulp.task('refresh', function () {
                 next();
             }
         },
-        ghostMode: false
+        ghostMode: false,
+        open: false
     });
 
     gulp.watch(['build/**/*.*', 'debug.html']).on('change', browserSync.reload);
