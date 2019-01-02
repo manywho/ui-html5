@@ -148,11 +148,12 @@
 
                 var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
-                    tenantId = window.location.pathname
-                                .split('/')
-                                .filter(function (path) {
-                                    return path && path.length > 0;
-                                })[0];
+                    tenantId = 
+                        window.location.pathname
+                        .split('/')
+                        .filter(function (path) {
+                            return path && path.length > 0;
+                        })[0];
                 }
 
                 manywho.engine.initialize(
