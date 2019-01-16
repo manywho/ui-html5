@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
-var argv = require('yargs').argv;
+var argv = require('yargs').default('platform_uri', '').argv;
 
 // Dev
 gulp.task('refresh', function () {
@@ -33,6 +33,7 @@ gulp.task('dist-loader', function() {
 gulp.task('dist-html', function () {
     return gulp.src('default.html')
         .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
+        .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
         .pipe(plugins.rename(argv.tenant + '.' + argv.player))
         .pipe(gulp.dest('./dist/players/'));
 });
