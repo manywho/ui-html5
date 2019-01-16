@@ -22,6 +22,7 @@
   "scripts": {
     "start": "gulp refresh",
     "dev": "./develop.sh || develop.sh",
-    "build": "./build.sh || build.sh"
+    "build": "./build.sh || build.sh",
+    "dist": "gulp dist"
   }
 }
