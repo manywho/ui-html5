@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-const gzip = require('gulp-gzip');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
 var argv = require('yargs').default('platform_uri', '').argv;
