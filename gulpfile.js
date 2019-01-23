@@ -35,8 +35,7 @@ gulp.task('dist-html', function () {
     return gulp.src('default.html')
         .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
         .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
-        .pipe(plugins.rename(argv.tenant + '.' + argv.player))        
-        .pipe(plugins.gzip({ append: false }))
+        .pipe(plugins.rename(argv.tenant + '.' + argv.player))
         .pipe(gulp.dest('./dist/players/'));
 });
 
