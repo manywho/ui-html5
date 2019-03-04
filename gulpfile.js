@@ -1,13 +1,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
-var argv = require('yargs').argv;
-var fs = require('fs');
-var glob = require("glob");
-
-function getDeployTask(task, cacheControl, src) {
-    return require('./gulp-tasks/deploy/' + task)(gulp, plugins, argv, cacheControl, src);
-}
+var argv = require('yargs').default('platform_uri', '').argv;
 
 // Dev
 gulp.task('refresh', function () {
@@ -32,24 +26,23 @@ gulp.task('refresh', function () {
 gulp.task('dist-loader', function() {
     return gulp.src('js/loader.js')
         .pipe(plugins.uglify())
+        .pipe(plugins.gzip({ append: false }))
         .pipe(plugins.rename('loader.min.js'))
         .pipe(gulp.dest('./dist/js'));
 });
 
-gulp.task('dist-vendor', function () {
-    return gulp.src(['js/vendor/*.js', 'js/vendor/vendor.json']).pipe(gulp.dest('./dist/js/vendor'));
-});
-
 gulp.task('dist-html', function () {
-    return gulp.src('default.html').pipe(gulp.dest('./dist/'));
+    return gulp.src('default.html')
+        .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
+        .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
+        .pipe(plugins.rename(argv.tenant + '.' + argv.player))
+        .pipe(gulp.dest('./dist/players/'));
 });
 
 gulp.task('dist-img', function() {
-    return gulp.src('img/*.*').pipe(gulp.dest('./dist/img'));
+    return gulp.src('img/*.*')    
+        .pipe(plugins.gzip({ append: false }))
+        .pipe(gulp.dest('./dist/img'));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-img']);
-
-// Deploy
-gulp.task('deploy-loader', getDeployTask('cdn', 'no-cache', ['dist/js/loader.min.js']));
-gulp.task('deploy-players', getDeployTask('player'));
+gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);

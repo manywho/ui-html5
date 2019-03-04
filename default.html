@@ -119,6 +119,9 @@
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
+                    platform: {
+                        uri: '{{platform_uri}}',
+                    },
                     adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
@@ -148,11 +151,12 @@
 
                 var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
-                    tenantId = window.location.pathname
-                                .split('/')
-                                .filter(function (path) {
-                                    return path && path.length > 0;
-                                })[0];
+                    tenantId = 
+                        window.location.pathname
+                        .split('/')
+                        .filter(function (path) {
+                            return path && path.length > 0;
+                        })[0];
                 }
 
                 manywho.engine.initialize(
