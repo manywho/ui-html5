@@ -23,7 +23,7 @@ Install Dependecies:
 
 ```
 npm install
-cd ui-core
+cd ../ui-core
 npm install
 cd ../ui-bootstrap
 npm install
