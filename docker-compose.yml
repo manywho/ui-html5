@@ -1,0 +1,18 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: runtime-ui
+    ports:
+      - "80:80"
+    volumes:
+      - draw-volume:/usr/share/nginx/html/draw
+      - players-volume:/usr/share/nginx/html/players
+
+volumes:
+  draw-volume:
+    external: true
+    name: ui-draw_draw-volume
+  players-volume:
