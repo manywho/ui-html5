@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.1.14",
-    "browser-sync": "^2.12.8",
+    "browser-sync": "^2.26.7",
     "glob": "^7.0.3",
     "gulp": "^3.8.11",
     "gulp-awspublish": "^3.3.0",
