@@ -8,7 +8,7 @@
     "url": "https://github.com/manywho/ui-html5.git"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1.14",
+    "aws-sdk": "^2.498.0",
     "browser-sync": "^2.12.8",
     "glob": "^7.0.3",
     "gulp": "^3.8.11",
