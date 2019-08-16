@@ -39,6 +39,21 @@ gulp.task('dist-html', function () {
         .pipe(gulp.dest('./dist/players/'));
 });
 
+gulp.task('dist-img', function() {
+    return gulp.src('img/*.*')
+        .pipe(plugins.gzip({ append: false }))
+        .pipe(gulp.dest('./dist/img'));
+});
+
+// Test files (they are the same but have different urls and are not gzipped)
+
+gulp.task('test-loader', function() {
+    return gulp.src('js/loader.js')
+        .pipe(plugins.uglify())
+        .pipe(plugins.rename('loader.min.js'))
+        .pipe(gulp.dest('./test/js'));
+});
+
 gulp.task('test-html', function () {
     return gulp.src('default.html')
         .pipe(plugins.replace('{{cdnurl}}', argv.test_cdnurl))
@@ -47,10 +62,14 @@ gulp.task('test-html', function () {
         .pipe(gulp.dest('./test/players/'));
 });
 
-gulp.task('dist-img', function() {
-    return gulp.src('img/*.*')    
-        .pipe(plugins.gzip({ append: false }))
-        .pipe(gulp.dest('./dist/img'));
+gulp.task('test-img', function() {
+    return gulp.src('img/*.*')
+        .pipe(gulp.dest('./test/img'));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img', 'test-html']);
+
+
+gulp.task('build-dist', ['dist-loader', 'dist-html', 'dist-img']);
+gulp.task('build-test', ['test-loader', 'test-html', 'test-img']);
+
+gulp.task('dist', ['build-dist', 'build-test']);
