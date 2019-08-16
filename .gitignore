@@ -5,6 +5,7 @@
 /css/*.css
 /css/themes/mw-*.css
 /dist
+/test
 /build
 /typings
 
