@@ -39,10 +39,18 @@ gulp.task('dist-html', function () {
         .pipe(gulp.dest('./dist/players/'));
 });
 
+gulp.task('test-html', function () {
+    return gulp.src('default.html')
+        .pipe(plugins.replace('{{cdnurl}}', argv.test_cdnurl))
+        .pipe(plugins.replace('{{platform_uri}}', argv.test_platform_uri))
+        .pipe(plugins.rename(argv.test_tenant + '.' + argv.player))
+        .pipe(gulp.dest('./test/players/'));
+});
+
 gulp.task('dist-img', function() {
     return gulp.src('img/*.*')    
         .pipe(plugins.gzip({ append: false }))
         .pipe(gulp.dest('./dist/img'));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);
+gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img', 'test-html']);
