@@ -26,7 +26,6 @@ gulp.task('refresh', function () {
 gulp.task('dist-loader', function() {
     return gulp.src('js/loader.js')
         .pipe(plugins.uglify())
-        .pipe(plugins.gzip({ append: false }))
         .pipe(plugins.rename('loader.min.js'))
         .pipe(gulp.dest(`${argv.output_directory}/js`));
 });
@@ -41,7 +40,6 @@ gulp.task('dist-html', function () {
 
 gulp.task('dist-img', function() {
     return gulp.src('img/*.*')
-        .pipe(plugins.gzip({ append: false }))
         .pipe(gulp.dest('./dist/img'));
 });
 
