@@ -24,6 +24,7 @@
     "start": "gulp refresh",
     "dev": "./develop.sh || develop.sh",
     "build": "./build.sh || build.sh",
-    "dist": "gulp dist"
+    "dist": "gulp dist",
+    "gulp": "gulp"
   }
 }
