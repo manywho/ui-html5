@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
-var argv = require('yargs').default('platform_uri', '').argv;
+var argv = require('yargs').default('platform_uri', '').default('output_directory', './dist').argv;
 
 // Dev
 gulp.task('refresh', function () {
@@ -28,7 +28,7 @@ gulp.task('dist-loader', function() {
         .pipe(plugins.uglify())
         .pipe(plugins.gzip({ append: false }))
         .pipe(plugins.rename('loader.min.js'))
-        .pipe(gulp.dest('./dist/js'));
+        .pipe(gulp.dest(`${argv.output_directory}/js`));
 });
 
 gulp.task('dist-html', function () {
@@ -36,13 +36,13 @@ gulp.task('dist-html', function () {
         .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
         .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
         .pipe(plugins.rename(argv.tenant + '.' + argv.player))
-        .pipe(gulp.dest('./dist/players/'));
+        .pipe(gulp.dest(`${argv.output_directory}/players/`));
 });
 
 gulp.task('dist-img', function() {
     return gulp.src('img/*.*')    
         .pipe(plugins.gzip({ append: false }))
-        .pipe(gulp.dest('./dist/img'));
+        .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
 gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);
