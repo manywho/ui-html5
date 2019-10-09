@@ -43,4 +43,4 @@ gulp.task('dist-img', function() {
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);
+gulp.task('dist', gulp.parallel('dist-loader', 'dist-html', 'dist-img'));
