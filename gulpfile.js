@@ -21,6 +21,38 @@ gulp.task('refresh', function () {
     gulp.watch(['build/**/*.*', 'debug.html']).on('change', browserSync.reload);
 });
 
+// local server
+gulp.task('local-server', function () {
+    // webpack server with local html and cors
+    browserSync.init({
+        server: {
+            baseDir: './',
+            index: 'local.html',
+            middleware: function (req, res, next) {
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                next();
+            },
+        },
+        ghostMode: false,
+        open: false,
+    });
+    // when files or local.html change, reload
+    gulp.watch(['build/**/*.*', 'local.html']).on('change', browserSync.reload);
+    // also watch debug.html and rebuild local.html when it does
+    gulp.watch('debug.html', ['build-local']);
+});
+// build the local.html ::TODO:: take url from somewhere, maybe also port
+// (so we can do the same with prod or any server we want)
+gulp.task('build-local', function () {
+    return gulp.src('debug.html')
+        .pipe(plugins.replace('https://development.manywho.net', 'http://localhost:22936'))
+        .pipe(plugins.rename('local.html'))
+        .pipe(gulp.dest('.'));
+});
+// local backend
+gulp.task('local', ['build-local', 'local-server']);
+
+
 // Dist
 
 gulp.task('dist-loader', function() {
