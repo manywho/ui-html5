@@ -5,29 +5,20 @@ var argv = require('yargs').default('platform_uri', '').default('output_director
 
 // Dev
 gulp.task('refresh', function () {
-    browserSync.init({
-        server: {
-            baseDir: './',
-            index: 'debug.html',
-            middleware: function (req, res, next) {
-                res.setHeader('Access-Control-Allow-Origin', '*');
-                next();
-            }
-        },
-        ghostMode: false,
-        open: false
-    });
-
-    gulp.watch(['build/**/*.*', 'debug.html']).on('change', browserSync.reload);
-});
-
-// local server
-gulp.task('local-server', function () {
+    // build html from template
+    let platform_uri = 'https://development.manywho.net';
+    if (process.env.platform_uri && process.env.platform_uri !== '') {
+        platform_uri = process.env.platform_uri;
+    }
+    gulp.src('debug.html')
+        .pipe(plugins.replace('{{{platform_uri}}}', platform_uri))
+        .pipe(plugins.rename('index.html'))
+        .pipe(gulp.dest('.'));
     // webpack server with local html and cors
     browserSync.init({
         server: {
             baseDir: './',
-            index: 'local.html',
+            index: 'index.html',
             middleware: function (req, res, next) {
                 res.setHeader('Access-Control-Allow-Origin', '*');
                 next();
@@ -36,21 +27,9 @@ gulp.task('local-server', function () {
         ghostMode: false,
         open: false,
     });
-    // when files or local.html change, reload
-    gulp.watch(['build/**/*.*', 'local.html']).on('change', browserSync.reload);
-    // also watch debug.html and rebuild local.html when it does
-    gulp.watch('debug.html', ['build-local']);
+    // when files change, reload
+    gulp.watch(['build/**/*.*']).on('change', browserSync.reload);
 });
-// build the local.html ::TODO:: take url from somewhere, maybe also port
-// (so we can do the same with prod or any server we want)
-gulp.task('build-local', function () {
-    return gulp.src('debug.html')
-        .pipe(plugins.replace('https://development.manywho.net', 'http://localhost:22936'))
-        .pipe(plugins.rename('local.html'))
-        .pipe(gulp.dest('.'));
-});
-// local backend
-gulp.task('local', ['build-local', 'local-server']);
 
 
 // Dist
