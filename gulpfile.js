@@ -1,7 +1,10 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
-var argv = require('yargs').default('platform_uri', '').default('output_directory', './dist').argv;
+var argv = require('yargs')
+    .default('platform_uri', '')
+    .default('output_directory', './dist')
+    .argv;
 
 // Dev
 gulp.task('refresh', function () {
@@ -43,4 +46,20 @@ gulp.task('dist-img', function() {
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);
+gulp.task('dist-vendor', () => {
+    const { PACKAGE_VERSION } = process.env;
+
+    if (!PACKAGE_VERSION) {
+        throw new Error('A version number must be supplied for a production build. eg. 1.0.0');
+    }
+
+    const filename = `flow-vendor-${PACKAGE_VERSION}.js`;
+
+    return gulp
+        .src('js/vendor/**/*.*')
+        .pipe(plugins.concat(filename))
+        .pipe(plugins.file('vendor.json', `{ "vendor": "/js/vendor/${filename}" }`))
+        .pipe(gulp.dest(`${argv.output_directory}/js/vendor`));
+});
+
+gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-img']);

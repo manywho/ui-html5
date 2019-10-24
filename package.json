@@ -9,10 +9,12 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.520.0",
-    "glob": "^7.1.4",
     "browser-sync": "^2.26.7",
+    "glob": "^7.1.4",
     "gulp": "^3.8.11",
     "gulp-awspublish": "^3.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-file": "^0.4.0",
     "gulp-gzip": "^1.4.2",
     "gulp-load-plugins": "^1.2.2",
     "gulp-rename": "^1.2.0",
