@@ -11,7 +11,7 @@
     "aws-sdk": "^2.520.0",
     "browser-sync": "^2.26.7",
     "glob": "^7.1.4",
-    "gulp": "^3.8.11",
+    "gulp": "^4.0.0",
     "gulp-awspublish": "^3.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-file": "^0.4.0",
@@ -23,7 +23,7 @@
     "yargs": "^14.0.0"
   },
   "scripts": {
-    "start": "gulp refresh",
+    "start": "gulp dev --cdnurl=/build --tenant=index --player=html --output_directory=build --package_version=development",
     "local": "platform_uri=\"http://localhost:22936\" npm start",
     "dev": "./develop.sh || develop.sh",
     "build": "./build.sh || build.sh",

@@ -2,36 +2,29 @@ var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
 var argv = require('yargs')
-    .default('platform_uri', '')
+    .default('platform_uri', 'https://development.manywho.net')
     .default('output_directory', './dist')
     .argv;
 
 // Dev
 gulp.task('refresh', function () {
-    // build html from template
-    let platform_uri = 'https://development.manywho.net';
-    if (process.env.platform_uri && process.env.platform_uri !== '') {
-        platform_uri = process.env.platform_uri;
-    }
-    gulp.src('debug.html')
-        .pipe(plugins.replace('{{{platform_uri}}}', platform_uri))
-        .pipe(plugins.rename('index.html'))
-        .pipe(gulp.dest('.'));
-    // webpack server with local html and cors
+
     browserSync.init({
         server: {
-            baseDir: './',
-            index: 'index.html',
-            middleware: function (req, res, next) {
-                res.setHeader('Access-Control-Allow-Origin', '*');
-                next();
-            },
+            baseDir: `./`,
+            index: `${argv.output_directory}/players/${argv.tenant}.${argv.player}`,
+            middleware: [
+                function (req, res, next) {
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    next();
+                }
+            ],
         },
         ghostMode: false,
         open: false,
     });
     // when files change, reload
-    gulp.watch(['build/**/*.*']).on('change', browserSync.reload);
+    gulp.watch([`${argv.output_directory}/**/*.*`]).on('change', browserSync.reload);
 });
 
 
@@ -57,14 +50,21 @@ gulp.task('dist-img', function() {
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
-gulp.task('dist-vendor', () => {
-    const { PACKAGE_VERSION } = process.env;
+gulp.task('dist-bundle', function() {
 
-    if (!PACKAGE_VERSION) {
-        throw new Error('A version number must be supplied for a production build. eg. 1.0.0');
+    return gulp.src('bundle-template.json')
+        .pipe(plugins.replace('{{version}}', argv.package_version))
+        .pipe(plugins.rename('bundles.json'))
+        .pipe(gulp.dest(`${argv.output_directory}`));
+});
+
+gulp.task('dist-vendor', () => {
+
+    if (!argv.package_version) {
+        throw new Error('A version number must be supplied. eg. 1.0.0');
     }
 
-    const filename = `flow-vendor-${PACKAGE_VERSION}.js`;
+    const filename = `flow-vendor-${argv.package_version}.js`;
 
     return gulp
         .src('js/vendor/**/*.*')
@@ -73,4 +73,5 @@ gulp.task('dist-vendor', () => {
         .pipe(gulp.dest(`${argv.output_directory}/js/vendor`));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-vendor', 'dist-html', 'dist-img']);
+gulp.task('dist', gulp.parallel(['dist-loader', 'dist-vendor', 'dist-html', 'dist-img', 'dist-bundle']));
+gulp.task('dev', gulp.series(['dist', 'refresh']));

@@ -1,0 +1,13 @@
+{
+    "core": [
+        "/js/flow-core-{{version}}.js"
+    ],
+    "bootstrap3": [
+        "/js/flow-ui-bootstrap-{{version}}.js",
+        "/css/flow-ui-bootstrap-{{version}}.css",
+        "/css/flow-ui-bootstrap-components-{{version}}.css"
+    ],
+    "offline": [
+        "/js/flow-offline-{{version}}.js"
+    ]
+}
