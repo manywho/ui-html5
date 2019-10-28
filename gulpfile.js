@@ -24,7 +24,7 @@ gulp.task('refresh', function () {
         open: false,
     });
     // when files change, reload
-    gulp.watch([`${argv.output_directory}/**/*.*`]).on('change', browserSync.reload);
+    gulp.watch([`${argv.output_directory}/**/*.*`, 'template.html']).on('change', browserSync.reload);
 });
 
 
@@ -38,7 +38,7 @@ gulp.task('dist-loader', function() {
 });
 
 gulp.task('dist-html', function () {
-    return gulp.src('default.html')
+    return gulp.src('template.html')
         .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
         .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
         .pipe(plugins.rename(argv.tenant + '.' + argv.player))
@@ -67,7 +67,10 @@ gulp.task('dist-vendor', () => {
     const filename = `flow-vendor-${argv.package_version}.js`;
 
     return gulp
-        .src('js/vendor/**/*.*')
+        .src([
+            'js/vendor/jquery-*.js', // Ensure jquery is loaded first
+            'js/vendor/**/*.*'
+        ])
         .pipe(plugins.concat(filename))
         .pipe(plugins.file('vendor.json', `{ "vendor": "/js/vendor/${filename}" }`))
         .pipe(gulp.dest(`${argv.output_directory}/js/vendor`));

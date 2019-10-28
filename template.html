@@ -1,24 +1,24 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 
-    <link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="57x57" href="img/favicon/apple-touch-icon-57x57.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="img/favicon/apple-touch-icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="img/favicon/apple-touch-icon-76x76.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="img/favicon/apple-touch-icon-114x114.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="img/favicon/apple-touch-icon-120x120.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="img/favicon/apple-touch-icon-144x144.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="img/favicon/apple-touch-icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon-180x180.png" />
-    <link rel="icon" sizes="192x192" href="img/favicon/android-icon.png">
-    <meta name="msapplication-square310x310logo" content="img/favicon/microsoft-310x310.png">
+    <link rel="shortcut icon" href="{{cdnurl}}/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="{{cdnurl}}/img/favicon/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="{{cdnurl}}/img/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="{{cdnurl}}/img/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="{{cdnurl}}/img/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="{{cdnurl}}/img/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{cdnurl}}/img/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="{{cdnurl}}/img/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="{{cdnurl}}/img/favicon/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{cdnurl}}/img/favicon/apple-touch-icon-180x180.png" />
+    <link rel="icon" sizes="192x192" href="{{cdnurl}}/img/favicon/android-icon.png">
+    <meta name="msapplication-square310x310logo" content="{{cdnurl}}/img/favicon/microsoft-310x310.png">
 
-    <title>Boomi Flow</title>
+    <title>Boomi Flows</title>
     <style>
         .mw-bs .wait-container {
             position: absolute;
@@ -112,7 +112,7 @@
         }
     </style>
 </head>
-<body style="height: 100%">
+<body style="height: 100%;">
     <div id="manywho">
         <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
             <div class="wait-container">
@@ -121,34 +121,21 @@
         </div>
     </div>
 
-    <link rel="stylesheet" href="build/css/flow-ui-bootstrap.css" />
-    <link rel="stylesheet" href="build/css/themes/mw-cosmo.css" id="theme" />
-    <link rel="stylesheet" href="build/css/flow-ui-bootstrap-components.css" />
-
-    <script src="js/vendor/jquery-2.1.4.min.js"></script>
-    <script src="js/vendor/bootstrap-3.3.6.min.js"></script>
-    <!-- When debugging, use the dev builds of react for better error messages and easier debugging -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.8.6/umd/react.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.8.6/umd/react-dom.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-transition-group/2.3.1/react-transition-group.js"></script>
-    <script src="js/vendor/socket.io-1.4.5.js"></script>
-    <script src="js/vendor/moment-with-locales-2.10.6.min.js"></script>
-    <script src="js/vendor/loglevel-1.4.0.min.js"></script>
-
     <script>
         var manywho = {
-            cdnUrl: '',
+            cdnUrl: '{{cdnurl}}',
+            requires: ['core', 'bootstrap3'],
             initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
 
                 manywho.settings.initialize({
-                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
-                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     platform: {
-                        // When debugging, use development as the platform
-                        uri: '{{{platform_uri}}}',
+                        uri: '{{platform_uri}}',
                     },
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
 
                 var options = {
@@ -159,7 +146,7 @@
                     navigationElementId: queryParameters['navigation-element-id'],
                     mode: queryParameters['mode'],
                     reportingMode: queryParameters['reporting-mode'],
-                    replaceUrl: false,
+                    replaceUrl: true,
                     collaboration: {
                         isEnabled: false
                     },
@@ -170,20 +157,18 @@
                         isWizard: false
                     },
                     callbacks: [],
-                    history: queryParameters['history'],
                     theme: queryParameters['theme']
                 };
 
                 var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
-                    tenantId = window.location.pathname
-                                .split('/')
-                                .filter(function (path) {
-                                    return path && path.length > 0;
-                                })[0];
+                    tenantId =
+                        window.location.pathname
+                        .split('/')
+                        .filter(function (path) {
+                            return path && path.length > 0;
+                        })[0];
                 }
-
-                manywho.log.enableAll();
 
                 manywho.engine.initialize(
                     tenantId,
@@ -200,11 +185,6 @@
         };
     </script>
 
-    <script src="build/js/flow-core.js"></script>
-    <script src="build/js/flow-ui-bootstrap.js"></script>
-
-    <script>
-        manywho.initialize();
-    </script>
+    <script src="{{cdnurl}}/js/loader.min.js"></script>
 </body>
 </html>
