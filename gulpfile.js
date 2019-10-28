@@ -28,16 +28,16 @@ gulp.task('refresh', function () {
 });
 
 
-// Dist
+// Build
 
-gulp.task('dist-loader', function() {
+gulp.task('loader', function() {
     return gulp.src('js/loader.js')
         .pipe(plugins.uglify())
         .pipe(plugins.rename('loader.min.js'))
         .pipe(gulp.dest(`${argv.output_directory}/js`));
 });
 
-gulp.task('dist-html', function () {
+gulp.task('html', function () {
     return gulp.src('template.html')
         .pipe(plugins.replace('{{cdnurl}}', argv.cdnurl))
         .pipe(plugins.replace('{{platform_uri}}', argv.platform_uri))
@@ -45,12 +45,12 @@ gulp.task('dist-html', function () {
         .pipe(gulp.dest(`${argv.output_directory}/players/`));
 });
 
-gulp.task('dist-img', function() {
+gulp.task('img', function() {
     return gulp.src('img/**/*.*')
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
-gulp.task('dist-bundle', function() {
+gulp.task('bundle', function() {
 
     return gulp.src('bundle-template.json')
         .pipe(plugins.replace('{{version}}', argv.package_version))
@@ -58,7 +58,7 @@ gulp.task('dist-bundle', function() {
         .pipe(gulp.dest(`${argv.output_directory}`));
 });
 
-gulp.task('dist-vendor', () => {
+gulp.task('vendor', () => {
 
     if (!argv.package_version) {
         throw new Error('A version number must be supplied. eg. 1.0.0');
@@ -66,15 +66,19 @@ gulp.task('dist-vendor', () => {
 
     const filename = `flow-vendor-${argv.package_version}.js`;
 
+    const libDirectory = argv.package_version === 'development' ? 'dev' : 'dist';
+
     return gulp
         .src([
             'js/vendor/jquery-*.js', // Ensure jquery is loaded first
-            'js/vendor/**/*.*'
+            `js/vendor/${libDirectory}/jquery-migrate*.js`, // Ensure jquery migrate is loaded next
+            `js/vendor/${libDirectory}/*.*`, // Rest of lib directory
+            'js/vendor/*.*' // All of top level vendor directory
         ])
         .pipe(plugins.concat(filename))
         .pipe(plugins.file('vendor.json', `{ "vendor": "/js/vendor/${filename}" }`))
         .pipe(gulp.dest(`${argv.output_directory}/js/vendor`));
 });
 
-gulp.task('dist', gulp.parallel(['dist-loader', 'dist-vendor', 'dist-html', 'dist-img', 'dist-bundle']));
-gulp.task('dev', gulp.series(['dist', 'refresh']));
+gulp.task('build', gulp.parallel(['loader', 'vendor', 'html', 'img', 'bundle']));
+gulp.task('dev', gulp.series(['build', 'refresh']));
