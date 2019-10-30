@@ -52,6 +52,10 @@ gulp.task('img', function() {
 
 gulp.task('bundle', function() {
 
+    if (!argv.package_version) {
+        throw new Error('A version number must be supplied. eg. 1.0.0');
+    }
+
     return gulp.src('bundle-template.json')
         .pipe(plugins.replace('{{version}}', argv.package_version))
         .pipe(plugins.rename('bundles.json'))
