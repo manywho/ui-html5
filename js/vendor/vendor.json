@@ -4,7 +4,7 @@
     "boostrap.js": "/js/vendor/bootstrap-3.3.7.min.js",
     "react.js": "/js/vendor/react-16.8.6.min.js",
     "react-dom.js": "/js/vendor/react-dom-16.8.6.min.js",
-    "socket-io.js": "/js/vendor/socket.io-1.4.5.min.js",
+    "socket-io.js": "/js/vendor/socket.io-1.4.5.js",
     "moment.js": "/js/vendor/moment-with-locales-2.10.6.min.js",
     "loglevel.js": "/js/vendor/loglevel-1.4.0.min.js"
 }
