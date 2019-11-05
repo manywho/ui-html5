@@ -39,7 +39,7 @@ gulp.task('dist-html', function () {
 });
 
 gulp.task('dist-img', function() {
-    return gulp.src('img/*.*')
+    return gulp.src('img/**/*.*')
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
