@@ -11,9 +11,7 @@
     "aws-sdk": "^2.520.0",
     "glob": "^7.1.4",
     "browser-sync": "^2.26.7",
-    "gulp": "^3.8.11",
-    "gulp-awspublish": "^3.3.0",
-    "gulp-gzip": "^1.4.2",
+    "gulp": "^4.0.2",
     "gulp-load-plugins": "^1.2.2",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.4",
@@ -22,6 +20,7 @@
   },
   "scripts": {
     "start": "gulp refresh",
+    "local": "platform_uri=\"http://localhost:22936\" npm start",
     "dev": "./develop.sh || develop.sh",
     "build": "./build.sh || build.sh",
     "dist": "gulp dist",

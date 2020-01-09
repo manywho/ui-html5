@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 cd ../ui-core
 npm start -- --env.build=../ui-html5/build &

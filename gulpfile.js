@@ -5,21 +5,32 @@ var argv = require('yargs').default('platform_uri', '').default('output_director
 
 // Dev
 gulp.task('refresh', function () {
+    // build html from template
+    let platform_uri = 'https://development.manywho.net';
+    if (process.env.platform_uri && process.env.platform_uri !== '') {
+        platform_uri = process.env.platform_uri;
+    }
+    gulp.src('debug.html')
+        .pipe(plugins.replace('{{{platform_uri}}}', platform_uri))
+        .pipe(plugins.rename('index.html'))
+        .pipe(gulp.dest('.'));
+    // webpack server with local html and cors
     browserSync.init({
         server: {
             baseDir: './',
-            index: 'debug.html',
+            index: 'index.html',
             middleware: function (req, res, next) {
                 res.setHeader('Access-Control-Allow-Origin', '*');
                 next();
-            }
+            },
         },
         ghostMode: false,
-        open: false
+        open: false,
     });
-
-    gulp.watch(['build/**/*.*', 'debug.html']).on('change', browserSync.reload);
+    // when files change, reload
+    gulp.watch(['build/**/*.*']).on('change', browserSync.reload);
 });
+
 
 // Dist
 
@@ -43,4 +54,4 @@ gulp.task('dist-img', function() {
         .pipe(gulp.dest(`${argv.output_directory}/img`));
 });
 
-gulp.task('dist', ['dist-loader', 'dist-html', 'dist-img']);
+gulp.task('dist', gulp.parallel('dist-loader', 'dist-html', 'dist-img'));
