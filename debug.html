@@ -139,16 +139,6 @@
     <script src="js/vendor/loglevel-1.4.0.min.js"></script>
 
     <script>
-        var historyBack = false;
-
-        var mapElementLoadCallback = function mapElementLoadCallback(registeredCallback, invokeResponse) {
-            if(!historyBack) {
-                // We're not going back in history, so push a new history entry                
-                history.pushState(invokeResponse.currentMapElementId, null, window.location.pathname + window.location.search);
-            }   
-            historyBack = false;
-        };
-
         var manywho = {
             cdnUrl: '',
             initialize: function () {
@@ -182,18 +172,7 @@
                         isFixed: true,
                         isWizard: false
                     },
-                    callbacks: [
-                        {
-                            repeat: true,
-                            type: 'forward',
-                            execute: mapElementLoadCallback,
-                        },
-                        {
-                            repeat: true,
-                            type: 'done',
-                            execute: mapElementLoadCallback,
-                        }  
-                    ],
+                    callbacks: [],
                     history: queryParameters['history'],
                     theme: queryParameters['theme']
                 };
@@ -218,43 +197,6 @@
                     queryParameters['authorization'],
                     options,
                     queryParameters['initialization']
-                ).then(
-                    function (flowKey) {
-                        
-                        window.addEventListener('popstate', function(event) {
-
-                            historyBack = true;
-
-                            var currentMapElementId = event.state;
-                            
-                            const invokeRequest = manywho.json.generateInvokeRequest(
-                                manywho.state.getState(flowKey),
-                                'FORWARD',
-                                null,
-                                currentMapElementId,
-                                manywho.state.getPageComponentInputResponseRequests(flowKey),
-                                manywho.model.getDefaultNavigationId(flowKey),
-                                null,
-                                manywho.settings.flow('annotations', flowKey),
-                                manywho.state.getLocation(flowKey),
-                                manywho.settings.flow('mode', flowKey),
-                            );
-
-                            return manywho.engine.moveWithAuthorization.call(
-                                this,
-                                {
-                                    execute: manywho.engine.joinWithAuthorization,
-                                    context: this,
-                                    args: [flowKey],
-                                    name: 'invoke',
-                                    type: 'done',
-                                },
-                                invokeRequest,
-                                flowKey,
-                            );
-            
-                        }, false);
-                    }
                 );
 
             }
