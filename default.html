@@ -26,9 +26,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            min-height: 500px;
+            min-height: 64px;
             z-index: 1100;
             background-color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .mw-bs .wait-message {
@@ -39,75 +43,40 @@
             top: 40%;
             font-size: 2em;
             padding: 0 2em;
+            animation: fadein 1s;
         }
 
         /* outer */
         .mw-bs .wait-spinner {
-            display: block;
-            position: relative;
-            left: 50%;
-            width: 150px;
-            height: 150px;
-            margin: 200px 0 0 -75px;
             border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #268AAF;
-            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
-            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            width: 30px;
+            height: 30px;
+            border: 4px solid rgb(206, 206, 206);
+            border-top-color: rgb(172, 172, 172);
+            animation: spin 750ms infinite linear, fadein 250ms;
         }
 
-        /* middle */
-        .mw-bs .wait-spinner:before {
-            content: "";
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #31B2E2;
-            -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
-              animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
-        }
-
-        /* inner */
-        .mw-bs .wait-spinner:after {
-            content: "";
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #154E62;
-            -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
-              animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
-        }
-
-        @-webkit-keyframes spin {
-            0%   {
-                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-                -ms-transform: rotate(0deg);  /* IE 9 */
-                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+        @keyframes fadein {
+            0% {
+                opacity: 0;
             }
+
+            66% {
+                opacity: 0;
+            }
+
             100% {
-                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-                -ms-transform: rotate(360deg);  /* IE 9 */
-                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+                opacity: 1;
             }
         }
+
         @keyframes spin {
-            0%   {
-                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-                -ms-transform: rotate(0deg);  /* IE 9 */
-                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            0% {
+                transform: rotate(0deg);
             }
+
             100% {
-                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
-                -ms-transform: rotate(360deg);  /* IE 9 */
-                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+                transform: rotate(360deg);
             }
         }
     </style>
